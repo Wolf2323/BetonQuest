@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -241,7 +242,7 @@ public class Journal {
      */
     private String generateMainPage() {
         HashMap<Integer, ArrayList<String>> lines = new HashMap<>(); // holds text lines with their priority
-        ArrayList<Integer> numbers = new ArrayList<>(); // stores numbers that are used, so there's no need to search them
+        HashSet<Integer> numbers = new HashSet<>(); // stores numbers that are used, so there's no need to search them
         for (ConfigPackage pack : Config.getPackages().values()) {
             String packName = pack.getName();
             ConfigurationSection s = pack.getMain().getConfig().getConfigurationSection("journal_main_page");
@@ -301,8 +302,8 @@ public class Journal {
                     	linesOrder = lines.get(i);
                     }
                     else {
-                	linesOrder = new ArrayList<String>();
-                	lines.put(i, linesOrder);
+                    	linesOrder = new ArrayList<String>();
+                    	lines.put(i, linesOrder);
                     }
                     linesOrder.add(text + "§r"); // reset the formatting
                 } else {
