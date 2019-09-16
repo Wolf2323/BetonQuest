@@ -307,7 +307,7 @@ public class Journal {
                     linesOrder.add(text + "§r"); // reset the formatting
                 } else {
                     Debug.error("Priority of " + packName + "." + key
-                            + " journal main page line is not defined or doubled");
+                            + " journal main page line is not defined");
                     continue;
                 }
             }
