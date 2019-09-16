@@ -17,10 +17,11 @@
  */
 package pl.betoncraft.betonquest.compatibility.citizens;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,18 +30,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import pl.betoncraft.betonquest.BetonQuest;
 import pl.betoncraft.betonquest.ConditionID;
+import pl.betoncraft.betonquest.InstructionParseException;
+import pl.betoncraft.betonquest.ItemID;
 import pl.betoncraft.betonquest.ObjectNotFoundException;
 import pl.betoncraft.betonquest.config.Config;
 import pl.betoncraft.betonquest.config.ConfigPackage;
+import pl.betoncraft.betonquest.item.QuestItem;
 import pl.betoncraft.betonquest.utils.Debug;
 import pl.betoncraft.betonquest.utils.PlayerConverter;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Displays a hologram relative to an npc
@@ -114,6 +119,7 @@ public class CitizensHologram extends BukkitRunnable implements Listener {
                         }
 
                         HologramConfig hologramConfig = new HologramConfig();
+                        hologramConfig.pack = pack;
 
                         try {
                             String vectorParts[] = settings.getString("vector", "0;3;0").split(";");
@@ -232,7 +238,26 @@ public class CitizensHologram extends BukkitRunnable implements Listener {
                             hologram.getVisibilityManager().setVisibleByDefault(false);
                             for (String line : npcHologram.config.settings.getStringList("lines")) {
                                 if (line.startsWith("item:")) {
-                                    hologram.appendItemLine(new ItemStack(Material.matchMaterial(line.substring(5))));
+                                	hologram.appendItemLine(new ItemStack(Material.matchMaterial(line.substring(5))));
+                                	try	{
+										String args[] = line.substring(5).split(":");
+										ItemID itemID = new ItemID(npcHologram.config.pack, args[0]);
+										int stackSize = 1;
+										try	{
+											stackSize = Integer.valueOf(args[1]);
+										}
+										catch(NumberFormatException e) {
+										}
+										ItemStack stack = new QuestItem(itemID).generate(stackSize);
+										stack.setAmount(stackSize);
+										hologram.appendItemLine(stack);
+									}
+									catch(InstructionParseException e) {
+										Debug.error("Could not parse item " + line.substring(5) + " hologram: " + e.getMessage());
+									}
+									catch(ObjectNotFoundException e) {
+										Debug.error("Could not find item in " + line.substring(5).split(":")[0] + " hologram: " + e.getMessage());
+									}
                                 } else {
                                     hologram.appendTextLine(line.replace('&', '§'));
                                 }
@@ -313,6 +338,6 @@ public class CitizensHologram extends BukkitRunnable implements Listener {
         private List<ConditionID> conditions;
         private Vector vector;
         private ConfigurationSection settings;
-
+        private ConfigPackage pack;
     }
 }
