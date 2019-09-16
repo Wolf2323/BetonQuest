@@ -240,7 +240,7 @@ public class Journal {
      * @return the main page string or null, if there is no main page
      */
     private String generateMainPage() {
-        HashMap<Integer, String> lines = new HashMap<>(); // holds text lines with their priority
+        HashMap<Integer, ArrayList<String>> lines = new HashMap<>(); // holds text lines with their priority
         ArrayList<Integer> numbers = new ArrayList<>(); // stores numbers that are used, so there's no need to search them
         for (ConfigPackage pack : Config.getPackages().values()) {
             String packName = pack.getName();
@@ -252,7 +252,7 @@ public class Journal {
             for (String key : s.getKeys(false)) {
                 int i = s.getInt(key + ".priority", -1);
                 // only add entry if the priority is set and not doubled
-                if (i >= 0 && !numbers.contains(i)) {
+                if (i >= 0) {
                     // check conditions and continue loop if not met
                     String rawConditions = s.getString(key + ".conditions");
                     if (rawConditions != null && rawConditions.length() > 0) {
@@ -296,7 +296,15 @@ public class Journal {
                     }
                     // add the text to HashMap
                     numbers.add(i);
-                    lines.put(i, text + "§r"); // reset the formatting
+                    ArrayList<String> linesOrder;
+                    if(lines.containsKey(i)) {
+                    	linesOrder = lines.get(i);
+                    }
+                    else {
+                	linesOrder = new ArrayList<String>();
+                	lines.put(i, linesOrder);
+                    }
+                    linesOrder.add(text + "§r"); // reset the formatting
                 } else {
                     Debug.error("Priority of " + packName + "." + key
                             + " journal main page line is not defined or doubled");
@@ -313,7 +321,13 @@ public class Journal {
         // build the string and return it
         ArrayList<String> sortedLines = new ArrayList<>();
         for (int i : sorted) {
-            sortedLines.add(lines.get(i));
+            ArrayList<String> linesOrder = lines.get(i);
+            String[] sortedlinesOrder = new String[linesOrder.size()];
+            sortedlinesOrder = linesOrder.toArray(sortedlinesOrder);
+            Arrays.sort(sortedlinesOrder);
+            for (String s : sortedlinesOrder) {
+            	sortedLines.add(s);
+            }
         }
         return StringUtils.join(sortedLines, '\n').replace('&', '§');
     }
