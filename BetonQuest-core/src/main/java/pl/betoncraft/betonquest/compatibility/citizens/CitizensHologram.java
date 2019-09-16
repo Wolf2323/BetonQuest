@@ -236,24 +236,24 @@ public class CitizensHologram extends BukkitRunnable implements Listener {
                             hologram.getVisibilityManager().setVisibleByDefault(false);
                             for (String line : npcHologram.config.settings.getStringList("lines")) {
                                 if (line.startsWith("item:")) {
-				    try {
-					String args[] = line.substring(5).split(":");
-					ItemID itemID = new ItemID(npcHologram.config.pack, args[0]);
-					int stackSize = 1;
-					try {
-					    stackSize = Integer.valueOf(args[1]);
-					} catch (NumberFormatException e) {
-					}
-					ItemStack stack = new QuestItem(itemID).generate(stackSize);
-					stack.setAmount(stackSize);
-					hologram.appendItemLine(stack);
-				    } catch (InstructionParseException e) {
-					Debug.error("Could not parse item " + line.substring(5) + " hologram: "
-						+ e.getMessage());
-				    } catch (ObjectNotFoundException e) {
-					Debug.error("Could not find item in " + line.substring(5).split(":")[0]
-						+ " hologram: " + e.getMessage());
-				    }
+                                    try {
+                                        String args[] = line.substring(5).split(":");
+                                        ItemID itemID = new ItemID(npcHologram.config.pack, args[0]);
+                                        int stackSize = 1;
+                                        try {
+                                            stackSize = Integer.valueOf(args[1]);
+                                        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                                        }
+                                        ItemStack stack = new QuestItem(itemID).generate(stackSize);
+                                        stack.setAmount(stackSize);
+                                        hologram.appendItemLine(stack);
+                                    } catch (InstructionParseException e) {
+                                        Debug.error("Could not parse item " + line.substring(5) + " hologram: "
+                                                + e.getMessage());
+                                    } catch (ObjectNotFoundException e) {
+                                        Debug.error("Could not find item in " + line.substring(5).split(":")[0]
+                                                + " hologram: " + e.getMessage());
+                                    }
                                 } else {
                                     hologram.appendTextLine(line.replace('&', '§'));
                                 }
