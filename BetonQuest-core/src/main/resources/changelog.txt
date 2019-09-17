@@ -26,6 +26,7 @@ Additions:
 Changes:
   * Event 'effect' can have 'ambient', 'hidden' and 'noicon' parameters
   * Event 'effect' has '--ambient' parameter deprecated with a non fatal warning.
+  * Items for HolographicDisplays are now defines in items.yml
 Fixes:
   * Resolve variables in journal pages.
   * WATER and LAVA can be specified in Action Objective
