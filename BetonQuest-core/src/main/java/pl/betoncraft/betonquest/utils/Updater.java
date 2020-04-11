@@ -86,8 +86,8 @@ public class Updater {
         }
         String version = plugin.getDescription().getVersion();
         final Version locVer = new Version();
-        isDevBuild = version.contains("dev");
-        isOfficial = isDevBuild && version.contains("#");
+        isDevBuild = version.contains("-SNAPSHOT");
+        isOfficial = isDevBuild && version.contains("#") && !version.contains("#UNOFFICIAL");
         // parse current version string to get all required information
         // correct version string is in one of those formats:
         // "1.2", "1.2.3", "1.2-dev", "1.2.3-dev", "1.2-dev#3" or "1.2.3-dev#4"

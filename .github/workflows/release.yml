@@ -1,0 +1,110 @@
+name: Create Release
+
+# Triggered when a version tag is pushed
+on:
+  push:
+    tags:
+      - 'v*'
+
+# The job
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Prepare the Build
+    - name: Prepare Build
+      run: |
+        # Replace the '${github-repository}' variable in the pom.xml with the github repository url to make it possible to tag versions on forks
+        sed -i 's~\${github-repository}~${{ github.repository }}~g' pom.xml
+        echo "Replaced the variable '\${github-repository}' with '${{ github.repository }}' in pom.xml"
+        # To avoid to manually remove the '-SNAPSHOT' from the pom.xml this will do it automatically in the working directory
+        mvn versions:set -DremoveSnapshot
+        echo "Removed the '-SNAPSHOT' from the pom.xml version"
+        # This sets the utility environment variable 'RELEASE_VERSION', that contains the version from the tag
+        LOCAL_RELEASE_VERSION=${GITHUB_REF:11}
+        echo ::set-env name=RELEASE_VERSION::$LOCAL_RELEASE_VERSION
+        echo "Collected the tag version. The version is '$LOCAL_RELEASE_VERSION'"
+        # This sets the utility environment variable 'MAVEN_VERSION', that contains the version from the pom.xml
+        LOCAL_MAVEN_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Collected the pom.xml version. The version is '$LOCAL_MAVEN_VERSION'"
+        # Replace the '${project.version}' variable in the plugin.yml with the maven version and build number to mark this as offical snapshot build
+        sed -i 's~\${maven-version}~$LOCAL_MAVEN_VERSION~g' ./BetonQuest-core/src/main/resources/plugin.yml
+        echo "Replaced the variable '\${project.version}' with '$LOCAL_MAVEN_VERSION' in plugin.yml"
+        # Check if the version of Maven and the version of the tag equals. If not the build fails.
+        if [ $LOCAL_RELEASE_VERSION != $LOCAL_MAVEN_VERSION ]; then echo "::error::The version of the tag and the version of the pom.xml are not equal! Release is '$LOCAL_RELEASE_VERSION' and Maven is '$LOCAL_MAVEN_VERSION'."; exit 1; fi
+
+    # Set up JDK 1.8
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+        server-id: github
+        settings-path: ${{ github.workspace }}
+
+    # Build with Maven
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    # Deploy with Maven
+    - name: Publish to GitHub Packages Apache Maven
+      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    # Archive the artifacts from the build to the workflow run
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: BetonQuest
+        path: target
+
+    # Create a GitHub release
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ env.RELEASE_VERSION }}
+        draft: false
+        prerelease: false
+
+    # Upload the jar to the GitHub release
+    - name: Upload release asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} 
+        asset_path: target/BetonQuest-${{ env.RELEASE_VERSION }}.jar
+        asset_name: BetonQuest-${{ env.RELEASE_VERSION }}.jar
+        asset_content_type: application/jar
+
+    # Building the mkdocs
+    - name: Building docs
+      if: github.repository == 'BetonQuest/BetonQuest'
+      env:
+        BRANCH_NAME: echo ${{ github.ref }} | sed 's/^[^/]*\/[^/]*\///g'
+        VERSION: ${{ env.VERSION }}
+      run: |
+        bash scripts/mkdocs.sh
+
+    # Publish to discord if the branch is master && it is the BetonQuest/BetonQuest repo && github.head_ref is empty(no pull_request)
+    # This uses: https://github.com/DiscordHooks/github-actions-discord-webhook
+    - name: Publish to Discord
+      if: always() && github.repository == 'BetonQuest/BetonQuest'
+      env:
+        JOB_STATUS: ${{ job.status }}
+        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        VERSION: ${{ env.VERSION }}
+      run: |
+        if [ -z ${{ secrets.WEBHOOK_URL }} ]; then echo "The secret variable 'WEBHOOK_URL' in GitHub is not set. Set it with a valid Discord webhook, if you want to run the 'discord.sh'. You may need to change some urls in the script!"; exit 0; fi
+        bash scripts/discord.sh $JOB_STATUS $WEBHOOK_URL
