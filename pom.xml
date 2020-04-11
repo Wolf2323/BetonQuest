@@ -21,6 +21,11 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<maven-version>${project.version}#UNOFFICIAL</maven-version>
+    </properties>
 
     <groupId>pl.betoncraft.betonquest</groupId>
     <artifactId>BetonQuest-parent</artifactId>
@@ -290,12 +295,14 @@
         </repository>
     </repositories>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <build>
         <defaultGoal>clean install</defaultGoal>
+    	<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+    	</resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -310,15 +317,10 @@
     </build>
 
     <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <name>Releases</name>
-            <url>https://repo.worldguard.com.au/repository/maven-releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>Snapshot</name>
-            <url>https://repo.worldguard.com.au/repository/maven-snapshots/</url>
-        </snapshotRepository>
+		<repository>
+			<id>github</id>
+			<name>GitHub BetonQuest Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/${github-repository}</url>
+		</repository>
     </distributionManagement>
 </project>

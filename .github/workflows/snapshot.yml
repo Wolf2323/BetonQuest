@@ -1,0 +1,97 @@
+name: Create Snapshot
+
+# Triggered when there is a pushed or pull_request
+on:
+  push:
+    tags-ignore:
+      - 'v*'
+    branches-ignore:
+      - 'gh-pages'
+  pull_request:
+    tags-ignore:
+      - 'v*'
+    branches-ignore:
+      - 'gh-pages'
+
+# The job
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    #Chache Maven
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    # Prepare the Build
+    - name: Prepare Build
+      run: |
+        # Replace the '${github-repository}' variable in the pom.xml with the github repository url to make it possible to tag versions on forks
+        sed -i 's~\${github-repository}~${{ github.repository }}~g' pom.xml
+        echo "Replaced the variable '\${github-repository}' with '${{ github.repository }}' in pom.xml"
+        # This sets the utility environment variable 'MAVEN_VERSION', that contains the version from the pom.xml
+        LOCAL_MAVEN_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Collected the pom.xml version. The version is '$LOCAL_MAVEN_VERSION'"
+        # Replace the '${project.version}' variable in the plugin.yml with the maven version and build number to mark this as offical snapshot build
+        SNAPSHOT_VERSION=$LOCAL_MAVEN_VERSION#${{ github.run_number }}
+        sed -i 's~\${maven-version}~$SNAPSHOT_VERSION~g' ./BetonQuest-core/src/main/resources/plugin.yml
+        echo "::set-env name=VERSION::$SNAPSHOT_VERSION"
+        echo "Replaced the variable '\${project.version}' with '$SNAPSHOT_VERSION' in plugin.yml"
+
+    # Set up JDK 1.8
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+        server-id: github
+        settings-path: ${{ github.workspace }}
+
+    # Build with Maven
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    # Archive the artifacts from the build to the workflow run
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: BetonQuest
+        path: target
+
+    #Upload the SNAPSHOT
+    - name: Uploading SNAPSHOT
+      if: github.ref == 'refs/heads/master' && github.repository == 'BetonQuest/BetonQuest' && github.event_name == 'push'
+      env:
+        BRANCH_NAME: echo ${{ github.ref }} | sed 's/^[^/]*\/[^/]*\///g'
+      run: |
+        if [ -z ${{ secrets.SNAPSHOT_UPLOAD_PASSWORD }} ]; then echo "The secret variable 'SNAPSHOT_UPLOAD_PASSWORD' in GitHub is not set. Set it, if you want to upload SNAPSHOTS. You may need to change some urls in the script!"; exit 1; fi
+        curl -F "pass=${{ secrets.SNAPSHOT_UPLOAD_PASSWORD }}" -F "id=${{ env.VERSION }} -F "hash=${{ github.sha }} -F "branch=$BRANCH_NAME" -F "plugin=@target/BetonQuest.jar" https://betonquest.pl;
+
+      # Building the mkdocs if the branch is master && it is the BetonQuest/BetonQuest repo && github.event_name is a push (not a pull_request)
+    - name: Building docs
+      if: github.ref == 'refs/heads/master' && github.repository == 'BetonQuest/BetonQuest' && github.event_name == 'push'
+      env:
+        BRANCH_NAME: echo ${{ github.ref }} | sed 's/^[^/]*\/[^/]*\///g'
+        VERSION: ${{ env.VERSION }}
+      run: |
+        bash scripts/mkdocs.sh
+
+      # Publish to discord if the branch is master && it is the BetonQuest/BetonQuest repo && github.event_name is a push (not a pull_request)
+    - name: Publish to Discord
+      if: always() && github.ref == 'refs/heads/master' && github.repository == 'BetonQuest/BetonQuest' && github.event_name == 'push'
+      env:
+        JOB_STATUS: ${{ job.status }}
+        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        VERSION: ${{ env.VERSION }}
+      run: |
+        if [ -z ${{ secrets.WEBHOOK_URL }} ]; then echo "The secret variable 'WEBHOOK_URL' in GitHub is not set. Set it with a valid Discord webhook, if you want to run the 'discord.sh'. You may need to change some urls in the script!"; exit 0; fi
+        bash scripts/discord.sh $JOB_STATUS $WEBHOOK_URL
