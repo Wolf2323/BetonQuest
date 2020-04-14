@@ -76,7 +76,7 @@ jobs:
         if [ -z ${{ secrets.SNAPSHOT_UPLOAD_PASSWORD }} ]; then echo "The secret variable 'SNAPSHOT_UPLOAD_PASSWORD' in GitHub is not set. Set it, if you want to upload SNAPSHOTS. You may need to change some urls in the script!"; exit 1; fi
         curl -F "pass=${{ secrets.SNAPSHOT_UPLOAD_PASSWORD }}" -F "id=${{ env.VERSION }} -F "hash=${{ github.sha }} -F "branch=$BRANCH_NAME" -F "plugin=@target/BetonQuest.jar" https://betonquest.pl;
 
-      # Building the mkdocs if the branch is master && it is the BetonQuest/BetonQuest repo && github.event_name is a push (not a pull_request)
+    # Building the mkdocs if the branch is master && it is the BetonQuest/BetonQuest repo && github.event_name is a push (not a pull_request)
     - name: Building docs
       if: github.ref == 'refs/heads/master' && github.repository == 'BetonQuest/BetonQuest' && github.event_name == 'push'
       env:
@@ -85,7 +85,7 @@ jobs:
       run: |
         bash scripts/mkdocs.sh
 
-      # Publish to discord if the branch is master && it is the BetonQuest/BetonQuest repo && github.event_name is a push (not a pull_request)
+    # Publish to discord if the branch is master && it is the BetonQuest/BetonQuest repo && github.event_name is a push (not a pull_request)
     - name: Publish to Discord
       if: always() && github.ref == 'refs/heads/master' && github.repository == 'BetonQuest/BetonQuest' && github.event_name == 'push'
       env:
