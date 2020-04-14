@@ -88,7 +88,7 @@ jobs:
         asset_name: BetonQuest-${{ env.RELEASE_VERSION }}.jar
         asset_content_type: application/jar
 
-    # Building the mkdocs
+    # Building the mkdocs if it is the BetonQuest/BetonQuest repo
     - name: Building docs
       if: github.repository == 'BetonQuest/BetonQuest'
       env:
@@ -97,8 +97,7 @@ jobs:
       run: |
         bash scripts/mkdocs.sh
 
-    # Publish to discord if the branch is master && it is the BetonQuest/BetonQuest repo && github.head_ref is empty(no pull_request)
-    # This uses: https://github.com/DiscordHooks/github-actions-discord-webhook
+    # Publish to discord if it is the BetonQuest/BetonQuest repo
     - name: Publish to Discord
       if: always() && github.repository == 'BetonQuest/BetonQuest'
       env:
