@@ -33,16 +33,12 @@
     <version>1.12-SNAPSHOT</version>
 
     <modules>
-        <module>BetonQuest-v1.8</module>
-        <module>BetonQuest-v1.9</module>
-        <module>BetonQuest-v1.10</module>
-        <module>BetonQuest-v1.11</module>
-        <module>BetonQuest-v1.12</module>
-        <module>BetonQuest-v1.13</module>
-        <module>BetonQuest-core</module>
         <module>BetonQuest-bootstrap</module>
         <module>BetonQuest-build</module>
-        <module>BetonQuest-WG-v7.0.0-S1</module>
+    
+        <module>BetonQuest-core</module>
+        
+        <module>BetonQuest-MVP</module>
     </modules>
 
     <!-- Shared Repositories -->
