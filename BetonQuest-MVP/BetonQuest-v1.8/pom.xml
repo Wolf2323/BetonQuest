@@ -22,32 +22,22 @@
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>BetonQuest-v1.13</artifactId>
-			<version>${project.parent.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>BetonQuest-v1.12</artifactId>
-			<version>${project.parent.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>BetonQuest-v1.11</artifactId>
-			<version>${project.parent.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>BetonQuest-v1.10</artifactId>
-			<version>${project.parent.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>BetonQuest-v1.9</artifactId>
-			<version>${project.parent.version}</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<!-- 3rd Party Dependencies -->
@@ -56,14 +46,12 @@
 			<groupId>com.sk89q</groupId>
 			<artifactId>worldguard</artifactId>
 			<version>6.1</version>
-			<scope>provided</scope>
 		</dependency>
 		<!-- WorldEdit -->
 		<dependency>
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-bukkit</artifactId>
 			<version>6.1</version>
-			<scope>provided</scope>
 		</dependency>
 		<!-- MagicAPI -->
 		<dependency>

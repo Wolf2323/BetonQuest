@@ -25,15 +25,11 @@
 		<dependency>
 			<groupId>com.sk89q.worldguard</groupId>
 			<artifactId>worldguard-legacy</artifactId>
-			<version>7.0.0-20181025</version>
-			<scope>provided</scope>
 		</dependency>
 		<!-- WorldEdit -->
 		<dependency>
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-bukkit</artifactId>
-			<version>7.0.0-20181025</version>
-			<scope>provided</scope>
 		</dependency>
 		<!-- Citizens -->
 		<dependency>
