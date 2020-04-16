@@ -25,6 +25,11 @@
 		<dependencies>
 			<!-- Local Dependencies -->
 			<dependency>
+				<groupId>org.spigotmc</groupId>
+				<artifactId>spigot-api</artifactId>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
 				<groupId>${project.parent.groupId}</groupId>
 				<artifactId>BetonQuest-v1.13</artifactId>
 				<version>${project.parent.version}</version>
