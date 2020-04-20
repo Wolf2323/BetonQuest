@@ -15,14 +15,17 @@ extra_javascript:
 
 # More info on this theme: https://squidfunk.github.io/mkdocs-material
 theme:
-  name: 'material'
-  logo: 'img/header_logo.png'
-  favicon: 'img/favicon.ico'
+  name: material
+  language: en
   palette:
-    primary: 'indigo'
-    accent: 'indigo'
-#  feature:
-#    tabs: false
+    primary: indigo
+    accent: indigo
+  font:
+      text: Roboto
+      code: Roboto Mono
+  icon:
+    logo: logo
+  favicon: assets/favicon.png
 
 
 
@@ -49,19 +52,14 @@ markdown_extensions:
   - pymdownx.tilde
   - toc:
       permalink: false
-#  - footnotes
-#  - metadata
+  - footnotes
 
 # Bundie's Tip: Disable mkpdfs whilst using `mkdocs serve` on a local machine
 plugins:
   - search
   - git-revision-date-localized:
       type: timeago
-  - mkpdfs:
-      author: BetonQuest Developers
-      toc_title: Table of contents
-      output_path: pdf/documentation.pdf
-      design: docs/css/pdf.css
+#  - pdf-export
 
 # Discord not yet supported but it will be soon
 extra:

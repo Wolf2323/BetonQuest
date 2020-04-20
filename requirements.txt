@@ -1,4 +1,4 @@
-mkdocs==1.0.4
+mkdocs
 mkdocs-material
-mkpdfs-mkdocs
 mkdocs-git-revision-date-localized-plugin
+git+https://github.com/zhaoterryy/mkdocs-pdf-export-plugin.git@master
