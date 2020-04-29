@@ -1,4 +1,5 @@
-mkdocs
-mkdocs-material
-mkdocs-git-revision-date-localized-plugin
-git+https://github.com/zhaoterryy/mkdocs-pdf-export-plugin.git@master
+mkdocs==1.1
+mkdocs-exclude==1.0.2
+mkdocs-material==5.1.3
+git+https://github.com/jwaschkau/mkpdfs-mkdocs-plugin.git@fix/string-types
+mkdocs-git-revision-date-localized-plugin==0.5.0
