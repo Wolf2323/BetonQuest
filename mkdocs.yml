@@ -65,7 +65,7 @@ plugins:
   - git-revision-date-localized:
       type: timeago
 #  - mkpdfs:
-#      author: PortalNetwork Developers
+#      author: Co0sh and contributors
 #      toc_title: Table of contents
 #      output_path: pdf/documentation.pdf
 #      design: docs/css/pdf.css
