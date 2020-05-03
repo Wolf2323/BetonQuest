@@ -36,14 +36,5 @@ These keys and values can also be nested into each other:
 YAML also cares a lot about spaces and tabs! You are not allowed to use tabs in your YAML files at all. You have to
  use spaces though.
  
- 
-Spaces & Tabs
-
-
-Editor
-
-
-Windows file extensions
-
-
-""
+Work in progress! 
+More about Spaces & Tabs, the VSCode addon, Windows file extensions and `""` soon!
