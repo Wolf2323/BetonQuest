@@ -270,20 +270,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                 }.runTaskAsynchronously(BetonQuest.getInstance().getJavaPlugin());
                 break;
             case "update":
-                Updater upd = BetonQuest.getInstance().getUpdater();
-                if (args.length > 1 && args[1].equalsIgnoreCase("--dev")) {
-                    if (upd.updateDevBuild(sender)) {
-                        sender.sendMessage("§2Downloading development version " + upd.getRemoteDevBuild());
-                    } else {
-                        sender.sendMessage("§cThere is no new development version available.");
-                    }
-                } else {
-                    if (upd.updateNewRelease(sender)) {
-                        sender.sendMessage("§2Downloading new release " + upd.getRemoteRelease());
-                    } else {
-                        sender.sendMessage("§cThere is no new release available.");
-                    }
-                }
+                BetonQuest.getInstance().getUpdater().update(sender, false);
                 break;
             case "reload":
                 // just reloading
@@ -1782,14 +1769,9 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         Updater updater = BetonQuest.getInstance().getUpdater();
         String updates_string = "";
         String updates_command = null;
-        if (updater.isEnabled() && updater.updateAvailable()) {
-            if (updater.isDevBuild() && (updater.getRemoteDevBuild().equals(updater.getUpdateVersion()))) {
-                // if update is a dev build
-                updates_command = "/q update --dev";
-            } else {
-                updates_command = "/q update";
-            }
-            updates_string = " (version " + updater.getUpdateVersion() + " is " + "avialable!)";
+        if (updater.isUpdateAvailable()) {
+            updates_command = "/q update";
+            updates_string = " (version '" + updater.getUpdateVersion() + "' is " + "avialable!)";
         }
 
         // get hooked Plugins

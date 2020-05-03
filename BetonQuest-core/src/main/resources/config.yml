@@ -9,8 +9,8 @@ mysql:
 language: en
 update:
   enabled: true
-  download_bugfixes: true
-  notify_new_release: true
+  strategy: MINOR
+  automatic: true
 default_journal_slot: '-1'
 max_npc_distance: '5'
 citizens_npcs_by_name: 'false'

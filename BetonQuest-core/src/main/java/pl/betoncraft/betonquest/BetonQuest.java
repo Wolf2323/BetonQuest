@@ -1030,7 +1030,7 @@ public class BetonQuest extends VersionPlugin {
         // won't happen automatically)
         StaticEvents.stop();
         // update if needed
-        updater.updateBugfixes();
+        updater.update(null, true);
         // done
         LogUtils.getLogger().log(Level.INFO, "BetonQuest succesfully disabled!");
     }

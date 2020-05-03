@@ -3,7 +3,7 @@
 git clone --branch=gh-pages --depth=1 "git@github.com:${GITHUB_REPOSITORY}" gh-pages || exit 1
 
 # If its to the master branch we build to 'latest'
-if [ "${BRANCH_NAME}" = "master" ];then
+if [ "${BRANCH_NAME}" = "master" ]; then
   echo "$0: Deploying Documents to gh-pages/en/latest"
   mkdir -p "gh-pages/en/latest" || exit 1
   mkdocs build --clean --strict --site-dir="gh-pages/en/latest" || exit 1

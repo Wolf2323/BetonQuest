@@ -132,7 +132,6 @@ deploy-key
 **/bin/
 **/.settings/
 **/build/
-**/target/
 .classpath
 .project
 

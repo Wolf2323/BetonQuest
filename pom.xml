@@ -23,14 +23,15 @@
     <modelVersion>4.0.0</modelVersion>
     
     <properties>
+        <version>1.12</version>
+    	<maven-version>${version}-DEV-UNOFFICIAL</maven-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    	<maven-version>${project.version}#UNOFFICIAL</maven-version>
     </properties>
 
     <groupId>pl.betoncraft.betonquest</groupId>
     <artifactId>BetonQuest-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.12-SNAPSHOT</version>
+    <version>${version}-SNAPSHOT</version>
 
     <modules>
         <module>BetonQuest-v1.8</module>
@@ -318,9 +319,8 @@
 
     <distributionManagement>
 		<repository>
-			<id>github</id>
-			<name>GitHub BetonQuest Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/${github-repository}</url>
+			<id>${env.REPOSITORY_ID}</id>
+			<url>${env.REPOSITORY_URL}</url>
 		</repository>
     </distributionManagement>
 </project>
