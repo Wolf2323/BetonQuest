@@ -7,6 +7,7 @@ import org.betonquest.betonquest.compatibility.brewery.BreweryIntegrator;
 import org.betonquest.betonquest.compatibility.citizens.CitizensIntegrator;
 import org.betonquest.betonquest.compatibility.denizen.DenizenIntegrator;
 import org.betonquest.betonquest.compatibility.effectlib.EffectLibIntegrator;
+import org.betonquest.betonquest.compatibility.fakeblock.FakeBlockIntegrator;
 import org.betonquest.betonquest.compatibility.heroes.HeroesIntegrator;
 import org.betonquest.betonquest.compatibility.holographicdisplays.HolographicDisplaysIntegrator;
 import org.betonquest.betonquest.compatibility.jobsreborn.JobsRebornIntegrator;
@@ -79,6 +80,7 @@ public class Compatibility implements Listener {
         integrators.put("ProtocolLib", new ProtocolLibIntegrator());
         integrators.put("Brewery", new BreweryIntegrator());
         integrators.put("Jobs", new JobsRebornIntegrator());
+        integrators.put("FakeBlock", new FakeBlockIntegrator());
 
         // hook into already enabled plugins in case Bukkit messes up the loading order
         for (final Plugin hook : Bukkit.getPluginManager().getPlugins()) {

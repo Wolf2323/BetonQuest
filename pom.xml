@@ -322,6 +322,14 @@
       </exclusions>
     </dependency>
 
+    <!-- from husk repository -->
+    <dependency>
+      <groupId>pro.husk</groupId>
+      <artifactId>FakeBlock-latest</artifactId>
+      <version>2.0.3-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
 
     <!-- from jitpack repository -->
     <dependency>
@@ -562,6 +570,10 @@
     <repository>
       <id>betonquest-elmakers-repo</id>
       <url>https://maven.elmakers.com/repository/</url>
+    </repository>
+    <repository>
+      <id>betonquest-husk-repo</id>
+      <url>https://maven.husk.pro/repository/maven-public/</url>
     </repository>
     <repository>
       <id>betonquest-jitpack-repo</id>
