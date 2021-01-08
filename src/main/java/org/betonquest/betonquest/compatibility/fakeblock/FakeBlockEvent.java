@@ -33,11 +33,13 @@ public class FakeBlockEvent extends QuestEvent {
     protected Void execute(final String playerID) throws QuestRuntimeException {
         final Location location = loc.getLocation(playerID);
         final LatestMaterialWall latestMaterialWall = new LatestMaterialWall(instruction.getID().getFullID());
-        final FakeBlockData fakeBlock = new FakeBlockData(selector.getBlockData());
+        latestMaterialWall.setLocation1(location);
+        latestMaterialWall.setLocation2(location);
 
+        final FakeBlockData fakeBlock = new FakeBlockData(selector.getBlockData());
         final HashMap<Location, FakeBlockData> fakeBlockDataHashMap = new HashMap<>();
         fakeBlockDataHashMap.put(location, fakeBlock);
-        latestMaterialWall.createNonPersistentWall(fakeBlockDataHashMap, location, location);
+        latestMaterialWall.createNonPersistentWall(fakeBlockDataHashMap);
 
         latestMaterialWall.addUserToDisplayFor(PlayerConverter.getPlayer(playerID));
 
