@@ -239,6 +239,11 @@
           <version>4.5.1</version>
           <scope>provided</scope>
         </dependency>
+        <dependency>
+          <groupId>com.comphenix.packetwrapper</groupId>
+          <artifactId>PacketWrapper</artifactId>
+          <version>1.13-R0.1-20180825.172109-2</version>
+        </dependency>
       </dependencies>
     </profile>
 

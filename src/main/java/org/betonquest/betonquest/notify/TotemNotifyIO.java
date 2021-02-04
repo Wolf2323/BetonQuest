@@ -1,9 +1,9 @@
 package org.betonquest.betonquest.notify;
 
+import com.comphenix.packetwrapper.WrapperPlayServerEntityStatus;
+import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
 import lombok.CustomLog;
 import org.betonquest.betonquest.BetonQuest;
-import org.betonquest.betonquest.compatibility.protocollib.wrappers.WrapperPlayServerEntityStatus;
-import org.betonquest.betonquest.compatibility.protocollib.wrappers.WrapperPlayServerSetSlot;
 import org.betonquest.betonquest.exceptions.InstructionParseException;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,10 +16,23 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Map;
 
 @CustomLog
+/**
+ * Shows a totem of undying animation with a "customModelData" NBT tag.
+ */
 public class TotemNotifyIO extends NotifyIO {
 
+    /**
+     * The totems customModelData.
+     * It instructs the game client to display a different model or texture when the totem is shown.
+     */
     private final int customModelData;
 
+    /**
+     * Creates a new TotemNotifyIO instance based on the users instruction string.
+     *
+     * @param data map with user instructions.
+     * @throws InstructionParseException if the users input couldn't be parsed.
+     */
     public TotemNotifyIO(final Map<String, String> data) throws InstructionParseException {
         super(data);
         customModelData = getIntegerData("custommodeldata", 2);
