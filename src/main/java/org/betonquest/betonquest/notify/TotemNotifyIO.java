@@ -16,10 +16,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Map;
 import java.util.Objects;
 
-@CustomLog
+
 /**
  * Shows a totem of undying animation with a "customModelData" NBT tag.
  */
+@CustomLog
 public class TotemNotifyIO extends NotifyIO {
 
     /**
