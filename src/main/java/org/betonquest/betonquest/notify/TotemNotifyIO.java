@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Map;
-import java.util.Objects;
 
 
 /**
@@ -51,7 +50,8 @@ public class TotemNotifyIO extends NotifyIO {
     private ItemStack buildFakeTotem() {
         final ItemStack fakeTotem = new ItemStack(Material.TOTEM_OF_UNDYING);
         final ItemMeta totemMeta = fakeTotem.getItemMeta();
-        Objects.requireNonNull(totemMeta).setCustomModelData(customModelData);
+        assert totemMeta != null;
+        totemMeta.setCustomModelData(customModelData);
         fakeTotem.setItemMeta(totemMeta);
         return fakeTotem;
     }

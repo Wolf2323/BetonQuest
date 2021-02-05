@@ -492,7 +492,8 @@
                   <include>com.google.guava</include>
                   <include>commons-io</include>
                   <include>org.json</include>
-                  <incluse>net.kyori</incluse>
+                  <include>net.kyori</include>
+                  <include>com.comphenix.packetwrapper</include>
                 </includes>
               </artifactSet>
               <filters>
@@ -533,6 +534,10 @@
                 <relocation>
                   <pattern>net.kyori</pattern>
                   <shadedPattern>${project.groupId}.${project.artifactId}.dependencies.net.kyori</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.comphenix.packetwrapper</pattern>
+                  <shadedPattern>${project.groupId}.${project.artifactId}.dependencies.com.comphenix.packetwrapper</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>
