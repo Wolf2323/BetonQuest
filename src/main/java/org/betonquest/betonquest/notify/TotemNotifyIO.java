@@ -50,7 +50,7 @@ public class TotemNotifyIO extends NotifyIO {
     private ItemStack buildFakeTotem() {
         final ItemStack fakeTotem = new ItemStack(Material.TOTEM_OF_UNDYING);
         final ItemMeta totemMeta = fakeTotem.getItemMeta();
-        assert totemMeta != null;
+        assert totemMeta != null : "ItemMeta for TotemIO ItemStack is null.";
         totemMeta.setCustomModelData(customModelData);
         fakeTotem.setItemMeta(totemMeta);
         return fakeTotem;

@@ -300,7 +300,7 @@
       </activation>
       <repositories>
         <repository>
-          <id>jitpack.io</id>
+          <id>jitpack-repo</id>
           <url>https://jitpack.io</url>
         </repository>
       </repositories>
@@ -488,12 +488,11 @@
                 <includes>
                   <include>org.bstats</include>
                   <include>org.apache.maven</include>
-                  <include>org.apache.commons</include>
                   <include>com.google.guava</include>
                   <include>commons-io</include>
                   <include>org.json</include>
                   <include>net.kyori</include>
-                  <include>com.comphenix.packetwrapper</include>
+                  <include>com.comphenix:packetwrapper</include>
                 </includes>
               </artifactSet>
               <filters>
@@ -516,12 +515,12 @@
                   <shadedPattern>${project.groupId}.${project.artifactId}.dependencies.org.bstats</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>com.google.common</pattern>
-                  <shadedPattern>${project.groupId}.${project.artifactId}.dependencies.com.google.common</shadedPattern>
-                </relocation>
-                <relocation>
                   <pattern>org.apache.maven</pattern>
                   <shadedPattern>${project.groupId}.${project.artifactId}.dependencies.org.apache.maven</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.google.common</pattern>
+                  <shadedPattern>${project.groupId}.${project.artifactId}.dependencies.com.google.common</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons</pattern>
