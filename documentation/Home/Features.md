@@ -63,7 +63,7 @@ lines based upon the progress in your old plugin.
 
 If just Beton isn't enough you can always just hook into Skript or Denizen too.
 
-Full list of integrations [here](User-Documentation/Compatibility.md).
+Full list of integrations [here](../User-Documentation/Compatibility.md).
 
 ##Examples
 

@@ -108,10 +108,10 @@ nav:
   - 'Home':
       - '👋 Welcome!': index.md
       - 'Overview':
-          - '✨ Features': Features.md
-          - '👔  For Owners': For-Owners.md
-          - '🎨 For Questers': For-Questers.md
-      - '💲 Sponsorships': Sponsorships.md
+          - '✨ Features': Home/Features.md
+          - '👔  For Owners': Home/For-Owners.md
+          - '🎨 For Questers': Home/For-Questers.md
+      - '💲 Sponsorships': Home/Sponsorships.md
   - 'Learn Beton':
       - '👋 Welcome!': Learn-Beton/Welcome.md
       - 'Getting Started':
@@ -123,7 +123,7 @@ nav:
       - '❓ Frequently Asked Questions':
           - '🤔  General FAQ': Learn-Beton/Frequently-Asked-Questions.md
 
-  - 'User Documentation':
+  - 'Documentation':
       - 'General':
           - '📚   Reference': User-Documentation/Reference.md
           - '💬  Conversations': User-Documentation/Conversations.md
