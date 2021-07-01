@@ -148,6 +148,7 @@ nav:
 
   - 'Contributing & Development':
       - '🤝 Overview': Contributing-Development/Overview.md
+      - '📰 Setup IDE': Contributing-Development/SetupIDE.md
       - 'Code':
           - '⚙️ API': Contributing-Development/Code/API.md
           - '📚 Contributing Guidelines': Contributing-Development/Code/Contributing-Guidelines.md
