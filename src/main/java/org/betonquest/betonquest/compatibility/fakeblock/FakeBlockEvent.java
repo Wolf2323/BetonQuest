@@ -1,6 +1,5 @@
 package org.betonquest.betonquest.compatibility.fakeblock;
 
-import org.bukkit.Location;
 import org.betonquest.betonquest.Instruction;
 import org.betonquest.betonquest.api.QuestEvent;
 import org.betonquest.betonquest.exceptions.InstructionParseException;
@@ -8,6 +7,7 @@ import org.betonquest.betonquest.exceptions.QuestRuntimeException;
 import org.betonquest.betonquest.utils.BlockSelector;
 import org.betonquest.betonquest.utils.PlayerConverter;
 import org.betonquest.betonquest.utils.location.CompoundLocation;
+import org.bukkit.Location;
 import pro.husk.fakeblock.objects.FakeBlockData;
 import pro.husk.fakeblock.objects.LatestMaterialWall;
 
