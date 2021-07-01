@@ -146,16 +146,16 @@ nav:
           - '🔧  Configuration': User-Documentation/Configuration.md
           - '🗃️ Changelog': User-Documentation/CHANGELOG.md
 
-  - 'Developer Documentation':
-      - '📚 Contributing Guidelines': Developer-Documentation/Contributing-Guidelines.md
-      - '⚙️ API': Developer-Documentation/API.md
-      - '🏭 Releasing': Developer-Documentation/Releasing.md
-      - '🏷️ Versioning': Developer-Documentation/Versioning.md
-  - 'Contributing':
-      - '🤝 Overview': Contributing/Contributing.md
+  - 'Contributing & Development':
+      - '🤝 Overview': Contributing-Development/Overview.md
+      - '⚙️ API': Contributing-Development/API.md
+      - 'Code':
+          - '📚 Contributing Guidelines': Contributing-Development/Code/Contributing-Guidelines.md
+          - '🏭 Releasing': Contributing-Development/Code/Releasing.md
+          - '🏷️ Versioning': Contributing-Development/Code/Versioning.md
       - 'Docs':
-          - '🔧 Setup': Contributing/Documentation/Setup.md
-          - '📚 Guidelines': Contributing/Documentation/Guidelines.md
+          - '🔧 Setup': Contributing-Development/Docs/Setup.md
+          - '📚 Guidelines': Contributing-Development/Docs/Guidelines.md
 
 google_analytics:
   - UA-164568470-1
