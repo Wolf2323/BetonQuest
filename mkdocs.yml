@@ -24,12 +24,13 @@ theme:
   name: material
   language: en
   features:
+    - navigation.instant
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.tracking
-    - navigation.top
     - navigation.sections
     - navigation.expand
+    - navigation.top
     - search.share
     - search.suggest
   palette:
@@ -105,14 +106,14 @@ extra:
 
 #Notice that here are a few strange looking hairspaces in here. They make the space between the emojis and the text look equal
 nav:
-  - 'Home':
+  - '🏠 Home':
       - '👋 Welcome!': index.md
       - 'Overview':
           - '✨ Features': Home/Features.md
           - '👔  For Owners': Home/For-Owners.md
           - '🎨 For Questers': Home/For-Questers.md
       - '💲 Sponsorships': Home/Sponsorships.md
-  - 'Learn Beton':
+  - '👨‍🎓 Tutorials':
       - '👋 Welcome!': Learn-Beton/Welcome.md
       - 'Getting Started':
           - '💻 Setting up a local test server': Learn-Beton/Getting-Started/Setting-up-a-local-test-server.md
@@ -122,8 +123,7 @@ nav:
           - '⏱️   Quick Start Tutorial': Learn-Beton/Getting-Started/Quick-Start-Tutorial.md
       - '❓ Frequently Asked Questions':
           - '🤔  General FAQ': Learn-Beton/Frequently-Asked-Questions.md
-
-  - 'Documentation':
+  - '📚 Documentation':
       - 'General':
           - '📚   Reference': User-Documentation/Reference.md
           - '💬  Conversations': User-Documentation/Conversations.md
@@ -145,18 +145,18 @@ nav:
           - '📥 Updating': User-Documentation/Updating-and-Backups.md
           - '🔧  Configuration': User-Documentation/Configuration.md
           - '🗃️ Changelog': User-Documentation/CHANGELOG.md
-
-  - 'Contributing & Development':
+  - '👷 Participate':
       - '🤝 Overview': Contributing-Development/Overview.md
       - '📰 Setup IDE': Contributing-Development/SetupIDE.md
       - 'Code':
-          - '⚙️ API': Contributing-Development/Code/API.md
           - '📚 Contributing Guidelines': Contributing-Development/Code/Contributing-Guidelines.md
           - '🏭 Releasing': Contributing-Development/Code/Releasing.md
           - '🏷️ Versioning': Contributing-Development/Code/Versioning.md
       - 'Docs':
           - '🔧 Setup': Contributing-Development/Docs/Setup.md
           - '📚 Guidelines': Contributing-Development/Docs/Guidelines.md
+  - '🔌 API':
+      - '⚙️ API': Contributing-Development/Code/API.md
 
 google_analytics:
   - UA-164568470-1
