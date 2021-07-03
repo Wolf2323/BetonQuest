@@ -81,15 +81,24 @@ Then you get a detailed description, what is wrong.
 If you still don't know how to solve it, ask the developers on Discord for help with PMD.
 
 ####Solve SpotBugs violations
+SpotBugs searches for some more problems, the most of them are potential bugs. You notice SpotBugs by a message like this:
+````
+Failed to execute goal com.github.spotbugs:spotbugs-maven-plugin:4.2.2:check (default) on project betonquest: failed with 1 bugs and 0 errors 
+````
+If you now look at the related issues, it looks like this:
+````
+[ERROR] Medium: Null passed for non-null parameter of org.betonquest.betonquest.utils.PlayerConverter.getPlayer(String) in org.betonquest.betonquest.BetonQuest.condition(String, ConditionID) [org.betonquest.betonquest.BetonQuest, org.betonquest.betonquest.BetonQuest] Method invoked at BetonQuest.java:[line 349]Known null at BetonQuest.java:[line 344] NP_NULL_PARAM_DEREF
+````
+SpotBugs errors are a little more complicated to read, but you find e.g. `NP_NULL_PARAM_DEREF` at the end of the line,
+and you can search on the [SpotBugs](https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#) for it.
+If you have problems solving this issues you can ask on your Discord for help with SpotBugs.
+
+####Solve CheckStyle violations
+
 
 
  
 ##Advanced Edits
-
-More advanced edits can be done with <a href="https://www.jetbrains.com/idea/download/" target="_blank"> IntelliJ</a> 
-or any other IDEA. 
-This guide will show the process with it and includes some neat tricks that are exclusive to IntelliJ.
- 
 * Clone in IntelliJ and select the "Docs" project scope.
 
 * Create a new branch before you start editing anything.

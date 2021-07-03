@@ -106,14 +106,14 @@ extra:
 
 #Notice that here are a few strange looking hairspaces in here. They make the space between the emojis and the text look equal
 nav:
-  - '🏠 Home':
+  - 'Home':
       - '👋 Welcome!': index.md
       - 'Overview':
           - '✨ Features': Home/Features.md
           - '👔  For Owners': Home/For-Owners.md
           - '🎨 For Questers': Home/For-Questers.md
       - '💲 Sponsorships': Home/Sponsorships.md
-  - '👨‍🎓 Tutorials':
+  - '🎓 Tutorials':
       - '👋 Welcome!': Learn-Beton/Welcome.md
       - 'Getting Started':
           - '💻 Setting up a local test server': Learn-Beton/Getting-Started/Setting-up-a-local-test-server.md
@@ -128,24 +128,21 @@ nav:
           - '📚   Reference': User-Documentation/Reference.md
           - '💬  Conversations': User-Documentation/Conversations.md
           - '   📱     Menus': User-Documentation/Menus.md
-
       - 'Types':
           - '✔️ Objectives List': User-Documentation/Objectives-List.md
           - '⚙️ Events List': User-Documentation/Events-List.md
           - '  ❓    Conditions List': User-Documentation/Conditions-List.md
           - '🤝 Compatibility List': User-Documentation/Compatibility.md
           - '🔮   Variables List': User-Documentation/Variables-List.md
-
       - 'Notifications':
           - '🔊   Settings': User-Documentation/Notification-Settings.md
           - "🏷️   IO's & Categories": User-Documentation/Notification-IO's-&-Categories.md
-
       - 'Technical':
           - '🔒 Permissions & Commands': User-Documentation/Commands-and-permissions.md
           - '📥 Updating': User-Documentation/Updating-and-Backups.md
           - '🔧  Configuration': User-Documentation/Configuration.md
           - '🗃️ Changelog': User-Documentation/CHANGELOG.md
-  - '👷 Participate':
+  - '🔧 Participate':
       - '🤝 Overview': Contributing-Development/Overview.md
       - '📰 Setup IDE': Contributing-Development/SetupIDE.md
       - 'Code':
