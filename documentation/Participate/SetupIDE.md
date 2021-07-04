@@ -1,6 +1,7 @@
-This setup guide is for IntelliJ. You can still use other IDEs.
-The advantage of using IntelliJ is that the setup contains multiple steps that helps fully fill our requirements.
+BetonQuest recommend to use IntelliJ as IDE, but you can still use your preferred IDE.
+The advantage of using IntelliJ is that the setup contains some steps that helps fully fill our requirements.
 If you still want to use your own IDE, you need to check by our own, that you fully fill our requirements.
+You can adopt some steps to your preferred IDE to get a similar setup.
 
 ##Installing IntelliJ 
 First download <a href="https://www.jetbrains.com/idea/download/" target="_blank">IntelliJ</a> and install it.
@@ -9,6 +10,8 @@ After you have installed IntelliJ, we recommend to installing the plugin
 <a href="https://plugins.jetbrains.com/plugin/7642-save-actions" target="_blank">Save Actions</a>.
 The plugin helps to auto format code, organize imports, add final modifiers, and some other requirements we have.
 You don't need to configure that plugin, the project contains the configuration file.
+
+After you have set up the IDE, checkout the repository.
 
 ##Building with maven
 To build the BetonQuest jar, you simply need to run `maven verify`.
@@ -64,38 +67,40 @@ If you now run into a problem when you execute `maven verify` you will notice it
 [INFO] BUILD FAILURE
 [INFO] ------------------------------------------------------------------------
 ````
-or IntelliJ shows something like `Failed to execute goal`.
+or IntelliJ shows something like `Failed to execute goal`. Here you can read, how to solve the requirements violations:
 
-####Solve PMD violations
-PMD will cover the most requirements we have. You notice that you have an issue there when you see the message:
-````
-[ERROR] Failed to execute goal org.apache.maven.plugins:maven-pmd-plugin:3.14.0:check (default) on project betonquest: You have 1 PMD violation.
-````
-If you have this message you also have messages, that looks like this:
-````
-[INFO] PMD Failure: org.betonquest.betonquest.BetonQuest:143 Rule:AvoidLiteralsInIfCondition Priority:3 Avoid using Literals in Conditional Statements.
-````
-If you read this, you may know what is wrong. If you don't know why, visit the [PMD](https://pmd.github.io/latest/) page.
-Then you type in the rule e.g. `AvoidLiteralsInIfCondition` in the search and click on the rule.
-Then you get a detailed description, what is wrong.
-If you still don't know how to solve it, ask the developers on Discord for help with PMD.
-
-####Solve SpotBugs violations
-SpotBugs searches for some more problems, the most of them are potential bugs. You notice SpotBugs by a message like this:
-````
-Failed to execute goal com.github.spotbugs:spotbugs-maven-plugin:4.2.2:check (default) on project betonquest: failed with 1 bugs and 0 errors 
-````
-If you now look at the related issues, it looks like this:
-````
-[ERROR] Medium: Null passed for non-null parameter of org.betonquest.betonquest.utils.PlayerConverter.getPlayer(String) in org.betonquest.betonquest.BetonQuest.condition(String, ConditionID) [org.betonquest.betonquest.BetonQuest, org.betonquest.betonquest.BetonQuest] Method invoked at BetonQuest.java:[line 349]Known null at BetonQuest.java:[line 344] NP_NULL_PARAM_DEREF
-````
-SpotBugs errors are a little more complicated to read, but you find e.g. `NP_NULL_PARAM_DEREF` at the end of the line,
-and you can search on the [SpotBugs](https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#) for it.
-If you have problems solving this issues you can ask on your Discord for help with SpotBugs.
-
-####Solve CheckStyle violations
-
-
+!!! note ""
+    === "PMD"
+        PMD will cover the most requirements we have. You notice that you have an issue there when you see the message:
+        ````
+        [ERROR] Failed to execute goal org.apache.maven.plugins:maven-pmd-plugin:3.14.0:check (default) on project betonquest: You have 1 PMD violation.
+        ````
+        If you have this message you also have messages, that looks like this:
+        ````
+        [INFO] PMD Failure: org.betonquest.betonquest.BetonQuest:143 Rule:AvoidLiteralsInIfCondition Priority:3 Avoid using Literals in Conditional Statements.
+        ````
+        If you read this, you may know what is wrong. If you don't know why, visit the [PMD](https://pmd.github.io/latest/) page.
+        Then you type in the rule e.g. `AvoidLiteralsInIfCondition` in the search and click on the rule.
+        Then you get a detailed description, what is wrong.
+        If you still don't know how to solve it, ask the developers on Discord for help with PMD.
+    === "SpotBugs"
+        SpotBugs searches for some more problems, the most of them are potential bugs. You notice SpotBugs by a message like this:
+        ````
+        Failed to execute goal com.github.spotbugs:spotbugs-maven-plugin:4.2.2:check (default) on project betonquest: failed with 1 bugs and 0 errors 
+        ````
+        If you have this message you also have messages, that looks like this:
+        ````
+        [ERROR] Medium: Null passed for non-null parameter of org.betonquest.betonquest.utils.PlayerConverter.getPlayer(String) in org.betonquest.betonquest.BetonQuest.condition(String, ConditionID) [org.betonquest.betonquest.BetonQuest, org.betonquest.betonquest.BetonQuest] Method invoked at BetonQuest.java:[line 349]Known null at BetonQuest.java:[line 344] NP_NULL_PARAM_DEREF
+        ````
+        SpotBugs errors are a little more complicated to read, but you find e.g. `NP_NULL_PARAM_DEREF` at the end of the line,
+        and you can search on the [SpotBugs](https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#) for it.
+        If you have problems solving this issues you can ask on your Discord for help with SpotBugs.
+    === "CheckStyle"
+        CheckStyle checks the code formatting and style. There is only a basic check for the imports, and it looks like this:
+        ````
+        [ERROR] src/main/java/org/betonquest/betonquest/BetonQuest.java:[16,1] (imports) ImportOrder: Wrong order for 'edu.umd.cs.findbugs.annotations.SuppressFBWarnings' import.
+        ````
+        
 
  
 ##Advanced Edits
