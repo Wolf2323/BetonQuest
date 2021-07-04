@@ -154,7 +154,7 @@ Starting the random quest must be blocked with a special tag. If there is no suc
 
 ## The same random daily quest for every player
 
-To do this use something called "[Static event](../../User-Documentation/Reference/#static-events)".
+To do this use something called "[Static event](../../Documentation/Reference/#static-events)".
 Run a static `folder` event every day at some late hour (for example 4am).
 The `folder` event should be `random:1` and contain several different `globaltag` events.
 These events will set a specific tag. Now when the player starts the conversation and asks about the daily quest the NPC
