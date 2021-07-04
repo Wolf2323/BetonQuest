@@ -114,46 +114,46 @@ nav:
           - '🎨 For Questers': Home/For-Questers.md
       - '💲 Sponsorships': Home/Sponsorships.md
   - '🎓 Tutorials':
-      - '👋 Welcome!': Learn-Beton/Welcome.md
+      - '👋 Welcome!': Tutorials/Welcome.md
       - 'Getting Started':
-          - '💻 Setting up a local test server': Learn-Beton/Getting-Started/Setting-up-a-local-test-server.md
-          - '📥 Installing BetonQuest': Learn-Beton/Getting-Started/Installing-BetonQuest.md
-          - '✒️ Setting up the editor': Learn-Beton/Getting-Started/Setting-up-the-editor.md
-          - '📑 YAML for questers': Learn-Beton/Getting-Started/YAML-for-questers.md
-          - '⏱️   Quick Start Tutorial': Learn-Beton/Getting-Started/Quick-Start-Tutorial.md
+          - '💻 Setting up a local test server': Tutorials/Getting-Started/Setting-up-a-local-test-server.md
+          - '📥 Installing BetonQuest': Tutorials/Getting-Started/Installing-BetonQuest.md
+          - '✒️ Setting up the editor': Tutorials/Getting-Started/Setting-up-the-editor.md
+          - '📑 YAML for questers': Tutorials/Getting-Started/YAML-for-questers.md
+          - '⏱️   Quick Start Tutorial': Tutorials/Getting-Started/Quick-Start-Tutorial.md
       - '❓ Frequently Asked Questions':
-          - '🤔  General FAQ': Learn-Beton/Frequently-Asked-Questions.md
+          - '🤔  General FAQ': Tutorials/Frequently-Asked-Questions.md
   - '📚 Documentation':
       - 'General':
-          - '📚   Reference': User-Documentation/Reference.md
-          - '💬  Conversations': User-Documentation/Conversations.md
-          - '   📱     Menus': User-Documentation/Menus.md
+          - '📚   Reference': Documentation/Reference.md
+          - '💬  Conversations': Documentation/Conversations.md
+          - '   📱     Menus': Documentation/Menus.md
       - 'Types':
-          - '✔️ Objectives List': User-Documentation/Objectives-List.md
-          - '⚙️ Events List': User-Documentation/Events-List.md
-          - '  ❓    Conditions List': User-Documentation/Conditions-List.md
-          - '🤝 Compatibility List': User-Documentation/Compatibility.md
-          - '🔮   Variables List': User-Documentation/Variables-List.md
+          - '✔️ Objectives List': Documentation/Objectives-List.md
+          - '⚙️ Events List': Documentation/Events-List.md
+          - '  ❓    Conditions List': Documentation/Conditions-List.md
+          - '🤝 Compatibility List': Documentation/Compatibility.md
+          - '🔮   Variables List': Documentation/Variables-List.md
       - 'Notifications':
-          - '🔊   Settings': User-Documentation/Notification-Settings.md
-          - "🏷️   IO's & Categories": User-Documentation/Notification-IO's-&-Categories.md
+          - '🔊   Settings': Documentation/Notification-Settings.md
+          - "🏷️   IO's & Categories": Documentation/Notification-IO's-&-Categories.md
       - 'Technical':
-          - '🔒 Permissions & Commands': User-Documentation/Commands-and-permissions.md
-          - '📥 Updating': User-Documentation/Updating-and-Backups.md
-          - '🔧  Configuration': User-Documentation/Configuration.md
-          - '🗃️ Changelog': User-Documentation/CHANGELOG.md
+          - '🔒 Permissions & Commands': Documentation/Commands-and-permissions.md
+          - '📥 Updating': Documentation/Updating-and-Backups.md
+          - '🔧  Configuration': Documentation/Configuration.md
+          - '🗃️ Changelog': Documentation/CHANGELOG.md
   - '🔧 Participate':
-      - '🤝 Overview': Contributing-Development/Overview.md
-      - '📰 Setup IDE': Contributing-Development/SetupIDE.md
+      - '🤝 Overview': Participate/Overview.md
+      - '📰 Setup IDE': Participate/SetupIDE.md
       - 'Code':
-          - '📚 Contributing Guidelines': Contributing-Development/Code/Contributing-Guidelines.md
-          - '🏭 Releasing': Contributing-Development/Code/Releasing.md
-          - '🏷️ Versioning': Contributing-Development/Code/Versioning.md
+          - '📚 Contributing Guidelines': Participate/Code/Contributing-Guidelines.md
+          - '🏭 Releasing': Participate/Code/Releasing.md
+          - '🏷️ Versioning': Participate/Code/Versioning.md
       - 'Docs':
-          - '🔧 Setup': Contributing-Development/Docs/Setup.md
-          - '📚 Guidelines': Contributing-Development/Docs/Guidelines.md
+          - '🔧 Setup': Participate/Docs/Setup.md
+          - '📚 Guidelines': Participate/Docs/Guidelines.md
   - '🔌 API':
-      - '⚙️ API': Contributing-Development/Code/API.md
+      - '⚙️ API': API/API.md
 
 google_analytics:
   - UA-164568470-1
