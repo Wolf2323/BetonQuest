@@ -71,6 +71,7 @@ or IntelliJ shows something like `Failed to execute goal`. Here you can read, ho
 
 !!! note ""
     === "PMD"
+        **PMD Page:** <a href="https://pmd.github.io/latest/" target="_blank">https://pmd.github.io/latest/</a><br><br>
         PMD will cover the most requirements we have. You notice that you have an issue there when you see the message:
         ````
         [ERROR] Failed to execute goal org.apache.maven.plugins:maven-pmd-plugin:3.14.0:check (default) on project betonquest: You have 1 PMD violation.
@@ -79,11 +80,13 @@ or IntelliJ shows something like `Failed to execute goal`. Here you can read, ho
         ````
         [INFO] PMD Failure: org.betonquest.betonquest.BetonQuest:143 Rule:AvoidLiteralsInIfCondition Priority:3 Avoid using Literals in Conditional Statements.
         ````
-        If you read this, you may know what is wrong. If you don't know why, visit the [PMD](https://pmd.github.io/latest/) page.
+        If you read this, you may know what is wrong. If you don't know why, visit the
+        <a href="https://pmd.github.io/latest/" target="_blank">PMD</a> page.
         Then you type in the rule e.g. `AvoidLiteralsInIfCondition` in the search and click on the rule.
         Then you get a detailed description, what is wrong.
         If you still don't know how to solve it, ask the developers on Discord for help with PMD.
     === "SpotBugs"
+        **SpotBugs Page:** <a href="https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#" target="_blank">https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#</a><br><br>
         SpotBugs searches for some more problems, the most of them are potential bugs. You notice SpotBugs by a message like this:
         ````
         Failed to execute goal com.github.spotbugs:spotbugs-maven-plugin:4.2.2:check (default) on project betonquest: failed with 1 bugs and 0 errors 
@@ -92,14 +95,23 @@ or IntelliJ shows something like `Failed to execute goal`. Here you can read, ho
         ````
         [ERROR] Medium: Null passed for non-null parameter of org.betonquest.betonquest.utils.PlayerConverter.getPlayer(String) in org.betonquest.betonquest.BetonQuest.condition(String, ConditionID) [org.betonquest.betonquest.BetonQuest, org.betonquest.betonquest.BetonQuest] Method invoked at BetonQuest.java:[line 349]Known null at BetonQuest.java:[line 344] NP_NULL_PARAM_DEREF
         ````
-        SpotBugs errors are a little more complicated to read, but you find e.g. `NP_NULL_PARAM_DEREF` at the end of the line,
-        and you can search on the [SpotBugs](https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#) for it.
+        SpotBugs errors are a little more complicated to read,
+        but you find e.g. `NP_NULL_PARAM_DEREF` at the end of the line, and you can search on the
+        <a href="https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#" target="_blank">SpotBugs</a> page for it.
         If you have problems solving this issues you can ask on your Discord for help with SpotBugs.
     === "CheckStyle"
-        CheckStyle checks the code formatting and style. There is only a basic check for the imports, and it looks like this:
+        **CheckStyle Page:** <a href="https://checkstyle.sourceforge.io/checks.html" target="_blank">https://checkstyle.sourceforge.io/checks.html</a><br><br>
+        CheckStyle checks the code formatting and style. We have only configured two checks.
+        The first check is the import order, and the second check is that you do not use star imports,
+        excepting some junit imports.
+        There is only a basic check for the imports, and it looks like this:
         ````
         [ERROR] src/main/java/org/betonquest/betonquest/BetonQuest.java:[16,1] (imports) ImportOrder: Wrong order for 'edu.umd.cs.findbugs.annotations.SuppressFBWarnings' import.
         ````
+        CheckStyle is very simple to read, normally it is in your language and self explaining.  
+        In the above error you can find e.g `ImportOrder` and you can search on the
+        <a href="https://checkstyle.sourceforge.io/checks.html" target="_blank">CheckStyle</a> page for it.
+        
         
 
  

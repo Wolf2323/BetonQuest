@@ -106,7 +106,7 @@ extra:
 
 #Notice that here are a few strange looking hairspaces in here. They make the space between the emojis and the text look equal
 nav:
-  - 'Home':
+  - '🚀 Home':
       - '👋 Welcome!': index.md
       - 'Overview':
           - '✨ Features': Home/Features.md
@@ -142,7 +142,9 @@ nav:
           - '📥 Updating': Documentation/Updating-and-Backups.md
           - '🔧  Configuration': Documentation/Configuration.md
           - '🗃️ Changelog': Documentation/CHANGELOG.md
-  - '🔧 Participate':
+  - '🔌 API':
+      - '⚙️ API': API/API.md
+  - '🧪 Participate':
       - '🤝 Overview': Participate/Overview.md
       - '📰 Setup IDE': Participate/SetupIDE.md
       - 'Code':
@@ -152,8 +154,6 @@ nav:
       - 'Docs':
           - '🔧 Setup': Participate/Docs/Setup.md
           - '📚 Guidelines': Participate/Docs/Guidelines.md
-  - '🔌 API':
-      - '⚙️ API': API/API.md
 
 google_analytics:
   - UA-164568470-1
