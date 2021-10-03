@@ -6,7 +6,7 @@ docs_dir: documentation
 repo_name: BetonQuest on GitHub
 edit_uri: /BetonQuest/BetonQuest/edit/master/documentation/
 repo_url: https://github.com/BetonQuest/BetonQuest
-copyright: '© 2020  BetonQuest Organisation. GPLv3'
+copyright: '© 2014-2021  BetonQuest Organisation. GPLv3'
 
 
 extra_css:
@@ -125,10 +125,12 @@ extra:
       link: https://patreon.com/betonquest
     - icon: fontawesome/brands/github
       link: https://github.com/BetonQuest/BetonQuest
-    - icon: fontawesome/solid/archive
-      link: https://betonquest.org/old
     - icon: fontawesome/solid/faucet
       link: https://spigotmc.org/resources/betonquest.2117/
+    - icon: fontawesome/solid/archive
+      link: https://betonquest.org/old
+    - icon: fontawesome/solid/envelope
+      link: mailto://contact@betonquest.org
 
 #Notice that here are a few strange looking hairspaces in here.
 #They make the space between the emojis and the text look equal
@@ -177,6 +179,6 @@ nav:
           - '📚 Contributing Guidelines': Participate/Code/Contributing-Guidelines.md
           - '🏭 Versioning & Releasing': Participate/Code/Versioning-and-Releasing.md
       - 'Docs':
+          - '✒️ Fundamental Principles': Participate/Docs/Principles.md
           - '📚 Guidelines': Participate/Docs/Guidelines.md
-          - '✒️ GeneralStyle': Participate/Docs/General-Style.md
           - '🗃️ MarkdownStyle': Participate/Docs/Markdown-and-Formatting.md
