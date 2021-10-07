@@ -22,7 +22,10 @@ If you have problems solving issues with our requirements there is also a page
     But don't forget, you need to successfully run `verify`, before you make a pull request on GitHub!
 
 ## Make changes
-Here we will now look at what you need to fulfill, if you change code, and you want to [Submit the Changes](./Submitting-Changes.md).
+If you run `mvn verify` there is a bunch of automatic requirement checks,
+but there are also some you have to care on our own manually.
+Here we will now look at what you need to fulfill, if you change code,
+and you want to [Submit the Changes](./Submitting-Changes.md) beside the automatic requirement checks.
 
 ??? success "... test your changes?"
     If you make changes, you should first test your changes.
