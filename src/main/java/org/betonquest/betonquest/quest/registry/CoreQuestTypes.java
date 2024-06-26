@@ -150,6 +150,7 @@ import org.betonquest.betonquest.quest.registry.type.ConditionTypeRegistry;
 import org.betonquest.betonquest.quest.registry.type.EventTypeRegistry;
 import org.betonquest.betonquest.quest.registry.type.VariableTypeRegistry;
 import org.betonquest.betonquest.quest.variable.condition.ConditionVariableFactory;
+import org.betonquest.betonquest.quest.variable.constant.ConstantVariableFactory;
 import org.betonquest.betonquest.quest.variable.eval.EvalVariableFactory;
 import org.betonquest.betonquest.quest.variable.name.NpcNameVariableFactory;
 import org.betonquest.betonquest.quest.variable.name.PlayerNameVariableFactory;
@@ -385,6 +386,7 @@ public class CoreQuestTypes {
 
     private void registerVariables(final VariableTypeRegistry variables) {
         variables.register("condition", new ConditionVariableFactory());
+        variables.register("constant", new ConstantVariableFactory());
         variables.registerCombined("eval", new EvalVariableFactory(variableProcessor));
         variables.register("globalpoint", GlobalPointVariable.class);
         variables.register("globaltag", GlobalTagVariable.class);
