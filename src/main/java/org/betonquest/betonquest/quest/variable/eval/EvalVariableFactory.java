@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.quest.variable.eval;
 
+import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.Instruction;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.quest.variable.PlayerVariable;
@@ -14,7 +15,12 @@ import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 /**
  * A factory for creating Eval variables.
  */
-public class EvalVariableFactory implements PlayerVariableFactory, PlayerlessVariableFactory {
+public class EvalVariableFactory implements VariableFactory {
+    /**
+     * Custom {@link BetonQuestLogger} instance for this class.
+     */
+    private final BetonQuestLogger log;
+
     /**
      * Variable processor that the eval variable should use for creating variables.
      */
@@ -25,7 +31,8 @@ public class EvalVariableFactory implements PlayerVariableFactory, PlayerlessVar
      *
      * @param variableProcessor variable processor to use
      */
-    public EvalVariableFactory(final VariableProcessor variableProcessor) {
+    public EvalVariableFactory(final BetonQuestLogger log, final VariableProcessor variableProcessor) {
+        this.log = log;
         this.variableProcessor = variableProcessor;
     }
 
@@ -43,7 +50,7 @@ public class EvalVariableFactory implements PlayerVariableFactory, PlayerlessVar
         final QuestPackage pack = instruction.getPackage();
         final String rawInstruction = String.join(".", instruction.getAllParts());
         return new NullableVariableAdapter(new EvalVariable(
-                variableProcessor, pack,
+                log, variableProcessor, pack,
                 new VariableString(variableProcessor, pack, rawInstruction)
         ));
     }

@@ -8,6 +8,7 @@ import org.betonquest.betonquest.api.profiles.OnlineProfile;
 import org.betonquest.betonquest.api.profiles.Profile;
 import org.betonquest.betonquest.exceptions.InstructionParseException;
 import org.betonquest.betonquest.exceptions.ObjectNotFoundException;
+import org.betonquest.betonquest.exceptions.QuestRuntimeException;
 import org.betonquest.betonquest.id.ConditionID;
 import org.betonquest.betonquest.id.EventID;
 import org.betonquest.betonquest.id.ItemID;
@@ -108,7 +109,11 @@ public class Menu extends SimpleYMLSection implements Listener {
         this.log = log;
         this.menuID = menuID;
         //load size
-        this.height = getInt("height");
+        try {
+            this.height = getNumber("height").getValue(null).intValue();
+        } catch (QuestRuntimeException | InstructionParseException e) {
+            throw new Invalid("height", e);
+        }
         if (this.height < 1 || this.height > 6) {
             throw new Invalid("height");
         }
@@ -127,8 +132,8 @@ public class Menu extends SimpleYMLSection implements Listener {
             @SuppressWarnings("PMD.ShortMethodName")
             protected QuestItem of() throws Missing, Invalid {
                 try {
-                    return new QuestItem(new ItemID(Menu.this.pack, getString("bind")));
-                } catch (final ObjectNotFoundException | InstructionParseException e) {
+                    return new QuestItem(new ItemID(Menu.this.pack, getString("bind").getValue(null)));
+                } catch (final ObjectNotFoundException | InstructionParseException | QuestRuntimeException e) {
                     throw new Invalid("bind", e);
                 }
             }
@@ -138,7 +143,12 @@ public class Menu extends SimpleYMLSection implements Listener {
             @Override
             @SuppressWarnings("PMD.ShortMethodName")
             protected MenuBoundCommand of() throws Missing, Invalid {
-                String command = getString("command").trim();
+                String command;
+                try {
+                    command = getString("command").getValue(null).trim();
+                } catch (QuestRuntimeException | InstructionParseException e) {
+                    throw new Invalid("command", e);
+                }
                 if (!command.matches("/*[0-9A-Za-z\\-]+")) {
                     throw new Invalid("command");
                 }

@@ -4,6 +4,7 @@ import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.exceptions.InstructionParseException;
 import org.betonquest.betonquest.exceptions.ObjectNotFoundException;
+import org.betonquest.betonquest.exceptions.QuestRuntimeException;
 import org.betonquest.betonquest.id.ConditionID;
 import org.betonquest.betonquest.id.EventID;
 import org.betonquest.betonquest.instruction.variable.VariableBoolean;
@@ -61,7 +62,7 @@ public abstract class SimpleYMLSection {
         }
     }
 
-    private final String getRawString(final String key) throws Missing {
+    private String getRawString(final String key) throws Missing {
         final String string = config.getString(key);
         if (string == null) {
             throw new Missing(key);
