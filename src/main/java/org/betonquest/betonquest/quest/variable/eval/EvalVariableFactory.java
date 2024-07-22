@@ -1,6 +1,5 @@
 package org.betonquest.betonquest.quest.variable.eval;
 
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.Instruction;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.quest.variable.PlayerVariable;
@@ -29,6 +28,7 @@ public class EvalVariableFactory implements VariableFactory {
     /**
      * Create a new Eval variable factory.
      *
+     * @param log               the logger
      * @param variableProcessor variable processor to use
      */
     public EvalVariableFactory(final BetonQuestLogger log, final VariableProcessor variableProcessor) {
