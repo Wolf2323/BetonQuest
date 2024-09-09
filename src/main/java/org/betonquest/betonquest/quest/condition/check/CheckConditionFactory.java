@@ -13,7 +13,7 @@ import org.betonquest.betonquest.api.quest.condition.nullable.NullableConditionA
 import org.betonquest.betonquest.exceptions.InstructionParseException;
 import org.betonquest.betonquest.exceptions.ObjectNotFoundException;
 import org.betonquest.betonquest.id.NoID;
-import org.betonquest.betonquest.quest.legacy.LegacyTypeFactory;
+import org.betonquest.betonquest.quest.registry.type.TypeFactory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public class CheckConditionFactory implements PlayerConditionFactory, Playerless
         if (parts.length == 0) {
             throw new InstructionParseException("Not enough arguments in internal condition");
         }
-        final LegacyTypeFactory<Condition> conditionFactory = BetonQuest.getInstance().getQuestRegistries().getConditionTypes().getFactory(parts[0]);
+        final TypeFactory<Condition> conditionFactory = BetonQuest.getInstance().getQuestRegistries().getConditionTypes().getFactory(parts[0]);
         if (conditionFactory == null) {
             // if it's null then there is no such type registered, log an error
             throw new InstructionParseException("Condition type " + parts[0] + " is not registered, check if it's"

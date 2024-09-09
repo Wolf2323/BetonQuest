@@ -105,7 +105,7 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveID, Objective> {
     }
 
     /**
-     * Creates new objective for given player
+     * Creates new objective for given player.
      *
      * @param profile     the {@link Profile} of the player
      * @param objectiveID ID of the objective
@@ -124,7 +124,7 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveID, Objective> {
     }
 
     /**
-     * Resumes the existing objective for given player
+     * Resumes the existing objective for given player.
      *
      * @param profile     the {@link Profile} of the player
      * @param objectiveID ID of the objective
@@ -160,6 +160,8 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveID, Objective> {
     }
 
     /**
+     * Gets an objective from its id.
+     *
      * @param objectiveID package name, dot and ID of the objective
      * @return Objective object or null if it does not exist
      */

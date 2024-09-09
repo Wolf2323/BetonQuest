@@ -108,12 +108,12 @@ import org.betonquest.betonquest.notify.SubTitleNotifyIO;
 import org.betonquest.betonquest.notify.SuppressNotifyIO;
 import org.betonquest.betonquest.notify.TitleNotifyIO;
 import org.betonquest.betonquest.notify.TotemNotifyIO;
-import org.betonquest.betonquest.quest.legacy.LegacyTypeFactory;
 import org.betonquest.betonquest.quest.registry.CoreQuestTypes;
 import org.betonquest.betonquest.quest.registry.QuestRegistry;
 import org.betonquest.betonquest.quest.registry.QuestTypeRegistries;
 import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.quest.registry.type.QuestTypeRegistry;
+import org.betonquest.betonquest.quest.registry.type.TypeFactory;
 import org.betonquest.betonquest.utils.PlayerConverter;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -1072,7 +1072,7 @@ public class BetonQuest extends JavaPlugin {
      */
     @Deprecated
     @Nullable
-    public LegacyTypeFactory<QuestEvent> getEventFactory(final String name) {
+    public TypeFactory<QuestEvent> getEventFactory(final String name) {
         return questTypeRegistries.getEventTypes().getFactory(name);
     }
 
