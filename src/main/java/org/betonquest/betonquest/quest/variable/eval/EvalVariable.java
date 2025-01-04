@@ -13,13 +13,12 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A variable which evaluates to another variable.
  */
-public class EvalVariable implements Variable {
+public class EvalVariable implements NullableVariable {
     /**
      * Custom {@link BetonQuestLogger} instance for this class.
      */
     private final BetonQuestLogger log;
 
-public class EvalVariable implements NullableVariable {
     /**
      * The variable processor used to create the evaluated variable.
      */
@@ -38,7 +37,7 @@ public class EvalVariable implements NullableVariable {
     /**
      * Create a new Eval variable.
      *
-     * @param log        the logger
+     * @param log               the logger
      * @param variableProcessor the variable processor
      * @param pack              the package
      * @param evaluation        the evaluation input

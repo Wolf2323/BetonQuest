@@ -12,10 +12,11 @@ import org.betonquest.betonquest.exceptions.InstructionParseException;
 import org.betonquest.betonquest.exceptions.ObjectNotFoundException;
 import org.betonquest.betonquest.exceptions.QuestRuntimeException;
 import org.betonquest.betonquest.id.ItemID;
+import org.betonquest.betonquest.instruction.variable.VariableString;
 import org.betonquest.betonquest.instruction.variable.location.VariableLocation;
 import org.betonquest.betonquest.item.QuestItem;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.utils.Utils;
-import org.betonquest.betonquest.variables.GlobalVariableResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -69,29 +70,31 @@ public class Backpack implements Listener {
     /**
      * Creates new backpack GUI opened at given page type.
      *
-     * @param onlineProfile the {@link OnlineProfile} of the player
-     * @param type          type of the display
+     * @param variableProcessor the processor to create the variables
+     * @param onlineProfile     the {@link OnlineProfile} of the player
+     * @param type              type of the display
      */
-    public Backpack(final OnlineProfile onlineProfile, final DisplayType type) {
+    public Backpack(final VariableProcessor variableProcessor, final OnlineProfile onlineProfile, final DisplayType type) {
         final BetonQuest instance = BetonQuest.getInstance();
         this.log = instance.getLoggerFactory().create(getClass());
         this.onlineProfile = onlineProfile;
         this.playerData = instance.getPlayerData(onlineProfile);
         this.lang = playerData.getLanguage();
         this.display = switch (type) {
-            case DEFAULT -> new Page(1);
+            case DEFAULT -> new Page(variableProcessor, 1);
             case CANCEL -> new Cancelers();
-            case COMPASS -> new Compass();
+            case COMPASS -> new Compass(variableProcessor);
         };
     }
 
     /**
      * Creates new backpack GUI.
      *
-     * @param onlineProfile the {@link OnlineProfile} of the player
+     * @param variableProcessor the processor to create the variables
+     * @param onlineProfile     the {@link OnlineProfile} of the player
      */
-    public Backpack(final OnlineProfile onlineProfile) {
-        this(onlineProfile, DisplayType.DEFAULT);
+    public Backpack(final VariableProcessor variableProcessor, final OnlineProfile onlineProfile) {
+        this(variableProcessor, onlineProfile, DisplayType.DEFAULT);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -135,6 +138,8 @@ public class Backpack implements Listener {
     @SuppressWarnings({"PMD.ShortClassName", "PMD.CyclomaticComplexity", "PMD.AvoidFieldNameMatchingTypeName",
             "PMD.GodClass"})
     private class Page extends Display {
+        private final VariableProcessor variableProcessor;
+
         private final int page;
 
         private final int pages;
@@ -155,8 +160,9 @@ public class Backpack implements Listener {
          * @param page number of the page to display, starting from 1
          */
         @SuppressWarnings({"PMD.NcssCount", "PMD.NPathComplexity", "PMD.CognitiveComplexity"})
-        public Page(final int page) {
+        public Page(final VariableProcessor variableProcessor, final int page) {
             super();
+            this.variableProcessor = variableProcessor;
             final boolean showJournalInBackpack = Boolean.parseBoolean(Config.getConfigString("journal.show_in_backpack"));
             this.page = page;
             this.showJournal = showJournalInBackpack && !Journal.hasJournal(onlineProfile);
@@ -267,7 +273,7 @@ public class Backpack implements Listener {
         protected void click(final int slot, final int playerSlot, final ClickType click) {
             if (page == 1 && slot == 0 && showJournal) {
                 playerData.getJournal().addToInv();
-                display = new Page(page);
+                display = new Page(variableProcessor, page);
             } else if (slot < 45) {
                 final int slotId = pageOffset + slot;
                 if (backpackItems.size() > slotId) {
@@ -303,7 +309,7 @@ public class Backpack implements Listener {
                         }
                         playerData.setBackpack(backpackItems.subList(showJournal ? 1 : 0, backpackItems.size()));
                     }
-                    display = new Page(page);
+                    display = new Page(variableProcessor, page);
                 }
             } else if (slot > 53) {
                 // slot above 53 is player's inventory, so handle item storing
@@ -339,19 +345,19 @@ public class Backpack implements Listener {
                         // backpack again
                         playerData.getJournal().removeFromInv();
                     }
-                    display = new Page(page);
+                    display = new Page(variableProcessor, page);
                 }
             } else if (slot == 48 && page > 1) {
                 // if it was a previous/next button turn the pages
-                display = new Page(page - 1);
+                display = new Page(variableProcessor, page - 1);
             } else if (slot == 50 && page < pages) {
-                display = new Page(page + 1);
+                display = new Page(variableProcessor, page + 1);
             } else if (slot == 45 && showCancel) {
                 // slot 45 is a slot with quest cancelers
                 display = new Cancelers();
             } else if (slot == 46 && showCompass) {
                 // slot 46 is a slot with compass pointers
-                display = new Compass();
+                display = new Compass(variableProcessor);
             }
         }
     }
@@ -408,14 +414,14 @@ public class Backpack implements Listener {
     }
 
     private class Compass extends Display {
-        private final Map<Integer, Location> locations = new HashMap<>();
+        private final Map<Integer, VariableLocation> locations = new HashMap<>();
 
-        private final Map<Integer, String> names = new HashMap<>();
+        private final Map<Integer, VariableString> names = new HashMap<>();
 
-        private final Map<Integer, Pair<QuestPackage, String>> items = new HashMap<>();
+        private final Map<Integer, Pair<QuestPackage, VariableString>> items = new HashMap<>();
 
         @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity", "PMD.CognitiveComplexity"})
-        public Compass() {
+        public Compass(final VariableProcessor variableProcessor) {
             super();
             int counter = 0;
             // for every package
@@ -452,10 +458,10 @@ public class Backpack implements Listener {
                             continue;
                         }
                         // if the tag is present, continue
-                        final Location loc;
+                        final VariableLocation loc;
                         try {
-                            loc = VariableLocation.parse(GlobalVariableResolver.resolve(pack, location));
-                        } catch (final QuestRuntimeException e) {
+                            loc = new VariableLocation(variableProcessor, pack, location);
+                        } catch (final InstructionParseException e) {
                             log.warn("Could not parse location in a compass pointer in " + packName
                                     + " package: " + key, e);
                             onlineProfile.getPlayer().closeInventory();
@@ -463,10 +469,24 @@ public class Backpack implements Listener {
                         }
                         // put location with next number
                         locations.put(counter, loc);
-                        names.put(counter, GlobalVariableResolver.resolve(pack, name));
+                        try {
+                            names.put(counter, new VariableString(variableProcessor, pack, name));
+                        } catch (final InstructionParseException e) {
+                            log.warn("Could not parse name in a compass pointer in " + packName
+                                    + " package: " + key, e);
+                            onlineProfile.getPlayer().closeInventory();
+                            return;
+                        }
                         final String itemName = keySection.getString("item");
                         if (itemName != null) {
-                            items.put(counter, Pair.of(pack, GlobalVariableResolver.resolve(pack, itemName)));
+                            try {
+                                items.put(counter, Pair.of(pack, new VariableString(variableProcessor, pack, itemName)));
+                            } catch (final InstructionParseException e) {
+                                log.warn("Could not parse item in a compass pointer in " + packName
+                                        + " package: " + key, e);
+                                onlineProfile.getPlayer().closeInventory();
+                                return;
+                            }
                         }
                         counter++;
                     }
@@ -485,7 +505,7 @@ public class Backpack implements Listener {
             final ItemStack[] content;
             try {
                 content = getContent(numberOfRows);
-            } catch (final InstructionParseException e) {
+            } catch (final InstructionParseException | QuestRuntimeException e) {
                 log.warn("Could not load compass button: " + e.getMessage(), e);
                 onlineProfile.getPlayer().closeInventory();
                 return;
@@ -496,23 +516,23 @@ public class Backpack implements Listener {
         }
 
         @SuppressWarnings({"NullAway", "PMD.LocalVariableCouldBeFinal"})
-        private ItemStack[] getContent(final int numberOfRows) throws InstructionParseException {
+        private ItemStack[] getContent(final int numberOfRows) throws InstructionParseException, QuestRuntimeException {
             final ItemStack[] content = new ItemStack[numberOfRows * 9];
             int index = 0;
             for (final Integer slot : locations.keySet()) {
-                final Pair<QuestPackage, String> item = items.get(slot);
+                final Pair<QuestPackage, VariableString> item = items.get(slot);
                 if (item == null) {
                     continue;
                 }
                 ItemStack compass;
                 try {
-                    compass = new QuestItem(new ItemID(item.getKey(), item.getValue())).generate(1);
+                    compass = new QuestItem(new ItemID(item.getKey(), item.getValue().getValue(onlineProfile))).generate(1);
                 } catch (final ObjectNotFoundException e) {
                     log.warn("Could not find item: " + e.getMessage(), e);
                     compass = new ItemStack(Material.COMPASS);
                 }
                 final ItemMeta meta = compass.getItemMeta();
-                final String name = names.get(slot);
+                final String name = names.get(slot).getValue(onlineProfile);
                 meta.setDisplayName(name.replace("_", " ").replace("&", "§"));
                 compass.setItemMeta(meta);
                 content[index] = compass;
@@ -523,15 +543,22 @@ public class Backpack implements Listener {
 
         @Override
         protected void click(final int slot, final int layerSlot, final ClickType click) {
-            final Location loc = locations.get(slot);
+            final VariableLocation loc = locations.get(slot);
             if (loc == null) {
                 return;
             }
-            // set the location of the compass
-            final QuestCompassTargetChangeEvent event = new QuestCompassTargetChangeEvent(onlineProfile, loc);
+            final Location location;
+            try {
+                location = loc.getValue(onlineProfile);
+            } catch (final QuestRuntimeException e) {
+                log.warn("Could not get compass location: " + e.getMessage(), e);
+                onlineProfile.getPlayer().closeInventory();
+                return;
+            }
+            final QuestCompassTargetChangeEvent event = new QuestCompassTargetChangeEvent(onlineProfile, location);
             Bukkit.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                onlineProfile.getPlayer().setCompassTarget(loc);
+                onlineProfile.getPlayer().setCompassTarget(location);
             }
             onlineProfile.getPlayer().closeInventory();
         }

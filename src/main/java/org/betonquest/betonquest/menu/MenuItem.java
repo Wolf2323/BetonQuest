@@ -110,15 +110,8 @@ public class MenuItem extends SimpleYMLSection {
         this.log = log;
         try {
             //load item
-            final ItemID itemID = new ItemID(pack, getString("item").trim());
-            final VariableNumber amount = new VariableNumber(BetonQuest.getInstance().getVariableProcessor(), pack,
-                    new DefaultSetting<>("1") {
-                        @Override
-                        @SuppressWarnings("PMD.ShortMethodName")
-                        protected String of() throws Missing {
-                            return getString("amount");
-                        }
-                    }.get());
+            final ItemID itemID = new ItemID(pack, getString("item").getValue(null).trim());
+            final VariableNumber amount = getNumber("amount", "1");
             this.item = new Item(itemID, amount);
             // load description
             this.descriptions = new HashMap<>();
@@ -146,17 +139,11 @@ public class MenuItem extends SimpleYMLSection {
             this.conditions.addAll(getConditions("conditions", pack));
             this.conditions.addAll(getConditions("condition", pack));
             //load if menu should close when item is clicked
-            this.close = new DefaultSetting<>(BetonQuest.getInstance().getRpgMenu().getConfiguration().defaultCloseOnClick) {
-                @Override
-                @SuppressWarnings("PMD.ShortMethodName")
-                protected Boolean of() throws Missing, Invalid {
-                    try {
-                        return getBoolean("close").getValue(null);
-                    } catch (final InstructionParseException | QuestRuntimeException e) {
-                        throw new Invalid("close", e);
-                    }
-                }
-            }.get();
+            try {
+                this.close = getBoolean("close", String.valueOf(BetonQuest.getInstance().getRpgMenu().getConfiguration().defaultCloseOnClick)).getValue(null);
+            } catch (final InstructionParseException | QuestRuntimeException e) {
+                throw new Invalid("close", e);
+            }
         } catch (final ObjectNotFoundException | InstructionParseException | QuestRuntimeException e) {
             throw new InvalidConfigurationException(e.getMessage(), e);
         }

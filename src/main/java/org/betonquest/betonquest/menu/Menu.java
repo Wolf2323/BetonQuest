@@ -119,7 +119,7 @@ public class Menu extends SimpleYMLSection implements Listener {
         }
         //load title
         try {
-            this.title = new VariableString(BetonQuest.getInstance().getVariableProcessor(), pack, getString("title"));
+            this.title = getString("title");
         } catch (final InstructionParseException e) {
             throw new InvalidConfigurationException(e.getMessage(), e);
         }

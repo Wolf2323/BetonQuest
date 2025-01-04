@@ -2,6 +2,7 @@ package org.betonquest.betonquest.quest.variable.eval;
 
 import org.betonquest.betonquest.Instruction;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.quest.variable.PlayerVariable;
 import org.betonquest.betonquest.api.quest.variable.PlayerVariableFactory;
 import org.betonquest.betonquest.api.quest.variable.PlayerlessVariable;
@@ -14,7 +15,7 @@ import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 /**
  * A factory for creating Eval variables.
  */
-public class EvalVariableFactory implements VariableFactory {
+public class EvalVariableFactory implements PlayerVariableFactory, PlayerlessVariableFactory {
     /**
      * Custom {@link BetonQuestLogger} instance for this class.
      */

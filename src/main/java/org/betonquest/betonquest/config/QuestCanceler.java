@@ -16,12 +16,12 @@ import org.betonquest.betonquest.id.EventID;
 import org.betonquest.betonquest.id.ID;
 import org.betonquest.betonquest.id.ItemID;
 import org.betonquest.betonquest.id.ObjectiveID;
+import org.betonquest.betonquest.instruction.variable.VariableString;
 import org.betonquest.betonquest.instruction.variable.location.VariableLocation;
 import org.betonquest.betonquest.item.QuestItem;
 import org.betonquest.betonquest.menu.config.SimpleYMLSection;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.utils.Utils;
-import org.betonquest.betonquest.variables.GlobalVariableResolver;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -71,7 +71,7 @@ public class QuestCanceler {
     private final String item;
 
     @Nullable
-    private final Location loc;
+    private final VariableLocation loc;
 
     /**
      * Creates a new canceler with given name.
@@ -81,7 +81,7 @@ public class QuestCanceler {
      * @throws InstructionParseException when parsing the canceler fails for some reason
      */
     @SuppressWarnings("PMD.LocalVariableCouldBeFinal")
-    public QuestCanceler(final QuestPackage pack, final String cancelerID) throws InstructionParseException {
+    public QuestCanceler(final VariableProcessor variableProcessor, final QuestPackage pack, final String cancelerID) throws InstructionParseException {
         this.cancelerID = Utils.getNN(cancelerID, "Name is null");
         this.pack = Utils.getNN(pack, "Package does not exist");
         final ConfigurationSection section = pack.getConfig().getConfigurationSection("cancel." + cancelerID);
@@ -105,25 +105,18 @@ public class QuestCanceler {
         tags = split(section, "tags");
         points = split(section, "points");
         journal = split(section, "journal");
-        final String rawLoc = GlobalVariableResolver.resolve(pack, section.getString("loc"));
+        final String rawLoc = section.getString("loc");
         if (rawLoc != null) {
-            Location tmp;
-            try {
-                tmp = VariableLocation.parse(rawLoc);
-            } catch (final QuestRuntimeException e) {
-                log.warn(pack, "Could not parse location in quest canceler '" + name + "': " + e.getMessage(), e);
-                tmp = null;
-            }
-            loc = tmp;
+            loc = new VariableLocation(variableProcessor, pack, rawLoc);
         } else {
             loc = null;
         }
     }
 
     @Nullable
-    private String[] split(final ConfigurationSection section, final String path) {
+    private String[] split(final ConfigurationSection section, final String path) throws InstructionParseException, QuestRuntimeException {
         final String raw = section.getString(path);
-        return raw == null ? null : GlobalVariableResolver.resolve(pack, raw).split(",");
+        return raw == null ? null : new VariableString(BetonQuest.getInstance().getVariableProcessor(), pack, raw).getValue(null).split(",");
     }
 
     @SuppressWarnings("PMD.ReturnEmptyCollectionRatherThanNull")

@@ -7,11 +7,10 @@ import org.betonquest.betonquest.exceptions.ObjectNotFoundException;
 import org.betonquest.betonquest.exceptions.QuestRuntimeException;
 import org.betonquest.betonquest.id.ConditionID;
 import org.betonquest.betonquest.id.EventID;
+import org.betonquest.betonquest.id.ID;
 import org.betonquest.betonquest.instruction.variable.VariableBoolean;
-import org.betonquest.betonquest.instruction.variable.VariableEnum;
 import org.betonquest.betonquest.instruction.variable.VariableNumber;
 import org.betonquest.betonquest.instruction.variable.VariableString;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.jetbrains.annotations.Nullable;
@@ -139,7 +138,24 @@ public abstract class SimpleYMLSection {
     }
 
     /**
-     * Parse a boolean from config file
+     * Parse an integer from config file.
+     *
+     * @param key          where to search
+     * @param defaultValue the default value if the key is missing
+     * @return the {@link VariableNumber} from the config
+     * @throws Missing                   if nothing is given
+     * @throws InstructionParseException If the {@link VariableNumber} could not be created
+     */
+    protected final VariableNumber getNumber(final String key, final String defaultValue) throws Missing, InstructionParseException {
+        try {
+            return getNumber(key);
+        } catch (final Missing e) {
+            return new VariableNumber(BetonQuest.getInstance().getVariableProcessor(), pack, defaultValue);
+        }
+    }
+
+    /**
+     * Parse a boolean from config file.
      *
      * @param key where to search
      * @return the {@link VariableBoolean} from the config
@@ -152,6 +168,23 @@ public abstract class SimpleYMLSection {
     }
 
     /**
+     * Parse a boolean from config file.
+     *
+     * @param key          where to search
+     * @param defaultValue the default value if the key is missing
+     * @return the {@link VariableBoolean} from the config
+     * @throws Missing                   if nothing is given
+     * @throws InstructionParseException If the {@link VariableBoolean} could not be created
+     */
+    protected final VariableBoolean getBoolean(final String key, final String defaultValue) throws Missing, InstructionParseException {
+        try {
+            return getBoolean(key);
+        } catch (final Missing e) {
+            return new VariableBoolean(BetonQuest.getInstance().getVariableProcessor(), pack, defaultValue);
+        }
+    }
+
+    /**
      * Parse a list of events from config file.
      *
      * @param key  where to search
@@ -159,7 +192,7 @@ public abstract class SimpleYMLSection {
      * @return requested EventIDs or empty list when not present
      * @throws Invalid if one of the events can't be found
      */
-    protected final List<EventID> getEvents(final String key, final QuestPackage pack) throws Invalid {
+    protected final List<EventID> getEvents(final String key, final QuestPackage pack) throws Invalid, InstructionParseException {
         return getID(key, pack, EventID::new);
     }
 
@@ -171,22 +204,22 @@ public abstract class SimpleYMLSection {
      * @return requested ConditionIDs or empty list when not present
      * @throws Invalid if one of the conditions can't be found
      */
-    protected final List<ConditionID> getConditions(final String key, final QuestPackage pack) throws Invalid {
+    protected final List<ConditionID> getConditions(final String key, final QuestPackage pack) throws Invalid, InstructionParseException {
         return getID(key, pack, ConditionID::new);
     }
 
-    private <T extends ID> List<T> getID(final String key, final QuestPackage pack, final IDArgument<T> argument) throws Invalid {
-        final List<String> strings;
+    private <T extends ID> List<T> getID(final String key, final QuestPackage pack, final IDArgument<T> argument) throws Invalid, InstructionParseException {
+        final List<VariableString> strings;
         try {
             strings = getStrings(key);
         } catch (final Missing ignored) {
             return List.of();
         }
         final List<T> ids = new ArrayList<>(strings.size());
-        for (final String string : strings) {
+        for (final VariableString string : strings) {
             try {
-                ids.add(argument.convert(pack, string));
-            } catch (final ObjectNotFoundException e) {
+                ids.add(argument.convert(pack, string.getValue(null)));
+            } catch (final ObjectNotFoundException | QuestRuntimeException e) {
                 throw new Invalid(key, e);
             }
         }
@@ -208,37 +241,6 @@ public abstract class SimpleYMLSection {
          * @throws ObjectNotFoundException when there is no such {@link T} in the resolved quest package
          */
         T convert(@Nullable QuestPackage pack, String identifier) throws ObjectNotFoundException;
-    }
-
-    /**
-     * A config setting which uses a given default value if not set.
-     *
-     * @param <T> the type of the setting
-     */
-    @SuppressWarnings("PMD.CommentRequired")
-    protected abstract class DefaultSetting<T> {
-
-        private final T value;
-
-        @SuppressWarnings("PMD.ConstructorCallsOverridableMethod")
-        public DefaultSetting(final T defaultValue) throws Invalid {
-            value = parse(defaultValue);
-        }
-
-        private T parse(final T defaultValue) throws Invalid {
-            try {
-                return of();
-            } catch (final Missing missing) {
-                return defaultValue;
-            }
-        }
-
-        @SuppressWarnings("PMD.ShortMethodName")
-        protected abstract T of() throws Missing, Invalid;
-
-        public final T get() {
-            return value;
-        }
     }
 
     /**
