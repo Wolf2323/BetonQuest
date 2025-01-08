@@ -1,14 +1,11 @@
-package org.betonquest.betonquest.conversation;
+package org.betonquest.betonquest.api.conversation.interceptor;
 
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * The interceptor is used to intercept chat messages that are sent to the player.
- * This is useful to provide a distraction-free conversation experience.
- *
- * @deprecated use {@link org.betonquest.betonquest.api.conversation.interceptor.Interceptor} instead
  */
-@Deprecated
 public interface Interceptor {
 
     /**
@@ -16,7 +13,9 @@ public interface Interceptor {
      *
      * @param message the message
      */
-    void sendMessage(String message);
+    default void sendMessage(final String message) {
+        sendMessage(TextComponent.fromLegacyText(message));
+    }
 
     /**
      * Send a message to player bypassing Interceptor.
