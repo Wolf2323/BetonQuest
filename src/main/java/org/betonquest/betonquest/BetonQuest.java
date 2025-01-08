@@ -14,6 +14,8 @@ import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
 import org.betonquest.betonquest.api.config.ConfigurationFile;
 import org.betonquest.betonquest.api.config.ConfigurationFileFactory;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.conversation.interceptor.Interceptor;
+import org.betonquest.betonquest.api.conversation.interceptor.InterceptorFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.logger.CachingBetonQuestLoggerFactory;
@@ -43,7 +45,6 @@ import org.betonquest.betonquest.conversation.ConversationColors;
 import org.betonquest.betonquest.conversation.ConversationData;
 import org.betonquest.betonquest.conversation.ConversationIO;
 import org.betonquest.betonquest.conversation.ConversationResumer;
-import org.betonquest.betonquest.conversation.Interceptor;
 import org.betonquest.betonquest.conversation.InventoryConvIO;
 import org.betonquest.betonquest.conversation.NonInterceptingInterceptor;
 import org.betonquest.betonquest.conversation.SimpleConvIO;
@@ -153,7 +154,7 @@ public class BetonQuest extends JavaPlugin {
 
     private static final Map<String, Class<? extends ConversationIO>> CONVERSATION_IO_TYPES = new HashMap<>();
 
-    private static final Map<String, Class<? extends Interceptor>> INTERCEPTOR_TYPES = new HashMap<>();
+    private static final Map<String, Class<? extends InterceptorFactory>> INTERCEPTOR_TYPES = new HashMap<>();
 
     private static final Map<String, Class<? extends NotifyIO>> NOTIFY_IO_TYPES = new HashMap<>();
 
