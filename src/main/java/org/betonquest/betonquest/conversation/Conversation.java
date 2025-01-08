@@ -8,6 +8,7 @@ import org.betonquest.betonquest.api.ConversationOptionEvent;
 import org.betonquest.betonquest.api.PlayerConversationEndEvent;
 import org.betonquest.betonquest.api.PlayerConversationStartEvent;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.conversation.interceptor.InterceptorFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profiles.OnlineProfile;
 import org.betonquest.betonquest.api.profiles.Profile;
@@ -136,10 +137,10 @@ public class Conversation implements Listener {
     private ConversationIO inOut;
 
     /**
-     * The {@link Interceptor} used to hide unrelated messages while the player is in this conversation.
+     * The {@link org.betonquest.betonquest.api.conversation.interceptor.Interceptor} used to hide unrelated messages while the player is in this conversation.
      */
     @Nullable
-    private Interceptor interceptor;
+    private org.betonquest.betonquest.api.conversation.interceptor.Interceptor interceptor;
 
     /**
      * Starts a new conversation between player and npc at given location. It uses
@@ -578,7 +579,7 @@ public class Conversation implements Listener {
      * @return the interceptor of the conversation
      */
     @Nullable
-    public Interceptor getInterceptor() {
+    public org.betonquest.betonquest.api.conversation.interceptor.Interceptor getInterceptor() {
         return interceptor;
     }
 
@@ -677,12 +678,15 @@ public class Conversation implements Listener {
 
                 // start interceptor if needed
                 if (messagesDelaying) {
+                    final String name = data.getInterceptor();
+                    final InterceptorFactory factory = plugin.getQuestRegistries().getInterceptorTypes().getFactory(name);
+                    if (factory == null) {
+                        log.warn(pack, "Error when loading interceptor: There is no interceptor '" + name + "' registered!");
+                        return;
+                    }
                     try {
-                        final String name = data.getInterceptor();
-                        final Class<? extends Interceptor> interceptor = plugin.getInterceptor(name);
-                        conv.interceptor = interceptor.getConstructor(Conversation.class, OnlineProfile.class).newInstance(conv, onlineProfile);
-                    } catch (final InstantiationException | IllegalAccessException | IllegalArgumentException
-                                   | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                        conv.interceptor = factory.create(onlineProfile);
+                    } catch (final QuestRuntimeException e) {
                         log.warn(pack, "Error when loading interceptor", e);
                         return;
                     }
@@ -697,9 +701,12 @@ public class Conversation implements Listener {
 
                     // check whether to add a prefix
                     final String prefix = data.getPrefix(language, nextNPCOption);
-                    String prefixName = null;
-                    String[] prefixVariables = null;
-                    if (prefix != null) {
+                    final String prefixName;
+                    final String[] prefixVariables;
+                    if (prefix == null) {
+                        prefixName = null;
+                        prefixVariables = null;
+                    } else {
                         prefixName = "conversation_prefix";
                         prefixVariables = new String[]{prefix};
                     }

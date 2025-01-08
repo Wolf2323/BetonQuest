@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * @param <L> the legacy structure based on the {@link org.betonquest.betonquest.Instruction Instruction}
  *            as defined in the {@link org.betonquest.betonquest.api API package}
  */
-public abstract class QuestTypeRegistry<P, S, L> extends TypeRegistry<L> {
+public abstract class QuestTypeRegistry<P, S, L> extends FactoryRegistry<TypeFactory<L>> {
 
     /**
      * Logger factory to create class specific logger for quest type factories.

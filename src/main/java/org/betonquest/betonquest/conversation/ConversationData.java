@@ -173,7 +173,7 @@ public class ConversationData {
 
         final String rawInterceptor = pack.getString("conversations." + convName + ".interceptor", plugin.getPluginConfig().getString("default_interceptor", "simple"));
         for (final String s : rawInterceptor.split(",")) {
-            if (plugin.getInterceptor(s.trim()) != null) {
+            if (plugin.getQuestRegistries().getInterceptorTypes().getFactory(s.trim()) != null) {
                 interceptor = s.trim();
                 break;
             }

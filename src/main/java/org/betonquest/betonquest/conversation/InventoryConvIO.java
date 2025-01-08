@@ -3,6 +3,7 @@ package org.betonquest.betonquest.conversation;
 import io.papermc.lib.PaperLib;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.ConfigurationFile;
+import org.betonquest.betonquest.api.conversation.interceptor.Interceptor;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profiles.OnlineProfile;
 import org.betonquest.betonquest.config.Config;

@@ -10,9 +10,9 @@ import java.util.Set;
 /**
  * Stores the Types that can be used in BetonQuest.
  *
- * @param <T> the type to be stored
+ * @param <T> the factory type to be stored
  */
-public class TypeRegistry<T> {
+public class FactoryRegistry<T> {
     /**
      * Custom {@link BetonQuestLogger} instance for this class.
      */
@@ -26,7 +26,7 @@ public class TypeRegistry<T> {
     /**
      * Map of registered factories.
      */
-    protected final Map<String, TypeFactory<T>> types = new HashMap<>();
+    protected final Map<String, T> types = new HashMap<>();
 
     /**
      * Create a new type registry.
@@ -34,7 +34,7 @@ public class TypeRegistry<T> {
      * @param log      the logger that will be used for logging
      * @param typeName the name of the type to use in the register log message
      */
-    public TypeRegistry(final BetonQuestLogger log, final String typeName) {
+    public FactoryRegistry(final BetonQuestLogger log, final String typeName) {
         this.log = log;
         this.typeName = typeName;
     }
@@ -46,7 +46,7 @@ public class TypeRegistry<T> {
      * @param name    the name of the type
      * @param factory the player factory to create the type
      */
-    public void register(final String name, final TypeFactory<T> factory) {
+    public void register(final String name, final T factory) {
         log.debug("Registering " + name + " " + typeName + " type");
         types.put(name, factory);
     }
@@ -58,7 +58,7 @@ public class TypeRegistry<T> {
      * @return a factory to create the type
      */
     @Nullable
-    public TypeFactory<T> getFactory(final String name) {
+    public T getFactory(final String name) {
         return types.get(name);
     }
 

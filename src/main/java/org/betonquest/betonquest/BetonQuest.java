@@ -15,7 +15,6 @@ import org.betonquest.betonquest.api.config.ConfigurationFile;
 import org.betonquest.betonquest.api.config.ConfigurationFileFactory;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.conversation.interceptor.Interceptor;
-import org.betonquest.betonquest.api.conversation.interceptor.InterceptorFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.logger.CachingBetonQuestLoggerFactory;
@@ -153,8 +152,6 @@ public class BetonQuest extends JavaPlugin {
     private static final Map<String, Class<? extends Objective>> OBJECTIVE_TYPES = new HashMap<>();
 
     private static final Map<String, Class<? extends ConversationIO>> CONVERSATION_IO_TYPES = new HashMap<>();
-
-    private static final Map<String, Class<? extends InterceptorFactory>> INTERCEPTOR_TYPES = new HashMap<>();
 
     private static final Map<String, Class<? extends NotifyIO>> NOTIFY_IO_TYPES = new HashMap<>();
 
@@ -934,9 +931,9 @@ public class BetonQuest extends JavaPlugin {
      * @param name             name of the interceptor type
      * @param interceptorClass class object to register
      */
-    public void registerInterceptor(final String name, final Class<? extends Interceptor> interceptorClass) {
+    public void registerInterceptor(final String name, final Class<? extends org.betonquest.betonquest.conversation.Interceptor> interceptorClass) {
         log.debug("Registering " + name + " interceptor type");
-        INTERCEPTOR_TYPES.put(name, interceptorClass);
+        questTypeRegistries.getInterceptorTypes().register(name, interceptorClass);
     }
 
     /**
@@ -1029,10 +1026,14 @@ public class BetonQuest extends JavaPlugin {
     /**
      * @param name name of the interceptor type
      * @return the class object for this interceptor type
+     * @deprecated won't return anything!
+     * use {@link #getQuestRegistries()} further {@link QuestTypeRegistries#getInterceptorTypes()}
      */
+    @Deprecated(forRemoval = true)
     @Nullable
     public Class<? extends Interceptor> getInterceptor(final String name) {
-        return INTERCEPTOR_TYPES.get(name);
+        return null;
+        //return INTERCEPTOR_TYPES.get(name);
     }
 
     /**

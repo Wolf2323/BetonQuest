@@ -6,8 +6,8 @@ import org.betonquest.betonquest.bstats.CompositeInstructionMetricsSupplier;
 import org.betonquest.betonquest.exceptions.InstructionParseException;
 import org.betonquest.betonquest.exceptions.ObjectNotFoundException;
 import org.betonquest.betonquest.id.ID;
+import org.betonquest.betonquest.quest.registry.type.FactoryRegistry;
 import org.betonquest.betonquest.quest.registry.type.TypeFactory;
-import org.betonquest.betonquest.quest.registry.type.TypeRegistry;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Map;
@@ -23,7 +23,7 @@ public abstract class TypedQuestProcessor<I extends ID, T> extends QuestProcesso
     /**
      * Available types.
      */
-    protected final TypeRegistry<T> types;
+    protected final FactoryRegistry<TypeFactory<T>> types;
 
     /**
      * Type name used for logging.
@@ -43,7 +43,7 @@ public abstract class TypedQuestProcessor<I extends ID, T> extends QuestProcesso
      * @param readable the type name used for logging, with first letter in upper case
      * @param internal the section name and/or bstats topic identifier
      */
-    public TypedQuestProcessor(final BetonQuestLogger log, final TypeRegistry<T> types,
+    public TypedQuestProcessor(final BetonQuestLogger log, final FactoryRegistry<TypeFactory<T>> types,
                                final String readable, final String internal) {
         super(log);
         this.types = types;

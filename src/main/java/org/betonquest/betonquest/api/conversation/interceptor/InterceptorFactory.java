@@ -1,7 +1,7 @@
 package org.betonquest.betonquest.api.conversation.interceptor;
 
 import org.betonquest.betonquest.api.profiles.OnlineProfile;
-import org.betonquest.betonquest.conversation.Interceptor;
+import org.betonquest.betonquest.exceptions.QuestRuntimeException;
 
 /**
  * Factory to create a new {@link Interceptor}.
@@ -12,6 +12,7 @@ public interface InterceptorFactory {
      *
      * @param profile the profile of the player
      * @return the new interceptor
+     * @throws QuestRuntimeException if the interceptor could not be created
      */
-    Interceptor create(OnlineProfile profile);
+    Interceptor create(OnlineProfile profile) throws QuestRuntimeException;
 }
