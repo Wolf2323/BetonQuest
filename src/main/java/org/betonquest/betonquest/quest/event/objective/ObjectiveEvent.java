@@ -11,6 +11,7 @@ import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.database.UpdateType;
 import org.betonquest.betonquest.exceptions.QuestException;
 import org.betonquest.betonquest.id.ObjectiveID;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.utils.PlayerConverter;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +29,11 @@ public class ObjectiveEvent implements NullableEvent {
      * Custom {@link BetonQuestLogger} instance for this class.
      */
     private final BetonQuestLogger log;
+
+    /**
+     * The {@link VariableProcessor} to resolve variables.
+     */
+    private final VariableProcessor variableProcessor;
 
     /**
      * The quest package.
@@ -52,15 +58,17 @@ public class ObjectiveEvent implements NullableEvent {
     /**
      * Creates a new ObjectiveEvent.
      *
-     * @param betonQuest   the BetonQuest instance
-     * @param log          the logger
-     * @param questPackage the quest package of the instruction
-     * @param objectives   the objectives to affect
-     * @param action       the action to do with the objectives
+     * @param betonQuest        the BetonQuest instance
+     * @param log               the logger
+     * @param variableProcessor the {@link VariableProcessor} to resolve variables
+     * @param questPackage      the quest package of the instruction
+     * @param objectives        the objectives to affect
+     * @param action            the action to do with the objectives
      * @throws QuestException if the action is invalid
      */
-    public ObjectiveEvent(final BetonQuest betonQuest, final BetonQuestLogger log, final QuestPackage questPackage, final List<ObjectiveID> objectives, final String action) throws QuestException {
+    public ObjectiveEvent(final BetonQuest betonQuest, final BetonQuestLogger log, final VariableProcessor variableProcessor, final QuestPackage questPackage, final List<ObjectiveID> objectives, final String action) throws QuestException {
         this.log = log;
+        this.variableProcessor = variableProcessor;
         this.questPackage = questPackage;
         this.betonQuest = betonQuest;
         this.objectives = objectives;
@@ -106,7 +114,7 @@ public class ObjectiveEvent implements NullableEvent {
 
     private void handleForOfflinePlayer(final Profile profile, final ObjectiveID objectiveID) {
         Bukkit.getScheduler().runTaskAsynchronously(betonQuest, () -> {
-            final PlayerData playerData = new PlayerData(profile);
+            final PlayerData playerData = new PlayerData(variableProcessor, profile);
             switch (action.toLowerCase(Locale.ROOT)) {
                 case "start", "add" -> playerData.addNewRawObjective(objectiveID);
                 case "complete", "finish" ->

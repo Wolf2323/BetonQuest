@@ -4,6 +4,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profiles.Profile;
 import org.betonquest.betonquest.exceptions.QuestException;
 import org.betonquest.betonquest.instruction.variable.VariableString;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,10 +20,10 @@ import java.util.List;
 public class ItemDescription {
     private final List<VariableString> lines;
 
-    public ItemDescription(final QuestPackage pack, final Collection<String> content) throws QuestException {
+    public ItemDescription(final VariableProcessor variableProcessor, final QuestPackage pack, final Collection<String> content) throws QuestException {
         this.lines = new ArrayList<>();
         for (final String line : content) {
-            this.lines.add(new VariableString(pack, line));
+            this.lines.add(new VariableString(variableProcessor, pack, line));
         }
     }
 

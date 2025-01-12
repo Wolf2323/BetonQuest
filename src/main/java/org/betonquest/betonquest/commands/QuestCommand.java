@@ -45,6 +45,7 @@ import org.betonquest.betonquest.quest.event.IngameNotificationSender;
 import org.betonquest.betonquest.quest.event.NoNotificationSender;
 import org.betonquest.betonquest.quest.event.NotificationLevel;
 import org.betonquest.betonquest.quest.event.give.GiveEvent;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.utils.PlayerConverter;
 import org.betonquest.betonquest.utils.Utils;
 import org.bukkit.Bukkit;
@@ -101,6 +102,11 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
 
     private final BetonQuest instance = BetonQuest.getInstance();
 
+    /**
+     * The {@link VariableProcessor} to use for creating {@link PlayerData}.
+     */
+    private final VariableProcessor variableProcessor;
+
     private final ConfigAccessorFactory configAccessorFactory;
 
     private final BukkitAudiences bukkitAudiences;
@@ -119,15 +125,17 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
      * Registers a new executor and a new tab completer of the /betonquest command.
      *
      * @param loggerFactory         logger factory to use
+     * @param log                   the logger that will be used for logging
+     * @param variableProcessor     the {@link VariableProcessor} to use for creating {@link PlayerData}
      * @param configAccessorFactory the config accessor factory to use
      * @param bukkitAudiences       the bukkit audiences to use
      * @param logWatcher            the player log watcher to use
      * @param debuggingController   the log publishing controller to use
-     * @param log                   the logger that will be used for logging
      */
-    public QuestCommand(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log, final ConfigAccessorFactory configAccessorFactory, final BukkitAudiences bukkitAudiences, final PlayerLogWatcher logWatcher, final LogPublishingController debuggingController) {
+    public QuestCommand(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log, final VariableProcessor variableProcessor, final ConfigAccessorFactory configAccessorFactory, final BukkitAudiences bukkitAudiences, final PlayerLogWatcher logWatcher, final LogPublishingController debuggingController) {
         this.loggerFactory = loggerFactory;
         this.log = log;
+        this.variableProcessor = variableProcessor;
         this.configAccessorFactory = configAccessorFactory;
         this.bukkitAudiences = bukkitAudiences;
         this.logWatcher = logWatcher;
@@ -452,7 +460,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             playerData = instance.getPlayerData(profile);
         } else {
             log.debug("Profile is offline, loading his data");
-            playerData = new PlayerData(profile);
+            playerData = new PlayerData(variableProcessor, profile);
         }
         log.debug("Purging player " + args[1]);
         playerData.purgePlayer();
@@ -502,7 +510,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             playerData = instance.getPlayerData(profile);
         } else {
             log.debug("Profile is offline, loading his data");
-            playerData = new PlayerData(profile);
+            playerData = new PlayerData(variableProcessor, profile);
         }
         final Journal journal = playerData.getJournal();
         // if there are no arguments then list player's pointers
@@ -607,7 +615,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             playerData = instance.getPlayerData(profile);
         } else {
             log.debug("Profile is offline, loading his data");
-            playerData = new PlayerData(profile);
+            playerData = new PlayerData(variableProcessor, profile);
         }
         // if there are no arguments then list player's points
         if (args.length < 3 || "list".equalsIgnoreCase(args[2]) || "l".equalsIgnoreCase(args[2])) {
@@ -940,7 +948,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             playerData = instance.getPlayerData(profile);
         } else {
             log.debug("Profile is offline, loading his data");
-            playerData = new PlayerData(profile);
+            playerData = new PlayerData(variableProcessor, profile);
         }
         // if there are no arguments then list player's tags
         if (args.length < 3 || "list".equalsIgnoreCase(args[2]) || "l".equalsIgnoreCase(args[2])) {
@@ -1101,7 +1109,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             playerData = instance.getPlayerData(profile);
         } else {
             log.debug("Profile is offline, loading his data");
-            playerData = new PlayerData(profile);
+            playerData = new PlayerData(variableProcessor, profile);
         }
         // if there are no arguments then list player's objectives
         if (args.length < 3 || "list".equalsIgnoreCase(args[2]) || "l".equalsIgnoreCase(args[2])) {

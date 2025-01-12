@@ -16,6 +16,7 @@ import org.betonquest.betonquest.exceptions.ObjectNotFoundException;
 import org.betonquest.betonquest.exceptions.QuestException;
 import org.betonquest.betonquest.id.ConditionID;
 import org.betonquest.betonquest.instruction.variable.VariableString;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.utils.Utils;
 import org.betonquest.betonquest.variables.GlobalVariableResolver;
 import org.bukkit.Material;
@@ -49,6 +50,8 @@ public class Journal {
      */
     private final BetonQuestLogger log = BetonQuest.getInstance().getLoggerFactory().create(getClass());
 
+    private final VariableProcessor variableProcessor;
+
     private final Profile profile;
 
     private final List<Pointer> pointers;
@@ -65,13 +68,14 @@ public class Journal {
     /**
      * Creates new Journal instance from List of Pointers.
      *
-     * @param profile the {@link OnlineProfile} of the player whose journal is created
-     * @param lang    default language to use when generating the journal
-     * @param list    list of pointers to journal entries
-     * @param config  a {@link ConfigurationFile} that contains the plugin's configuration
+     * @param variableProcessor the {@link VariableProcessor} to use
+     * @param profile           the {@link OnlineProfile} of the player whose journal is created
+     * @param lang              default language to use when generating the journal
+     * @param list              list of pointers to journal entries
+     * @param config            a {@link ConfigurationFile} that contains the plugin's configuration
      */
-    public Journal(final Profile profile, final String lang, final List<Pointer> list, final ConfigurationFile config) {
-        // generate texts from list of pointers
+    public Journal(final VariableProcessor variableProcessor, final Profile profile, final String lang, final List<Pointer> list, final ConfigurationFile config) {
+        this.variableProcessor = variableProcessor;
         this.profile = profile;
         this.lang = lang;
         this.pointers = list;
@@ -245,7 +249,7 @@ public class Journal {
             }
 
             try {
-                text = new VariableString(pack, text).getString(profile);
+                text = new VariableString(variableProcessor, pack, text).getString(profile);
             } catch (final QuestException e) {
                 log.warn(pack, "Error while creating variable on journal page '" + pointerName + "' in "
                         + profile + " journal: " + e.getMessage(), e);
@@ -311,7 +315,7 @@ public class Journal {
                     }
                     text = GlobalVariableResolver.resolve(pack, text);
                     try {
-                        text = new VariableString(pack, text).getString(profile);
+                        text = new VariableString(variableProcessor, pack, text).getString(profile);
                     } catch (final QuestException e) {
                         log.warn(pack, "Error while creating variable on main page in "
                                 + profile + " journal: " + e.getMessage(), e);

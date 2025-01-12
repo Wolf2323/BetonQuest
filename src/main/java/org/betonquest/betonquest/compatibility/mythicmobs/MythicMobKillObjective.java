@@ -85,7 +85,7 @@ public class MythicMobKillObjective extends CountingObjective implements Listene
         minMobLevel = instruction.getVarNum(unsafeMinMobLevel == null ? String.valueOf(Double.NEGATIVE_INFINITY) : unsafeMinMobLevel);
         maxMobLevel = instruction.getVarNum(unsafeMaxMobLevel == null ? String.valueOf(Double.POSITIVE_INFINITY) : unsafeMaxMobLevel);
         final String markedString = instruction.getOptional("marked");
-        marked = markedString == null ? null : new VariableString(
+        marked = markedString == null ? null : new VariableString(BetonQuest.getInstance().getVariableProcessor(),
                 instruction.getPackage(),
                 Utils.addPackage(instruction.getPackage(), markedString)
         );
@@ -143,7 +143,6 @@ public class MythicMobKillObjective extends CountingObjective implements Listene
             getCountingData(onlineProfile).progress();
             completeIfDoneOrNotify(onlineProfile);
         }
-
     }
 
     private boolean matchesMobLevel(final OnlineProfile onlineProfile, final ActiveMob mob) {

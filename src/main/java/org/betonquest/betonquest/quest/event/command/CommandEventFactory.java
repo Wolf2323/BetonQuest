@@ -12,6 +12,7 @@ import org.betonquest.betonquest.exceptions.QuestException;
 import org.betonquest.betonquest.quest.PrimaryServerThreadData;
 import org.betonquest.betonquest.quest.event.PrimaryServerThreadEvent;
 import org.betonquest.betonquest.quest.event.PrimaryServerThreadStaticEvent;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -28,11 +29,12 @@ public class CommandEventFactory extends BaseCommandEventFactory implements Stat
     /**
      * Create the command event factory.
      *
-     * @param loggerFactory logger factory to use
-     * @param data          the data for primary server thread access
+     * @param loggerFactory     logger factory to use
+     * @param data              the data for primary server thread access
+     * @param variableProcessor the {@link VariableProcessor} to create variables
      */
-    public CommandEventFactory(final BetonQuestLoggerFactory loggerFactory, final PrimaryServerThreadData data) {
-        super(loggerFactory, data);
+    public CommandEventFactory(final BetonQuestLoggerFactory loggerFactory, final PrimaryServerThreadData data, final VariableProcessor variableProcessor) {
+        super(loggerFactory, data, variableProcessor);
         this.silentSender = new SilentConsoleCommandSender(loggerFactory.create(SilentCommandSender.class,
                 "CommandEvent"), data.server().getConsoleSender());
     }

@@ -9,6 +9,7 @@ import org.betonquest.betonquest.api.profiles.Profile;
 import org.betonquest.betonquest.conversation.ConversationResumer;
 import org.betonquest.betonquest.database.PlayerData;
 import org.betonquest.betonquest.objectives.ResourcePackObjective;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.utils.PlayerConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -36,14 +37,21 @@ public class JoinQuitListener implements Listener {
     private final BetonQuest betonQuest;
 
     /**
+     * The {@link VariableProcessor} to use for creating {@link PlayerData}.
+     */
+    private final VariableProcessor variableProcessor;
+
+    /**
      * Creates new listener, which will handle the data loading/saving.
      *
-     * @param loggerFactory used for logger creation in ConversationResumer
-     * @param betonQuest    the object to store and remove {@link PlayerData}
+     * @param loggerFactory     used for logger creation in ConversationResumer
+     * @param betonQuest        the object to store and remove {@link PlayerData}
+     * @param variableProcessor the {@link VariableProcessor} to use for creating {@link PlayerData}
      */
-    public JoinQuitListener(final BetonQuestLoggerFactory loggerFactory, final BetonQuest betonQuest) {
+    public JoinQuitListener(final BetonQuestLoggerFactory loggerFactory, final BetonQuest betonQuest, final VariableProcessor variableProcessor) {
         this.loggerFactory = loggerFactory;
         this.betonQuest = betonQuest;
+        this.variableProcessor = variableProcessor;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -52,7 +60,7 @@ public class JoinQuitListener implements Listener {
             return;
         }
         final Profile profile = PlayerConverter.getID(Bukkit.getOfflinePlayer(event.getUniqueId()));
-        betonQuest.putPlayerData(profile, new PlayerData(profile));
+        betonQuest.putPlayerData(profile, new PlayerData(variableProcessor, profile));
     }
 
     @EventHandler(ignoreCancelled = true)

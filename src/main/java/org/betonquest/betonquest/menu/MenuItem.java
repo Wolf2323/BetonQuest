@@ -14,6 +14,7 @@ import org.betonquest.betonquest.id.ItemID;
 import org.betonquest.betonquest.instruction.variable.VariableNumber;
 import org.betonquest.betonquest.item.QuestItem;
 import org.betonquest.betonquest.menu.config.SimpleYMLSection;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.utils.PlayerConverter;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -46,6 +47,11 @@ public class MenuItem extends SimpleYMLSection {
      * Custom {@link BetonQuestLogger} instance for this class.
      */
     private final BetonQuestLogger log;
+
+    /**
+     * The {@link VariableProcessor} to use
+     */
+    private final VariableProcessor variableProcessor;
 
     /**
      * The betonquest quest item this item is based on.
@@ -95,19 +101,21 @@ public class MenuItem extends SimpleYMLSection {
     /**
      * Creates a new Menu Item.
      *
-     * @param log          the custom logger for this class
-     * @param pack         the quest package the item is in
-     * @param menuID       the menu the item is in
-     * @param name         the name of the item
-     * @param section      the configuration representing the item
-     * @param defaultClose if the item click closes as default
+     * @param log               the custom logger for this class
+     * @param variableProcessor the {@link VariableProcessor} to use
+     * @param pack              the quest package the item is in
+     * @param menuID            the menu the item is in
+     * @param name              the name of the item
+     * @param section           the configuration representing the item
+     * @param defaultClose      if the item click closes as default
      * @throws InvalidConfigurationException if there are missing or invalid entries
      */
-    public MenuItem(final BetonQuestLogger log, final QuestPackage pack, final MenuID menuID, final String name,
-                    final ConfigurationSection section, final boolean defaultClose)
+    public MenuItem(final BetonQuestLogger log, final VariableProcessor variableProcessor, final QuestPackage pack,
+                    final MenuID menuID, final String name, final ConfigurationSection section, final boolean defaultClose)
             throws InvalidConfigurationException {
         super(pack, name, section);
         this.log = log;
+        this.variableProcessor = variableProcessor;
         try {
             //load item
             final ItemID itemID = new ItemID(pack, getString("item").trim());
@@ -252,9 +260,9 @@ public class MenuItem extends SimpleYMLSection {
             if (section.isConfigurationSection(CONFIG_TEXT)) {
                 descriptions.putAll(generateLanguageDescriptions(menuID, section));
             } else if (section.isString(CONFIG_TEXT)) {
-                descriptions.put(Config.getLanguage(), new ItemDescription(this.pack, getString(CONFIG_TEXT).lines().toList()));
+                descriptions.put(Config.getLanguage(), new ItemDescription(variableProcessor, this.pack, getString(CONFIG_TEXT).lines().toList()));
             } else if (section.isList(CONFIG_TEXT)) {
-                descriptions.put(Config.getLanguage(), new ItemDescription(this.pack, getStringList(CONFIG_TEXT)));
+                descriptions.put(Config.getLanguage(), new ItemDescription(variableProcessor, this.pack, getStringList(CONFIG_TEXT)));
             } else {
                 throw new QuestException("Unrecognized item '" + name + "' text configuration in menu '"
                         + menuID + "'");
@@ -272,9 +280,9 @@ public class MenuItem extends SimpleYMLSection {
         if (textSection != null) {
             for (final String lang : textSection.getKeys(false)) {
                 if (section.isString(CONFIG_TEXT_PATH + lang)) {
-                    descriptions.put(lang, new ItemDescription(this.pack, getString(CONFIG_TEXT_PATH + lang).lines().toList()));
+                    descriptions.put(lang, new ItemDescription(variableProcessor, this.pack, getString(CONFIG_TEXT_PATH + lang).lines().toList()));
                 } else if (section.isList(CONFIG_TEXT_PATH + lang)) {
-                    descriptions.put(lang, new ItemDescription(this.pack, getStringList(CONFIG_TEXT_PATH + lang)));
+                    descriptions.put(lang, new ItemDescription(variableProcessor, this.pack, getStringList(CONFIG_TEXT_PATH + lang)));
                 } else {
                     throw new QuestException("Unrecognized item '" + name + "' text language '" + lang
                             + "' configuration in menu '" + menuID + "'");

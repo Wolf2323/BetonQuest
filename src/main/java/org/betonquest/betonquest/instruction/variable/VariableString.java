@@ -11,18 +11,6 @@ import org.jetbrains.annotations.Nullable;
  * Represents a string that can contain variables.
  */
 public class VariableString extends Variable<String> {
-    /**
-     * Resolves a string that may contain variables to a variable of the given type.
-     *
-     * @param pack  the package in which the variable is used in
-     * @param input the string that may contain variables
-     * @throws QuestException if the variables could not be created or resolved to the given type
-     * @deprecated use {@link #VariableString(VariableProcessor, QuestPackage, String)} instead
-     */
-    @Deprecated
-    public VariableString(final QuestPackage pack, final String input) throws QuestException {
-        this(BetonQuest.getInstance().getVariableProcessor(), pack, input);
-    }
 
     /**
      * Resolves a string that may contain variables to a variable of the given type.

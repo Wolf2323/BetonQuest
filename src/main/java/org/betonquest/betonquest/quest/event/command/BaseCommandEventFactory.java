@@ -6,6 +6,7 @@ import org.betonquest.betonquest.api.quest.event.EventFactory;
 import org.betonquest.betonquest.exceptions.QuestException;
 import org.betonquest.betonquest.instruction.variable.VariableString;
 import org.betonquest.betonquest.quest.PrimaryServerThreadData;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,24 +27,31 @@ public abstract class BaseCommandEventFactory implements EventFactory {
     private static final Pattern CONDITIONS_REGEX = Pattern.compile("conditions?:\\S*\\s*$");
 
     /**
-     * Data for primary server thread access.
-     */
-    protected final PrimaryServerThreadData data;
-
-    /**
      * Logger factory to create a logger for events.
      */
     protected final BetonQuestLoggerFactory loggerFactory;
 
     /**
+     * Data for primary server thread access.
+     */
+    protected final PrimaryServerThreadData data;
+
+    /**
+     * The {@link VariableProcessor} to use.
+     */
+    private final VariableProcessor variableProcessor;
+
+    /**
      * Create the sudo event factory.
      *
-     * @param loggerFactory logger factory to use
-     * @param data          the data for primary server thread access
+     * @param loggerFactory     logger factory to use
+     * @param data              the data for primary server thread access
+     * @param variableProcessor the {@link VariableProcessor} to use
      */
-    public BaseCommandEventFactory(final BetonQuestLoggerFactory loggerFactory, final PrimaryServerThreadData data) {
+    public BaseCommandEventFactory(final BetonQuestLoggerFactory loggerFactory, final PrimaryServerThreadData data, final VariableProcessor variableProcessor) {
         this.loggerFactory = loggerFactory;
         this.data = data;
+        this.variableProcessor = variableProcessor;
     }
 
     /**
@@ -68,7 +76,7 @@ public abstract class BaseCommandEventFactory implements EventFactory {
                 .map(String::trim)
                 .toList();
         for (final String rawCommand : rawCommands) {
-            commands.add(new VariableString(instruction.getPackage(), rawCommand));
+            commands.add(new VariableString(variableProcessor, instruction.getPackage(), rawCommand));
         }
         return commands;
     }

@@ -93,7 +93,7 @@ public class EntityInteractObjective extends CountingObjective {
         customName = parseName(instruction.getOptional("name"));
         realName = parseName(instruction.getOptional("realname"));
         final String markedString = instruction.getOptional("marked");
-        marked = markedString == null ? null : new VariableString(
+        marked = markedString == null ? null : new VariableString(BetonQuest.getInstance().getVariableProcessor(),
                 instruction.getPackage(),
                 Utils.addPackage(instruction.getPackage(), markedString)
         );

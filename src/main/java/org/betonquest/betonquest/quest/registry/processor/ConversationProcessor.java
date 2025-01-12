@@ -20,14 +20,21 @@ public class ConversationProcessor extends QuestProcessor<ConversationID, Conver
     private final BetonQuest plugin;
 
     /**
+     * The {@link VariableProcessor} instance to resolve variables.
+     */
+    private final VariableProcessor variableProcessor;
+
+    /**
      * Create a new Conversation Data Processor to load and process conversation data.
      *
-     * @param log    the custom logger for this class
-     * @param plugin the plugin instance used for new conversation data
+     * @param log               the custom logger for this class
+     * @param plugin            the plugin instance used for new conversation data
+     * @param variableProcessor the {@link VariableProcessor} instance to resolve variables
      */
-    public ConversationProcessor(final BetonQuestLogger log, final BetonQuest plugin) {
+    public ConversationProcessor(final BetonQuestLogger log, final BetonQuest plugin, final VariableProcessor variableProcessor) {
         super(log);
         this.plugin = plugin;
+        this.variableProcessor = variableProcessor;
     }
 
     @Override
@@ -43,7 +50,7 @@ public class ConversationProcessor extends QuestProcessor<ConversationID, Conver
                         continue;
                     }
                     final ConversationID convID = new ConversationID(pack, convName);
-                    values.put(convID, new ConversationData(plugin, convID, convSection));
+                    values.put(convID, new ConversationData(plugin, variableProcessor, convID, convSection));
                 } catch (final QuestException | ObjectNotFoundException e) {
                     log.warn(pack, "Error in '" + packName + "." + convName + "' conversation: " + e.getMessage(), e);
                 }

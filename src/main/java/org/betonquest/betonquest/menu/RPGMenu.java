@@ -16,6 +16,7 @@ import org.betonquest.betonquest.menu.betonquest.MenuVariable;
 import org.betonquest.betonquest.menu.commands.RPGMenuCommand;
 import org.betonquest.betonquest.menu.config.RPGMenuConfig;
 import org.betonquest.betonquest.menu.events.MenuOpenEvent;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,6 +44,8 @@ public class RPGMenu {
      */
     private final BetonQuestLoggerFactory loggerFactory;
 
+    private final VariableProcessor variableProcessor;
+
     /**
      * The {@link ConfigAccessor} for the menu config file.
      */
@@ -55,9 +58,10 @@ public class RPGMenu {
     private RPGMenuConfig config;
 
     @SuppressWarnings("NullAway.Init")
-    public RPGMenu(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory, final ConfigAccessor menuConfigAccessor) {
+    public RPGMenu(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory, final VariableProcessor variableProcessor, final ConfigAccessor menuConfigAccessor) {
         this.log = log;
         this.loggerFactory = loggerFactory;
+        this.variableProcessor = variableProcessor;
         this.menuConfigAccessor = menuConfigAccessor;
         this.menus = new HashMap<>();
         final BetonQuest betonQuest = BetonQuest.getInstance();
@@ -172,7 +176,7 @@ public class RPGMenu {
             for (final String name : menus.getKeys(false)) {
                 try {
                     final MenuID menuID = new MenuID(pack, name);
-                    this.menus.put(menuID, new Menu(this, loggerFactory, loggerFactory.create(Menu.class), menuID));
+                    this.menus.put(menuID, new Menu(this, loggerFactory, loggerFactory.create(Menu.class), variableProcessor, menuID));
                     info.loaded++;
                 } catch (final InvalidConfigurationException e) {
                     log.warn(pack, e.getMessage());
@@ -204,7 +208,7 @@ public class RPGMenu {
         }
         final ReloadInformation info = new ReloadInformation();
         try {
-            this.menus.put(menuID, new Menu(this, loggerFactory, loggerFactory.create(Menu.class), menuID));
+            this.menus.put(menuID, new Menu(this, loggerFactory, loggerFactory.create(Menu.class), variableProcessor, menuID));
             info.result = ReloadResult.FULL_SUCCESS;
             info.loaded = 1;
             log.info(menuID.getPackage(), "Reloaded menu " + menuID);

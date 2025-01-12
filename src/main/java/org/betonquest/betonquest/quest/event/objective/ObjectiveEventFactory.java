@@ -10,6 +10,7 @@ import org.betonquest.betonquest.api.quest.event.StaticEventFactory;
 import org.betonquest.betonquest.api.quest.event.nullable.NullableEventAdapter;
 import org.betonquest.betonquest.exceptions.QuestException;
 import org.betonquest.betonquest.id.ObjectiveID;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 
 import java.util.List;
 import java.util.Locale;
@@ -30,14 +31,21 @@ public class ObjectiveEventFactory implements EventFactory, StaticEventFactory {
     private final BetonQuestLoggerFactory loggerFactory;
 
     /**
+     * The {@link VariableProcessor} to create variables.
+     */
+    private final VariableProcessor variableProcessor;
+
+    /**
      * Creates a new factory for {@link ObjectiveEvent}s.
      *
-     * @param betonQuest    the BetonQuest instance
-     * @param loggerFactory the logger factory
+     * @param betonQuest        the BetonQuest instance
+     * @param loggerFactory     the logger factory
+     * @param variableProcessor the {@link VariableProcessor} to create variables
      */
-    public ObjectiveEventFactory(final BetonQuest betonQuest, final BetonQuestLoggerFactory loggerFactory) {
+    public ObjectiveEventFactory(final BetonQuest betonQuest, final BetonQuestLoggerFactory loggerFactory, final VariableProcessor variableProcessor) {
         this.betonQuest = betonQuest;
         this.loggerFactory = loggerFactory;
+        this.variableProcessor = variableProcessor;
     }
 
     @Override
@@ -53,7 +61,6 @@ public class ObjectiveEventFactory implements EventFactory, StaticEventFactory {
     private NullableEventAdapter createObjectiveEvent(final Instruction instruction) throws QuestException {
         final String action = instruction.next().toLowerCase(Locale.ROOT);
         final List<ObjectiveID> objectives = instruction.getList(instruction::getObjective);
-        return new NullableEventAdapter(new ObjectiveEvent(betonQuest, loggerFactory.create(ObjectiveEvent.class), instruction.getPackage(), objectives, action));
+        return new NullableEventAdapter(new ObjectiveEvent(betonQuest, loggerFactory.create(ObjectiveEvent.class), variableProcessor, instruction.getPackage(), objectives, action));
     }
-
 }

@@ -44,7 +44,7 @@ public class MobKillObjective extends CountingObjective implements Listener {
             name = Utils.format(name, true, false).replace('_', ' ');
         }
         final String markedString = instruction.getOptional("marked");
-        marked = markedString == null ? null : new VariableString(
+        marked = markedString == null ? null : new VariableString(BetonQuest.getInstance().getVariableProcessor(),
                 instruction.getPackage(),
                 Utils.addPackage(instruction.getPackage(), markedString)
         );

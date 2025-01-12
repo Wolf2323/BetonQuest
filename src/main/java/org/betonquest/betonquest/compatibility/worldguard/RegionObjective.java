@@ -28,7 +28,7 @@ public class RegionObjective extends AbstractLocationObjective {
      */
     public RegionObjective(final Instruction instruction) throws QuestException {
         super(BetonQuest.getInstance().getLoggerFactory().create(RegionObjective.class), instruction);
-        name = new VariableString(instruction.getPackage(), instruction.next());
+        name = new VariableString(BetonQuest.getInstance().getVariableProcessor(), instruction.getPackage(), instruction.next());
     }
 
     @Override
@@ -55,5 +55,4 @@ public class RegionObjective extends AbstractLocationObjective {
     public String getProperty(final String name, final Profile profile) {
         return "";
     }
-
 }

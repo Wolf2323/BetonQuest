@@ -294,7 +294,7 @@ public class CoreQuestTypes {
         eventTypes.registerCombined("chestgive", new ChestGiveEventFactory(data));
         eventTypes.registerCombined("chesttake", new ChestTakeEventFactory(data));
         eventTypes.register("compass", new CompassEventFactory(loggerFactory, betonQuest, server.getPluginManager(), data));
-        eventTypes.registerCombined("command", new CommandEventFactory(loggerFactory, data));
+        eventTypes.registerCombined("command", new CommandEventFactory(loggerFactory, data, variableProcessor));
         eventTypes.register("conversation", new ConversationEventFactory(loggerFactory, data));
         eventTypes.register("damage", new DamageEventFactory(loggerFactory, data));
         eventTypes.register("deleffect", new DeleteEffectEventFactory(loggerFactory, data));
@@ -322,8 +322,8 @@ public class CoreQuestTypes {
         eventTypes.registerCombined("log", new LogEventFactory(loggerFactory, variableProcessor));
         eventTypes.register("notify", new NotifyEventFactory(loggerFactory, data, variableProcessor));
         eventTypes.registerCombined("notifyall", new NotifyAllEventFactory(loggerFactory, data, variableProcessor));
-        eventTypes.registerCombined("objective", new ObjectiveEventFactory(betonQuest, loggerFactory));
-        eventTypes.register("opsudo", new OpSudoEventFactory(loggerFactory, data));
+        eventTypes.registerCombined("objective", new ObjectiveEventFactory(betonQuest, loggerFactory, variableProcessor));
+        eventTypes.register("opsudo", new OpSudoEventFactory(loggerFactory, data, variableProcessor));
         eventTypes.register("party", new PartyEventFactory(loggerFactory));
         eventTypes.registerCombined("pickrandom", new PickRandomEventFactory(variableProcessor));
         eventTypes.register("point", new PointEventFactory(loggerFactory, variableProcessor));
@@ -336,7 +336,7 @@ public class CoreQuestTypes {
         eventTypes.register("scoretag", new ScoreboardTagEventFactory(loggerFactory, data));
         eventTypes.registerCombined("spawn", new SpawnMobEventFactory(data, variableProcessor));
         eventTypes.register("stage", new StageEventFactory(betonQuest, variableProcessor));
-        eventTypes.register("sudo", new SudoEventFactory(loggerFactory, data));
+        eventTypes.register("sudo", new SudoEventFactory(loggerFactory, data, variableProcessor));
         eventTypes.registerCombined("tag", new TagPlayerEventFactory(betonQuest, betonQuest.getSaver()));
         eventTypes.register("take", new TakeEventFactory(loggerFactory));
         eventTypes.register("teleport", new TeleportEventFactory(loggerFactory, data));

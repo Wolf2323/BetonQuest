@@ -18,6 +18,7 @@ import org.betonquest.betonquest.exceptions.ObjectNotFoundException;
 import org.betonquest.betonquest.exceptions.QuestException;
 import org.betonquest.betonquest.id.ObjectiveID;
 import org.betonquest.betonquest.item.QuestItem;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,6 +48,8 @@ public class PlayerData implements TagData {
      * Custom {@link BetonQuestLogger} instance for this class.
      */
     private final BetonQuestLogger log = BetonQuest.getInstance().getLoggerFactory().create(getClass());
+
+    private final VariableProcessor variableProcessor;
 
     @SuppressWarnings("PMD.DoNotUseThreads")
     private final Saver saver = BetonQuest.getInstance().getSaver();
@@ -79,9 +82,11 @@ public class PlayerData implements TagData {
     /**
      * Loads the PlayerData of the given {@link Profile}.
      *
-     * @param profile - the profile to load the data for
+     * @param variableProcessor the {@link VariableProcessor} to use
+     * @param profile           the profile to load the data for
      */
-    public PlayerData(final Profile profile) {
+    public PlayerData(final VariableProcessor variableProcessor, final Profile profile) {
+        this.variableProcessor = variableProcessor;
         this.profile = profile;
         this.profileID = profile.getProfileUUID().toString();
         loadAllPlayerData();
@@ -339,7 +344,7 @@ public class PlayerData implements TagData {
      */
     public Journal getJournal() {
         if (journal == null) {
-            journal = new Journal(profile, profileLanguage, entries, BetonQuest.getInstance().getPluginConfig());
+            journal = new Journal(variableProcessor, profile, profileLanguage, entries, BetonQuest.getInstance().getPluginConfig());
         }
         return journal;
     }

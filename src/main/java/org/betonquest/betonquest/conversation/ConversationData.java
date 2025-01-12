@@ -12,6 +12,7 @@ import org.betonquest.betonquest.id.ConditionID;
 import org.betonquest.betonquest.id.ConversationID;
 import org.betonquest.betonquest.id.EventID;
 import org.betonquest.betonquest.instruction.variable.VariableString;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.variables.GlobalVariableResolver;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -86,6 +87,8 @@ public class ConversationData {
      */
     private final List<EventID> finalEvents = new ArrayList<>();
 
+    private final VariableProcessor variableProcessor;
+
     /**
      * The NPC options that the conversation can start from.
      */
@@ -123,8 +126,9 @@ public class ConversationData {
      * @throws ObjectNotFoundException when conversation options cannot be resolved or {@code convSection} is null
      */
     @SuppressWarnings({"PMD.NcssCount", "PMD.NPathComplexity", "PMD.CognitiveComplexity"})
-    public ConversationData(final BetonQuest plugin, final ConversationID conversationID, final ConfigurationSection convSection) throws QuestException, ObjectNotFoundException {
+    public ConversationData(final BetonQuest plugin, final VariableProcessor variableProcessor, final ConversationID conversationID, final ConfigurationSection convSection) throws QuestException, ObjectNotFoundException {
         this.plugin = plugin;
+        this.variableProcessor = variableProcessor;
         this.conversationID = conversationID;
         this.pack = conversationID.getPackage();
         this.convName = conversationID.getBaseID();
@@ -791,7 +795,7 @@ public class ConversationData {
             if (convText == null) {
                 throw new QuestException("No text for " + name + " " + type.getReadable());
             }
-            text.put(lang, new VariableString(pack, convText));
+            text.put(lang, new VariableString(variableProcessor, pack, convText));
         }
 
         /**

@@ -15,6 +15,7 @@ import org.betonquest.betonquest.instruction.variable.VariableString;
 import org.betonquest.betonquest.item.QuestItem;
 import org.betonquest.betonquest.menu.commands.SimpleCommand;
 import org.betonquest.betonquest.menu.config.SimpleYMLSection;
+import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.utils.PlayerConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -41,6 +42,11 @@ public class Menu extends SimpleYMLSection implements Listener {
      * Custom {@link BetonQuestLogger} instance for this class.
      */
     private final BetonQuestLogger log;
+
+    /**
+     * The {@link VariableProcessor} to use.
+     */
+    private final VariableProcessor variableProcessor;
 
     /**
      * The internal id of the menu.
@@ -103,10 +109,11 @@ public class Menu extends SimpleYMLSection implements Listener {
      * @param menuID        the id of the menu
      * @throws InvalidConfigurationException if config options are missing or invalid
      */
-    public Menu(final RPGMenu rpgMenu, final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log, final MenuID menuID) throws InvalidConfigurationException {
+    public Menu(final RPGMenu rpgMenu, final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log, final VariableProcessor variableProcessor, final MenuID menuID) throws InvalidConfigurationException {
         super(menuID.getPackage(), menuID.getFullID(), menuID.getConfig());
         this.rpgMenu = rpgMenu;
         this.log = log;
+        this.variableProcessor = variableProcessor;
         this.menuID = menuID;
         //load size
         this.height = getInt("height");
@@ -171,7 +178,7 @@ public class Menu extends SimpleYMLSection implements Listener {
 
         final Map<String, MenuItem> itemsMap = new HashMap<>();
         for (final String key : config.getConfigurationSection(itemsSection).getKeys(false)) {
-            itemsMap.put(key, new MenuItem(loggerFactory.create(MenuItem.class), pack, menuID, key,
+            itemsMap.put(key, new MenuItem(loggerFactory.create(MenuItem.class), variableProcessor, pack, menuID, key,
                     config.getConfigurationSection("items." + key), rpgMenu.getConfiguration().defaultCloseOnClick));
         }
 

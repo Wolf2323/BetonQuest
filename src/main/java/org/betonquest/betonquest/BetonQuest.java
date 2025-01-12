@@ -484,7 +484,7 @@ public class BetonQuest extends JavaPlugin {
         globalData = new GlobalData(loggerFactory.create(GlobalData.class), saver);
 
         final PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new JoinQuitListener(loggerFactory, this), this);
+        pluginManager.registerEvents(new JoinQuitListener(loggerFactory, this, getVariableProcessor()), this);
         pluginManager.registerEvents(new QuestItemHandler(this), this);
 
         final ConfigAccessor cache;
@@ -511,7 +511,7 @@ public class BetonQuest extends JavaPlugin {
 
         pluginManager.registerEvents(new CustomDropListener(loggerFactory.create(CustomDropListener.class)), this);
 
-        final QuestCommand questCommand = new QuestCommand(loggerFactory, loggerFactory.create(QuestCommand.class), configAccessorFactory, adventure, new PlayerLogWatcher(receiverSelector), debugHistoryHandler);
+        final QuestCommand questCommand = new QuestCommand(loggerFactory, loggerFactory.create(QuestCommand.class), getVariableProcessor(), configAccessorFactory, adventure, new PlayerLogWatcher(receiverSelector), debugHistoryHandler);
         getCommand("betonquest").setExecutor(questCommand);
         getCommand("betonquest").setTabCompleter(questCommand);
         getCommand("journal").setExecutor(new JournalCommand(this));
@@ -559,7 +559,7 @@ public class BetonQuest extends JavaPlugin {
             Compatibility.postHook();
             loadData();
             for (final OnlineProfile onlineProfile : PlayerConverter.getOnlineProfiles()) {
-                final PlayerData playerData = new PlayerData(onlineProfile);
+                final PlayerData playerData = new PlayerData(getVariableProcessor(), onlineProfile);
                 playerDataMap.put(onlineProfile, playerData);
                 playerData.startObjectives();
                 playerData.getJournal().update();
@@ -588,7 +588,7 @@ public class BetonQuest extends JavaPlugin {
 
         setupUpdater();
 
-        rpgMenu = new RPGMenu(loggerFactory.create(RPGMenu.class), loggerFactory, menuConfigAccessor);
+        rpgMenu = new RPGMenu(loggerFactory.create(RPGMenu.class), loggerFactory, getVariableProcessor(), menuConfigAccessor);
 
         PaperLib.suggestPaper(this);
         log.info("BetonQuest successfully enabled!");
@@ -799,7 +799,7 @@ public class BetonQuest extends JavaPlugin {
         PlayerData playerData = playerDataMap.get(profile);
         if (playerData == null) {
             if (profile.getOnlineProfile().isPresent()) {
-                playerData = new PlayerData(profile);
+                playerData = new PlayerData(getVariableProcessor(), profile);
                 putPlayerData(profile, playerData);
             } else {
                 throw new IllegalArgumentException("The profile has no online player!");
@@ -812,7 +812,7 @@ public class BetonQuest extends JavaPlugin {
         if (profile.getOnlineProfile().isPresent()) {
             return getPlayerData(profile);
         }
-        return new PlayerData(profile);
+        return new PlayerData(getVariableProcessor(), profile);
     }
 
     /**
