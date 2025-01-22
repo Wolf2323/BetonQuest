@@ -315,7 +315,7 @@ public class Conversation implements Listener {
             return;
         }
 
-        String text = data.getText(onlineProfile, language, nextNPCOption);
+        String text = data.getText(onlineProfile, nextNPCOption);
         text = ChatColor.translateAlternateColorCodes('&', text);
 
         // print option to the player

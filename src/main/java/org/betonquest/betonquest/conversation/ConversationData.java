@@ -1,9 +1,12 @@
 package org.betonquest.betonquest.conversation;
 
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.feature.FeatureAPI;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+import org.betonquest.betonquest.api.message.Message;
+import org.betonquest.betonquest.api.message.MessageParser;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.api.quest.QuestTypeAPI;
@@ -16,7 +19,6 @@ import org.betonquest.betonquest.instruction.argument.IDArgument;
 import org.betonquest.betonquest.instruction.variable.VariableString;
 import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.variables.GlobalVariableResolver;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,11 +37,12 @@ import static org.betonquest.betonquest.conversation.ConversationData.OptionType
  */
 @SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.TooManyMethods"})
 public class ConversationData {
-
     /**
      * Custom {@link BetonQuestLogger} instance for this class.
      */
     private final BetonQuestLogger log;
+
+    private final MessageParser parser;
 
     /**
      * All references made by this conversation's pointers to other conversations.
@@ -357,12 +360,11 @@ public class ConversationData {
      * Respects extended options.
      *
      * @param profile the profile of the player
-     * @param lang    the desired language of the text
      * @param option  the option
      * @return the text of the specified option in the specified language
      */
     @Nullable
-    public String getText(@Nullable final Profile profile, final String lang, final ResolvedOption option) {
+    public Component getText(final Profile profile, final ResolvedOption option) throws QuestException {
         final ConversationOption opt;
         if (option.type() == NPC) {
             opt = option.conversationData().npcOptions.get(option.name());
@@ -372,7 +374,7 @@ public class ConversationData {
         if (opt == null) {
             return null;
         }
-        return opt.getText(profile, lang);
+        return opt.getText(profile);
     }
 
     /**
@@ -451,6 +453,33 @@ public class ConversationData {
             }
         }
         return false;
+    }
+
+    private Message getMessageFromConfig(final ConfigurationSection section, final String key) throws QuestException {
+        if (section.isConfigurationSection(key)) {
+            final Map<String, VariableString> messages = new HashMap<>();
+            for (final String lang : section.getConfigurationSection(key).getKeys(false)) {
+                try {
+                    final String message = section.getString(key + "." + lang);
+                    if (message == null) {
+                        throw new QuestException("Error while loading '" + key + "' language '" + lang + "' reason: message is null");
+                    }
+                    messages.put(lang, new VariableString(plugin.getVariableProcessor(), pack, message));
+                } catch (final QuestException e) {
+                    throw new QuestException("Error while loading '" + key + "' language '" + lang + "' reason: " + e.getMessage(), e);
+                }
+            }
+            return new ParsedMessage(parser, messages, plugin.getPlayerDataStorage());
+        }
+        final String message = section.getString(key);
+        if (message == null) {
+            throw new QuestException("Error while loading '" + key + "' reason: message is null");
+        }
+        try {
+            return new ParsedMessage(parser, new VariableString(plugin.getVariableProcessor(), pack, message), plugin.getPlayerDataStorage());
+        } catch (final QuestException e) {
+            throw new QuestException("Error while loading '" + key + "' reason: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -575,6 +604,17 @@ public class ConversationData {
         private final List<String> extendLinks;
 
         /**
+         * The inline prefix of the option.
+         */
+        @Nullable
+        private Message inlinePrefix;
+
+        /**
+         * A map of the text of the option in different languages.
+         */
+        private Message text;
+
+        /**
          * Creates a ConversationOption.
          *
          * @param name        the name of the option, as defined in the config
@@ -671,21 +711,20 @@ public class ConversationData {
          * Returns the text of this option in the given language.
          *
          * @param profile the profile of the player to get the text for
-         * @param lang    the language to get the text in
          * @return the text of this option in the given language
          */
-        public String getText(@Nullable final Profile profile, final String lang) {
-            return getText(profile, lang, new ArrayList<>());
+        public Component getText(final Profile profile) throws QuestException {
+            return getText(profile, new ArrayList<>());
         }
 
-        private String getText(@Nullable final Profile profile, final String lang, final List<String> optionPath) {
+        private Component getText(final Profile profile, final List<String> optionPath) throws QuestException {
             // Prevent infinite loops
             if (optionPath.contains(getName())) {
-                return "";
+                return Component.empty();
             }
             optionPath.add(getName());
 
-            final StringBuilder text = new StringBuilder(getText(lang, profile));
+            Component text = this.text.asComponent(profile);
 
             if (profile != null) {
                 for (final String extend : extendLinks) {
