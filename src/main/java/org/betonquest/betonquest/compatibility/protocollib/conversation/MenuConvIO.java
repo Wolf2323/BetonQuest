@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import io.papermc.lib.PaperLib;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -115,7 +116,7 @@ public class MenuConvIO extends ChatConvIO {
 
     protected String configNpcWrap = "&l &r".replace('&', '§');
 
-    protected String configNpcText = "&l &r&f{npc_text}".replace('&', '§');
+    protected Component configNpcText = "&l &r&f{npc_text}".replace('&', '§');
 
     protected String configNpcTextReset = "&f".replace('&', '§');
 
@@ -401,10 +402,9 @@ public class MenuConvIO extends ChatConvIO {
             return;
         }
 
-        // NPC Text
-        final String msgNpcText = configNpcText
-                .replace("{npc_text}", npcText)
-                .replace("{npc_name}", npcName);
+        final Component msgNpcText = configNpcText
+                .replaceText(b -> b.matchLiteral("{npc_text}").replacement(npcText))
+                .replaceText(b -> b.matchLiteral("{npc_name}").replacement(npcName));
 
         final List<String> npcLines = Arrays.stream(LocalChatPaginator.wordWrap(
                         Utils.replaceReset(StringUtils.stripEnd(msgNpcText, "\n"), configNpcTextReset), configLineLength, configNpcWrap))
