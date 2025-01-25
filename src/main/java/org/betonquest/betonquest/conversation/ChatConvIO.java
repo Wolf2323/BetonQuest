@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.conversation;
 
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.config.Config;
@@ -40,9 +41,9 @@ public abstract class ChatConvIO implements ConversationIO, Listener {
     protected Map<Integer, String> options;
 
     @Nullable
-    protected String npcText;
+    protected Component npcText;
 
-    protected String npcName;
+    protected Component npcName;
 
     protected String answerFormat;
 
@@ -153,7 +154,7 @@ public abstract class ChatConvIO implements ConversationIO, Listener {
     }
 
     @Override
-    public void setNpcResponse(final String npcName, final String response) {
+    public void setNpcResponse(final Component npcName, final Component response) {
         this.npcName = npcName;
         this.npcText = response;
     }

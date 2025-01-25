@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.conversation;
 
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang3.tuple.Pair;
@@ -276,17 +277,14 @@ public class Conversation implements Listener {
      * selectOption()
      */
     private void printNPCText() {
-        // if there are no possible options, end conversation
         if (nextNPCOption == null) {
             new ConversationEnder().runTask(BetonQuest.getInstance());
             return;
         }
 
-        String text = data.getText(onlineProfile, nextNPCOption);
-        text = ChatColor.translateAlternateColorCodes('&', text);
-
-        // print option to the player
-        inOut.setNpcResponse(data.getQuester(language), text);
+        final Component text = data.getText(onlineProfile, nextNPCOption);
+        final Component quester = data.getQuester(onlineProfile);
+        inOut.setNpcResponse(quester, text);
 
         new NPCEventRunner(nextNPCOption).runTask(BetonQuest.getInstance());
     }
