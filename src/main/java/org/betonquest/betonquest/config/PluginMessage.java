@@ -1,14 +1,15 @@
 package org.betonquest.betonquest.config;
 
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
 import org.betonquest.betonquest.api.config.ConfigurationFile;
 import org.betonquest.betonquest.api.config.ConfigurationFileFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+import org.betonquest.betonquest.api.message.MessageParser;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.QuestException;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 
 import java.io.File;
@@ -26,6 +27,11 @@ public class PluginMessage {
     private final BetonQuest instance;
 
     /**
+     * The {@link MessageParser} instance.
+     */
+    private final MessageParser messageParser;
+
+    /**
      * The messages configuration file.
      */
     private final ConfigurationFile messages;
@@ -40,14 +46,16 @@ public class PluginMessage {
      *
      * @param log                      the logger that will be used for logging
      * @param instance                 the BetonQuest instance
+     * @param messageParser            the {@link MessageParser} instance
      * @param configurationFileFactory the configuration file factory
      * @param configAccessorFactory    the config accessor factory
      * @throws QuestException if the messages could not be loaded
      */
-    public PluginMessage(final BetonQuestLogger log, final BetonQuest instance,
+    public PluginMessage(final BetonQuestLogger log, final BetonQuest instance, final MessageParser messageParser,
                          final ConfigurationFileFactory configurationFileFactory,
                          final ConfigAccessorFactory configAccessorFactory) throws QuestException {
         this.instance = instance;
+        this.messageParser = messageParser;
         final File root = instance.getDataFolder();
 
         try {
@@ -89,8 +97,9 @@ public class PluginMessage {
      * @param variables array of variables to replace
      * @return message with replaced variables in the profile's language or the default language or in english
      * @throws IllegalArgumentException if the message could not be found in the configuration
+     * @throws QuestException           if the message could not be parsed into components
      */
-    public String getMessage(final Profile profile, final String message, final Replacement... variables) {
+    public Component getMessage(final Profile profile, final String message, final Replacement... variables) throws QuestException {
         final String language = instance.getPlayerDataStorage().get(profile).getLanguage();
         return getMessage(language, message, variables);
     }
@@ -102,12 +111,13 @@ public class PluginMessage {
      * @param variables the variables to replace
      * @return the message with replaced variables
      * @throws IllegalArgumentException if the message could not be found in the configuration
+     * @throws QuestException           if the message could not be parsed into components
      */
-    public String getMessage(final String message, final Replacement... variables) {
+    public Component getMessage(final String message, final Replacement... variables) throws QuestException {
         return getMessage(Config.getLanguage(), message, variables);
     }
 
-    private String getMessage(final String language, final String message, final Replacement... variables) {
+    private Component getMessage(final String language, final String message, final Replacement... variables) throws QuestException {
         String result = messages.getString(language + "." + message);
         if (result == null) {
             result = messages.getString(Config.getLanguage() + "." + message);
@@ -127,7 +137,7 @@ public class PluginMessage {
         for (final Replacement variable : variables) {
             result = result.replace("{" + variable.variable + "}", variable.replacement);
         }
-        return ChatColor.translateAlternateColorCodes('&', result);
+        return messageParser.parse(result);
     }
 
     /**
