@@ -176,6 +176,11 @@ public class BetonQuest extends JavaPlugin {
     private MessageParser messageParser;
 
     /**
+     * The message parser.
+     */
+    private MessageParser messageParser;
+
+    /**
      * The plugin messages provider.
      */
     private PluginMessage pluginMessage;
