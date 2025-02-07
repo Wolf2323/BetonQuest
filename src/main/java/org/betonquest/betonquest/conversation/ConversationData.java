@@ -79,6 +79,8 @@ public class ConversationData {
      */
     private final PublicData publicData;
 
+    private final BetonQuest plugin;
+
     /**
      * The NPC options that the conversation can start from.
      */
