@@ -134,10 +134,11 @@ public class PluginMessage {
         if (result == null) {
             throw new IllegalArgumentException("Message " + message + " not found in the configuration");
         }
+        Component component = messageParser.parse(result);
         for (final Replacement variable : variables) {
-            result = result.replace("{" + variable.variable + "}", variable.replacement);
+            component = component.replaceText(builder -> builder.matchLiteral("{" + variable.variable + "}").replacement(variable.replacement));
         }
-        return messageParser.parse(result);
+        return component;
     }
 
     /**
@@ -146,6 +147,6 @@ public class PluginMessage {
      * @param variable    the variable to replace
      * @param replacement the replacement
      */
-    public record Replacement(String variable, String replacement) {
+    public record Replacement(String variable, Component replacement) {
     }
 }
