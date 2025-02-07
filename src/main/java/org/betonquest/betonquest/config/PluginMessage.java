@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.config;
 
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
@@ -136,6 +137,6 @@ public class PluginMessage {
      * @param variable    the variable to replace
      * @param replacement the replacement
      */
-    public record Replacement(String variable, String replacement) {
+    public record Replacement(String variable, Component replacement) {
     }
 }

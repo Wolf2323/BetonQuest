@@ -27,7 +27,6 @@ import org.betonquest.betonquest.quest.registry.feature.InterceptorRegistry;
 import org.betonquest.betonquest.util.PlayerConverter;
 import org.betonquest.betonquest.util.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -282,9 +281,14 @@ public class Conversation implements Listener {
             return;
         }
 
-        final Component text = data.getText(onlineProfile, nextNPCOption);
-        final Component quester = data.getQuester(onlineProfile);
-        inOut.setNpcResponse(quester, text);
+        try {
+            final Component text = data.getText(onlineProfile, nextNPCOption);
+            final Component quester = data.getQuester(onlineProfile);
+            inOut.setNpcResponse(quester, text);
+        } catch (final QuestException e) {
+            log.warn(pack, "Error when loading text: " + e.getMessage(), e);
+            return;
+        }
 
         new NPCEventRunner(nextNPCOption).runTask(BetonQuest.getInstance());
     }
@@ -340,11 +344,12 @@ public class Conversation implements Listener {
             optionsCount++;
             availablePlayerOptions.put(optionsCount, option);
 
-            // replace variables with their values
-            String text = data.getText(onlineProfile, language, option);
-            text = ChatColor.translateAlternateColorCodes('&', text);
-
-            inOut.addPlayerOption(text);
+            try {
+                inOut.addPlayerOption(data.getText(onlineProfile, option));
+            } catch (final QuestException e) {
+                log.warn(pack, "Error when loading text: " + e.getMessage(), e);
+                continue;
+            }
         }
         new BukkitRunnable() {
             @Override
@@ -388,8 +393,12 @@ public class Conversation implements Listener {
             }
             //only display status messages if conversationIO allows it
             if (conv.inOut.printMessages()) {
-                conv.inOut.print(pluginMessage.getMessage(onlineProfile, "conversation_end",
-                        new PluginMessage.Replacement("npc", data.getQuester(language))));
+                try {
+                    conv.inOut.print(pluginMessage.getMessage(onlineProfile, "conversation_end",
+                            new PluginMessage.Replacement("npc", data.getQuester(onlineProfile))));
+                } catch (final QuestException e) {
+                    log.warn(pack, "Error when loading text: " + e.getMessage(), e);
+                }
             }
             //play conversation end sound
             Config.playSound(onlineProfile, "end");

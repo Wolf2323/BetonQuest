@@ -15,9 +15,7 @@ import org.betonquest.betonquest.id.ConditionID;
 import org.betonquest.betonquest.id.ConversationID;
 import org.betonquest.betonquest.id.EventID;
 import org.betonquest.betonquest.instruction.variable.VariableString;
-import org.betonquest.betonquest.message.DecidingMessageParser;
 import org.betonquest.betonquest.message.ParsedMessage;
-import org.betonquest.betonquest.message.TagMessageParserDecider;
 import org.betonquest.betonquest.variables.GlobalVariableResolver;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.Nullable;
@@ -85,6 +83,8 @@ public class ConversationData {
      */
     private final List<EventID> finalEvents = new ArrayList<>();
 
+    private final BetonQuest plugin;
+
     /**
      * The NPC options that the conversation can start from.
      */
@@ -123,9 +123,9 @@ public class ConversationData {
      */
     @SuppressWarnings({"PMD.NPathComplexity", "PMD.CognitiveComplexity"})
     public ConversationData(final BetonQuest plugin, final ConversationID conversationID, final ConfigurationSection convSection) throws QuestException {
-        this.featureAPI = plugin.getFeatureAPI();
-        this.parser = new DecidingMessageParser(plugin.getFeatureRegistries().messageParser(), new TagMessageParserDecider("minimesage"));
         this.plugin = plugin;
+        this.featureAPI = plugin.getFeatureAPI();
+        this.parser = plugin.getMessageParser();
         this.conversationID = conversationID;
         this.pack = conversationID.getPackage();
         this.convName = conversationID.getBaseID();
@@ -767,7 +767,7 @@ public class ConversationData {
             Component text = this.text.asComponent(profile);
 
             for (final String extend : extendLinks) {
-                if (BetonQuest.conditions(profile, getOption(extend, type).getConditions())) {
+                if (plugin.getQuestTypeAPI().conditions(profile, getOption(extend, type).getConditions())) {
                     text = text.append(getOption(extend, type).getText(profile, optionPath));
                     break;
                 }
