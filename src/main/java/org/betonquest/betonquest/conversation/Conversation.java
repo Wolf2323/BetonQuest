@@ -27,7 +27,6 @@ import org.betonquest.betonquest.notify.Notify;
 import org.betonquest.betonquest.util.PlayerConverter;
 import org.betonquest.betonquest.util.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -375,11 +374,12 @@ public class Conversation implements Listener {
             optionsCount++;
             availablePlayerOptions.put(optionsCount, option);
 
-            // replace variables with their values
-            String text = data.getText(onlineProfile, language, option);
-            text = ChatColor.translateAlternateColorCodes('&', text);
-
-            inOut.addPlayerOption(text);
+            try {
+                inOut.addPlayerOption(data.getText(onlineProfile, option));
+            } catch (final QuestException e) {
+                log.warn(pack, "Error when loading text: " + e.getMessage(), e);
+                continue;
+            }
         }
         new BukkitRunnable() {
             @Override
