@@ -49,25 +49,9 @@ public final class StandardPatchingConfigAccessor extends StandardConfigAccessor
     }
 
     private boolean patchConfig(final File configurationFile, final Patcher patcher, final URI relativeRoot) {
-        if (patcher.hasUpdate()) {
-            final URI configPath = configurationFile.getAbsoluteFile().toURI();
-            final String relativePath = relativeRoot.relativize(configPath).getPath();
-
-            log.info("Updating config file '" + relativePath + "' from version '" + patcher.getCurrentConfigVersion()
-                    + "' to version '" + patcher.getNextConfigVersion().getVersion() + "'");
-
-            final boolean flawless = patcher.patch(original);
-            if (flawless) {
-                log.info("Patching complete!");
-            } else {
-                log.warn("The patching progress did not go flawlessly. However, this does not mean your configs "
-                        + "are now corrupted. Please check the errors above to see what the patcher did. "
-                        + "You might want to adjust your config manually depending on that information.");
-            }
-            return true;
-        }
-        log.debug("No patch found.");
-
-        return patcher.updateVersion(original);
+        final URI configPath = configurationFile.getAbsoluteFile().toURI();
+        final String relativePath = relativeRoot.relativize(configPath).getPath();
+        log.info("Updating config file '" + relativePath + "'!");
+        return patcher.patch(original);
     }
 }

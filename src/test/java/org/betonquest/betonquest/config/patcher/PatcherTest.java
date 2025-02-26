@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.config.patcher;
 
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.versioning.Version;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,18 +40,6 @@ class PatcherTest {
 
     @Test
     @SuppressWarnings("PMD.UnitTestContainsTooManyAsserts")
-    void testHasUpdate() throws InvalidConfigurationException {
-        final YamlConfiguration configBeforeTest = new YamlConfiguration();
-        configBeforeTest.loadFromString(config.saveToString());
-
-        final Patcher patcher = new Patcher(logger, config, patch, new DefaultPatchTransformerRegistry());
-        assertTrue(patcher.hasUpdate(), "Patcher did not recognise the possible update.");
-        assertEquals(new Version("3.4.5-CONFIG-6"), patcher.getNextConfigVersion(), "Patcher did not return the newest patch version as next config version.");
-        assertEquals(configBeforeTest.saveToString(), config.saveToString(), "The patcher must only patch when patcher.patch() is called.");
-    }
-
-    @Test
-    @SuppressWarnings("PMD.UnitTestContainsTooManyAsserts")
     void testHasNoUpdateForNewerConfigs() throws InvalidConfigurationException {
         final YamlConfiguration configFromTheFuture = new YamlConfiguration();
         configFromTheFuture.loadFromString("""
@@ -67,9 +54,8 @@ class PatcherTest {
                     key: journalLock
                     value: true
                 """);
-        final Patcher patcher = new Patcher(logger, configFromTheFuture, patch, new DefaultPatchTransformerRegistry());
-        assertFalse(patcher.hasUpdate(), "Patcher recognised patches from outdated versions as possible updates.");
-        assertFalse(patcher.updateVersion(configFromTheFuture), "The Patcher updated the configVersion when it should not.");
+        final Patcher patcher = new Patcher(logger, new DefaultPatchTransformerRegistry(), patch);
+        assertFalse(patcher.patch(configFromTheFuture), "The Patcher should not patch a config that is already up to date.");
 
         assertEquals(configFromTheFuture.saveToString(), """
                 configVersion: 6.2.3-CONFIG-12
@@ -83,9 +69,8 @@ class PatcherTest {
         final YamlConfiguration expectedConfig = new YamlConfiguration();
         expectedConfig.loadFromString(config.saveToString());
 
-        final Patcher patcher = new Patcher(logger, config, patch, new DefaultPatchTransformerRegistry());
-        assertTrue(patcher.hasUpdate(), "Patcher did not recognise the possible update.");
-        assertFalse(patcher.updateVersion(config), "The Patcher updated the configVersion when it should not.");
+        final Patcher patcher = new Patcher(logger, new DefaultPatchTransformerRegistry(), patch);
+        assertTrue(patcher.patch(config), "The Patcher should patch the config.");
 
         patcher.patch(config);
 
@@ -114,7 +99,7 @@ class PatcherTest {
                     value: true
                 """);
 
-        new Patcher(logger, config, invalidConfig, new DefaultPatchTransformerRegistry());
+        new Patcher(logger, new DefaultPatchTransformerRegistry(), invalidConfig);
         verify(logger, times(1)).error(eq("Invalid patch file! A version number is too short or too long."), any(InvalidConfigurationException.class));
         verifyNoMoreInteractions(logger);
     }
@@ -126,7 +111,7 @@ class PatcherTest {
                 "1.0": Nonsense
                 """);
 
-        new Patcher(logger, config, invalidConfig, new DefaultPatchTransformerRegistry());
+        new Patcher(logger, new DefaultPatchTransformerRegistry(), invalidConfig);
         verify(logger, times(1)).error(eq("Invalid patch file! The patch is malformed."), any(InvalidConfigurationException.class));
         verifyNoMoreInteractions(logger);
     }
@@ -141,9 +126,7 @@ class PatcherTest {
         final YamlConfiguration invalidConfig = new YamlConfiguration();
         invalidConfig.loadFromString(patch);
 
-        new Patcher(logger, config, invalidConfig, new DefaultPatchTransformerRegistry());
-        verify(logger, times(1)).error(eq("Invalid patch file! A version number is too short or too long."), any(InvalidConfigurationException.class));
-        verifyNoMoreInteractions(logger);
+        assertThrows(InvalidConfigurationException.class, () -> new Patcher(logger, new DefaultPatchTransformerRegistry(), invalidConfig), "The patch file at '1' is too long or too short.");
     }
 
     @SuppressWarnings("PMD.UnitTestContainsTooManyAsserts")
@@ -157,7 +140,7 @@ class PatcherTest {
                 """;
         final YamlConfiguration invalidConfig = new YamlConfiguration();
         invalidConfig.loadFromString(patch);
-        final Patcher patcher = new Patcher(logger, config, invalidConfig, new DefaultPatchTransformerRegistry());
+        final Patcher patcher = new Patcher(logger, new DefaultPatchTransformerRegistry(), invalidConfig);
         final boolean patchNoError = patcher.patch(config);
         assertFalse(patchNoError, "Patcher says there were no problems although there were.");
         verify(logger, times(1)).info("Applying patches to update to '3.4.5-CONFIG-6'...");
@@ -171,8 +154,8 @@ class PatcherTest {
         final String patch = "";
         final YamlConfiguration patchConfig = new YamlConfiguration();
         patchConfig.loadFromString(patch);
-        final Patcher patcher = new Patcher(logger, config, patchConfig, new DefaultPatchTransformerRegistry());
-        assertFalse(patcher.hasUpdate(), "An empty patch cannot provide updates.");
+        final Patcher patcher = new Patcher(logger, new DefaultPatchTransformerRegistry(), patchConfig);
+        assertFalse(patcher.patch(config), "An empty patch cannot provide updates.");
     }
 
     @Test
@@ -186,7 +169,7 @@ class PatcherTest {
                   value: newValue
                 """);
 
-        final Patcher patcher = new Patcher(logger, emptyConfig, patchConfig, new DefaultPatchTransformerRegistry());
+        final Patcher patcher = new Patcher(logger, new DefaultPatchTransformerRegistry(), patchConfig);
         patcher.patch(emptyConfig);
         final YamlConfiguration desiredResult = createConfigFromString("""
                 configVersion: 2.0.0-CONFIG-1 #Don't change this! The plugin's automatic config updater handles it.
@@ -194,7 +177,6 @@ class PatcherTest {
                 """);
 
         assertEquals(desiredResult.saveToString(), emptyConfig.saveToString(), "The Patcher did not set the configVersion variable on a legacy config.");
-        assertEquals("Legacy config", patcher.getCurrentConfigVersion(), "The Patcher did not correctly return a user friendly default version.");
     }
 
     @Test
@@ -212,10 +194,8 @@ class PatcherTest {
                   value: newValue
                 """);
 
-        final Patcher patcher = new Patcher(logger, emptyConfig, patchConfig, new DefaultPatchTransformerRegistry());
-        patcher.patch(emptyConfig);
-        assertEquals("100.200.300-CONFIG-400", patcher.getCurrentConfigVersion(), "The Patcher did not return the highest available patch version.");
-        assertTrue(patcher.updateVersion(emptyConfig), "The Patcher did not update the configVersion variable.");
+        final Patcher patcher = new Patcher(logger, new DefaultPatchTransformerRegistry(), patchConfig);
+        assertTrue(patcher.patch(emptyConfig), "The Patcher should patch the config.");
 
         final YamlConfiguration desiredResult = createConfigFromString("""
                 configVersion: 100.200.300-CONFIG-400 #Don't change this! The plugin's automatic config updater handles it.

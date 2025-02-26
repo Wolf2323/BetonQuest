@@ -28,7 +28,7 @@ class TransformerIntegrationTest extends TransformersFixture {
 
         CONFIG.set("configVersion", "2.0.0-CONFIG-1");
 
-        final Patcher patcher = new Patcher(mock(BetonQuestLogger.class), questConfig, patchConfig, new DefaultPatchTransformerRegistry());
+        final Patcher patcher = new Patcher(mock(BetonQuestLogger.class), new DefaultPatchTransformerRegistry(), patchConfig);
         patcher.patch(questConfig);
 
         assertEquals(CONFIG.saveToString(), questConfig.saveToString(), "Patch was not applied correctly.");
