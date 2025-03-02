@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.command;
 
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
@@ -83,8 +84,8 @@ public class LangCommand implements CommandExecutor, SimpleTabCompleter {
                 log.warn("No translations loaded, somethings wrong!");
                 return false;
             }
-            final String finalMessage = builder.substring(0, builder.length() - 2) + ".";
-            sender.sendMessage(pluginMessage.getMessage(onlineProfile, "language_not_exist") + finalMessage);
+            final Component finalMessage = Component.text(builder.substring(0, builder.length() - 2) + ".");
+            sender.sendMessage(pluginMessage.getMessage(onlineProfile, "language_not_exist").append(finalMessage));
             return true;
         }
         final String lang = args[0];
@@ -92,7 +93,7 @@ public class LangCommand implements CommandExecutor, SimpleTabCompleter {
         final Journal journal = playerData.getJournal();
         playerData.setLanguage(lang);
         journal.update();
-        final String message = pluginMessage.getMessage(onlineProfile, "language_changed");
+        final Component message = pluginMessage.getMessage(onlineProfile, "language_changed");
         try {
             Notify.get(null, "language_changed,info").sendNotify(message, onlineProfile);
         } catch (final QuestException e) {

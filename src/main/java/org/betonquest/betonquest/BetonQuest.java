@@ -392,7 +392,7 @@ public class BetonQuest extends JavaPlugin {
 
         messageParser = new DecidingMessageParser(getFeatureRegistries().messageParser(), new TagMessageParserDecider("legacyminimessage"));
         try {
-            pluginMessage = new PluginMessage(this, configAccessorFactory);
+            pluginMessage = new PluginMessage(this, messageParser, configAccessorFactory);
             for (final String language : pluginMessage.getLanguages()) {
                 log.debug("Loaded " + language + " language");
             }

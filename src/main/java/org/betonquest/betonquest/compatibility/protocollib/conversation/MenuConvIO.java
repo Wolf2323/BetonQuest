@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import io.papermc.lib.PaperLib;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -382,7 +383,7 @@ public class MenuConvIO extends ChatConvIO {
      * @param response the text the NPC chose
      */
     @Override
-    public void setNpcResponse(final String npcName, final String response) {
+    public void setNpcResponse(final Component npcName, final Component response) {
         super.setNpcResponse(npcName, response);
         formattedNpcName = configNpcNameFormat
                 .replace("{npc_name}", npcName);

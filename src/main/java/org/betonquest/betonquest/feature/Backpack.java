@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.feature;
 
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.tuple.Pair;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.bukkit.event.QuestCompassTargetChangeEvent;
@@ -304,7 +305,7 @@ public class Backpack implements Listener {
                 stack = new ItemStack(fallback);
             }
             final ItemMeta meta = stack.getItemMeta();
-            meta.setDisplayName(pluginMessage.getMessage(onlineProfile, button).replaceAll("&", "§"));
+            meta.displayName(pluginMessage.getMessage(onlineProfile, button));
             stack.setItemMeta(meta);
             return Pair.of(stack, present);
         }
@@ -520,16 +521,14 @@ public class Backpack implements Listener {
                     log.warn("Could not find item: " + e.getMessage(), e);
                     compass = new ItemStack(Material.COMPASS);
                 }
-                final String name;
+                final Component name;
                 try {
-                    name = comp.names().getResolved(lang, onlineProfile);
+                    name = comp.names().asComponent(onlineProfile);
                 } catch (final QuestException e) {
                     log.warn("Could not get name for compass '" + entry.getKey() + "', skipping it: " + e.getMessage(), e);
                     continue;
                 }
-                final ItemMeta meta = compass.getItemMeta();
-                meta.setDisplayName(name.replace("_", " ").replace("&", "§"));
-                compass.setItemMeta(meta);
+                compass.editMeta(meta -> meta.displayName(name));
                 content[index] = compass;
                 index++;
             }

@@ -74,7 +74,7 @@ public class ConversationProcessor extends SectionProcessor<ConversationID, Conv
         final String convName = section.getName();
         log.debug(pack, String.format("Loading conversation '%s'.", convName));
 
-        final ParsedSectionMessage quester = new ParsedSectionMessage(variableProcessor, pack, section, "quester");
+        final ParsedSectionMessage quester = new ParsedSectionMessage(variableProcessor, plugin.getMessageParser(), plugin.getPlayerDataStorage(), pack, section, "quester");
         final CreationHelper helper = new CreationHelper(pack, section);
         final boolean blockMovement = Boolean.parseBoolean(helper.opt("stop"));
         final String convIO = helper.parseConvIO();
@@ -83,7 +83,7 @@ public class ConversationProcessor extends SectionProcessor<ConversationID, Conv
         final ConversationData.PublicData publicData = new ConversationData.PublicData(convName, quester, blockMovement, finalEvents, convIO, interceptor);
 
         return new ConversationData(loggerFactory.create(ConversationData.class), plugin.getQuestTypeAPI(), plugin.getFeatureAPI(),
-                variableProcessor, pack, section, publicData);
+                variableProcessor, plugin.getMessageParser(), plugin.getPlayerDataStorage(), pack, section, publicData);
     }
 
     @Override

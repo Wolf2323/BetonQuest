@@ -1,6 +1,8 @@
 package org.betonquest.betonquest.quest.variable.tag;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.config.PluginMessage;
 
 import java.util.List;
@@ -60,11 +62,12 @@ public abstract class AbstractTagVariable<T> {
      *
      * @param tags the tags to check
      * @return the value of the variable
+     * @throws QuestException if the variable is not found
      */
-    public String getValueFor(final List<String> tags) {
+    public String getValueFor(final List<String> tags) throws QuestException {
         if (tags.contains(questPackage.getQuestPath() + "." + tagName)) {
-            return papiMode ? pluginMessage.getMessage("condition_variable_met") : "true";
+            return papiMode ? PlainTextComponentSerializer.plainText().serialize(pluginMessage.getMessage("condition_variable_met")) : "true";
         }
-        return papiMode ? pluginMessage.getMessage("condition_variable_not_met") : "false";
+        return papiMode ? PlainTextComponentSerializer.plainText().serialize(pluginMessage.getMessage("condition_variable_not_met")) : "false";
     }
 }

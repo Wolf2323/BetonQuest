@@ -4,6 +4,7 @@ import net.citizensnpcs.api.event.NPCClickEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
@@ -159,7 +160,7 @@ public class CitizensConversationStarter {
         final OnlineProfile onlineProfile = profileProvider.getProfile(event.getClicker());
         if (CombatTagger.isTagged(onlineProfile)) {
 
-            final String message = pluginMessage.getMessage(onlineProfile, "busy");
+            final Component message = pluginMessage.getMessage(onlineProfile, "busy");
             try {
                 Notify.get(null, "busy,error").sendNotify(message, onlineProfile);
             } catch (final QuestException e) {

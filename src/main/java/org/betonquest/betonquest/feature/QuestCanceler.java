@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.feature;
 
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.Objective;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
@@ -20,7 +21,6 @@ import org.betonquest.betonquest.message.ParsedSectionMessage;
 import org.betonquest.betonquest.notify.Notify;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -140,8 +140,8 @@ public class QuestCanceler {
         }
         // done
         log.debug("Quest removed!");
-        final String questName = getName(onlineProfile);
-        final String message = pluginMessage.getMessage(onlineProfile, "quest_canceled",
+        final Component questName = getName(onlineProfile);
+        final Component message = pluginMessage.getMessage(onlineProfile, "quest_canceled",
                 new PluginMessage.Replacement("name", questName));
         try {
             Notify.get(pack, "quest_cancelled,quest_canceled,info").sendNotify(message, onlineProfile);
@@ -187,14 +187,14 @@ public class QuestCanceler {
      * @param profile the {@link Profile} of the player
      * @return the name of the quest canceler
      */
-    public String getName(final Profile profile) {
+    public Component getName(final Profile profile) {
         final String language = BetonQuest.getInstance().getPlayerDataStorage().get(profile).getLanguage();
         try {
-            return names.getResolved(language, profile).replace("_", " ").replace("&", "§");
+            return names.asComponent(profile);
         } catch (final QuestException e) {
             log.warn(pack, "Could not resolve Quest name in canceler '" + pack.getQuestPath() + "." + cancelerID + "': "
                     + e.getMessage(), e);
-            return "Quest";
+            return Component.text("Quest");
         }
     }
 
@@ -213,9 +213,7 @@ public class QuestCanceler {
                 log.warn(pack, "Could not load cancel button: " + e.getMessage(), e);
             }
         }
-        final ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(getName(profile));
-        stack.setItemMeta(meta);
+        stack.editMeta(meta -> meta.displayName(getName(profile)));
         return stack;
     }
 

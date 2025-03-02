@@ -148,8 +148,7 @@ public class PluginMessage {
      * @param message   name of the message to retrieve
      * @param variables array of variables to replace
      * @return message with replaced variables in the profile's language or the default language or in english
-     * @throws IllegalArgumentException if the message could not be found in the configuration
-     * @throws QuestException           if the message could not be parsed into components
+     * @throws QuestException if the message could not be found in the configuration
      */
     public Component getMessage(final Profile profile, final String message, final Replacement... variables) throws QuestException {
         final String language = instance.getPlayerDataStorage().get(profile).getLanguage();
@@ -170,12 +169,9 @@ public class PluginMessage {
     }
 
     private Component getMessage(final String language, final String message, final Replacement... variables) throws QuestException {
-        String result = messages.getString(language + "." + message);
+        String result = getMessageFromSpecificLanguage(language, message);
         if (result == null) {
             result = getMessageFromSpecificLanguage(Config.getLanguage(), message);
-        }
-        if (result == null) {
-            result = getMessageFromSpecificLanguage("en-US", message);
         }
         if (result == null) {
             result = internal.getConfig().getString(message);

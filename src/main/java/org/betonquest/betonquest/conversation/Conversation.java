@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.conversation;
 
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,7 +27,6 @@ import org.betonquest.betonquest.id.EventID;
 import org.betonquest.betonquest.notify.Notify;
 import org.betonquest.betonquest.util.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -315,12 +315,8 @@ public class Conversation implements Listener {
             return;
         }
 
-        String text = data.getText(onlineProfile, language, nextNPCOption);
-        text = ChatColor.translateAlternateColorCodes('&', text);
-
-        // print option to the player
+        final Component text = data.getText(onlineProfile, nextNPCOption);
         inOut.setNpcResponse(data.getPublicData().getQuester(log, language, onlineProfile), text);
-
         new NPCEventRunner(nextNPCOption).runTask(BetonQuest.getInstance());
     }
 
@@ -376,9 +372,7 @@ public class Conversation implements Listener {
             availablePlayerOptions.put(optionsCount, option);
 
             // replace variables with their values
-            String text = data.getText(onlineProfile, language, option);
-            text = ChatColor.translateAlternateColorCodes('&', text);
-
+            final Component text = data.getText(onlineProfile, option);
             inOut.addPlayerOption(text);
         }
         new BukkitRunnable() {
@@ -516,7 +510,7 @@ public class Conversation implements Listener {
         final String cmdName = event.getMessage().split(" ")[0].substring(1);
         if (blacklist.contains(cmdName)) {
             event.setCancelled(true);
-            final String message = pluginMessage.getMessage(onlineProfile, "command_blocked");
+            final Component message = pluginMessage.getMessage(onlineProfile, "command_blocked");
             try {
                 Notify.get(getPackage(), "command_blocked,error").sendNotify(message, onlineProfile);
             } catch (final QuestException e) {

@@ -1,12 +1,16 @@
 package org.betonquest.betonquest.conversation;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.feature.FeatureAPI;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+import org.betonquest.betonquest.api.message.MessageParser;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.api.quest.QuestTypeAPI;
+import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.id.ConditionID;
 import org.betonquest.betonquest.id.ConversationID;
 import org.betonquest.betonquest.id.EventID;
@@ -15,7 +19,6 @@ import org.betonquest.betonquest.instruction.argument.IDArgument;
 import org.betonquest.betonquest.message.ParsedSectionMessage;
 import org.betonquest.betonquest.quest.registry.processor.VariableProcessor;
 import org.betonquest.betonquest.variables.GlobalVariableResolver;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,6 +62,16 @@ public class ConversationData {
      * Processor to create new variables.
      */
     private final VariableProcessor variableProcessor;
+
+    /**
+     * Message parser to parse messages.
+     */
+    private final MessageParser messageParser;
+
+    /**
+     * Player data storage.
+     */
+    private final PlayerDataStorage playerDataStorage;
 
     /**
      * The {@link QuestPackage} this conversation is in.
@@ -105,12 +118,15 @@ public class ConversationData {
      * @throws QuestException when there is a syntax error in the defined conversation or
      *                        when conversation options cannot be resolved or {@code convSection} is null
      */
-    public ConversationData(final BetonQuestLogger log, final QuestTypeAPI questTypeAPI, final FeatureAPI featureAPI, final VariableProcessor variableProcessor,
+    public ConversationData(final BetonQuestLogger log, final QuestTypeAPI questTypeAPI, final FeatureAPI featureAPI,
+                            final VariableProcessor variableProcessor, final MessageParser messageParser, final PlayerDataStorage playerDataStorage,
                             final QuestPackage pack, final ConfigurationSection convSection, final PublicData publicData) throws QuestException {
         this.log = log;
         this.questTypeAPI = questTypeAPI;
         this.featureAPI = featureAPI;
         this.variableProcessor = variableProcessor;
+        this.messageParser = messageParser;
+        this.playerDataStorage = playerDataStorage;
         this.pack = pack;
         this.convName = publicData.convName();
         this.publicData = publicData;
@@ -348,12 +364,11 @@ public class ConversationData {
      * Respects extended options.
      *
      * @param profile the profile of the player
-     * @param lang    the desired language of the text
      * @param option  the option
      * @return the text of the specified option in the specified language
      */
     @Nullable
-    public String getText(@Nullable final Profile profile, final String lang, final ResolvedOption option) {
+    public Component getText(@Nullable final Profile profile, final ResolvedOption option) {
         final ConversationOption opt;
         if (option.type() == NPC) {
             opt = option.conversationData().npcOptions.get(option.name());
@@ -363,7 +378,7 @@ public class ConversationData {
         if (opt == null) {
             return null;
         }
-        return opt.getText(profile, lang);
+        return opt.getText(profile);
     }
 
     /**
@@ -518,12 +533,12 @@ public class ConversationData {
          * @param profile the profile to resolve the variable
          * @return the quester's name in the specified language
          */
-        public String getQuester(final BetonQuestLogger log, final String lang, final Profile profile) {
+        public Component getQuester(final BetonQuestLogger log, final String lang, final Profile profile) {
             try {
-                return ChatColor.translateAlternateColorCodes('&', quester.getResolved(lang, profile));
+                return quester.asComponent(profile);
             } catch (final QuestException e) {
                 log.warn("Could not get Quester's name! Using 'Quester' instead, reason: " + e.getMessage(), e);
-                return "Quester";
+                return Component.text("Quester");
             }
         }
     }
@@ -631,7 +646,7 @@ public class ConversationData {
             }
             final ParsedSectionMessage text;
             try {
-                text = new ParsedSectionMessage(variableProcessor, pack, conv, "text");
+                text = new ParsedSectionMessage(variableProcessor, messageParser, playerDataStorage, pack, conv, "text");
             } catch (final QuestException e) {
                 throw new QuestException("Could not load text for " + optionName + " " + type.getReadable() + ": " + e.getMessage(), e);
             }
@@ -651,44 +666,44 @@ public class ConversationData {
          * Returns the text of this option in the given language.
          *
          * @param profile the profile of the player to get the text for
-         * @param lang    the language to get the text in
          * @return the text of this option in the given language
          */
-        public String getText(@Nullable final Profile profile, final String lang) {
-            return getText(profile, lang, new ArrayList<>());
+        public Component getText(@Nullable final Profile profile) {
+            return getText(profile, new ArrayList<>());
         }
 
-        private String getText(@Nullable final Profile profile, final String lang, final List<String> optionPath) {
+        private Component getText(@Nullable final Profile profile, final List<String> optionPath) {
             // Prevent infinite loops
             if (optionPath.contains(getName())) {
-                return "";
+                return Component.empty();
             }
             optionPath.add(getName());
 
-            final StringBuilder text = new StringBuilder(getText(lang, profile));
+            final TextComponent.Builder text = Component.text();
+            text.append(getTextComponent(profile));
 
             if (profile != null) {
                 for (final String extend : extendLinks) {
                     if (questTypeAPI.conditions(profile, getOption(extend, type).getConditions())) {
-                        text.append(getOption(extend, type).getText(profile, lang, optionPath));
+                        text.append(getOption(extend, type).getText(profile, optionPath));
                         break;
                     }
                 }
             }
 
-            return text.toString();
+            return text.build();
         }
 
-        private String getText(final String lang, @Nullable final Profile profile) {
+        private Component getTextComponent(@Nullable final Profile profile) {
             if (text == null) {
                 log.warn(pack, "No text in conversation '" + convName + "'!");
-                return "";
+                return Component.empty();
             }
             try {
-                return text.getResolved(lang, profile);
+                return text.asComponent(profile);
             } catch (final QuestException e) {
                 log.warn(pack, "Could not resolve message in conversation '" + convName + "': " + e.getMessage(), e);
-                return "";
+                return Component.empty();
             }
         }
 

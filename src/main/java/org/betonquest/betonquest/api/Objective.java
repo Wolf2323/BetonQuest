@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.api;
 
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.GlobalObjectives;
 import org.betonquest.betonquest.api.bukkit.event.PlayerObjectiveChangeEvent;
@@ -239,9 +240,10 @@ public abstract class Objective {
      * @param messageName   message name to use in messages.yml
      * @param onlineProfile the {@link OnlineProfile} for which the notification is to be sent
      * @param variables     variables for putting into the message
+     * @throws QuestException if the message could not found in the configuration
      */
-    protected void sendNotify(final OnlineProfile onlineProfile, final String messageName, final PluginMessage.Replacement... variables) {
-        final String message = BetonQuest.getInstance().getPluginMessage().getMessage(onlineProfile, messageName, variables);
+    protected void sendNotify(final OnlineProfile onlineProfile, final String messageName, final PluginMessage.Replacement... variables) throws QuestException {
+        final Component message = BetonQuest.getInstance().getPluginMessage().getMessage(onlineProfile, messageName, variables);
         try {
             Notify.get(instruction.getPackage(), messageName + ",info").sendNotify(message, onlineProfile);
         } catch (final QuestException exception) {

@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.api;
 
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
@@ -117,7 +118,7 @@ public abstract class CountingObjective extends Objective {
         }
         if (notify && notifyMessageName != null && shouldNotify(data) && profile.getOnlineProfile().isPresent()) {
             sendNotify(profile.getOnlineProfile().get(), notifyMessageName,
-                    new PluginMessage.Replacement("amount", String.valueOf(Math.abs(data.getAmountLeft()))));
+                    new PluginMessage.Replacement("amount", Component.text(Math.abs(data.getAmountLeft()))));
         }
         return false;
     }

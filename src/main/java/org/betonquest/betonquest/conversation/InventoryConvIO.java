@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.conversation;
 
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
@@ -52,13 +53,13 @@ public class InventoryConvIO implements Listener, ConversationIO {
     private final BetonQuestLogger log;
 
     @Nullable
-    protected String response;
+    protected Component response;
 
     protected Map<Integer, String> options = new HashMap<>();
 
     protected int playerOptionsCount;
 
-    protected String npcName;
+    protected Component npcName;
 
     protected String npcNameColor;
 
@@ -122,13 +123,13 @@ public class InventoryConvIO implements Listener, ConversationIO {
     }
 
     @Override
-    public void setNpcResponse(final String npcName, final String response) {
+    public void setNpcResponse(final Component npcName, final Component response) {
         this.npcName = npcName;
         this.response = Utils.replaceReset(response, npcTextColor);
     }
 
     @Override
-    public void addPlayerOption(final String option) {
+    public void addPlayerOption(final Component option) {
         playerOptionsCount++;
         options.put(playerOptionsCount, Utils.replaceReset(option, optionColor));
     }

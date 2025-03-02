@@ -64,10 +64,10 @@ public record QuestRegistry(
         final EventProcessor events = new EventProcessor(loggerFactory.create(EventProcessor.class), questTypeRegistries.event());
         final ObjectiveProcessor objectives = new ObjectiveProcessor(loggerFactory.create(ObjectiveProcessor.class), questTypeRegistries.objective());
         final VariableProcessor variables = new VariableProcessor(loggerFactory.create(VariableProcessor.class), questTypeRegistries.variable());
-        final CancelerProcessor cancelers = new CancelerProcessor(loggerFactory.create(CancelerProcessor.class), loggerFactory, pluginMessage, variables);
+        final CancelerProcessor cancelers = new CancelerProcessor(loggerFactory.create(CancelerProcessor.class), loggerFactory, pluginMessage, variables, plugin.getMessageParser(), plugin.getPlayerDataStorage());
         final ConversationProcessor conversations = new ConversationProcessor(loggerFactory.create(ConversationProcessor.class), loggerFactory, plugin, variables,
                 otherRegistries.conversationIO(), otherRegistries.interceptor());
-        final CompassProcessor compasses = new CompassProcessor(loggerFactory.create(CompassProcessor.class), variables);
+        final CompassProcessor compasses = new CompassProcessor(loggerFactory.create(CompassProcessor.class), variables, plugin.getMessageParser(), plugin.getPlayerDataStorage());
         return new QuestRegistry(log, eventScheduling, conditions, events, objectives, variables, cancelers, conversations, compasses);
     }
 

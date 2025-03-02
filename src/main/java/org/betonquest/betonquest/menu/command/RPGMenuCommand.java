@@ -1,10 +1,9 @@
 package org.betonquest.betonquest.menu.command;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
@@ -104,7 +103,7 @@ public class RPGMenuCommand extends SimpleCommand {
                     try {
                         menu = new MenuID(null, args[1]);
                     } catch (final QuestException e) {
-                        sendMessage(sender, "command_invalid_menu", new PluginMessage.Replacement("menu", args[1]));
+                        sendMessage(sender, "command_invalid_menu", new PluginMessage.Replacement("menu", Component.text(args[1])));
                         return false;
                     }
                 }
@@ -117,21 +116,20 @@ public class RPGMenuCommand extends SimpleCommand {
         switch (args[0].toLowerCase(Locale.ROOT)) {
             case "l":
             case "list":
-                final ComponentBuilder builder = new ComponentBuilder("");
-                builder.append(TextComponent.fromLegacyText(getMessage(sender, "command_list")));
+                final net.kyori.adventure.text.TextComponent.Builder text = Component.text();
+                text.append(getMessage(sender, "command_list"));
                 final Collection<MenuID> ids = this.menu.getMenus();
                 if (ids.isEmpty()) {
-                    builder.append("\n - ").color(ChatColor.GRAY);
+                    text.append(Component.text("\n - ")).color(NamedTextColor.GRAY);
                 } else {
                     for (final MenuID menuID : ids) {
-                        builder
-                                .append("\n" + menuID, ComponentBuilder.FormatRetention.FORMATTING)
-                                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                        TextComponent.fromLegacyText(getMessage(sender, "click_to_open"))))
-                                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + getName() + " open " + menuID));
+                        text
+                                .append(Component.text("\n" + menuID)
+                                        .hoverEvent(getMessage(sender, "click_to_open"))
+                                        .clickEvent(ClickEvent.runCommand("/" + getName() + " open " + menuID)));
                     }
                 }
-                sender.spigot().sendMessage(builder.create());
+                sender.sendMessage(text.build());
                 return true;
             case "o":
             case "open":
@@ -140,7 +138,7 @@ public class RPGMenuCommand extends SimpleCommand {
                 if (args.length >= 3) {
                     player = Bukkit.getPlayer(args[2]);
                     if (player == null) {
-                        sendMessage(sender, "command_invalid_player", new PluginMessage.Replacement("player", args[1]));
+                        sendMessage(sender, "command_invalid_player", new PluginMessage.Replacement("player", Component.text(args[1])));
                         return false;
                     }
                 }
@@ -160,7 +158,7 @@ public class RPGMenuCommand extends SimpleCommand {
                 }
                 //open the menu and send feedback
                 this.menu.openMenu(BetonQuest.getInstance().getProfileProvider().getProfile(player), menu);
-                sendMessage(sender, "command_open_successful", new PluginMessage.Replacement("menu", menu.toString()));
+                sendMessage(sender, "command_open_successful", new PluginMessage.Replacement("menu", Component.text(menu.toString())));
                 break;
             case "reload":
                 final RPGMenu.ReloadInformation info;
@@ -192,8 +190,8 @@ public class RPGMenuCommand extends SimpleCommand {
                         sender.sendMessage(errorMessage);
                     }
                     sendMessage(sender, "command_reload_successful",
-                            new PluginMessage.Replacement("color", color.toString()),
-                            new PluginMessage.Replacement("amount", String.valueOf(info.getLoaded())));
+                            new PluginMessage.Replacement("color", Component.text(color.toString())),
+                            new PluginMessage.Replacement("amount", Component.text(String.valueOf(info.getLoaded()))));
                 }
         }
         return true;
@@ -205,21 +203,18 @@ public class RPGMenuCommand extends SimpleCommand {
      * @param sender player who issued the command or console
      */
     private void showHelp(final CommandSender sender) {
-        final ComponentBuilder builder = new ComponentBuilder("");
-        builder
-                .append(TextComponent.fromLegacyText("----- RPGMenu for Betonquest -----\n"))
-                .append("/rpgmenu reload [menu]\n").color(ChatColor.RED)
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        TextComponent.fromLegacyText(getMessage(sender, "command_info_reload"))))
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/rpgmenu reload "))
-                .append("/rpgmenu open <menu> [player]\n", ComponentBuilder.FormatRetention.FORMATTING)
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        TextComponent.fromLegacyText(getMessage(sender, "command_info_open"))))
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/rpgmenu open"))
-                .append("/rpgmenu list", ComponentBuilder.FormatRetention.FORMATTING)
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        TextComponent.fromLegacyText(getMessage(sender, "command_info_list"))))
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/rpgmenu list"));
-        sender.spigot().sendMessage(builder.create());
+        final net.kyori.adventure.text.TextComponent.Builder text = Component.text();
+        text
+                .append(Component.text("----- RPGMenu for Betonquest -----\n"))
+                .append(Component.text("/rpgmenu reload [menu]\n").color(NamedTextColor.RED)
+                        .hoverEvent(getMessage(sender, "command_info_reload"))
+                        .clickEvent(ClickEvent.suggestCommand("/rpgmenu reload ")))
+                .append(Component.text("/rpgmenu open <menu> [player]\n")
+                        .hoverEvent(getMessage(sender, "command_info_open"))
+                        .clickEvent(ClickEvent.suggestCommand("/rpgmenu open")))
+                .append(Component.text("/rpgmenu list\n")
+                        .hoverEvent(getMessage(sender, "command_info_list"))
+                        .clickEvent(ClickEvent.suggestCommand("/rpgmenu list")));
+        sender.sendMessage(text.build());
     }
 }

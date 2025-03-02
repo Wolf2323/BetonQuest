@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.menu.command;
 
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
@@ -45,7 +46,7 @@ public abstract class SimpleCommand extends Command implements PluginIdentifiabl
     @Nullable
     private CommandMap commandMap;
 
-    private String usage = "null";
+    private Component usage = Component.text("Not Defined");
 
     public SimpleCommand(final BetonQuestLogger log, final String name, final int minimalArgs) {
         super(name);
@@ -90,7 +91,7 @@ public abstract class SimpleCommand extends Command implements PluginIdentifiabl
 
     @Override
     public final Command setUsage(final String usage) {
-        this.usage = usage;
+        this.usage = Component.text(usage);
         return this;
     }
 
@@ -200,7 +201,7 @@ public abstract class SimpleCommand extends Command implements PluginIdentifiabl
         sender.sendMessage(getMessage(sender, message, replacements));
     }
 
-    protected String getMessage(final CommandSender sender, final String message, final PluginMessage.Replacement... replacements) {
+    protected Component getMessage(final CommandSender sender, final String message, final PluginMessage.Replacement... replacements) {
         final PluginMessage pluginMessage = getPlugin().getPluginMessage();
         if (sender instanceof final Player player) {
             final OnlineProfile profile = getPlugin().getProfileProvider().getProfile(player);

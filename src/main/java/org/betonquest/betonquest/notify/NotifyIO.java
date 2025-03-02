@@ -1,12 +1,12 @@
 package org.betonquest.betonquest.notify;
 
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.instruction.variable.VariableNumber;
-import org.betonquest.betonquest.util.Utils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,19 +38,19 @@ public abstract class NotifyIO {
         sound = new NotifySound(this);
     }
 
-    public void sendNotify(final String message) throws QuestException {
+    public void sendNotify(final Component message) throws QuestException {
         final ProfileProvider profileProvider = BetonQuest.getInstance().getProfileProvider();
         for (final OnlineProfile onlineProfile : profileProvider.getOnlineProfiles()) {
             sendNotify(message, onlineProfile);
         }
     }
 
-    public void sendNotify(final String message, final OnlineProfile onlineProfile) throws QuestException {
-        notifyPlayer(Utils.format(message), onlineProfile);
+    public void sendNotify(final Component message, final OnlineProfile onlineProfile) throws QuestException {
+        notifyPlayer(message, onlineProfile);
         sound.sendSound(onlineProfile);
     }
 
-    protected abstract void notifyPlayer(String message, OnlineProfile onlineProfile);
+    protected abstract void notifyPlayer(Component message, OnlineProfile onlineProfile);
 
     protected final float getFloatData(final String dataKey, final float defaultData) throws QuestException {
         final String dataString = data.get(dataKey);
