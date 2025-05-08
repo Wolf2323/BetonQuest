@@ -1,19 +1,17 @@
 package org.betonquest.betonquest.conversation;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.common.component.ComponentLineWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.conversation.interceptor.Interceptor;
-import org.betonquest.betonquest.util.LocalChatPaginator;
-import org.betonquest.betonquest.util.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,7 +29,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,24 +56,20 @@ public class InventoryConvIO implements Listener, ConversationIO {
      */
     protected final boolean printMessages;
 
+    private final ComponentLineWrapper componentLineWrapper;
+
     @Nullable
     protected Component response;
 
-    protected Map<Integer, String> options = new HashMap<>();
+    protected Map<Integer, Component> options = new HashMap<>();
 
     protected int playerOptionsCount;
 
     protected Component npcName;
 
-    protected String npcNameColor;
+    protected ConversationColors colors;
 
-    protected String npcTextColor;
-
-    protected String numberFormat;
-
-    protected String optionColor;
-
-    protected String answerPrefix;
+    protected Component answerPrefix;
 
     protected Conversation conv;
 
@@ -93,23 +86,18 @@ public class InventoryConvIO implements Listener, ConversationIO {
     protected Location loc;
 
     public InventoryConvIO(final Conversation conv, final OnlineProfile onlineProfile, final BetonQuestLogger log,
-                           final ConversationColors.Colors colors, final boolean showNumber, final boolean showNPCText, final boolean printMessages) {
+                           final ConversationColors colors, final boolean showNumber, final boolean showNPCText,
+                           final boolean printMessages, final ComponentLineWrapper componentLineWrapper) {
         this.log = log;
         this.conv = conv;
         this.player = onlineProfile.getPlayer();
-        this.npcNameColor = collect(colors.npc());
-        this.npcTextColor = collect(colors.text());
-        this.numberFormat = collect(colors.number()) + "%number%.";
-        this.optionColor = collect(colors.option());
-        final StringBuilder string = new StringBuilder();
-        for (final ChatColor color : colors.player()) {
-            string.append(color);
-        }
-        string.append(player.getName()).append(ChatColor.RESET).append(": ");
-        for (final ChatColor color : colors.answer()) {
-            string.append(color);
-        }
-        answerPrefix = string.toString();
+        this.colors = colors;
+        this.componentLineWrapper = componentLineWrapper;
+        final TextComponent.Builder answerPrefix = Component.text();
+        answerPrefix.append(colors.getPlayer().append(Component.text(player.getName())))
+                .append(Component.text(": "))
+                .append(colors.getAnswer());
+        this.answerPrefix = answerPrefix.asComponent();
         loc = player.getLocation();
 
         this.showNumber = showNumber;
@@ -119,25 +107,16 @@ public class InventoryConvIO implements Listener, ConversationIO {
         Bukkit.getPluginManager().registerEvents(this, BetonQuest.getInstance());
     }
 
-    private String collect(final ChatColor... chatColors) {
-        final StringBuilder string = new StringBuilder();
-        for (final ChatColor color : chatColors) {
-            string.append(color);
-        }
-        return string.toString();
-    }
-
     @Override
     public void setNpcResponse(final Component npcName, final Component response) {
         this.npcName = npcName;
-        this.response = LegacyComponentSerializer.legacySection().deserialize(
-                Utils.replaceReset(LegacyComponentSerializer.legacySection().serialize(response), npcTextColor));
+        this.response = colors.getText().append(response);
     }
 
     @Override
-    public void addPlayerOption(final String option) {
+    public void addPlayerOption(final Component option) {
         playerOptionsCount++;
-        options.put(playerOptionsCount, Utils.replaceReset(option, optionColor));
+        options.put(playerOptionsCount, colors.getOption().append(option));
     }
 
     @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity", "PMD.UnusedAssignment", "PMD.LambdaCanBeMethodReference"})
@@ -173,8 +152,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
 
         if (printMessages) {
             Objects.requireNonNull(response);
-            conv.sendMessage(npcNameColor + LegacyComponentSerializer.legacySection().serialize(npcName)
-                    + ChatColor.RESET + ": " + npcTextColor + LegacyComponentSerializer.legacySection().serialize(response));
+            conv.sendMessage(colors.getText().append(colors.getNpc().append(npcName)).append(Component.text(": ")).append(response));
         }
 
         Bukkit.getScheduler().runTask(BetonQuest.getInstance(), () -> {
@@ -199,7 +177,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
             // count option numbers, starting with 1
             next++;
             // break if all options are set
-            String option = options.get(next);
+            Component option = options.get(next);
             if (option == null) {
                 break;
             }
@@ -235,33 +213,21 @@ public class InventoryConvIO implements Listener, ConversationIO {
             item.setDurability(data);
             final ItemMeta meta = item.getItemMeta();
 
-            final StringBuilder string = new StringBuilder();
-            for (final ChatColor color : ConversationColors.getColors().number()) {
-                string.append(color);
-            }
-
             if (showNumber) {
-                meta.setDisplayName(numberFormat.replace("%number%", Integer.toString(next)));
+                meta.displayName(colors.getNumber().append(Component.text(next)).append(Component.text(".")));
             } else {
-                meta.setDisplayName(" ");
+                meta.displayName(Component.empty());
             }
 
-            final List<String> lines = new ArrayList<>();
+            final List<Component> lines = new ArrayList<>();
 
             if (showNPCText) {
-                // NPC Text
                 Objects.requireNonNull(response);
-                lines.addAll(Arrays.asList(LocalChatPaginator.wordWrap(
-                        Utils.replaceReset(npcNameColor + LegacyComponentSerializer.legacySection().serialize(npcName)
-                                + ChatColor.RESET + ": " + LegacyComponentSerializer.legacySection().serialize(response), npcTextColor),
-                        45)));
+                lines.addAll(componentLineWrapper.splitWidth(colors.getText().append(colors.getNpc().append(npcName)).append(Component.text(": ")).append(response)));
             }
 
-            // Option Text
-            lines.addAll(Arrays.asList(LocalChatPaginator.wordWrap(
-                    Utils.replaceReset(string + "- " + option, optionColor),
-                    45)));
-            meta.setLore(lines);
+            lines.addAll(componentLineWrapper.splitWidth(colors.getOption().append(colors.getNumber().append(Component.text("- "))).append(option)));
+            meta.lore(lines);
 
             item.setItemMeta(meta);
             buttons[j] = item;
@@ -279,7 +245,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
             npcHead = new ItemStack(Material.PLAYER_HEAD);
             npcHead.setDurability((short) 3);
             final SkullMeta npcMeta = (SkullMeta) npcHead.getItemMeta();
-            npcMeta.setDisplayName(npcNameColor + LegacyComponentSerializer.legacySection().serialize(npcName));
+            npcMeta.displayName(colors.getNpc().append(npcName));
             npcHead.setItemMeta(npcMeta);
             Bukkit.getScheduler().runTaskAsynchronously(BetonQuest.getInstance(), () -> {
                 try {
@@ -296,8 +262,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
 
         final SkullMeta npcMeta = (SkullMeta) npcHead.getItemMeta();
         Objects.requireNonNull(response);
-        npcMeta.setLore(Arrays.asList(LocalChatPaginator.wordWrap(
-                Utils.replaceReset(LegacyComponentSerializer.legacySection().serialize(response), npcTextColor), 45)));
+        npcMeta.lore(componentLineWrapper.splitWidth(colors.getText().append(response)));
         npcHead.setItemMeta(npcMeta);
         return npcHead;
     }
@@ -336,11 +301,11 @@ public class InventoryConvIO implements Listener, ConversationIO {
             final int col = slot % 9 - 2 + 1;
             // each row can have 7 options, add column number to get an option
             final int choosen = row * 7 + col;
-            final String message = options.get(choosen);
+            final Component message = options.get(choosen);
             if (message != null) {
                 processingLastClick = true;
                 if (printMessages) {
-                    conv.sendMessage(answerPrefix + message);
+                    conv.sendMessage(answerPrefix.append(message));
                 }
                 conv.passPlayerAnswer(choosen);
             }

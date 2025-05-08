@@ -12,17 +12,17 @@ import io.papermc.lib.PaperLib;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.common.component.ComponentLineWrapper;
+import org.betonquest.betonquest.api.common.component.VariableReplacement;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.compatibility.protocollib.wrappers.WrapperPlayClientSteerVehicleUpdated;
 import org.betonquest.betonquest.conversation.ChatConvIO;
 import org.betonquest.betonquest.conversation.Conversation;
+import org.betonquest.betonquest.conversation.ConversationColors;
 import org.betonquest.betonquest.conversation.ConversationState;
-import org.betonquest.betonquest.util.LocalChatPaginator;
 import org.betonquest.betonquest.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -73,7 +73,7 @@ public class MenuConvIO extends ChatConvIO {
     protected final AtomicInteger selectedOption;
 
     /**
-     * Thread safety
+     * Thread safety.
      */
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -88,6 +88,11 @@ public class MenuConvIO extends ChatConvIO {
      */
     private final MenuConvIOSettings settings;
 
+    /**
+     * The component line wrapper to use for the conversation.
+     */
+    private final ComponentLineWrapper componentLineWrapper;
+
     // Actions
     protected Map<CONTROL, ACTION> controls = new EnumMap<>(CONTROL.class);
 
@@ -100,17 +105,19 @@ public class MenuConvIO extends ChatConvIO {
     protected BukkitRunnable displayRunnable;
 
     @Nullable
-    protected BaseComponent[] displayOutput;
+    protected Component displayOutput;
 
-    protected String formattedNpcName;
+    protected Component formattedNpcName;
 
     @Nullable
     private ArmorStand stand;
 
     @SuppressWarnings({"PMD.CognitiveComplexity", "NullAway.Init"})
-    public MenuConvIO(final Conversation conv, final OnlineProfile onlineProfile, final MenuConvIOSettings settings) {
-        super(conv, onlineProfile);
+    public MenuConvIO(final Conversation conv, final OnlineProfile onlineProfile, final ConversationColors colors,
+                      final MenuConvIOSettings settings, final ComponentLineWrapper componentLineWrapper) {
+        super(conv, onlineProfile, colors);
         this.settings = settings;
+        this.componentLineWrapper = componentLineWrapper;
         final BetonQuestLogger log = BetonQuest.getInstance().getLoggerFactory().create(getClass());
         this.oldSelectedOption = new AtomicInteger();
         this.selectedOption = new AtomicInteger();
@@ -187,7 +194,7 @@ public class MenuConvIO extends ChatConvIO {
             mount.sendPacket(player);
 
             // Display Actionbar to hide the dismount message
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(" "));
+            player.sendActionBar(Component.empty());
 
             // Intercept Packets
             packetAdapter = getPacketAdapter();
@@ -312,8 +319,7 @@ public class MenuConvIO extends ChatConvIO {
     @Override
     public void setNpcResponse(final Component npcName, final Component response) {
         super.setNpcResponse(npcName, response);
-        formattedNpcName = settings.configNpcNameFormat()
-                .replace("{npc_name}", LegacyComponentSerializer.legacySection().serialize(npcName));
+        formattedNpcName = settings.configNpcNameFormat().resolve(new VariableReplacement("{npc_name}", npcName));
     }
 
     protected void showDisplay() {
@@ -330,13 +336,11 @@ public class MenuConvIO extends ChatConvIO {
         }
 
         // NPC Text
-        final String msgNpcText = settings.configNpcText()
-                .replace("{npc_text}", LegacyComponentSerializer.legacySection().serialize(npcText))
-                .replace("{npc_name}", LegacyComponentSerializer.legacySection().serialize(npcName));
+        final Component msgNpcText = settings.configNpcText().resolve(new VariableReplacement("{npc_text}", npcText),
+                new VariableReplacement("{npc_name}", npcName));
 
-        final List<String> npcLines = Arrays.stream(LocalChatPaginator.wordWrap(
-                        Utils.replaceReset(StringUtils.stripEnd(msgNpcText, "\n"), settings.configNpcTextReset()), settings.configLineLength(), settings.configNpcWrap()))
-                .toList();
+        settings.configNpcWrap()
+        final List<Component> npcLines = componentLineWrapper.splitWidth(settings.configNpcTextReset().append(msgNpcText));
 
         // Provide for as many options as we can fit but if there is lots of npcLines we will reduce this as necessary
         // own to a minimum of 1.
@@ -353,7 +357,7 @@ public class MenuConvIO extends ChatConvIO {
 
         // Displaying options is tricky. We need to deal with if the selection has moved, multi-line options and less
         // pace for all options due to npc text
-        final List<String> optionsSelected = new ArrayList<>();
+        final List<Component> optionsSelected = new ArrayList<>();
         int currentOption = selectedOption.get();
         int currentDirection = selectedOption.get() == oldSelectedOption.get() ? 1 : selectedOption.get() - oldSelectedOption.get();
         int topOption = options.size();
@@ -377,24 +381,22 @@ public class MenuConvIO extends ChatConvIO {
                 topOption = optionIndex;
             }
 
-            final List<String> optionLines;
+            final List<Component> optionLines;
 
             if (i == 0) {
-                final String optionText = settings.configOptionSelected()
-                        .replace("{option_text}", options.get(optionIndex + 1))
-                        .replace("{npc_name}", LegacyComponentSerializer.legacySection().serialize(npcName));
+                final Component optionText = settings.configOptionSelected().resolve(
+                        new VariableReplacement("{option_text}", options.get(optionIndex + 1)),
+                        new VariableReplacement("{npc_name}", npcName));
 
-                optionLines = Arrays.stream(LocalChatPaginator.wordWrap(
-                        Utils.replaceReset(StringUtils.stripEnd(optionText, "\n"), settings.configOptionSelectedReset()),
-                        settings.configLineLength(), settings.configOptionSelectedWrap())).toList();
+                settings.configOptionSelectedWrap()
+                optionLines = componentLineWrapper.splitWidth(settings.configOptionSelectedReset().append(optionText));
             } else {
-                final String optionText = settings.configOptionText()
-                        .replace("{option_text}", options.get(optionIndex + 1))
-                        .replace("{npc_name}", LegacyComponentSerializer.legacySection().serialize(npcName));
+                final Component optionText = settings.configOptionText().resolve(
+                        new VariableReplacement("{option_text}", options.get(optionIndex + 1)),
+                        new VariableReplacement("{npc_name}", npcName));
 
-                optionLines = Arrays.stream(LocalChatPaginator.wordWrap(
-                        Utils.replaceReset(StringUtils.stripEnd(optionText, "\n"), settings.configOptionTextReset()),
-                        settings.configLineLength(), settings.configOptionWrap())).toList();
+                settings.configOptionWrap()
+                optionLines = componentLineWrapper.splitWidth(settings.configOptionTextReset().append(optionText));
             }
 
             if (linesAvailable < optionLines.size()) {
@@ -403,10 +405,12 @@ public class MenuConvIO extends ChatConvIO {
 
             linesAvailable -= optionLines.size();
 
+            final Component optionLine = optionLines.stream().reduce((first, second)
+                    -> first.append(Component.newline()).append(second)).orElseGet(Component::empty);
             if (currentDirection > 0) {
-                optionsSelected.add(String.join("\n", optionLines));
+                optionsSelected.add(optionLine);
             } else {
-                optionsSelected.add(0, String.join("\n", optionLines));
+                optionsSelected.add(0, optionLine);
             }
 
             currentOption = optionIndex;
@@ -414,8 +418,10 @@ public class MenuConvIO extends ChatConvIO {
         }
 
         // Build the displayOutput
-        final StringBuilder displayBuilder = new StringBuilder();
-        displayBuilder.append(" \n".repeat(settings.configStartNewLines()));
+        final net.kyori.adventure.text.TextComponent.Builder displayBuilder = Component.text();
+        for (int i = 0; i < settings.configStartNewLines(); i++) {
+            displayBuilder.append(Component.newline());
+        }
 
         // If NPC name type is chat_top, show it
         if (NPC_NAME_TYPE_CHAT.equals(settings.configNpcNameType())) {
@@ -430,12 +436,12 @@ public class MenuConvIO extends ChatConvIO {
                 default:
                     break;
             }
-            displayBuilder.append(formattedNpcName).append('\n');
+            displayBuilder.append(formattedNpcName).append(Component.newline());
         }
 
         // We aim to try have a blank line at the top. It looks better
         if (settings.configNpcNameNewlineSeparator() && linesAvailable > 0) {
-            displayBuilder.append(" \n");
+            displayBuilder.append(Component.newline());
             linesAvailable--;
         }
 

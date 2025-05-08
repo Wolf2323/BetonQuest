@@ -23,7 +23,7 @@ public interface ConversationIO {
      *
      * @param option the text of an option
      */
-    void addPlayerOption(String option);
+    void addPlayerOption(Component option);
 
     /**
      * Displays all data to the player. Should be called after setting all
@@ -48,7 +48,7 @@ public interface ConversationIO {
      *
      * @param message The message to send
      */
-    default void print(@Nullable final String message) {
+    default void print(@Nullable final Component message) {
         // Empty
     }
 }
