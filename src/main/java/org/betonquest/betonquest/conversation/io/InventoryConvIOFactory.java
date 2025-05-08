@@ -1,5 +1,7 @@
 package org.betonquest.betonquest.conversation.io;
 
+import org.betonquest.betonquest.api.common.component.ComponentLineWrapper;
+import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
@@ -26,6 +28,11 @@ public class InventoryConvIOFactory implements ConversationIOFactory {
     private final ConfigAccessor config;
 
     /**
+     * Font registry to use for the inventory.
+     */
+    private final FontRegistry fontRegistry;
+
+    /**
      * If the IO should also print the messages in the chat.
      */
     private final boolean printMessages;
@@ -35,12 +42,14 @@ public class InventoryConvIOFactory implements ConversationIOFactory {
      *
      * @param loggerFactory the logger factory to create new conversation specific loggers
      * @param config        the config to read io options from
+     * @param fontRegistry  the font registry to use for the inventory
      * @param printMessages if the IO should also print the messages in the chat
      */
     public InventoryConvIOFactory(final BetonQuestLoggerFactory loggerFactory, final ConfigAccessor config,
-                                  final boolean printMessages) {
+                                  final FontRegistry fontRegistry, final boolean printMessages) {
         this.loggerFactory = loggerFactory;
         this.config = config;
+        this.fontRegistry = fontRegistry;
         this.printMessages = printMessages;
     }
 
@@ -49,7 +58,8 @@ public class InventoryConvIOFactory implements ConversationIOFactory {
         final ConversationColors.Colors colors = ConversationColors.getColors();
         final boolean showNumber = config.getBoolean("conversation_IO_config.chest.show_number", true);
         final boolean showNPCText = config.getBoolean("conversation_IO_config.chest.show_npc_text", true);
+        final ComponentLineWrapper componentLineWrapper = new ComponentLineWrapper(fontRegistry, 45);
         final BetonQuestLogger log = loggerFactory.create(InventoryConvIO.class);
-        return new InventoryConvIO(conversation, onlineProfile, log, colors, showNumber, showNPCText, printMessages);
+        return new InventoryConvIO(conversation, onlineProfile, log, colors, showNumber, showNPCText, printMessages, componentLineWrapper);
     }
 }

@@ -164,7 +164,7 @@ public abstract class ChatConvIO implements ConversationIO, Listener {
     }
 
     @Override
-    public void addPlayerOption(final String option) {
+    public void addPlayerOption(final Component option) {
         optionsCount++;
         options.put(optionsCount, option);
     }

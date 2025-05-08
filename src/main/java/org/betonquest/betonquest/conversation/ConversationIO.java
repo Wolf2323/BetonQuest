@@ -23,7 +23,7 @@ public interface ConversationIO {
      *
      * @param option the text of an option
      */
-    void addPlayerOption(String option);
+    void addPlayerOption(Component option);
 
     /**
      * Displays all data to the player. Should be called after setting all

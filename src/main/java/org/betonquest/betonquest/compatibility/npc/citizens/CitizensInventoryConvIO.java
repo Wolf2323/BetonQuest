@@ -48,7 +48,7 @@ public class CitizensInventoryConvIO extends InventoryConvIO {
     public CitizensInventoryConvIO(final Conversation conv, final OnlineProfile onlineProfile, final BetonQuestLogger log,
                                    final ConversationColors.Colors colors, final boolean showNumber, final boolean showNPCText,
                                    final boolean printMessages) {
-        super(conv, onlineProfile, log, colors, showNumber, showNPCText, printMessages);
+        super(conv, onlineProfile, log, colors, showNumber, showNPCText, printMessages, componentLineWrapper);
     }
 
     @Override
