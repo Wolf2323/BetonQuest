@@ -181,6 +181,21 @@ public final class ComponentLineWrapper {
         }
     }
 
+    /**
+     * Calculates the width of a Component in pixels.
+     *
+     * @param component the Component to calculate the width for
+     * @return the width of the Component in pixels
+     */
+    public int width(final Component component) {
+        int width = 0;
+        if (component instanceof final TextComponent text) {
+            final Font font = fontRegistry.getFont(text.font());
+            width = getTextWidth(font, text.content());
+        }
+        return width + component.children().stream().mapToInt(this::width).sum();
+    }
+
     private int getTextWidth(final Font font, final String text) {
         int width = 0;
         for (final char c : text.toCharArray()) {
