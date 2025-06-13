@@ -49,11 +49,10 @@ public class PatcherOptions {
      * @param key          the key to get
      * @param defaultValue the default value to return if the key does not exist
      * @return the value of the key
-     * @throws PatchException if the key does not exist in the options
      */
     @Contract("_, !null -> !null")
     @Nullable
-    public Object get(final String key, @Nullable final Object defaultValue) throws PatchException {
+    public Object get(final String key, @Nullable final Object defaultValue) {
         final Object object = options.get(key);
         if (object == null) {
             return defaultValue;
@@ -66,7 +65,7 @@ public class PatcherOptions {
      *
      * @param key the key to get
      * @return the value of the key as a boolean
-     * @throws PatchException if the key does not exist or cannot be converted to a boolean
+     * @throws PatchException if the key does not exist in the options
      */
     public String getString(final String key) throws PatchException {
         final Object object = get(key);
@@ -79,11 +78,10 @@ public class PatcherOptions {
      * @param key          the key to get
      * @param defaultValue the default value to return if the key does not exist
      * @return the value of the key as a boolean
-     * @throws PatchException if the key does not exist or cannot be converted to a boolean
      */
     @Contract("_, !null -> !null")
     @Nullable
-    public String getString(final String key, @Nullable final String defaultValue) throws PatchException {
+    public String getString(final String key, @Nullable final String defaultValue) {
         final Object object = get(key, defaultValue);
         if (object == null) {
             return null;
