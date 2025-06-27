@@ -63,7 +63,16 @@ class ComponentLineWrapperTest {
                                     Component.text("break bold text actually correct at the end of the").decoration(TextDecoration.BOLD, true),
                                     Component.empty().append(Component.text("line").decoration(TextDecoration.BOLD, true)).append(Component.text("!"))
                             ),
-                            320));
+                            320),
+                    Arguments.of("Hello <rainbow>test</rainbow>!",
+                            List.of(Component.text("Hello"),
+                                    Component.empty()
+                                            .append(Component.text("t"))
+                                            .append(Component.text("e"))
+                                            .append(Component.text("s"))
+                                            .append(Component.text("t"))
+                            ),
+                            40));
         }
 
         @ParameterizedTest

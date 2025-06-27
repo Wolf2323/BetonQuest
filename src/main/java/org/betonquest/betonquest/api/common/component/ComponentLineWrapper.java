@@ -106,7 +106,8 @@ public class ComponentLineWrapper {
             return width(prefix);
         };
 
-        final List<Component> lines = newLineWrapped.stream().map(line -> wrap(line, new Offset(offsetProvider), maxLineWidth, new ComponentDecorations(line)))
+        final List<Component> lines = newLineWrapped.stream()
+                .map(line -> wrap(line, new Offset(offsetProvider), maxLineWidth, new ComponentDecorations(line)))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
