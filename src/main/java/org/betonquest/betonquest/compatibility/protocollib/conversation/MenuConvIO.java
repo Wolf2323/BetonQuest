@@ -10,10 +10,8 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import io.papermc.lib.PaperLib;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.common.component.FixedComponentLineWrapper;
-import org.betonquest.betonquest.api.common.component.VariableComponent;
 import org.betonquest.betonquest.api.common.component.VariableReplacement;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
@@ -53,11 +51,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.GodClass", "PMD.TooManyMethods", "PMD.CommentRequired",
         "PMD.CouplingBetweenObjects"})
@@ -105,8 +101,6 @@ public class MenuConvIO extends ChatConvIO {
 
     @Nullable
     protected Component displayOutput;
-
-    protected Component formattedNpcName;
 
     @Nullable
     private ArmorStand stand;
@@ -326,7 +320,6 @@ public class MenuConvIO extends ChatConvIO {
     @Override
     public void setNpcResponse(final Component npcName, final Component response) {
         super.setNpcResponse(npcName, response);
-        formattedNpcName = settings.npcNameFormat().resolve(new VariableReplacement("npc_name", npcName));
     }
 
     protected void showDisplay() {
@@ -335,149 +328,11 @@ public class MenuConvIO extends ChatConvIO {
         }
     }
 
-    @SuppressWarnings({"PMD.NcssCount", "PMD.NPathComplexity", "PMD.CognitiveComplexity"})
-    protected void updateDisplay() {
-        if (Component.empty().equals(npcText)) {
-            displayOutput = null;
-            return;
-        }
-
-        final List<Component> npcLines = getNpcLines();
-
-        int linesAvailable = Math.max(1, 10 - npcLines.size());
-
-        if (NPC_NAME_TYPE_CHAT.equals(settings.npcNameType())) {
-            linesAvailable = Math.max(1, linesAvailable - 1);
-        }
-        if (!options.isEmpty()) {
-            linesAvailable = Math.max(1, linesAvailable - 2);
-        }
-
-        final List<Component> optionsSelected = new ArrayList<>();
-        int currentOption = selectedOption.get();
-        int currentDirection = selectedOption.get() == oldSelectedOption.get() ? 1 : selectedOption.get() - oldSelectedOption.get();
-        int topOption = options.size();
-        for (int i = 0; i < options.size() && linesAvailable > (i < 2 ? 0 : 1); i++) {
-            int optionIndex = currentOption + (i * currentDirection);
-            if (optionIndex > options.size() - 1) {
-                optionIndex = currentOption - (optionIndex - (options.size() - 1));
-                currentDirection = -currentDirection;
-                if (optionIndex < 0) {
-                    break;
-                }
-            } else if (optionIndex < 0) {
-                optionIndex = currentOption + (-optionIndex);
-                if (optionIndex > options.size() - 1) {
-                    break;
-                }
-                currentDirection = -currentDirection;
-            }
-
-            if (topOption > optionIndex) {
-                topOption = optionIndex;
-            }
-
-            final List<Component> optionLines;
-
-            final Component optionReplacementComponent = options.get(optionIndex + 1);
-            optionLines = getOptionLines(i == 0 ? settings.optionSelected() : settings.optionText(), optionReplacementComponent);
-
-            if (linesAvailable < optionLines.size()) {
-                break;
-            }
-
-            linesAvailable -= optionLines.size();
-
-            final Component optionLine = optionLines.stream().reduce((first, second)
-                    -> first.append(Component.newline()).append(second)).orElseGet(Component::empty);
-            if (currentDirection > 0) {
-                optionsSelected.add(optionLine);
-            } else {
-                optionsSelected.add(0, optionLine);
-            }
-
-            currentOption = optionIndex;
-            currentDirection = -currentDirection;
-        }
-
-        final TextComponent.Builder displayBuilder = Component.text();
-        for (int i = 0; i < settings.startNewLines(); i++) {
-            displayBuilder.append(Component.newline());
-        }
-
-        if (NPC_NAME_TYPE_CHAT.equals(settings.npcNameType())) {
-            displayBuilder.append(getFormattedNpcName().append(Component.newline()));
-        }
-
-        if (settings.npcNameNewlineSeparator() && linesAvailable > 0) {
-            displayBuilder.append(Component.newline());
-            linesAvailable--;
-        }
-
-        npcLines.forEach(line -> displayBuilder.append(line).append(Component.newline()));
-        if (settings.npcTextFillNewLines()) {
-            for (int i = 0; i < linesAvailable; i++) {
-                displayBuilder.append(Component.newline());
-            }
-        }
-
-        if (!options.isEmpty()) {
-            if (topOption > 0) {
-                displayBuilder.append(settings.scrollUp());
-            }
-            displayBuilder.append(Component.newline());
-
-            optionsSelected.forEach(line -> displayBuilder.append(line).append(Component.newline()));
-
-            if (topOption + optionsSelected.size() < options.size()) {
-                displayBuilder.append(settings.scrollDown());
-            }
-        }
-
-        if (settings.npcTextFillNewLines()) {
-            displayOutput = displayBuilder.asComponent();
-        } else {
-            final TextComponent.Builder prefix = Component.text();
-            for (int i = 0; i < linesAvailable; i++) {
-                displayBuilder.append(Component.newline());
-            }
-            displayOutput = prefix.append(displayBuilder.asComponent()).asComponent();
-        }
-
-        showDisplay();
-    }
-
-    private Component getFormattedNpcName() {
-        return switch (settings.npcNameAlign()) {
-            case "right" -> Component.text(" ".repeat(getSpaceToFillForNpcName())).append(formattedNpcName);
-            case "center", "middle" ->
-                    Component.text(" ".repeat(getSpaceToFillForNpcName() / 2)).append(formattedNpcName);
-            default -> formattedNpcName;
-        };
-    }
-
     private List<Component> getNpcLines() {
-        final VariableReplacement replacementNpcText = new VariableReplacement("npc_text", npcText);
         final VariableReplacement replacementNpcName = new VariableReplacement("npc_name", npcName);
         final Component resolvedNpcText = settings.npcText().resolve(replacementNpcText, replacementNpcName);
 
         return componentLineWrapper.splitWidth(resolvedNpcText, getPrefixComponentSupplier(settings.npcWrap()));
-    }
-
-    private List<Component> getOptionLines(final VariableComponent baseComponent, @Nullable final Component optionReplacementComponent) {
-        final Component optionReplacement = optionReplacementComponent == null ? Component.empty() : optionReplacementComponent;
-        final VariableReplacement replacementOptionText = new VariableReplacement("option_text", optionReplacement);
-        final VariableReplacement replacementNpcName = new VariableReplacement("npc_name", npcName);
-        final Component optionText = baseComponent.resolve(replacementOptionText, replacementNpcName);
-
-        return componentLineWrapper.splitWidth(optionText, getPrefixComponentSupplier(settings.optionSelectedWrap()));
-    }
-
-    private int getSpaceToFillForNpcName() {
-        final int npcNameWidth = componentLineWrapper.width(npcName);
-        final int spaceWidth = componentLineWrapper.width(Component.text(" "));
-        final int remainingSpace = Math.max(0, settings.lineLength() - npcNameWidth);
-        return remainingSpace / spaceWidth;
     }
 
     /**
@@ -783,18 +638,6 @@ public class MenuConvIO extends ChatConvIO {
             }
         }
         return Direction.UP;
-    }
-
-    private Supplier<Component> getPrefixComponentSupplier(final Component component) {
-        final AtomicBoolean first = new AtomicBoolean(true);
-        return () -> {
-            if (first.get()) {
-                first.set(false);
-                return Component.empty();
-            } else {
-                return component;
-            }
-        };
     }
 
     public enum ACTION {
