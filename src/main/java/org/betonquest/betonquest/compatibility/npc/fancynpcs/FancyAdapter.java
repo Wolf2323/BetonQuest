@@ -46,7 +46,7 @@ public class FancyAdapter implements org.betonquest.betonquest.api.quest.npc.Npc
 
     @Override
     public void show(final OnlineProfile onlineProfile) {
-        Bukkit.getScheduler().runTaskAsynchronously(BetonQuest.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(, () -> {
             final Player player = onlineProfile.getPlayer();
             final Boolean isVisible = npc.getIsVisibleForPlayer().get(player.getUniqueId());
             if (isVisible == null || !isVisible) {
@@ -57,7 +57,7 @@ public class FancyAdapter implements org.betonquest.betonquest.api.quest.npc.Npc
 
     @Override
     public void hide(final OnlineProfile onlineProfile) {
-        Bukkit.getScheduler().runTaskAsynchronously(BetonQuest.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(, () -> {
             final Player player = onlineProfile.getPlayer();
             final Boolean isVisible = npc.getIsVisibleForPlayer().get(player.getUniqueId());
             if (isVisible == null || isVisible) {

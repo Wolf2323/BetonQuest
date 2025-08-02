@@ -1,8 +1,8 @@
 package org.betonquest.betonquest.compatibility.heroes;
 
 import com.herocraftonline.heroes.api.events.HeroKillCharacterEvent;
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.MobKillNotifier;
+import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -10,12 +10,18 @@ import org.bukkit.event.Listener;
  * Handles kills done by Heroes plugin and passes them to MobKillNotifier.
  */
 public class HeroesMobKillListener implements Listener {
+    /**
+     * The profile provider used to get the profile of the player who killed the mob.
+     */
+    private final ProfileProvider profileProvider;
 
     /**
      * The default constructor.
+     *
+     * @param profileProvider the profile provider used to get the profile of the player who killed the mob
      */
-    public HeroesMobKillListener() {
-        // Empty
+    public HeroesMobKillListener(final ProfileProvider profileProvider) {
+        this.profileProvider = profileProvider;
     }
 
     /**
@@ -25,6 +31,6 @@ public class HeroesMobKillListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void onHeroesKill(final HeroKillCharacterEvent event) {
-        MobKillNotifier.addKill(BetonQuest.getInstance().getProfileProvider().getProfile(event.getAttacker().getPlayer()), event.getDefender().getEntity());
+        MobKillNotifier.addKill(profileProvider.getProfile(event.getAttacker().getPlayer()), event.getDefender().getEntity());
     }
 }

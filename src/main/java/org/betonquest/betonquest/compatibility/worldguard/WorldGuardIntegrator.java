@@ -28,7 +28,7 @@ public class WorldGuardIntegrator implements Integrator {
      * The default constructor.
      */
     public WorldGuardIntegrator() {
-        plugin = BetonQuest.getInstance();
+        plugin =;
     }
 
     /**
@@ -54,8 +54,7 @@ public class WorldGuardIntegrator implements Integrator {
     }
 
     @Override
-    public void hook() {
-        final Server server = plugin.getServer();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
         final QuestTypeRegistries questRegistries = plugin.getQuestRegistries();
         questRegistries.condition().register("region", new RegionConditionFactory(plugin.getLoggerFactory(), data));

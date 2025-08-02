@@ -40,7 +40,7 @@ public class SkriptEffectBQ extends Effect {
      */
     public SkriptEffectBQ() {
         super();
-        this.log = BetonQuest.getInstance().getLoggerFactory().create(getClass());
+        this.log = .getLoggerFactory().create(getClass());
     }
 
     @SuppressWarnings("unchecked")
@@ -64,12 +64,13 @@ public class SkriptEffectBQ extends Effect {
             public void run() {
                 final String eventID = SkriptEffectBQ.this.event.getSingle(event);
                 try {
-                    final ProfileProvider profileProvider = BetonQuest.getInstance().getProfileProvider();
-                    BetonQuest.getInstance().getQuestTypeAPI().event(profileProvider.getProfile(player.getSingle(event)), new EventID(null, eventID));
+                    final ProfileProvider profileProvider = .getProfileProvider();
+                    .
+                    getQuestTypeAPI().event(profileProvider.getProfile(player.getSingle(event)), new EventID(null, eventID));
                 } catch (final QuestException e) {
                     log.warn("Error when running Skript event - could not load '" + eventID + "' event: " + e.getMessage(), e);
                 }
             }
-        }.runTask(BetonQuest.getInstance());
+        }.runTask();
     }
 }

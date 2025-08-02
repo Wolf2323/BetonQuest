@@ -74,7 +74,7 @@ public class MMOCoreBreakCustomBlockObjective extends CountingObjective implemen
 
     @Override
     public void start() {
-        Bukkit.getPluginManager().registerEvents(this, BetonQuest.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, );
     }
 
     @Override

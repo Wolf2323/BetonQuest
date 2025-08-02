@@ -1,7 +1,8 @@
 package org.betonquest.betonquest.compatibility.holograms;
 
-import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.feature.FeatureAPI;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.QuestException;
@@ -64,6 +65,16 @@ public abstract class HologramLoop extends SectionProcessor<HologramLoop.Hologra
     protected final HologramProvider hologramProvider;
 
     /**
+     * The feature API to use for getting items.
+     */
+    private final FeatureAPI featureAPI;
+
+    /**
+     * The config accessor for the plugin.
+     */
+    private final ConfigAccessor config;
+
+    /**
      * The {@link BetonQuestLoggerFactory} to use for creating {@link BetonQuestLogger} instances.
      */
     private final BetonQuestLoggerFactory loggerFactory;
@@ -79,22 +90,28 @@ public abstract class HologramLoop extends SectionProcessor<HologramLoop.Hologra
      * @param loggerFactory     logger factory to use
      * @param log               the logger that will be used for logging
      * @param variableProcessor the {@link VariableProcessor} to use
+     * @param featureAPI        the feature API to use for getting items
      * @param hologramProvider  the hologram provider to create new holograms
+     * @param config            the config accessor for the plugin
      * @param readable          the type name used for logging, with the first letter in upper case
      * @param internal          the section name and/or bstats topic identifier
      */
-    public HologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log, final VariableProcessor variableProcessor,
-                        final HologramProvider hologramProvider, final String readable, final String internal) {
+    public HologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
+                        final VariableProcessor variableProcessor, final FeatureAPI featureAPI,
+                        final HologramProvider hologramProvider, final ConfigAccessor config, final String readable,
+                        final String internal) {
         super(log, readable, internal);
         this.loggerFactory = loggerFactory;
         this.variableProcessor = variableProcessor;
+        this.featureAPI = featureAPI;
         this.hologramProvider = hologramProvider;
+        this.config = config;
     }
 
     @Override
     public void clear() {
         super.clear();
-        defaultInterval = BetonQuest.getInstance().getPluginConfig().getInt("hologram.update_interval", 10 * 20);
+        defaultInterval = config.getInt("hologram.update_interval", 10 * 20);
     }
 
     @Override
@@ -157,7 +174,7 @@ public abstract class HologramLoop extends SectionProcessor<HologramLoop.Hologra
             } catch (final NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 stackSize = 1;
             }
-            return new ItemLine(BetonQuest.getInstance().getFeatureAPI().getItem(itemID, null).generate(stackSize));
+            return new ItemLine(featureAPI.getItem(itemID, null).generate(stackSize));
         } catch (final QuestException e) {
             throw new QuestException("Error while loading item: " + e.getMessage(), e);
         }

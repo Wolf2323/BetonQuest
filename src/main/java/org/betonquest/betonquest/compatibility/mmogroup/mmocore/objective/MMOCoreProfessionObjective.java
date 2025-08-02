@@ -74,7 +74,7 @@ public class MMOCoreProfessionObjective extends Objective implements Listener {
 
     @Override
     public void start() {
-        Bukkit.getPluginManager().registerEvents(this, BetonQuest.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, );
     }
 
     @Override

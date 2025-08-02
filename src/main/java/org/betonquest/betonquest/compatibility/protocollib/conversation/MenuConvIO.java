@@ -130,7 +130,7 @@ public class MenuConvIO extends ChatConvIO {
         super(conv, onlineProfile, colors);
         this.settings = settings;
         this.componentLineWrapper = componentLineWrapper;
-        final BetonQuestLogger log = BetonQuest.getInstance().getLoggerFactory().create(getClass());
+        final BetonQuestLogger log = .getLoggerFactory().create(getClass());
 
         // Sort out Controls
         try {
@@ -210,7 +210,7 @@ public class MenuConvIO extends ChatConvIO {
             packetAdapter = getPacketAdapter();
             ProtocolLibrary.getProtocolManager().addPacketListener(packetAdapter);
 
-            Bukkit.getPluginManager().registerEvents(this, BetonQuest.getInstance());
+            Bukkit.getPluginManager().registerEvents(this, );
         } finally {
             lock.unlock();
         }
@@ -304,7 +304,7 @@ public class MenuConvIO extends ChatConvIO {
                     }
                 }
             };
-            displayRunnable.runTaskTimerAsynchronously(BetonQuest.getInstance(), settings.refreshDelay(), settings.refreshDelay());
+            displayRunnable.runTaskTimerAsynchronously(, settings.refreshDelay(), settings.refreshDelay());
         }
     }
 
@@ -352,7 +352,7 @@ public class MenuConvIO extends ChatConvIO {
                 ProtocolLibrary.getProtocolManager().removePacketListener(packetAdapter);
             }
             if (stand != null) {
-                Bukkit.getScheduler().runTask(BetonQuest.getInstance(), () -> {
+                Bukkit.getScheduler().runTask(, () -> {
                     if (stand != null) {
                         stand.remove();
                         stand = null;
@@ -374,7 +374,7 @@ public class MenuConvIO extends ChatConvIO {
 
     @SuppressWarnings("PMD.CognitiveComplexity")
     private PacketAdapter getPacketAdapter() {
-        return new PacketAdapter(BetonQuest.getInstance(), ListenerPriority.HIGHEST,
+        return new PacketAdapter(, ListenerPriority.HIGHEST,
                 PacketType.Play.Client.STEER_VEHICLE,
                 PacketType.Play.Server.ANIMATION
         ) {
@@ -583,7 +583,7 @@ public class MenuConvIO extends ChatConvIO {
             return true;
         } else {
             selectionCooldowns.add(player);
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(BetonQuest.getInstance(), () -> selectionCooldowns.remove(player), settings.rateLimit());
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(, () -> selectionCooldowns.remove(player), settings.rateLimit());
         }
         return false;
     }

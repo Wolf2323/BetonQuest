@@ -23,8 +23,8 @@ public class FancyNpcsIntegrator implements Integrator {
     }
 
     @Override
-    public void hook() throws HookException {
-        final BetonQuest betonQuest = BetonQuest.getInstance();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) throws HookException {
+        final BetonQuest betonQuest = ;
         final NpcTypeRegistry npcTypes = betonQuest.getFeatureRegistries().npc();
         final ProfileProvider profileProvider = betonQuest.getProfileProvider();
         Bukkit.getPluginManager().registerEvents(new FancyCatcher(profileProvider, npcTypes), betonQuest);

@@ -8,11 +8,12 @@ import org.betonquest.betonquest.compatibility.brewery.condition.DrunkQualityCon
 import org.betonquest.betonquest.compatibility.brewery.condition.HasBrewConditionFactory;
 import org.betonquest.betonquest.compatibility.brewery.event.GiveBrewEventFactory;
 import org.betonquest.betonquest.compatibility.brewery.event.TakeBrewEventFactory;
+import org.betonquest.betonquest.kernel.registry.feature.FeatureRegistries;
 import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.EventTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.QuestTypeRegistries;
 import org.betonquest.betonquest.quest.PrimaryServerThreadData;
-import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Integrator for the Brewery plugin.
@@ -21,27 +22,33 @@ public class BreweryIntegrator implements Integrator {
     /**
      * The {@link BetonQuest} plugin instance.
      */
-    private final BetonQuest plugin;
+    private final Plugin plugin;
+
+    /**
+     * The logger factory used by BetonQuest.
+     */
+    private final BetonQuestLoggerFactory loggerFactory;
 
     /**
      * Create a new Brewery Integrator.
+     *
+     * @param plugin        the plugin instance
+     * @param loggerFactory the logger factory used by BetonQuest
      */
-    public BreweryIntegrator() {
-        plugin = BetonQuest.getInstance();
+    public BreweryIntegrator(final Plugin plugin, final BetonQuestLoggerFactory loggerFactory) {
+        this.plugin = plugin;
+        this.loggerFactory = loggerFactory;
     }
 
     @Override
-    public void hook() {
-        final Server server = plugin.getServer();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
 
-        final BetonQuestLoggerFactory loggerFactory = plugin.getLoggerFactory();
-        final QuestTypeRegistries questRegistries = plugin.getQuestRegistries();
-        final EventTypeRegistry eventTypes = questRegistries.event();
+        final EventTypeRegistry eventTypes = questTypeRegistries.event();
         eventTypes.register("givebrew", new GiveBrewEventFactory(loggerFactory, data));
         eventTypes.register("takebrew", new TakeBrewEventFactory(loggerFactory, data));
 
-        final ConditionTypeRegistry conditionTypes = questRegistries.condition();
+        final ConditionTypeRegistry conditionTypes = questTypeRegistries.condition();
         conditionTypes.register("drunk", new DrunkConditionFactory(loggerFactory, data));
         conditionTypes.register("drunkquality", new DrunkQualityConditionFactory(loggerFactory, data));
         conditionTypes.register("hasbrew", new HasBrewConditionFactory(loggerFactory, data));

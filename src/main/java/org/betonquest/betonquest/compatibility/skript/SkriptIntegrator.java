@@ -19,14 +19,13 @@ public class SkriptIntegrator implements Integrator {
     }
 
     @Override
-    public void hook() {
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
         Skript.registerCondition(SkriptConditionBQ.class, "%player% (meet|meets) [betonquest] condition %string%");
         Skript.registerEffect(SkriptEffectBQ.class, "fire [betonquest] event %string% for %player%");
         Skript.registerEvent("betonquest", SkriptEventBQ.class, BQEventSkript.CustomEventForSkript.class,
                 "[betonquest] event %string%");
 
-        final BetonQuest plugin = BetonQuest.getInstance();
-        final Server server = plugin.getServer();
+        final BetonQuest plugin = ;
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
         plugin.getQuestRegistries().event().register("skript", new BQEventSkriptFactory(data));
     }

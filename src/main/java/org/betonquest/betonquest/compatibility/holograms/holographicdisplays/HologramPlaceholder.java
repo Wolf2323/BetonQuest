@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.compatibility.holograms.holographicdisplays;
 
 import me.filoghost.holographicdisplays.api.placeholder.IndividualPlaceholder;
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
@@ -25,14 +24,21 @@ public class HologramPlaceholder implements IndividualPlaceholder {
     private final VariableProcessor variableProcessor;
 
     /**
+     * The {@link ProfileProvider} to use.
+     */
+    private final ProfileProvider profileProvider;
+
+    /**
      * Creates new instance of HologramPlaceholder.
      *
      * @param log               the logger that will be used for logging
      * @param variableProcessor the processor to create new variables
+     * @param profileProvider   the {@link ProfileProvider} to use
      */
-    public HologramPlaceholder(final BetonQuestLogger log, final VariableProcessor variableProcessor) {
+    public HologramPlaceholder(final BetonQuestLogger log, final VariableProcessor variableProcessor, final ProfileProvider profileProvider) {
         this.log = log;
         this.variableProcessor = variableProcessor;
+        this.profileProvider = profileProvider;
     }
 
     @Override
@@ -46,7 +52,6 @@ public class HologramPlaceholder implements IndividualPlaceholder {
         if (arguments == null) {
             return "";
         }
-        final ProfileProvider profileProvider = BetonQuest.getInstance().getProfileProvider();
         final Profile profile = profileProvider.getProfile(player);
         try {
             return variableProcessor.getValue(arguments, profile);

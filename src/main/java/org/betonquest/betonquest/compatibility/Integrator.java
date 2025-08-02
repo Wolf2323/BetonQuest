@@ -1,5 +1,8 @@
 package org.betonquest.betonquest.compatibility;
 
+import org.betonquest.betonquest.kernel.registry.feature.FeatureRegistries;
+import org.betonquest.betonquest.kernel.registry.quest.QuestTypeRegistries;
+
 /**
  * Integrator object performs integration with other plugins.
  */
@@ -8,9 +11,11 @@ public interface Integrator {
     /**
      * Integrate with another plugin.
      *
+     * @param questTypeRegistries the quest type registries
+     * @param featureRegistries   the feature registries
      * @throws HookException Is thrown, if the hooking was not successful
      */
-    void hook() throws HookException;
+    void hook(QuestTypeRegistries questTypeRegistries, FeatureRegistries featureRegistries) throws HookException;
 
     /**
      * After all integrations are successfully hooked,

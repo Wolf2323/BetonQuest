@@ -28,7 +28,7 @@ public class MythicMobKillObjective extends CountingObjective implements Listene
     /**
      * The marked key.
      */
-    private final NamespacedKey key = new NamespacedKey(BetonQuest.getInstance(), "betonquest-marked");
+    private final NamespacedKey key = new NamespacedKey(, "betonquest-marked");
 
     /**
      * The names of all mobs that this objective should count.
@@ -154,7 +154,7 @@ public class MythicMobKillObjective extends CountingObjective implements Listene
 
     @Override
     public void start() {
-        Bukkit.getPluginManager().registerEvents(this, BetonQuest.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, );
     }
 
     @Override

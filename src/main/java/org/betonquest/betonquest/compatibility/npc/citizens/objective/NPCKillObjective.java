@@ -82,7 +82,7 @@ public class NPCKillObjective extends CountingObjective implements Listener {
 
     @Override
     public void start() {
-        Bukkit.getPluginManager().registerEvents(this, BetonQuest.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, );
     }
 
     @Override

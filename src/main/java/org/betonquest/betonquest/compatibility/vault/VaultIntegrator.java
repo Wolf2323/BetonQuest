@@ -35,13 +35,12 @@ public class VaultIntegrator implements Integrator {
      * Constructor for the Vault Integration.
      */
     public VaultIntegrator() {
-        plugin = BetonQuest.getInstance();
+        plugin =;
         this.log = plugin.getLoggerFactory().create(getClass());
     }
 
     @Override
-    public void hook() {
-        final Server server = plugin.getServer();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
 
         final ServicesManager servicesManager = Bukkit.getServer().getServicesManager();

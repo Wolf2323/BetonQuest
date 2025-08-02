@@ -1,10 +1,12 @@
 package org.betonquest.betonquest.compatibility.holograms;
 
-import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.UnsupportedVersionException;
+import org.betonquest.betonquest.kernel.registry.feature.FeatureRegistries;
+import org.betonquest.betonquest.kernel.registry.quest.QuestTypeRegistries;
 import org.betonquest.betonquest.versioning.UpdateStrategy;
 import org.betonquest.betonquest.versioning.Version;
 import org.betonquest.betonquest.versioning.VersionComparator;
@@ -18,6 +20,11 @@ import org.jetbrains.annotations.Nullable;
  * HologramIntegrator objects loaded at once, hence reload(), and close() should not do anything.
  */
 public abstract class HologramIntegrator implements Integrator, Comparable<HologramIntegrator> {
+    /**
+     * The config accessor for the plugin.
+     */
+    private final ConfigAccessor config;
+
     /**
      * The name of the plugin.
      */
@@ -42,11 +49,13 @@ public abstract class HologramIntegrator implements Integrator, Comparable<Holog
     /**
      * Create a sub-integrator representing a specific implementation of BetonHolograms.
      *
+     * @param config          The config accessor for the plugin
      * @param pluginName      The plugin to be hooked
      * @param requiredVersion The minimum required version
      * @param qualifiers      Version qualifiers
      */
-    public HologramIntegrator(final String pluginName, final String requiredVersion, final String... qualifiers) {
+    public HologramIntegrator(final ConfigAccessor config, final String pluginName, final String requiredVersion, final String... qualifiers) {
+        this.config = config;
         this.pluginName = pluginName;
         this.requiredVersion = requiredVersion;
         this.qualifiers = qualifiers.clone();
@@ -78,7 +87,7 @@ public abstract class HologramIntegrator implements Integrator, Comparable<Holog
      * did not exist or if the plugin was not found.
      */
     public int getPriority() {
-        final String defaultHolograms = BetonQuest.getInstance().getPluginConfig().getString("hologram.default");
+        final String defaultHolograms = config.getString("hologram.default");
         if (defaultHolograms != null) {
             final String[] split = defaultHolograms.split(",");
             for (int i = 0; i < split.length; i++) {
@@ -99,7 +108,7 @@ public abstract class HologramIntegrator implements Integrator, Comparable<Holog
     public abstract BetonHologram createHologram(Location location);
 
     @Override
-    public void hook() throws HookException {
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) throws HookException {
         plugin = Bukkit.getPluginManager().getPlugin(pluginName);
         if (plugin != null) {
             final Version version = new Version(plugin.getDescription().getVersion());

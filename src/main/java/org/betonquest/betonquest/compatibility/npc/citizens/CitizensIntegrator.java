@@ -55,7 +55,7 @@ public class CitizensIntegrator implements Integrator {
      */
     public CitizensIntegrator(final Compatibility compatibility) {
         this.compatibility = compatibility;
-        plugin = BetonQuest.getInstance();
+        plugin =;
     }
 
     /**
@@ -68,8 +68,7 @@ public class CitizensIntegrator implements Integrator {
     }
 
     @Override
-    public void hook() {
-        final Server server = plugin.getServer();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
         final NPCRegistry npcRegistry = CitizensAPI.getNPCRegistry();
         final CitizensWalkingListener citizensWalkingListener = new CitizensWalkingListener(npcRegistry);
         server.getPluginManager().registerEvents(citizensWalkingListener, plugin);

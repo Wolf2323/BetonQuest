@@ -1,6 +1,5 @@
 package org.betonquest.betonquest.compatibility.mmogroup.mmocore;
 
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.mmogroup.mmocore.condition.MMOCoreAttributeConditionFactory;
 import org.betonquest.betonquest.compatibility.mmogroup.mmocore.condition.MMOCoreClassConditionFactory;
@@ -14,41 +13,54 @@ import org.betonquest.betonquest.compatibility.mmogroup.mmocore.event.MMOCoreSki
 import org.betonquest.betonquest.compatibility.mmogroup.mmocore.objective.MMOCoreBreakCustomBlockObjectiveFactory;
 import org.betonquest.betonquest.compatibility.mmogroup.mmocore.objective.MMOCoreChangeClassObjectiveFactory;
 import org.betonquest.betonquest.compatibility.mmogroup.mmocore.objective.MMOCoreProfessionObjectiveFactory;
+import org.betonquest.betonquest.kernel.registry.feature.FeatureRegistries;
 import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.EventTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.ObjectiveTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.QuestTypeRegistries;
 import org.betonquest.betonquest.quest.PrimaryServerThreadData;
 import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Integrator for MMO CORE.
  */
 public class MMOCoreIntegrator implements Integrator {
+    /**
+     * The plugin instance.
+     */
+    private final Plugin plugin;
+
+    /**
+     * The server instance.
+     */
+    private final Server server;
 
     /**
      * The default constructor.
+     *
+     * @param plugin the plugin instance
+     * @param server the server instance
      */
-    public MMOCoreIntegrator() {
+    public MMOCoreIntegrator(final Plugin plugin, final Server server) {
+        this.plugin = plugin;
+        this.server = server;
     }
 
     @Override
-    public void hook() {
-        final BetonQuest plugin = BetonQuest.getInstance();
-        final Server server = plugin.getServer();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
-        final QuestTypeRegistries questRegistries = plugin.getQuestRegistries();
-        final ConditionTypeRegistry conditionTypes = questRegistries.condition();
+        final ConditionTypeRegistry conditionTypes = questTypeRegistries.condition();
         conditionTypes.register("mmoclass", new MMOCoreClassConditionFactory(data));
         conditionTypes.register("mmoattribute", new MMOCoreAttributeConditionFactory(data));
         conditionTypes.register("mmoprofession", new MMOCoreProfessionLevelConditionFactory(data));
 
-        final ObjectiveTypeRegistry objectiveTypes = questRegistries.objective();
+        final ObjectiveTypeRegistry objectiveTypes = questTypeRegistries.objective();
         objectiveTypes.register("mmoprofessionlevelup", new MMOCoreProfessionObjectiveFactory());
         objectiveTypes.register("mmochangeclass", new MMOCoreChangeClassObjectiveFactory());
         objectiveTypes.register("mmocorebreakblock", new MMOCoreBreakCustomBlockObjectiveFactory());
 
-        final EventTypeRegistry eventTypes = questRegistries.event();
+        final EventTypeRegistry eventTypes = questTypeRegistries.event();
         eventTypes.register("mmoclassexperience", new MMOCoreClassExperienceEventFactory(data));
         eventTypes.register("mmoprofessionexperience", new MMOCoreProfessionExperienceEventFactory(data));
         eventTypes.register("mmocoreclasspoints", new MMOCoreClassPointsEventFactory(data));

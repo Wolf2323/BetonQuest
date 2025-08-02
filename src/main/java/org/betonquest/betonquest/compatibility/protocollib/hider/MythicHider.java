@@ -50,7 +50,7 @@ public final class MythicHider extends BukkitRunnable implements Listener {
 
     private MythicHider() {
         super();
-        final BetonQuest plugin = BetonQuest.getInstance();
+        final BetonQuest plugin = ;
         this.profileProvider = plugin.getProfileProvider();
         mythicmobs = new HashMap<>();
         final int updateInterval = plugin.getPluginConfig().getInt("hider.npc_update_interval", 5 * 20);

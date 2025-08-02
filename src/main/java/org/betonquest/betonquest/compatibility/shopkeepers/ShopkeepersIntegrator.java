@@ -26,16 +26,15 @@ public class ShopkeepersIntegrator implements Integrator {
     }
 
     @Override
-    public void hook() throws HookException {
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) throws HookException {
         final Plugin shopkeepers = Bukkit.getPluginManager().getPlugin("Shopkeepers");
         final Version shopkeepersVersion = new Version(shopkeepers.getDescription().getVersion());
         final VersionComparator comparator = new VersionComparator(UpdateStrategy.MAJOR);
         if (comparator.isOtherNewerThanCurrent(shopkeepersVersion, new Version("2.2.0"))) {
             throw new UnsupportedVersionException(shopkeepers, "2.2.0");
         }
-        final BetonQuest plugin = BetonQuest.getInstance();
+        final BetonQuest plugin = ;
         final QuestTypeRegistries questRegistries = plugin.getQuestRegistries();
-        final Server server = plugin.getServer();
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
         questRegistries.condition().register("shopamount", new HavingShopConditionFactory(data));
         questRegistries.event().register("shopkeeper", new OpenShopEventFactory(plugin.getLoggerFactory(), data));

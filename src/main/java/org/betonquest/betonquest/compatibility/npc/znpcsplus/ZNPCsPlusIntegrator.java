@@ -30,9 +30,9 @@ public class ZNPCsPlusIntegrator implements Integrator {
     }
 
     @Override
-    public void hook() throws HookException {
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) throws HookException {
         validateVersion();
-        final BetonQuest betonQuest = BetonQuest.getInstance();
+        final BetonQuest betonQuest = ;
         final NpcTypeRegistry npcTypes = betonQuest.getFeatureRegistries().npc();
         final ProfileProvider profileProvider = betonQuest.getProfileProvider();
         Bukkit.getPluginManager().registerEvents(new ZNPCsPlusCatcher(profileProvider, npcTypes), betonQuest);

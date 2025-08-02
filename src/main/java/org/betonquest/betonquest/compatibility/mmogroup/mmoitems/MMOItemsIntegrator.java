@@ -21,8 +21,8 @@ public class MMOItemsIntegrator implements Integrator {
     }
 
     @Override
-    public void hook() {
-        final BetonQuest plugin = BetonQuest.getInstance();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
+        final BetonQuest plugin = ;
         final ObjectiveTypeRegistry objectiveTypes = plugin.getQuestRegistries().objective();
         objectiveTypes.register("mmoitemupgrade", new MMOItemsUpgradeObjectiveFactory());
         objectiveTypes.register("mmoitemapplygem", new MMOItemsApplyGemObjectiveFactory());

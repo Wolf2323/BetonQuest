@@ -17,6 +17,7 @@ import org.betonquest.betonquest.instruction.variable.VariableList;
 import org.betonquest.betonquest.kernel.processor.quest.VariableProcessor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,16 @@ public class EffectLibParticleManager {
      * Custom {@link BetonQuestLogger} instance for this class.
      */
     private final BetonQuestLogger log;
+
+    /**
+     * The BetonQuest instance to use.
+     */
+    private final BetonQuest betonQuest;
+
+    /**
+     * The Plugin instance.
+     */
+    private final Plugin plugin;
 
     /**
      * The {@link BetonQuestLoggerFactory} to use for creating {@link BetonQuestLogger} instances.
@@ -73,6 +84,8 @@ public class EffectLibParticleManager {
     /**
      * Loads the particle configuration and starts the effects.
      *
+     * @param betonQuest        the BetonQuest instance to use
+     * @param plugin            the Plugin instance
      * @param log               the custom logger for this class
      * @param loggerFactory     the logger factory to create new custom loggers
      * @param questTypeAPI      the Quest Type API
@@ -81,10 +94,12 @@ public class EffectLibParticleManager {
      * @param variableProcessor the variable processor to create new variables
      * @param manager           the effect manager starting and controlling particles
      */
-    public EffectLibParticleManager(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                                    final QuestTypeAPI questTypeAPI, final FeatureAPI featureAPI,
-                                    final ProfileProvider profileProvider, final VariableProcessor variableProcessor,
-                                    final EffectManager manager) {
+    public EffectLibParticleManager(final BetonQuest betonQuest, final Plugin plugin, final BetonQuestLogger log,
+                                    final BetonQuestLoggerFactory loggerFactory, final QuestTypeAPI questTypeAPI,
+                                    final FeatureAPI featureAPI, final ProfileProvider profileProvider,
+                                    final VariableProcessor variableProcessor, final EffectManager manager) {
+        this.betonQuest = betonQuest;
+        this.plugin = plugin;
         this.loggerFactory = loggerFactory;
         this.log = log;
         this.questTypeAPI = questTypeAPI;
@@ -97,7 +112,7 @@ public class EffectLibParticleManager {
 
     @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CognitiveComplexity"})
     private void loadParticleConfiguration() {
-        for (final QuestPackage pack : BetonQuest.getInstance().getPackages().values()) {
+        for (final QuestPackage pack : betonQuest.getPackages().values()) {
             final ConfigurationSection section = pack.getConfig().getConfigurationSection(EFFECTLIB_CONFIG_SECTION);
             if (section == null) {
                 continue;
@@ -139,7 +154,7 @@ public class EffectLibParticleManager {
                         questTypeAPI, featureAPI, profileProvider, manager, effect);
 
                 activeParticles.add(particleRunnable);
-                particleRunnable.runTaskTimer(BetonQuest.getInstance(), 1, interval);
+                particleRunnable.runTaskTimer(plugin, 1, interval);
             }
         }
     }

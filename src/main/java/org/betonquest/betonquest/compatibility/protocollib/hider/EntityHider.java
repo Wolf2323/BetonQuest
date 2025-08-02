@@ -270,7 +270,7 @@ public class EntityHider implements Listener {
                     final int index = event.getPacketType().equals(PacketType.Play.Server.PLAYER_COMBAT_KILL) ? 1 : 0;
 
                     final Integer entityID = event.getPacket().getIntegers().readSafely(index);
-                    if (entityID != null && !isVisible(BetonQuest.getInstance().getProfileProvider().getProfile(event.getPlayer()), entityID)) {
+                    if (entityID != null && !isVisible(.getProfileProvider().getProfile(event.getPlayer()),entityID)){
                         event.setCancelled(true);
                     }
                 }

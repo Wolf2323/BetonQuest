@@ -44,7 +44,7 @@ public class TrainCartsLocationObjective extends AbstractLocationObjective imple
 
     @Override
     public void start() {
-        Bukkit.getPluginManager().registerEvents(this, BetonQuest.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, );
     }
 
     @Override

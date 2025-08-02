@@ -69,7 +69,7 @@ public class CitizensWalkingListener implements Listener {
                         }
                     }
                 }
-            }.runTask(BetonQuest.getInstance());
+            }.runTask();
         }
     }
 
@@ -105,7 +105,7 @@ public class CitizensWalkingListener implements Listener {
                         }
                     }
                 }
-            }.runTask(BetonQuest.getInstance());
+            }.runTask();
         }
     }
 

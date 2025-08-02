@@ -2,7 +2,7 @@ package org.betonquest.betonquest.compatibility.mythicmobs;
 
 import io.lumine.mythic.bukkit.BukkitAPIHelper;
 import io.lumine.mythic.bukkit.MythicBukkit;
-import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
@@ -14,6 +14,7 @@ import org.betonquest.betonquest.compatibility.mythicmobs.npc.MythicMobsNpcFacto
 import org.betonquest.betonquest.compatibility.mythicmobs.npc.MythicMobsReverseIdentifier;
 import org.betonquest.betonquest.compatibility.mythicmobs.objective.MythicMobKillObjectiveFactory;
 import org.betonquest.betonquest.compatibility.protocollib.hider.MythicHider;
+import org.betonquest.betonquest.kernel.registry.feature.FeatureRegistries;
 import org.betonquest.betonquest.kernel.registry.quest.NpcTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.QuestTypeRegistries;
 import org.betonquest.betonquest.quest.PrimaryServerThreadData;
@@ -30,9 +31,14 @@ import org.bukkit.plugin.Plugin;
 public class MythicMobsIntegrator implements Integrator {
 
     /**
-     * The BetonQuest plugin instance.
+     * The plugin instance.
      */
-    private final BetonQuest plugin;
+    private final Plugin plugin;
+
+    /**
+     * The profile provider instance.
+     */
+    private final ProfileProvider profileProvider;
 
     /**
      * The compatibility instance to use for checking other hooks.
@@ -40,29 +46,37 @@ public class MythicMobsIntegrator implements Integrator {
     private final Compatibility compatibility;
 
     /**
+     * The server instance.
+     */
+    private final Server server;
+
+    /**
      * The default constructor.
      *
-     * @param compatibility the compatibility instance to use for checking other hooks
+     * @param plugin          the plugin instance
+     * @param profileProvider the profile provider instance
+     * @param compatibility   the compatibility instance to use for checking other hooks
+     * @param server          the server instance
      */
-    public MythicMobsIntegrator(final Compatibility compatibility) {
+    public MythicMobsIntegrator(final Plugin plugin, final ProfileProvider profileProvider, final Compatibility compatibility, final Server server) {
+        this.plugin = plugin;
+        this.profileProvider = profileProvider;
         this.compatibility = compatibility;
-        plugin = BetonQuest.getInstance();
+        this.server = server;
     }
 
     @Override
-    public void hook() throws HookException {
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) throws HookException {
         validateVersion();
 
         final BukkitAPIHelper apiHelper = new BukkitAPIHelper();
 
-        final Server server = plugin.getServer();
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
-        final QuestTypeRegistries questRegistries = plugin.getQuestRegistries();
-        questRegistries.condition().register("mythicmobdistance", new MythicMobDistanceConditionFactory(apiHelper, data));
-        questRegistries.objective().register("mmobkill", new MythicMobKillObjectiveFactory());
-        questRegistries.event().registerCombined("mspawnmob", new MythicSpawnMobEventFactory(apiHelper, data, compatibility));
-        final NpcTypeRegistry npcTypes = plugin.getFeatureRegistries().npc();
-        server.getPluginManager().registerEvents(new MythicMobsInteractCatcher(plugin.getProfileProvider(), npcTypes, apiHelper), plugin);
+        questTypeRegistries.condition().register("mythicmobdistance", new MythicMobDistanceConditionFactory(apiHelper, data));
+        questTypeRegistries.objective().register("mmobkill", new MythicMobKillObjectiveFactory());
+        questTypeRegistries.event().registerCombined("mspawnmob", new MythicSpawnMobEventFactory(apiHelper, data, compatibility));
+        final NpcTypeRegistry npcTypes = featureRegistries.npc();
+        server.getPluginManager().registerEvents(new MythicMobsInteractCatcher(profileProvider, npcTypes, apiHelper), plugin);
         npcTypes.register("mythicmobs", new MythicMobsNpcFactory(MythicBukkit.inst().getMobManager()));
         npcTypes.registerIdentifier(new MythicMobsReverseIdentifier());
     }

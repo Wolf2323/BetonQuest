@@ -39,7 +39,7 @@ public class SkriptConditionBQ extends Condition {
      */
     public SkriptConditionBQ() {
         super();
-        this.log = BetonQuest.getInstance().getLoggerFactory().create(getClass());
+        this.log = .getLoggerFactory().create(getClass());
     }
 
     @SuppressWarnings("unchecked")
@@ -60,8 +60,9 @@ public class SkriptConditionBQ extends Condition {
     public boolean check(final Event event) {
         final String conditionID = condition.getSingle(event);
         try {
-            final ProfileProvider profileProvider = BetonQuest.getInstance().getProfileProvider();
-            return BetonQuest.getInstance().getQuestTypeAPI().condition(profileProvider.getProfile(player.getSingle(event)), new ConditionID(null, conditionID));
+            final ProfileProvider profileProvider = .getProfileProvider();
+            return .
+            getQuestTypeAPI().condition(profileProvider.getProfile(player.getSingle(event)), new ConditionID(null, conditionID));
         } catch (final QuestException e) {
             log.warn("Error while checking Skript condition - could not load condition with ID '" + conditionID + "': " + e.getMessage(), e);
             return false;

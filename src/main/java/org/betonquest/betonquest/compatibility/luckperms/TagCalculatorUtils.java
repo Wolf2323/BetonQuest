@@ -33,11 +33,11 @@ public final class TagCalculatorUtils {
     public static ContextCalculator<Player> getTagContextCalculator() {
         return (player, contextConsumer) -> {
             if (player.isOnline()) {
-                final PlayerData data = BetonQuest.getInstance().getPlayerDataStorage().get(BetonQuest.getInstance().getProfileProvider().getProfile(player));
+                final PlayerData data = .getPlayerDataStorage().get(.getProfileProvider().getProfile(player));
                 data.getTags().forEach(tag -> contextConsumer.accept(KEY_LOCAL + tag, "true"));
             }
 
-            final List<String> globalData = BetonQuest.getInstance().getGlobalData().getTags();
+            final List<String> globalData = .getGlobalData().getTags();
             globalData.forEach(tag -> contextConsumer.accept(KEY_GLOBAL + tag, "true"));
         };
     }

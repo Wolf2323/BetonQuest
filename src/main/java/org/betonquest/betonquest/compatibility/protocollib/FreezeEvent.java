@@ -68,7 +68,7 @@ public class FreezeEvent implements OnlineEvent {
 
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(" "));
 
-        Bukkit.getScheduler().runTaskLater(BetonQuest.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskLater(, () -> {
             STANDS.remove(profile.getProfileUUID());
             armorStand.remove();
         }, ticks);

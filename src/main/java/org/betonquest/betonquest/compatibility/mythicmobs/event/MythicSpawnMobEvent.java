@@ -104,13 +104,13 @@ public class MythicSpawnMobEvent implements PlayerEvent, PlayerlessEvent {
                     if (mythicHider == null) {
                         throw new QuestException("Can't hide MythicMob because the Hider is null!");
                     }
-                    Bukkit.getScheduler().runTaskLater(BetonQuest.getInstance(), () -> mythicHider.applyVisibilityPrivate(profile.getOnlineProfile().get(), entity), 20L);
+                    Bukkit.getScheduler().runTaskLater(, () -> mythicHider.applyVisibilityPrivate(profile.getOnlineProfile().get(), entity), 20L);
                 }
                 if (targetPlayer) {
-                    Bukkit.getScheduler().runTaskLater(BetonQuest.getInstance(), () -> targetMob.setTarget(BukkitAdapter.adapt(player)), 20L);
+                    Bukkit.getScheduler().runTaskLater(, () -> targetMob.setTarget(BukkitAdapter.adapt(player)), 20L);
                 }
                 if (marked != null) {
-                    final NamespacedKey key = new NamespacedKey(BetonQuest.getInstance(), "betonquest-marked");
+                    final NamespacedKey key = new NamespacedKey(, "betonquest-marked");
                     entity.getPersistentDataContainer().set(key, PersistentDataType.STRING, marked.getValue(profile));
                 }
             } catch (final InvalidMobTypeException e) {
@@ -128,7 +128,7 @@ public class MythicSpawnMobEvent implements PlayerEvent, PlayerlessEvent {
             try {
                 final Entity entity = apiHelper.spawnMythicMob(mob, location, level);
                 if (marked != null) {
-                    final NamespacedKey key = new NamespacedKey(BetonQuest.getInstance(), "betonquest-marked");
+                    final NamespacedKey key = new NamespacedKey(, "betonquest-marked");
                     entity.getPersistentDataContainer().set(key, PersistentDataType.STRING, marked.getValue(null));
                 }
             } catch (final InvalidMobTypeException e) {

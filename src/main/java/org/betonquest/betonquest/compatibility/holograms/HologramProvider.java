@@ -6,6 +6,8 @@ import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
+import org.betonquest.betonquest.kernel.registry.feature.FeatureRegistries;
+import org.betonquest.betonquest.kernel.registry.quest.QuestTypeRegistries;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -90,8 +92,7 @@ public class HologramProvider implements Integrator {
     }
 
     @Override
-    public void hook() throws HookException {
-        final BetonQuest plugin = BetonQuest.getInstance();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) throws HookException {
         final BetonQuestLoggerFactory loggerFactory = plugin.getLoggerFactory();
         this.locationHologramLoop = new LocationHologramLoop(loggerFactory, loggerFactory.create(LocationHologramLoop.class),
                 plugin.getVariableProcessor(), this);

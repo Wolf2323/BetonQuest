@@ -110,7 +110,7 @@ public class TrainCartsRideObjective extends CountingObjective implements Listen
 
     @Override
     public void start() {
-        Bukkit.getPluginManager().registerEvents(this, BetonQuest.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, );
     }
 
     @Override
@@ -134,7 +134,7 @@ public class TrainCartsRideObjective extends CountingObjective implements Listen
 
     private void startCount(final OnlineProfile onlineProfile) {
         final int ticksToCompletion = getCountingData(onlineProfile).getAmountLeft() * 20;
-        final BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLater(BetonQuest.getInstance(),
+        final BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLater(,
                 () -> stopCount(onlineProfile), ticksToCompletion);
 
         startTimes.put(onlineProfile.getPlayerUUID(), Pair.of(System.currentTimeMillis(), bukkitTask));

@@ -22,11 +22,10 @@ public class WorldEditIntegrator implements Integrator {
     }
 
     @Override
-    public void hook() {
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
         final WorldEditPlugin worldEdit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
         final File folder = new File(worldEdit.getDataFolder(), "schematics");
-        final BetonQuest plugin = BetonQuest.getInstance();
-        final Server server = plugin.getServer();
+        final BetonQuest plugin = ;
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
         plugin.getQuestRegistries().event().registerCombined("paste", new PasteSchematicEventFactory(folder, data));
     }

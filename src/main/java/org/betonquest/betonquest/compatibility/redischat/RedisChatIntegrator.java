@@ -22,11 +22,11 @@ public class RedisChatIntegrator implements Integrator, Listener {
      * Creates the RedisChat integrator.
      */
     public RedisChatIntegrator() {
-        plugin = BetonQuest.getInstance();
+        plugin =;
     }
 
     @Override
-    public void hook() throws HookException {
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) throws HookException {
         final RedisChatAPI redisChatAPI = RedisChatAPI.getAPI();
         Objects.requireNonNull(redisChatAPI, "RedisChatAPI is null");
         plugin.getFeatureRegistries().interceptor().register("redischat", new RedisChatInterceptorFactory(redisChatAPI));

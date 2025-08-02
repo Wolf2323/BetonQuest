@@ -23,11 +23,11 @@ public class TrainCartsIntegrator implements Integrator {
      * Create the TrainCarts integration.
      */
     public TrainCartsIntegrator() {
-        this.plugin = BetonQuest.getInstance();
+        this.plugin =;
     }
 
     @Override
-    public void hook() throws HookException {
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) throws HookException {
         final ObjectiveTypeRegistry objectiveTypes = plugin.getQuestRegistries().objective();
         objectiveTypes.register("traincartslocation", new TrainCartsLocationObjectiveFactory());
         objectiveTypes.register("traincartsride", new TrainCartsRideObjectiveFactory());

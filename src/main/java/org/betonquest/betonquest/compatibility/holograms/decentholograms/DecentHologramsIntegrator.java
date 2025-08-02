@@ -2,9 +2,10 @@ package org.betonquest.betonquest.compatibility.holograms.decentholograms;
 
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
-import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.holograms.BetonHologram;
@@ -12,6 +13,8 @@ import org.betonquest.betonquest.compatibility.holograms.HologramIntegrator;
 import org.betonquest.betonquest.compatibility.holograms.HologramProvider;
 import org.betonquest.betonquest.id.VariableID;
 import org.betonquest.betonquest.instruction.Instruction;
+import org.betonquest.betonquest.kernel.registry.feature.FeatureRegistries;
+import org.betonquest.betonquest.kernel.registry.quest.QuestTypeRegistries;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -29,10 +32,13 @@ public class DecentHologramsIntegrator extends HologramIntegrator {
 
     /**
      * Creates a new DecentHologramsIntegrator for DecentHolograms.
+     *
+     * @param config        the config accessor for the plugin
+     * @param loggerFactory the logger factory.
      */
-    public DecentHologramsIntegrator() {
-        super("DecentHolograms", "2.7.5");
-        this.log = BetonQuest.getInstance().getLoggerFactory().create(getClass());
+    public DecentHologramsIntegrator(final ConfigAccessor config, final BetonQuestLoggerFactory loggerFactory) {
+        super(config, "DecentHolograms", "2.7.5");
+        this.log = loggerFactory.create(getClass());
     }
 
     @Override
@@ -43,8 +49,8 @@ public class DecentHologramsIntegrator extends HologramIntegrator {
     }
 
     @Override
-    public void hook() throws HookException {
-        super.hook();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) throws HookException {
+        super.hook(questTypeRegistries, featureRegistries);
         if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             log.warn("Holograms from DecentHolograms will not be able to use BetonQuest variables in text lines "
                     + "without PlaceholderAPI plugin! Install it to use holograms with variables!");

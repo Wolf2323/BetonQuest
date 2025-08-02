@@ -309,7 +309,7 @@ public class CitizensMoveController implements Listener, Predicate<NPC> {
                         questTypeAPI.event(profile, event);
                     }
                 }
-            }.runTaskLater(BetonQuest.getInstance(), moveData.waitTicks());
+            }.runTaskLater(, moveData.waitTicks());
         }
     }
 }

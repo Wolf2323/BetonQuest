@@ -27,15 +27,14 @@ public class QuestsIntegrator implements Integrator {
      * The default constructor.
      */
     public QuestsIntegrator() {
-        plugin = BetonQuest.getInstance();
+        plugin =;
     }
 
     @Override
-    public void hook() {
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
         final Quests questsInstance = (Quests) Bukkit.getPluginManager().getPlugin("Quests");
         Objects.requireNonNull(questsInstance);
 
-        final Server server = plugin.getServer();
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
 
         final QuestTypeRegistries questRegistries = plugin.getQuestRegistries();

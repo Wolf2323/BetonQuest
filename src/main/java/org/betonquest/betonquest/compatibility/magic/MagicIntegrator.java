@@ -2,14 +2,19 @@ package org.betonquest.betonquest.compatibility.magic;
 
 import com.elmakers.mine.bukkit.api.event.SpellInventoryEvent;
 import com.elmakers.mine.bukkit.api.magic.MagicAPI;
-import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.compatibility.Integrator;
+import org.betonquest.betonquest.config.PluginMessage;
+import org.betonquest.betonquest.data.PlayerDataStorage;
+import org.betonquest.betonquest.kernel.registry.feature.FeatureRegistries;
+import org.betonquest.betonquest.kernel.registry.quest.QuestTypeRegistries;
 import org.betonquest.betonquest.quest.PrimaryServerThreadData;
 import org.bukkit.Server;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import java.util.Objects;
@@ -19,9 +24,14 @@ import java.util.Objects;
  */
 public class MagicIntegrator implements Integrator, Listener {
     /**
-     * The BetonQuest plugin instance.
+     * The plugin instance.
      */
-    private final BetonQuest plugin;
+    private final Plugin plugin;
+
+    /**
+     * The logger factory used by BetonQuest.
+     */
+    private final BetonQuestLoggerFactory loggerFactory;
 
     /**
      * The profile provider instance.
@@ -29,20 +39,47 @@ public class MagicIntegrator implements Integrator, Listener {
     private final ProfileProvider profileProvider;
 
     /**
-     * The default constructor.
+     * The player data storage instance.
      */
-    public MagicIntegrator() {
-        plugin = BetonQuest.getInstance();
-        profileProvider = plugin.getProfileProvider();
+    private final PlayerDataStorage dataStorage;
+
+    /**
+     * The plugin message instance.
+     */
+    private final PluginMessage pluginMessage;
+
+    /**
+     * The server instance.
+     */
+    private final Server server;
+
+    /**
+     * The default constructor.
+     *
+     * @param plugin          the plugin instance
+     * @param loggerFactory   the logger factory used by BetonQuest
+     * @param profileProvider the profile provider instance
+     * @param dataStorage     the player data storage instance
+     * @param pluginMessage   the plugin message instance
+     * @param server          the server instance
+     */
+    public MagicIntegrator(final Plugin plugin, final BetonQuestLoggerFactory loggerFactory,
+                           final ProfileProvider profileProvider, final PlayerDataStorage dataStorage,
+                           final PluginMessage pluginMessage, final Server server) {
+        this.plugin = plugin;
+        this.loggerFactory = loggerFactory;
+        this.profileProvider = profileProvider;
+        this.dataStorage = dataStorage;
+        this.pluginMessage = pluginMessage;
+        this.server = server;
     }
 
     @Override
-    public void hook() {
-        final Server server = plugin.getServer();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
         final PluginManager manager = server.getPluginManager();
         final MagicAPI api = Objects.requireNonNull((MagicAPI) manager.getPlugin("Magic"));
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
-        plugin.getQuestRegistries().condition().register("wand", new WandConditionFactory(plugin.getLoggerFactory(), api, data));
+        questTypeRegistries.condition().register("wand", new WandConditionFactory(loggerFactory, api, data));
         manager.registerEvents(this, plugin);
     }
 
@@ -65,7 +102,7 @@ public class MagicIntegrator implements Integrator, Listener {
     public void onSpellInventoryEvent(final SpellInventoryEvent event) {
         if (!event.isOpening()) {
             final OnlineProfile onlineProfile = profileProvider.getProfile(event.getMage().getPlayer());
-            plugin.getPlayerDataStorage().get(onlineProfile).getJournal(plugin.getPluginMessage()).update();
+            dataStorage.get(onlineProfile).getJournal(pluginMessage).update();
         }
     }
 }

@@ -18,11 +18,11 @@ public class PlaceholderAPIIntegrator implements Integrator {
      * The default constructor.
      */
     public PlaceholderAPIIntegrator() {
-        plugin = BetonQuest.getInstance();
+        plugin =;
     }
 
     @Override
-    public void hook() {
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
         plugin.getQuestRegistries().variable().registerCombined("ph", new PlaceholderVariableFactory());
         final PluginDescriptionFile description = plugin.getDescription();
         new BetonQuestPlaceholder(plugin.getLoggerFactory().create(BetonQuestPlaceholder.class, "PlaceholderAPI Integration"),

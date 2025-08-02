@@ -20,12 +20,11 @@ public class MythicLibIntegrator implements Integrator {
      * Creates a new MythicLib integrator.
      */
     public MythicLibIntegrator() {
-        plugin = BetonQuest.getInstance();
+        plugin =;
     }
 
     @Override
-    public void hook() {
-        final Server server = plugin.getServer();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) {
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
         plugin.getQuestRegistries().condition().register("mmostat", new MythicLibStatConditionFactory(data));
 

@@ -7,10 +7,11 @@ import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.auraskills.condition.AuraSkillsLevelConditionFactory;
 import org.betonquest.betonquest.compatibility.auraskills.condition.AuraSkillsStatsConditionFactory;
 import org.betonquest.betonquest.compatibility.auraskills.event.AuraSkillsExperienceEventFactory;
+import org.betonquest.betonquest.kernel.registry.feature.FeatureRegistries;
 import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.QuestTypeRegistries;
 import org.betonquest.betonquest.quest.PrimaryServerThreadData;
-import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Integrator for <a href="https://github.com/Archy-X/AuraSkills">AuraSkills</a>.
@@ -19,26 +20,26 @@ public class AuraSkillsIntegrator implements Integrator {
     /**
      * The {@link BetonQuest} plugin instance.
      */
-    private final BetonQuest plugin;
+    private final Plugin plugin;
 
     /**
      * The default constructor.
+     *
+     * @param plugin the plugin instance
      */
-    public AuraSkillsIntegrator() {
-        this.plugin = BetonQuest.getInstance();
+    public AuraSkillsIntegrator(final Plugin plugin) {
+        this.plugin = plugin;
     }
 
     @Override
-    public void hook() throws HookException {
-        final Server server = plugin.getServer();
+    public void hook(final QuestTypeRegistries questTypeRegistries, final FeatureRegistries featureRegistries) throws HookException {
         final PrimaryServerThreadData data = new PrimaryServerThreadData(server, server.getScheduler(), plugin);
 
         final AuraSkillsApi auraSkillsApi = AuraSkillsApi.get();
-        final QuestTypeRegistries questRegistries = plugin.getQuestRegistries();
 
-        questRegistries.event().register("auraskillsxp", new AuraSkillsExperienceEventFactory(auraSkillsApi, data));
+        questTypeRegistries.event().register("auraskillsxp", new AuraSkillsExperienceEventFactory(auraSkillsApi, data));
 
-        final ConditionTypeRegistry conditionTypes = questRegistries.condition();
+        final ConditionTypeRegistry conditionTypes = questTypeRegistries.condition();
         conditionTypes.register("auraskillslevel", new AuraSkillsLevelConditionFactory(auraSkillsApi, data));
         conditionTypes.register("auraskillsstatslevel", new AuraSkillsStatsConditionFactory(auraSkillsApi, data));
     }

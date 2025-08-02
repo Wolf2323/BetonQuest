@@ -39,7 +39,7 @@ public class RegionObjective extends AbstractLocationObjective {
 
     @Override
     public void start() {
-        Bukkit.getPluginManager().registerEvents(this, BetonQuest.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, );
     }
 
     @Override
