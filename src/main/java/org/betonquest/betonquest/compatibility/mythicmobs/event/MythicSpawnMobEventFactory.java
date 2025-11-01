@@ -17,7 +17,7 @@ import org.betonquest.betonquest.api.quest.event.thread.PrimaryServerThreadEvent
 import org.betonquest.betonquest.api.quest.event.thread.PrimaryServerThreadPlayerlessEvent;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.compatibility.mythicmobs.MythicMobDoubleParser;
-import org.betonquest.betonquest.compatibility.protocollib.hider.MythicHider;
+import org.betonquest.betonquest.compatibility.packetevents.hider.MythicHider;
 import org.bukkit.Location;
 
 import java.util.Map;

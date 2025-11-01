@@ -420,12 +420,7 @@ public class Conversation implements Listener {
 
                 // End interceptor after a second
                 if (interceptor != null) {
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            interceptor.end();
-                        }
-                    }.runTaskLaterAsynchronously(plugin, 20);
+                    interceptor.end();
                 }
 
                 // delete conversation

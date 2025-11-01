@@ -4,7 +4,7 @@ import io.lumine.mythic.api.adapters.AbstractLocation;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.npc.Npc;
-import org.betonquest.betonquest.compatibility.protocollib.hider.MythicHider;
+import org.betonquest.betonquest.compatibility.packetevents.hider.MythicHider;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;

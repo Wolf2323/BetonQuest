@@ -1,7 +1,5 @@
 package org.betonquest.betonquest.notify.io;
 
-import com.comphenix.packetwrapper.WrapperPlayServerEntityStatus;
-import com.comphenix.packetwrapper.WrapperPlayServerSetSlot;
 import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.instruction.variable.Variable;
@@ -9,10 +7,7 @@ import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.QuestException;
 import org.betonquest.betonquest.notify.NotifyIO;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -65,25 +60,25 @@ public class TotemNotifyIO extends NotifyIO {
     }
 
     private void sendOffhandPacket(final Player player, final ItemStack offHandItem) {
-        final WrapperPlayServerSetSlot slotPacket = new WrapperPlayServerSetSlot() {
-            @Override
-            public void setSlot(final int value) {
-                handle.getIntegers().write(2, value);
-            }
-        };
-
-        slotPacket.setSlot(45);
-        slotPacket.setSlotData(offHandItem);
-        slotPacket.setWindowId(0);
-        slotPacket.sendPacket(player);
+        //final WrapperPlayServerSetSlot slotPacket = new WrapperPlayServerSetSlot() {
+        //    @Override
+        //    public void setSlot(final int value) {
+        //        handle.getIntegers().write(2, value);
+        //    }
+        //};
+//
+        //slotPacket.setSlot(45);
+        //slotPacket.setSlotData(offHandItem);
+        //slotPacket.setWindowId(0);
+        //slotPacket.sendPacket(player);
     }
 
     private void playSilentTotemEffect(final Player player) {
-        final WrapperPlayServerEntityStatus statusPacket = new WrapperPlayServerEntityStatus();
-        statusPacket.setEntityStatus((byte) 35);
-        statusPacket.setEntityID(player.getEntityId());
-        statusPacket.sendPacket(player);
-
-        Bukkit.getScheduler().runTask(plugin, () -> player.stopSound(Sound.ITEM_TOTEM_USE, SoundCategory.PLAYERS));
+        //final WrapperPlayServerEntityStatus statusPacket = new WrapperPlayServerEntityStatus();
+        //statusPacket.setEntityStatus((byte) 35);
+        //statusPacket.setEntityID(player.getEntityId());
+        //statusPacket.sendPacket(player);
+//
+        //Bukkit.getScheduler().runTask(plugin, () -> player.stopSound(Sound.ITEM_TOTEM_USE, SoundCategory.PLAYERS));
     }
 }

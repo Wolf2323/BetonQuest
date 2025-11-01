@@ -21,7 +21,7 @@ import org.betonquest.betonquest.compatibility.npc.citizens.event.move.CitizensM
 import org.betonquest.betonquest.compatibility.npc.citizens.event.move.CitizensMoveEventFactory;
 import org.betonquest.betonquest.compatibility.npc.citizens.event.move.CitizensStopEventFactory;
 import org.betonquest.betonquest.compatibility.npc.citizens.objective.NPCKillObjectiveFactory;
-import org.betonquest.betonquest.compatibility.protocollib.hider.CitizensHider;
+import org.betonquest.betonquest.compatibility.packetevents.hider.CitizensHider;
 import org.betonquest.betonquest.conversation.ConversationColors;
 import org.betonquest.betonquest.conversation.ConversationIOFactory;
 import org.bukkit.Server;
