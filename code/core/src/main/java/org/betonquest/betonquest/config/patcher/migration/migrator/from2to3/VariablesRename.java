@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Handles the variables rename migration.
+ * Handles the variables (now named Placeholders) rename migration.
  */
 public class VariablesRename implements QuestMigration {
 

@@ -24,7 +24,7 @@ import java.util.List;
  * @param holograms       A list of actual hologram
  * @param interval        Interval in ticks that lie between updates to the visibility and content
  * @param staticContent   Indicates whether the displayed content of the hologram is changing after a while.
- *                        HolographicDisplays variables are not updated BetonQuest, it does not make a hologram flexible.
+ *                        HolographicDisplays placeholders are not updated BetonQuest, it does not make a hologram flexible.
  *                        However, content updates such as refreshing the top list do.
  *                        <p>
  *                        If <code>true</code>, {@link HologramWrapper#updateContent()} will end instantly to not cause

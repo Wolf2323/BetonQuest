@@ -110,5 +110,5 @@ public interface QuestTypeApi {
      *
      * @return variable api
      */
-    Variables variables();
+    Placeholders placeholders();
 }

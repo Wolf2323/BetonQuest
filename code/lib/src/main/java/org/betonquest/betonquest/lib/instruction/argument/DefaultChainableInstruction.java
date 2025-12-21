@@ -11,7 +11,7 @@ import org.betonquest.betonquest.api.instruction.FlagState;
 import org.betonquest.betonquest.api.instruction.ValueParser;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
 import org.betonquest.betonquest.api.instruction.chain.ChainableInstruction;
-import org.betonquest.betonquest.api.quest.Variables;
+import org.betonquest.betonquest.api.quest.Placeholders;
 
 import java.util.List;
 import java.util.Map;
@@ -24,9 +24,9 @@ import java.util.Optional;
 public class DefaultChainableInstruction implements ChainableInstruction {
 
     /**
-     * The variable processor.
+     * The {@link Placeholders} to create and resolve placeholders.
      */
-    private final Variables variables;
+    private final Placeholders placeholders;
 
     /**
      * The package manager.
@@ -56,18 +56,18 @@ public class DefaultChainableInstruction implements ChainableInstruction {
     /**
      * Sole constructor.
      *
-     * @param variables            the variable processor
+     * @param placeholders         the {@link Placeholders} to create and resolve placeholders
      * @param packManager          the package manager
      * @param pack                 the related package
      * @param nextElementSupplier  the provider for the next element
      * @param nextOptionalFunction the provider for the next element by key
      * @param nextFlagFunction     the provider for the next flag by key
      */
-    public DefaultChainableInstruction(final Variables variables, final QuestPackageManager packManager,
+    public DefaultChainableInstruction(final Placeholders placeholders, final QuestPackageManager packManager,
                                        final QuestPackage pack, final QuestSupplier<String> nextElementSupplier,
                                        final QuestFunction<String, String> nextOptionalFunction,
                                        final QuestFunction<String, Map.Entry<FlagState, String>> nextFlagFunction) {
-        this.variables = variables;
+        this.placeholders = placeholders;
         this.packManager = packManager;
         this.pack = pack;
         this.nextElementSupplier = nextElementSupplier;
@@ -77,14 +77,14 @@ public class DefaultChainableInstruction implements ChainableInstruction {
 
     @Override
     public <T> Argument<T> getNext(final InstructionArgumentParser<T> argumentParser) throws QuestException {
-        return new DefaultArgument<>(variables, pack, nextElementSupplier.get(),
-                value -> argumentParser.apply(variables, packManager, pack, value));
+        return new DefaultArgument<>(placeholders, pack, nextElementSupplier.get(),
+                value -> argumentParser.apply(placeholders, packManager, pack, value));
     }
 
     @Override
     public <T> Argument<List<T>> getNextList(final InstructionArgumentParser<T> argumentParser) throws QuestException {
-        return new DefaultListArgument<>(variables, pack, nextElementSupplier.get(),
-                value -> argumentParser.apply(variables, packManager, pack, value));
+        return new DefaultListArgument<>(placeholders, pack, nextElementSupplier.get(),
+                value -> argumentParser.apply(placeholders, packManager, pack, value));
     }
 
     @Override
@@ -93,8 +93,8 @@ public class DefaultChainableInstruction implements ChainableInstruction {
         if (argumentValue == null) {
             return Optional.empty();
         }
-        final ValueParser<T> valueParser = value -> argumentParser.apply(variables, packManager, pack, value);
-        return Optional.of(new DefaultArgument<>(variables, pack, argumentValue, valueParser));
+        final ValueParser<T> valueParser = value -> argumentParser.apply(placeholders, packManager, pack, value);
+        return Optional.of(new DefaultArgument<>(placeholders, pack, argumentValue, valueParser));
     }
 
     @Override
@@ -103,8 +103,8 @@ public class DefaultChainableInstruction implements ChainableInstruction {
         if (argumentValue == null) {
             return new DefaultArgument<>(defaultValue);
         }
-        final ValueParser<T> valueParser = value -> argument.apply(variables, packManager, pack, value);
-        return new DefaultArgument<>(variables, pack, argumentValue, valueParser);
+        final ValueParser<T> valueParser = value -> argument.apply(placeholders, packManager, pack, value);
+        return new DefaultArgument<>(placeholders, pack, argumentValue, valueParser);
     }
 
     @Override
@@ -113,8 +113,8 @@ public class DefaultChainableInstruction implements ChainableInstruction {
         if (argumentValue == null) {
             return Optional.empty();
         }
-        final ValueParser<T> valueParser = value -> argumentParser.apply(variables, packManager, pack, value);
-        return Optional.of(new DefaultListArgument<>(variables, pack, argumentValue, valueParser));
+        final ValueParser<T> valueParser = value -> argumentParser.apply(placeholders, packManager, pack, value);
+        return Optional.of(new DefaultListArgument<>(placeholders, pack, argumentValue, valueParser));
     }
 
     @Override
@@ -123,8 +123,8 @@ public class DefaultChainableInstruction implements ChainableInstruction {
         if (argumentValue == null) {
             return new DefaultListArgument<>(defaultList);
         }
-        final ValueParser<T> valueParser = value -> argumentParser.apply(variables, packManager, pack, value);
-        return new DefaultListArgument<>(variables, pack, argumentValue, valueParser);
+        final ValueParser<T> valueParser = value -> argumentParser.apply(placeholders, packManager, pack, value);
+        return new DefaultListArgument<>(placeholders, pack, argumentValue, valueParser);
     }
 
     @Override
@@ -133,8 +133,8 @@ public class DefaultChainableInstruction implements ChainableInstruction {
         return switch (flag.getKey()) {
             case ABSENT -> new DefaultFlagArgument<>();
             case UNDEFINED -> new DefaultFlagArgument<>(presenceDefault, FlagState.UNDEFINED);
-            case DEFINED -> new DefaultFlagArgument<>(variables, pack, flag.getValue(),
-                    value -> Optional.of(argumentParser.apply(variables, packManager, pack, value)));
+            case DEFINED -> new DefaultFlagArgument<>(placeholders, pack, flag.getValue(),
+                    value -> Optional.of(argumentParser.apply(placeholders, packManager, pack, value)));
         };
     }
 }
