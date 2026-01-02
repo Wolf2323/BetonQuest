@@ -3,7 +3,7 @@ icon: material/application-export
 ---
 @snippet:api-state:unfinished@
 
-## Listening to BetonQuest (Bukkit) events
+## Listening to BetonQuest (Bukkit) actions
 
 BetonQuest exposes some of its actions as Bukkit events.  
 You can find these events in `org.betonquest.betonquest.api.bukkit.event` package.
