@@ -1,6 +1,8 @@
 ---
 icon: material/handshake
 toc_depth: 2
+tags:
+  - Integration
 ---
 # Integration List
 
@@ -61,7 +63,7 @@ conditions:
 
 ### Actions
 
-### Give Skill Xp : `auraskillsxp`
+#### Give Skill Xp : `auraskillsxp`
 
 Adds experience to the players skill. The amount is a number.
 The `level` argument is optional and would convert the amount to levels instead of XP points.
@@ -937,8 +939,6 @@ conditions:
 
 #### :material-skull: Spawn MythicMob: `mspawnmob`
 
-**static**
-
 | Parameter  | Syntax                                               | Default Value          | Explanation                                                                                                                             |
 |------------|------------------------------------------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | _location_ | [ULF](../Data-Formats.md#unified-location-formating) | :octicons-x-circle-16: | The location to spawn the mob at.                                                                                                       |
@@ -1035,8 +1035,6 @@ Testing your placeholder is easy using this command:
 ```
 
 ### Placeholder: `ph`
-
-**persistent**, **static**
 
 You can also use placeholders from other plugins in BetonQuest. Simply insert a placeholder starting with `ph`, the second argument should be the placeholder without percentage characters.
 
@@ -1348,8 +1346,6 @@ actions:
 
 #### Paste schematic: `paste`
 
-**persistent**, **static**
-
 This action will paste a schematic at the given location.
 The first argument is a location and the second one is the name of a schematic file.
 The file must be located in `WorldEdit/schematics` or `FastAsyncWorldEdit/schematics` and must have a name like
@@ -1373,8 +1369,6 @@ actions:
 ### Conditions
 
 #### NPC region: `npcregion`
-
-**persistent**, **static**
 
 This condition is met a NPC is inside a region.
 
