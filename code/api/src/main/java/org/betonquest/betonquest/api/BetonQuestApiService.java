@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * The BetonQuest API service represents the single source of truth for all methods related to BetonQuest.
  * Accessing and modifying the current state of BetonQuest will primarily be done through this service
- * and the {@link BetonQuestApiInstance} it is providing.
+ * and the {@link BetonQuestApi} it is providing.
  * <br> <br>
  * The only valid instance for this interface is available through the {@link ServicesManager}
  * and may be obtained by calling {@link ServicesManager#load(Class)} with this interface as parameter.
@@ -43,5 +43,5 @@ public interface BetonQuestApiService {
      * @param plugin the plugin to get the API instance for
      * @return the API instance for the specified plugin
      */
-    BetonQuestApiInstance getApi(Plugin plugin);
+    BetonQuestApi api(Plugin plugin);
 }
