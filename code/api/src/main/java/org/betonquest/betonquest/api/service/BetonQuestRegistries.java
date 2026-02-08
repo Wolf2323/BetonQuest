@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.api.service;
 
+import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.item.ItemRegistry;
 import org.betonquest.betonquest.api.item.QuestItem;
 import org.betonquest.betonquest.api.item.QuestItemSerializer;
@@ -62,4 +63,11 @@ public interface BetonQuestRegistries {
      * @return the placeholder registry
      */
     PlaceholderRegistry placeholders();
+
+    /**
+     * Obtains the {@link IdentifierRegistry} for registering custom identifiers.
+     *
+     * @return the identifier registry
+     */
+    IdentifierRegistry identifiers();
 }
