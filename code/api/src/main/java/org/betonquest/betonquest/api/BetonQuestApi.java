@@ -109,7 +109,7 @@ public interface BetonQuestApi {
      * <br> <br>
      * A manager allows accessing all instances created for a specific type.
      * For example, to start an objective with an {@link ObjectiveIdentifier} for a specific {@link OnlineProfile}, call
-     * {@link BetonQuestManagers#getObjectives()} and use {@link ObjectiveManager#start(Profile, ObjectiveIdentifier)}.
+     * {@link BetonQuestManagers#objectives()} and use {@link ObjectiveManager#start(Profile, ObjectiveIdentifier)}.
      *
      * @return the betonquest managers offering functionality to access existing and loaded types
      */
