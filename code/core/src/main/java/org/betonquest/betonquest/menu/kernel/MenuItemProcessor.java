@@ -8,13 +8,14 @@ import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.MenuItemIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.menu.MenuItem;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
@@ -47,15 +48,17 @@ public class MenuItemProcessor extends RPGMenuProcessor<MenuItemIdentifier, Menu
      * @param instructionApi    the instruction api to use
      * @param textCreator       the text creator to parse text
      * @param identifierFactory the identifier factory to create {@link MenuItemIdentifier}s for this type
-     * @param questTypeApi      the QuestTypeApi
      * @param config            the config to load menu item options from
      * @param parsers           the argument parsers
+     * @param actionManager     the ActionManager
+     * @param conditionManager  the ConditionManager
      */
     public MenuItemProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                             final InstructionApi instructionApi, final ParsedSectionTextCreator textCreator,
+                             final BetonQuestInstructions instructionApi, final ParsedSectionTextCreator textCreator,
                              final IdentifierFactory<MenuItemIdentifier> identifierFactory,
-                             final QuestTypeApi questTypeApi, final ConfigAccessor config, final ArgumentParsers parsers) {
-        super(log, instructionApi, "Menu Item", "menu_items", loggerFactory, textCreator, parsers, identifierFactory, questTypeApi);
+                             final ConfigAccessor config, final ArgumentParsers parsers,
+                             final ActionManager actionManager, final ConditionManager conditionManager) {
+        super(log, instructionApi, "Menu Item", "menu_items", loggerFactory, textCreator, parsers, identifierFactory, actionManager, conditionManager);
         this.config = config;
     }
 
@@ -79,7 +82,7 @@ public class MenuItemProcessor extends RPGMenuProcessor<MenuItemIdentifier, Menu
 
         final BetonQuestLogger log = loggerFactory.create(MenuItem.class);
         final MenuItemIdentifier menuItemID = getIdentifier(pack, sectionName);
-        final MenuItem menuItem = new MenuItem(log, questTypeApi, item, menuItemID, descriptions, clickActions, conditions, close);
+        final MenuItem menuItem = new MenuItem(log, item, actionManager, conditionManager, menuItemID, descriptions, clickActions, conditions, close);
         return Map.entry(menuItemID, menuItem);
     }
 

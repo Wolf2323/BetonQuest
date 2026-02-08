@@ -6,11 +6,11 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.quest.TypeFactory;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.kernel.processor.TypedQuestProcessor;
 import org.betonquest.betonquest.kernel.processor.adapter.PlaceholderAdapter;
 import org.betonquest.betonquest.kernel.registry.quest.PlaceholderTypeRegistry;
@@ -75,7 +75,7 @@ public class PlaceholderProcessor extends TypedQuestProcessor<PlaceholderIdentif
     public PlaceholderProcessor(final BetonQuestLogger log, final QuestPackageManager packManager,
                                 final PlaceholderTypeRegistry placeholderTypes, final BukkitScheduler scheduler,
                                 final IdentifierFactory<PlaceholderIdentifier> placeholderIdentifierFactory,
-                                final InstructionApi instructionApi, final Plugin plugin) {
+                                final BetonQuestInstructions instructionApi, final Plugin plugin) {
         super(log, placeholderTypes, placeholderIdentifierFactory,
                 instructionApi, "Placeholders", "placeholders");
         this.packManager = packManager;
@@ -101,7 +101,7 @@ public class PlaceholderProcessor extends TypedQuestProcessor<PlaceholderIdentif
         if (existingPlaceholder != null) {
             return existingPlaceholder;
         }
-        final Instruction instructionVar = instructionApi.createPlaceholderInstruction(placeholderID, placeholderID.readRawInstruction());
+        final Instruction instructionVar = instructionApi.createPlaceholder(placeholderID, placeholderID.readRawInstruction());
         final TypeFactory<PlaceholderAdapter> placeholderFactory = types.getFactory(instructionVar.current());
         final PlaceholderAdapter placeholder = placeholderFactory.parseInstruction(instructionVar);
         values.put(placeholderID, placeholder);

@@ -6,8 +6,8 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.condition.NullableCondition;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -54,9 +54,9 @@ public class PartyCondition implements NullableCondition {
     private final Argument<Number> count;
 
     /**
-     * Quest Type API.
+     * The condition manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ConditionManager conditionManager;
 
     /**
      * The profile provider instance.
@@ -66,32 +66,32 @@ public class PartyCondition implements NullableCondition {
     /**
      * Create a new party condition.
      *
-     * @param location        the location to check for party members
-     * @param range           the range to check for party members
-     * @param conditions      the conditions to check for to be a party member
-     * @param everyone        the conditions that everyone in the party must meet
-     * @param anyone          the conditions that at least one party member must meet
-     * @param count           the minimum number of party members
-     * @param questTypeApi    the Quest Type API
-     * @param profileProvider the profile provider instance
+     * @param location         the location to check for party members
+     * @param range            the range to check for party members
+     * @param conditions       the conditions to check for to be a party member
+     * @param everyone         the conditions that everyone in the party must meet
+     * @param anyone           the conditions that at least one party member must meet
+     * @param count            the minimum number of party members
+     * @param conditionManager the condition manager
+     * @param profileProvider  the profile provider instance
      */
     public PartyCondition(final Argument<Location> location, final Argument<Number> range,
                           final Argument<List<ConditionIdentifier>> conditions, final Argument<List<ConditionIdentifier>> everyone,
                           final Argument<List<ConditionIdentifier>> anyone, @Nullable final Argument<Number> count,
-                          final QuestTypeApi questTypeApi, final ProfileProvider profileProvider) {
+                          final ConditionManager conditionManager, final ProfileProvider profileProvider) {
         this.location = location;
         this.range = range;
         this.conditions = conditions;
         this.everyone = everyone;
         this.anyone = anyone;
         this.count = count;
-        this.questTypeApi = questTypeApi;
+        this.conditionManager = conditionManager;
         this.profileProvider = profileProvider;
     }
 
     @Override
     public boolean check(@Nullable final Profile profile) throws QuestException {
-        final Set<OnlineProfile> partyMembers = Utils.getParty(questTypeApi, profileProvider.getOnlineProfiles(),
+        final Set<OnlineProfile> partyMembers = Utils.getParty(conditionManager, profileProvider.getOnlineProfiles(),
                 location.getValue(profile), range.getValue(profile).doubleValue(), conditions.getValue(profile)).keySet();
 
         final int pCount = count == null ? 0 : count.getValue(profile).intValue();
@@ -104,14 +104,14 @@ public class PartyCondition implements NullableCondition {
 
     private boolean meetEveryoneConditions(final List<ConditionIdentifier> conditions, final Set<OnlineProfile> partyMembers) {
         final Stream<OnlineProfile> everyoneStream = Bukkit.isPrimaryThread() ? partyMembers.stream() : partyMembers.parallelStream();
-        return everyoneStream.allMatch(member -> questTypeApi.conditions(member, conditions));
+        return everyoneStream.allMatch(member -> conditionManager.testAll(member, conditions));
     }
 
     private boolean meetAnyoneConditions(final List<ConditionIdentifier> conditions, final Set<OnlineProfile> partyMembers) {
         final Stream<ConditionIdentifier> anyoneStream = Bukkit.isPrimaryThread() ? conditions.stream() : conditions.stream().parallel();
         return anyoneStream.allMatch(condition -> {
             final Stream<OnlineProfile> memberStream = Bukkit.isPrimaryThread() ? partyMembers.stream() : partyMembers.parallelStream();
-            return memberStream.anyMatch(member -> questTypeApi.condition(member, condition));
+            return memberStream.anyMatch(member -> conditionManager.test(member, condition));
         });
     }
 }

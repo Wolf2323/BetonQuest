@@ -4,9 +4,9 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
 
 /**
  * Factory to create variable actions from {@link Instruction}s.
@@ -14,17 +14,17 @@ import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 public class VariableActionFactory implements PlayerActionFactory {
 
     /**
-     * Quest Type API.
+     * The objective manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ObjectiveManager objectiveManager;
 
     /**
      * Create a new factory for {@link VariableAction}s.
      *
-     * @param questTypeApi the Quest Type API
+     * @param objectiveManager the objective manager
      */
-    public VariableActionFactory(final QuestTypeApi questTypeApi) {
-        this.questTypeApi = questTypeApi;
+    public VariableActionFactory(final ObjectiveManager objectiveManager) {
+        this.objectiveManager = objectiveManager;
     }
 
     @Override
@@ -32,6 +32,6 @@ public class VariableActionFactory implements PlayerActionFactory {
         final Argument<ObjectiveIdentifier> objectiveID = instruction.identifier(ObjectiveIdentifier.class).get();
         final Argument<String> key = instruction.string().get();
         final Argument<String> value = instruction.string().get();
-        return new VariableAction(questTypeApi, objectiveID, key, value);
+        return new VariableAction(objectiveManager, objectiveID, key, value);
     }
 }

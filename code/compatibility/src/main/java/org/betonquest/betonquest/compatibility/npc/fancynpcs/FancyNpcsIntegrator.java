@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.compatibility.npc.fancynpcs;
 
+import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
@@ -33,11 +34,11 @@ public class FancyNpcsIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final NpcRegistry npcRegistry = api.getFeatureRegistries().npc();
-        final ProfileProvider profileProvider = api.getProfileProvider();
+        final NpcRegistry npcRegistry = api.registries().npcs();
+        final ProfileProvider profileProvider = api.profiles();
         final PluginManager manager = plugin.getServer().getPluginManager();
         manager.registerEvents(new FancyCatcher(profileProvider, npcRegistry), plugin);
-        final FancyHider hider = new FancyHider(api.getFeatureApi().getNpcHider());
+        final FancyHider hider = new FancyHider(BetonQuest.getInstance().getLegacyFeatureApi().getNpcHider());
         manager.registerEvents(hider, plugin);
         npcRegistry.register(PREFIX, new FancyFactory());
         npcRegistry.registerIdentifier(new FancyIdentifier(PREFIX));

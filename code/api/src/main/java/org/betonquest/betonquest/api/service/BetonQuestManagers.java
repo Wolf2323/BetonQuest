@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.api.service;
 
+import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.quest.objective.Objective;
 
 /**
@@ -48,4 +49,12 @@ public interface BetonQuestManagers {
      * @return the npc manager
      */
     NpcManager npcs();
+
+    /**
+     * Obtain the {@link Placeholders} instance.
+     * The placeholder manager offers functionality to resolve placeholders.
+     *
+     * @return the placeholder manager
+     */
+    Placeholders placeholders();
 }

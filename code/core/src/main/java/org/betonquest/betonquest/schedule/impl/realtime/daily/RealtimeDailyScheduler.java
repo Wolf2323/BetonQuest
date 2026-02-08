@@ -1,8 +1,8 @@
 package org.betonquest.betonquest.schedule.impl.realtime.daily;
 
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.schedule.CatchupStrategy;
+import org.betonquest.betonquest.api.service.ActionManager;
 import org.betonquest.betonquest.schedule.LastExecutionCache;
 import org.betonquest.betonquest.schedule.impl.ExecutorServiceScheduler;
 
@@ -38,12 +38,12 @@ public class RealtimeDailyScheduler extends ExecutorServiceScheduler<RealtimeDai
      * Create a new simple scheduler and pass BetonQuest instance to it.
      *
      * @param log                the logger that will be used for logging
-     * @param questTypeApi       the class for executing actions
+     * @param actionManager      the class for executing actions
      * @param executor           supplier used to create new instances of the executor used by this scheduler
      * @param lastExecutionCache cache where the last execution times of a schedule are stored
      */
-    public RealtimeDailyScheduler(final BetonQuestLogger log, final QuestTypeApi questTypeApi, final Supplier<ScheduledExecutorService> executor, final LastExecutionCache lastExecutionCache) {
-        super(log, questTypeApi, executor);
+    public RealtimeDailyScheduler(final BetonQuestLogger log, final ActionManager actionManager, final Supplier<ScheduledExecutorService> executor, final LastExecutionCache lastExecutionCache) {
+        super(log, actionManager, executor);
         this.log = log;
         this.lastExecutionCache = lastExecutionCache;
     }
@@ -52,11 +52,11 @@ public class RealtimeDailyScheduler extends ExecutorServiceScheduler<RealtimeDai
      * Create a new simple scheduler and pass BetonQuest instance to it.
      *
      * @param log                the logger that will be used for logging
-     * @param questTypeApi       the class for executing actions
+     * @param actionManager      the class for executing actions
      * @param lastExecutionCache cache where the last execution times of a schedule are stored
      */
-    public RealtimeDailyScheduler(final BetonQuestLogger log, final QuestTypeApi questTypeApi, final LastExecutionCache lastExecutionCache) {
-        super(log, questTypeApi);
+    public RealtimeDailyScheduler(final BetonQuestLogger log, final ActionManager actionManager, final LastExecutionCache lastExecutionCache) {
+        super(log, actionManager);
         this.log = log;
         this.lastExecutionCache = lastExecutionCache;
     }

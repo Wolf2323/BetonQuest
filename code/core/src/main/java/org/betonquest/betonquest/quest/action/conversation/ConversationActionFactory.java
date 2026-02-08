@@ -2,10 +2,10 @@ package org.betonquest.betonquest.quest.action.conversation;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.ConversationApi;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
+import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
@@ -24,7 +24,7 @@ public class ConversationActionFactory implements PlayerActionFactory {
     /**
      * Conversation API.
      */
-    private final ConversationApi conversationApi;
+    private final LegacyConversationApi conversationApi;
 
     /**
      * Create the conversation action factory.
@@ -33,7 +33,7 @@ public class ConversationActionFactory implements PlayerActionFactory {
      * @param conversationApi the Conversation API
      */
     public ConversationActionFactory(final BetonQuestLoggerFactory loggerFactory,
-                                     final ConversationApi conversationApi) {
+                                     final LegacyConversationApi conversationApi) {
         this.loggerFactory = loggerFactory;
         this.conversationApi = conversationApi;
     }

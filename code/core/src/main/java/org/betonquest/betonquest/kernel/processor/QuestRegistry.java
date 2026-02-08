@@ -3,11 +3,8 @@ package org.betonquest.betonquest.kernel.processor;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.feature.ConversationApi;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.CompassIdentifier;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
-import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalMainPageIdentifier;
@@ -15,14 +12,12 @@ import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.identifier.QuestCancelerIdentifier;
 import org.betonquest.betonquest.api.identifier.ReadableIdentifier;
 import org.betonquest.betonquest.api.identifier.ScheduleIdentifier;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
-import org.betonquest.betonquest.api.item.QuestItem;
+import org.betonquest.betonquest.api.legacy.LegacyFeatureApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.npc.DefaultNpcHider;
-import org.betonquest.betonquest.api.quest.npc.Npc;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.bstats.InstructionMetricsSupplier;
 import org.betonquest.betonquest.config.PluginMessage;
@@ -41,7 +36,6 @@ import org.betonquest.betonquest.kernel.registry.feature.BaseFeatureRegistries;
 import org.betonquest.betonquest.kernel.registry.quest.IdentifierTypeRegistry;
 import org.betonquest.betonquest.schedule.ActionScheduling;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,7 +72,7 @@ public record QuestRegistry(
         JournalMainPageProcessor journalMainPages,
         NpcProcessor npcs,
         List<QuestProcessor<?, ?>> additional
-) implements FeatureApi {
+) implements LegacyFeatureApi {
 
     /**
      * Create a new Registry for storing and using Processors.
@@ -101,39 +95,30 @@ public record QuestRegistry(
                                        final BetonQuest plugin, final CoreQuestRegistry coreQuestRegistry,
                                        final BaseFeatureRegistries otherRegistries, final PluginMessage pluginMessage,
                                        final ParsedSectionTextCreator textCreator, final ProfileProvider profileProvider,
-                                       final PlayerDataStorage playerDataStorage, final IdentifierTypeRegistry identifiers) throws QuestException {
-        final IdentifierFactory<ItemIdentifier> itemIdentifierFactory = identifiers.getFactory(ItemIdentifier.class);
-        final IdentifierFactory<QuestCancelerIdentifier> cancelerIdentifierIdentifierFactory = identifiers.getFactory(QuestCancelerIdentifier.class);
-        final IdentifierFactory<NpcIdentifier> npcIdentifierFactory = identifiers.getFactory(NpcIdentifier.class);
-        final IdentifierFactory<JournalMainPageIdentifier> journalMainPageIdentifierFactory = identifiers.getFactory(JournalMainPageIdentifier.class);
-        final IdentifierFactory<JournalEntryIdentifier> entryIdentifierIdentifierFactory = identifiers.getFactory(JournalEntryIdentifier.class);
-        final IdentifierFactory<ConversationIdentifier> conversationIdentifierFactory = identifiers.getFactory(ConversationIdentifier.class);
-        final IdentifierFactory<CompassIdentifier> compassIdentifierFactory = identifiers.getFactory(CompassIdentifier.class);
-        final IdentifierFactory<ScheduleIdentifier> scheduleIdentifierFactory = identifiers.getFactory(ScheduleIdentifier.class);
+                                       final PlayerDataStorage playerDataStorage, final IdentifierTypeRegistry identifiers,
+                                       final BetonQuestInstructions instructions) throws QuestException {
 
-        final InstructionApi instructionApi = plugin.getInstructionApi();
         final ItemProcessor items = new ItemProcessor(loggerFactory.create(ItemProcessor.class),
-                itemIdentifierFactory, otherRegistries.item(), instructionApi);
-
+                identifiers.getFactory(ItemIdentifier.class), otherRegistries.item(), instructions);
         final ActionScheduling actionScheduling = new ActionScheduling(
-                loggerFactory.create(ActionScheduling.class, "Schedules"), instructionApi,
-                otherRegistries.actionScheduling(), scheduleIdentifierFactory);
+                loggerFactory.create(ActionScheduling.class, "Schedules"), instructions,
+                otherRegistries.actionScheduling(), identifiers.getFactory(ScheduleIdentifier.class));
         final CancelerProcessor cancelers = new CancelerProcessor(loggerFactory.create(CancelerProcessor.class),
-                loggerFactory, plugin, pluginMessage, instructionApi, textCreator, coreQuestRegistry,
-                playerDataStorage, cancelerIdentifierIdentifierFactory);
+                loggerFactory, pluginMessage, instructions, plugin.getBetonQuestManagers(), textCreator,
+                playerDataStorage, identifiers.getFactory(QuestCancelerIdentifier.class));
         final CompassProcessor compasses = new CompassProcessor(loggerFactory.create(CompassProcessor.class),
-                instructionApi, textCreator, compassIdentifierFactory);
+                instructions, textCreator, identifiers.getFactory(CompassIdentifier.class));
         final ConversationProcessor conversations = new ConversationProcessor(loggerFactory.create(ConversationProcessor.class),
                 loggerFactory, plugin, textCreator, otherRegistries.conversationIO(), otherRegistries.interceptor(),
-                instructionApi, pluginMessage, conversationIdentifierFactory);
-        final JournalEntryProcessor journalEntries = new JournalEntryProcessor(loggerFactory.create(JournalEntryProcessor.class),
-                entryIdentifierIdentifierFactory, textCreator);
-        final JournalMainPageProcessor journalMainPages = new JournalMainPageProcessor(
-                loggerFactory.create(JournalMainPageProcessor.class), instructionApi, textCreator,
-                journalMainPageIdentifierFactory);
+                instructions, pluginMessage, coreQuestRegistry.actions(), coreQuestRegistry.conditions(), identifiers.getFactory(ConversationIdentifier.class));
         final NpcProcessor npcs = new NpcProcessor(loggerFactory.create(NpcProcessor.class), loggerFactory,
-                npcIdentifierFactory, conversationIdentifierFactory, otherRegistries.npc(), pluginMessage,
-                plugin, profileProvider, coreQuestRegistry.conditions(), conversations.getStarter(), instructionApi);
+                identifiers.getFactory(NpcIdentifier.class), identifiers.getFactory(ConversationIdentifier.class), otherRegistries.npc(), pluginMessage,
+                plugin, profileProvider, coreQuestRegistry.actions(), coreQuestRegistry.conditions(), conversations.getStarter(), instructions);
+        final JournalEntryProcessor journalEntries = new JournalEntryProcessor(loggerFactory.create(JournalEntryProcessor.class),
+                identifiers.getFactory(JournalEntryIdentifier.class), textCreator);
+        final JournalMainPageProcessor journalMainPages = new JournalMainPageProcessor(
+                loggerFactory.create(JournalMainPageProcessor.class), instructions, textCreator,
+                identifiers.getFactory(JournalMainPageIdentifier.class));
         return new QuestRegistry(log, coreQuestRegistry, actionScheduling, cancelers, compasses, conversations,
                 items, journalEntries, journalMainPages, npcs, new ArrayList<>());
     }
@@ -205,11 +190,6 @@ public record QuestRegistry(
     }
 
     @Override
-    public ConversationApi conversationApi() {
-        return conversations;
-    }
-
-    @Override
     public Map<QuestCancelerIdentifier, QuestCanceler> getCancelers() {
         return new HashMap<>(cancelers().getValues());
     }
@@ -240,17 +220,7 @@ public record QuestRegistry(
     }
 
     @Override
-    public Npc<?> getNpc(final NpcIdentifier npcID, @Nullable final Profile profile) throws QuestException {
-        return npcs().get(npcID).getNpc(profile);
-    }
-
-    @Override
     public DefaultNpcHider getNpcHider() {
         return npcs().getNpcHider();
-    }
-
-    @Override
-    public QuestItem getItem(final ItemIdentifier itemID, @Nullable final Profile profile) throws QuestException {
-        return items().get(itemID).getItem(profile);
     }
 }

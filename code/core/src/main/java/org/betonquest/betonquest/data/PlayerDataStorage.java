@@ -1,7 +1,7 @@
 package org.betonquest.betonquest.data;
 
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.feature.ConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
@@ -71,7 +71,7 @@ public class PlayerDataStorage {
      * @param onlineProfiles  the profiles to initialize
      * @param conversationApi the Conversation API
      */
-    public void initProfiles(final Collection<OnlineProfile> onlineProfiles, final ConversationApi conversationApi) {
+    public void initProfiles(final Collection<OnlineProfile> onlineProfiles, final LegacyConversationApi conversationApi) {
         for (final OnlineProfile onlineProfile : onlineProfiles) {
             final PlayerData playerData = init(onlineProfile);
             playerData.startObjectives();

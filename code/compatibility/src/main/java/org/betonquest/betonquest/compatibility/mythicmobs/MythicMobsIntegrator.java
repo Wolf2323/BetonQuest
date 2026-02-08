@@ -8,8 +8,8 @@ import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.item.ItemRegistry;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
 import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
+import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.UnsupportedVersionException;
@@ -64,24 +64,24 @@ public class MythicMobsIntegrator implements Integrator {
         final MobExecutor mobExecutor = mythicBukkit.getMobManager();
 
         final PluginManager manager = plugin.getServer().getPluginManager();
-        mythicHider = new MythicHider(api.getProfileProvider(), plugin);
+        mythicHider = new MythicHider(api.profiles(), plugin);
         mythicHider.reload(plugin.getPluginConfig().getInt("hider.npc_update_interval", 5 * 20));
         manager.registerEvents(mythicHider, plugin);
 
-        final BetonQuestLoggerFactory loggerFactory = api.getLoggerFactory();
-        final QuestTypeRegistries questRegistries = api.getQuestRegistries();
-        questRegistries.condition().register("mythicmobdistance", new MythicMobDistanceConditionFactory(loggerFactory, mobExecutor, new MythicMobParser(mobExecutor)));
-        questRegistries.objective().register("mmobkill", new MythicMobKillObjectiveFactory());
-        questRegistries.action().registerCombined("mspawnmob", new MythicSpawnMobActionFactory(loggerFactory,
+        final BetonQuestLoggerFactory loggerFactory = api.loggers();
+        final BetonQuestRegistries questRegistries = api.registries();
+        questRegistries.conditions().register("mythicmobdistance", new MythicMobDistanceConditionFactory(loggerFactory, mobExecutor, new MythicMobParser(mobExecutor)));
+        questRegistries.objectives().register("mmobkill", new MythicMobKillObjectiveFactory());
+        questRegistries.actions().registerCombined("mspawnmob", new MythicSpawnMobActionFactory(loggerFactory,
                 new MythicMobDoubleParser(mobExecutor), plugin, mythicHider));
-        questRegistries.action().register("mcast", new MythicCastSkillActionFactory(loggerFactory, apiHelper));
+        questRegistries.actions().register("mcast", new MythicCastSkillActionFactory(loggerFactory, apiHelper));
 
-        final NpcRegistry npcRegistry = api.getFeatureRegistries().npc();
-        manager.registerEvents(new MythicMobsInteractCatcher(api.getProfileProvider(), npcRegistry, mobExecutor, mythicHider), plugin);
+        final NpcRegistry npcRegistry = questRegistries.npcs();
+        manager.registerEvents(new MythicMobsInteractCatcher(api.profiles(), npcRegistry, mobExecutor, mythicHider), plugin);
         npcRegistry.register("mythicmobs", new MythicMobsNpcFactory(mobExecutor, mythicHider));
         npcRegistry.registerIdentifier(new MythicMobsReverseIdentifier());
 
-        final ItemRegistry itemRegistry = api.getFeatureRegistries().item();
+        final ItemRegistry itemRegistry = questRegistries.items();
         final ItemExecutor itemManager = mythicBukkit.getItemManager();
         itemRegistry.register("mythic", new MythicItemFactory(itemManager));
         itemRegistry.registerSerializer("mythic", new MythicQuestItemSerializer(itemManager));

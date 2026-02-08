@@ -6,7 +6,6 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.argument.parser.PackageIdentifierParser;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
@@ -15,6 +14,7 @@ import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveState;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveService;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveServiceProvider;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.betonquest.betonquest.bstats.CompositeInstructionMetricsSupplier;
 import org.betonquest.betonquest.data.PlayerDataStorage;
@@ -42,7 +42,7 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
     /**
      * Instruction API.
      */
-    protected final InstructionApi instructionApi;
+    protected final BetonQuestInstructions instructionApi;
 
     /**
      * Manager to register listener.
@@ -83,7 +83,7 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
     public ObjectiveProcessor(final BetonQuestLogger log, final ObjectiveTypeRegistry objectiveTypes,
                               final IdentifierFactory<ObjectiveIdentifier> objectiveIdentifierFactory,
                               final PluginManager pluginManager, final ObjectiveServiceProvider service,
-                              final InstructionApi instructionApi, final Plugin plugin) {
+                              final BetonQuestInstructions instructionApi, final Plugin plugin) {
         super(log, objectiveIdentifierFactory, "Objective", "objectives");
         this.instructionApi = instructionApi;
         this.pluginManager = pluginManager;
@@ -133,7 +133,7 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
 
     private void loadKey(final String key, final QuestPackage pack) throws QuestException {
         final ObjectiveIdentifier identifier = getIdentifier(pack, key);
-        final Instruction instruction = instructionApi.createInstruction(identifier, identifier.readRawInstruction());
+        final Instruction instruction = instructionApi.create(identifier, identifier.readRawInstruction());
         final String type = instruction.getPart(0);
         final ObjectiveFactory factory = types.getFactory(type);
         try {
@@ -175,7 +175,7 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
     private void postCreation(final ObjectiveIdentifier identifier, final Objective objective) {
         boolean global = false;
         try {
-            global = instructionApi.createInstruction(identifier, identifier.readRawInstruction()).bool()
+            global = instructionApi.create(identifier, identifier.readRawInstruction()).bool()
                     .getFlag("global", true).getValue(null).orElse(false);
         } catch (final QuestException e) {
             log.error("Error while loading global flag for objective " + identifier, e);

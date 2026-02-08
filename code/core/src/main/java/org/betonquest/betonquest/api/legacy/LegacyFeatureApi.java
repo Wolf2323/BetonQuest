@@ -1,35 +1,22 @@
-package org.betonquest.betonquest.api.feature;
+package org.betonquest.betonquest.api.legacy;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.CompassIdentifier;
-import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalMainPageIdentifier;
-import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.identifier.QuestCancelerIdentifier;
-import org.betonquest.betonquest.api.item.QuestItem;
-import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.npc.DefaultNpcHider;
-import org.betonquest.betonquest.api.quest.npc.Npc;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.feature.QuestCanceler;
 import org.betonquest.betonquest.feature.QuestCompass;
 import org.betonquest.betonquest.feature.journal.JournalMainPageEntry;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 /**
  * The FeatureApi provides access to more complex features, often based on basic features.
  */
-public interface FeatureApi {
-
-    /**
-     * Get the Api for Conversation interaction.
-     *
-     * @return conversation api
-     */
-    ConversationApi conversationApi();
+public interface LegacyFeatureApi {
 
     /**
      * Get the loaded Quest Canceler.
@@ -79,29 +66,9 @@ public interface FeatureApi {
     Map<JournalMainPageIdentifier, JournalMainPageEntry> getJournalMainPages();
 
     /**
-     * Gets a Npc by its id.
-     *
-     * @param npcID   the id of the Npc
-     * @param profile the profile to resolve the Npc
-     * @return the betonquest Npc
-     * @throws QuestException when there is no Npc with that id
-     */
-    Npc<?> getNpc(NpcIdentifier npcID, @Nullable Profile profile) throws QuestException;
-
-    /**
      * Gets the NpcHider.
      *
      * @return the active npc hider
      */
     DefaultNpcHider getNpcHider();
-
-    /**
-     * Gets a QuestItem by their id.
-     *
-     * @param itemID  the id
-     * @param profile the profile to resolve the item
-     * @return the stored quest item
-     * @throws QuestException if there exists no QuestItem with that id
-     */
-    QuestItem getItem(ItemIdentifier itemID, @Nullable Profile profile) throws QuestException;
 }

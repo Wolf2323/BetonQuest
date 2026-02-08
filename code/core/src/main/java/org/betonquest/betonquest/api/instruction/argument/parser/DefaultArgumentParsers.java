@@ -4,8 +4,8 @@ import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.common.function.QuestBiFunction;
 import org.betonquest.betonquest.api.identifier.Identifier;
+import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
-import org.betonquest.betonquest.api.identifier.factory.IdentifierRegistry;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.argument.DecoratedArgumentParser;
 import org.betonquest.betonquest.api.instruction.argument.NumberArgumentParser;
@@ -105,7 +105,7 @@ public class DefaultArgumentParsers implements ArgumentParsers {
      * @param registry        the identifier registry to get identifier factories from
      * @throws QuestException if an error occurs during initialization
      */
-    public DefaultArgumentParsers(final QuestBiFunction<ItemIdentifier, Profile, QuestItem> getItemFunction,
+    public DefaultArgumentParsers(final QuestBiFunction<Profile, ItemIdentifier, QuestItem> getItemFunction,
                                   final TextParser textParser, final Server server, final IdentifierRegistry registry) throws QuestException {
         this.registry = registry;
         defaultBlockSelectorParser = new DecoratableArgumentParser<>(new BlockSelectorParser());

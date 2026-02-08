@@ -2,7 +2,7 @@ package org.betonquest.betonquest.api.schedule;
 
 import org.betonquest.betonquest.api.identifier.ScheduleIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ActionManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,9 +39,9 @@ public abstract class Scheduler<S extends Schedule, T> {
     private final BetonQuestLogger log;
 
     /**
-     * Quest Type API.
+     * The action manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
 
     /**
      * Flag stating if this scheduler is currently running.
@@ -51,12 +51,12 @@ public abstract class Scheduler<S extends Schedule, T> {
     /**
      * Default constructor.
      *
-     * @param log          the logger that will be used for logging
-     * @param questTypeApi the Quest Type API
+     * @param log           the logger that will be used for logging
+     * @param actionManager the action manager
      */
-    public Scheduler(final BetonQuestLogger log, final QuestTypeApi questTypeApi) {
+    public Scheduler(final BetonQuestLogger log, final ActionManager actionManager) {
         this.log = log;
-        this.questTypeApi = questTypeApi;
+        this.actionManager = actionManager;
         schedules = new HashMap<>();
         running = false;
     }
@@ -127,7 +127,7 @@ public abstract class Scheduler<S extends Schedule, T> {
      */
     protected void executeActions(final S schedule) {
         log.debug(schedule.getId().getPackage(), "Schedule '" + schedule.getId() + "' runs its actions...");
-        questTypeApi.actions(null, schedule.getActions());
+        actionManager.run(null, schedule.getActions());
     }
 
     /**

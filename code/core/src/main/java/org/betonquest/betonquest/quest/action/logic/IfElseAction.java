@@ -5,8 +5,9 @@ import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.NullableAction;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -30,32 +31,40 @@ public class IfElseAction implements NullableAction {
     private final Argument<ActionIdentifier> elseAction;
 
     /**
-     * Quest Type API.
+     * The action manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * Creates a new if-else action.
      *
-     * @param condition    the condition to check
-     * @param action       the action to run if the condition is true
-     * @param elseAction   the action to run if the condition is false
-     * @param questTypeApi the Quest Type API
+     * @param condition        the condition to check
+     * @param action           the action to run if the condition is true
+     * @param actionManager    the action manager
+     * @param conditionManager the condition manager
+     * @param elseAction       the action to run if the condition is false
      */
     public IfElseAction(final Argument<ConditionIdentifier> condition, final Argument<ActionIdentifier> action,
-                        final Argument<ActionIdentifier> elseAction, final QuestTypeApi questTypeApi) {
+                        final ActionManager actionManager, final ConditionManager conditionManager,
+                        final Argument<ActionIdentifier> elseAction) {
         this.condition = condition;
         this.action = action;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
         this.elseAction = elseAction;
-        this.questTypeApi = questTypeApi;
     }
 
     @Override
     public void execute(@Nullable final Profile profile) throws QuestException {
-        if (questTypeApi.condition(profile, condition.getValue(profile))) {
-            questTypeApi.action(profile, action.getValue(profile));
+        if (conditionManager.test(profile, condition.getValue(profile))) {
+            actionManager.run(profile, action.getValue(profile));
         } else {
-            questTypeApi.action(profile, elseAction.getValue(profile));
+            actionManager.run(profile, elseAction.getValue(profile));
         }
     }
 }

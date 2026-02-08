@@ -6,8 +6,9 @@ import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -26,9 +27,14 @@ public class RunForAllAction implements PlayerlessAction {
     private final Supplier<? extends Iterable<? extends Profile>> profileCollectionSupplier;
 
     /**
-     * Quest Type API.
+     * The Action Manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
+
+    /**
+     * The Condition Manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * List of Actions to run.
@@ -44,16 +50,18 @@ public class RunForAllAction implements PlayerlessAction {
      * Create a new RunForAllAction instance.
      *
      * @param profileCollectionSupplier the supplier for generating the profiles
-     * @param questTypeApi              the Quest Type API
      * @param actions                   the actions to run
+     * @param actionManager             the Action Manager
+     * @param conditionManager          the Condition Manager
      * @param conditions                the conditions each profile must meet to run the actions
      */
     public RunForAllAction(final Supplier<? extends Iterable<? extends Profile>> profileCollectionSupplier,
-                           final QuestTypeApi questTypeApi, final Argument<List<ActionIdentifier>> actions,
+                           final Argument<List<ActionIdentifier>> actions, final ActionManager actionManager, final ConditionManager conditionManager,
                            final Argument<List<ConditionIdentifier>> conditions) {
         this.profileCollectionSupplier = profileCollectionSupplier;
-        this.questTypeApi = questTypeApi;
         this.actions = actions;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
         this.conditions = conditions;
     }
 
@@ -63,8 +71,8 @@ public class RunForAllAction implements PlayerlessAction {
         for (final Profile profile : profileCollectionSupplier.get()) {
             try {
                 final List<ConditionIdentifier> resolvedConditions = conditions.getValue(profile);
-                if (resolvedConditions.isEmpty() || questTypeApi.conditions(profile, resolvedConditions)) {
-                    questTypeApi.actions(profile, actions.getValue(profile));
+                if (resolvedConditions.isEmpty() || conditionManager.testAll(profile, resolvedConditions)) {
+                    actionManager.run(profile, actions.getValue(profile));
                 }
             } catch (final QuestException e) {
                 questListException.addException(profile.toString(), e);

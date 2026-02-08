@@ -3,8 +3,8 @@ package org.betonquest.betonquest.quest.action.random;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.NullableAction;
+import org.betonquest.betonquest.api.service.ActionManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -14,6 +14,11 @@ import java.util.List;
  * Fires randomly actions by weight and amount.
  */
 public class PickRandomAction implements NullableAction {
+
+    /**
+     * The action manager.
+     */
+    private final ActionManager actionManager;
 
     /**
      * The actions with there weight.
@@ -27,21 +32,16 @@ public class PickRandomAction implements NullableAction {
     private final Argument<Number> amount;
 
     /**
-     * Quest Type API.
-     */
-    private final QuestTypeApi questTypeApi;
-
-    /**
      * Creates a new PickRandomAction.
      *
-     * @param actions      the actions with there weight
-     * @param amount       the amount of actions to fire
-     * @param questTypeApi the Quest Type API
+     * @param actionManager the action manager
+     * @param actions       the actions with there weight
+     * @param amount        the amount of actions to fire
      */
-    public PickRandomAction(final Argument<List<RandomAction>> actions, @Nullable final Argument<Number> amount, final QuestTypeApi questTypeApi) {
+    public PickRandomAction(final ActionManager actionManager, final Argument<List<RandomAction>> actions, @Nullable final Argument<Number> amount) {
+        this.actionManager = actionManager;
         this.actions = actions;
         this.amount = amount;
-        this.questTypeApi = questTypeApi;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class PickRandomAction implements NullableAction {
                 final RandomAction action = iterator.next();
                 random -= action.weight();
                 if (random < 0) {
-                    questTypeApi.action(profile, action.actionID());
+                    actionManager.run(profile, action.actionID());
                     iterator.remove();
                     total -= action.weight();
                     break;

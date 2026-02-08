@@ -13,14 +13,14 @@ import org.betonquest.betonquest.api.common.component.BookPageWrapper;
 import org.betonquest.betonquest.api.common.component.ComponentLineWrapper;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalMainPageIdentifier;
+import org.betonquest.betonquest.api.legacy.LegacyFeatureApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.config.PluginMessage;
@@ -72,14 +72,14 @@ public class Journal {
     private final PluginMessage pluginMessage;
 
     /**
-     * The Quest Type API.
-     */
-    private final QuestTypeApi questTypeApi;
-
-    /**
      * The Feature API.
      */
-    private final FeatureApi featureApi;
+    private final LegacyFeatureApi featureApi;
+
+    /**
+     * The Condition Manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * The text parser used to parse text in the journal.
@@ -123,24 +123,24 @@ public class Journal {
     private Component mainPage;
 
     /**
-     * Creates new Journal instance from List of Pointers.
+     * Creates a new Journal instance from List of Pointers.
      *
-     * @param log           the custom {@link BetonQuestLogger} instance for this class
-     * @param pluginMessage the {@link PluginMessage} instance
-     * @param questTypeApi  the Quest Type API
-     * @param featureApi    the Feature API
-     * @param textParser    the {@link TextParser} instance used to parse messages
-     * @param fontRegistry  the {@link FontRegistry} used for font handling
-     * @param profile       the {@link OnlineProfile} of the player whose journal is created
-     * @param list          list of pointers to journal entries
-     * @param config        a {@link ConfigAccessor} that contains the plugin's configuration
+     * @param log              the custom {@link BetonQuestLogger} instance for this class
+     * @param pluginMessage    the {@link PluginMessage} instance
+     * @param conditionManager the Condition Manager
+     * @param featureApi       the Feature API
+     * @param textParser       the {@link TextParser} instance used to parse messages
+     * @param fontRegistry     the {@link FontRegistry} used for font handling
+     * @param profile          the {@link OnlineProfile} of the player whose journal is created
+     * @param list             list of pointers to journal entries
+     * @param config           a {@link ConfigAccessor} that contains the plugin's configuration
      */
-    public Journal(final BetonQuestLogger log, final PluginMessage pluginMessage, final QuestTypeApi questTypeApi,
-                   final FeatureApi featureApi, final TextParser textParser, final FontRegistry fontRegistry,
+    public Journal(final BetonQuestLogger log, final PluginMessage pluginMessage, final ConditionManager conditionManager,
+                   final LegacyFeatureApi featureApi, final TextParser textParser, final FontRegistry fontRegistry,
                    final Profile profile, final List<Pointer> list, final ConfigAccessor config) {
         this.log = log;
         this.pluginMessage = pluginMessage;
-        this.questTypeApi = questTypeApi;
+        this.conditionManager = conditionManager;
         this.featureApi = featureApi;
         this.textParser = textParser;
         this.bookWrapper = new BookPageWrapper(fontRegistry, config.getInt("journal.format.line_length"),
@@ -296,7 +296,7 @@ public class Journal {
             Component text;
             try {
                 final List<ConditionIdentifier> conditions = mainPageEntry.conditions().getValue(profile);
-                if (!conditions.isEmpty() && !questTypeApi.conditions(profile, conditions)) {
+                if (!conditions.isEmpty() && !conditionManager.testAll(profile, conditions)) {
                     continue;
                 }
                 text = mainPageEntry.entry().asComponent(profile);

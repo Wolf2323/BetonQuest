@@ -1,15 +1,15 @@
 package org.betonquest.betonquest.playerhider;
 
-import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
-import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
@@ -44,33 +44,34 @@ public class PlayerHider {
     private final Plugin plugin;
 
     /**
-     * The BetonQuest API instance.
-     */
-    private final BetonQuestApi api;
-
-    /**
      * The profile provider instance.
      */
     private final ProfileProvider profileProvider;
 
     /**
+     * The condition manager instance.
+     */
+    private final ConditionManager conditionManager;
+
+    /**
      * Initialize and start a new {@link PlayerHider}.
      *
-     * @param plugin          the plugin instance
-     * @param api             the BetonQuest API instance
-     * @param placeholders    the {@link Placeholders} to create and resolve placeholders
-     * @param profileProvider the profile provider instance
-     * @param config          the config to load from
+     * @param plugin              the plugin instance
+     * @param conditionManager    the condition manager instance
+     * @param instructions        the instructions instance
+     * @param questPackageManager the quest package manager instance
+     * @param profileProvider     the profile provider instance
+     * @param config              the config to load from
      * @throws QuestException Thrown if there is a configuration error.
      */
-    public PlayerHider(final Plugin plugin, final BetonQuestApi api, final Placeholders placeholders,
-                       final ProfileProvider profileProvider, final ConfigAccessor config) throws QuestException {
+    public PlayerHider(final Plugin plugin, final ConditionManager conditionManager, final BetonQuestInstructions instructions,
+                       final QuestPackageManager questPackageManager, final ProfileProvider profileProvider, final ConfigAccessor config) throws QuestException {
         this.plugin = plugin;
+        this.conditionManager = conditionManager;
         this.profileProvider = profileProvider;
         hiders = new HashMap<>();
-        this.api = api;
 
-        for (final QuestPackage pack : api.getQuestPackageManager().getPackages().values()) {
+        for (final QuestPackage pack : questPackageManager.getPackages().values()) {
             final ConfigurationSection hiderSection = pack.getConfig().getConfigurationSection("player_hider");
             if (hiderSection == null) {
                 continue;
@@ -78,8 +79,8 @@ public class PlayerHider {
             for (final String key : hiderSection.getKeys(false)) {
                 final String rawConditionsSource = hiderSection.getString(key + ".source_player");
                 final String rawConditionsTarget = hiderSection.getString(key + ".target_player");
-                hiders.put(getConditions(placeholders, pack, key, rawConditionsSource),
-                        getConditions(placeholders, pack, key, rawConditionsTarget));
+                hiders.put(getConditions(instructions, pack, key, rawConditionsSource),
+                        getConditions(instructions, pack, key, rawConditionsTarget));
             }
         }
 
@@ -94,15 +95,14 @@ public class PlayerHider {
         bukkitTask.cancel();
     }
 
-    private Collection<ConditionIdentifier> getConditions(final Placeholders placeholders, final QuestPackage pack, final String key,
+    private Collection<ConditionIdentifier> getConditions(final BetonQuestInstructions instructions, final QuestPackage pack, final String key,
                                                           @Nullable final String rawConditions) throws QuestException {
         if (rawConditions == null || rawConditions.isEmpty()) {
             return new ArrayList<>();
         }
         try {
-            final ArgumentParsers parsers = api.getArgumentParsers();
-            return parsers.forIdentifier(ConditionIdentifier.class).list()
-                    .apply(placeholders, api.getQuestPackageManager(), pack, rawConditions);
+            return instructions.createForArgument(pack, rawConditions).identifier(ConditionIdentifier.class)
+                    .list().get().getValue(null);
         } catch (final QuestException e) {
             throw new QuestException("Error while loading conditions for player_hider '" + key + "' in Package '" + pack.getQuestPath() + "': " + e.getMessage(), e);
         }
@@ -141,12 +141,12 @@ public class PlayerHider {
         for (final Map.Entry<Collection<ConditionIdentifier>, Collection<ConditionIdentifier>> hider : hiders.entrySet()) {
             final List<OnlineProfile> targetProfiles = new ArrayList<>();
             for (final OnlineProfile target : onlineProfiles) {
-                if (api.getQuestTypeApi().conditions(target, hider.getValue())) {
+                if (conditionManager.testAll(target, hider.getValue())) {
                     targetProfiles.add(target);
                 }
             }
             for (final OnlineProfile source : onlineProfiles) {
-                if (!api.getQuestTypeApi().conditions(source, hider.getKey())) {
+                if (!conditionManager.testAll(source, hider.getKey())) {
                     continue;
                 }
                 final List<OnlineProfile> hiddenProfiles = getOrCreateProfileList(source, profilesToHide);

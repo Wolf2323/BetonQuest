@@ -8,6 +8,8 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.Conversation;
 import org.bukkit.Location;
@@ -49,16 +51,18 @@ public class ConversationStarter {
      * @param activeConversations the list of conversations to add started
      * @param plugin              the plugin to start tasks
      * @param pluginMessage       the {@link PluginMessage} instance
+     * @param actionManager       the action manager
+     * @param conditionManager    the condition manager
      */
     public ConversationStarter(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
                                final Map<Profile, Conversation> activeConversations, final Plugin plugin,
-                               final PluginMessage pluginMessage) {
+                               final PluginMessage pluginMessage, final ActionManager actionManager, final ConditionManager conditionManager) {
         this.log = log;
         this.activeConversations = activeConversations;
         this.plugin = plugin;
         this.standardFactory = (onlineProfile, conversationID, center, endCallable)
                 -> new Conversation(loggerFactory.create(Conversation.class), pluginMessage, onlineProfile, conversationID,
-                center, endCallable);
+                actionManager, conditionManager, center, endCallable);
     }
 
     /**

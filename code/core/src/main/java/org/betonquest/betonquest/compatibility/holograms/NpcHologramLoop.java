@@ -2,23 +2,18 @@ package org.betonquest.betonquest.compatibility.holograms;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.bukkit.event.npc.NpcVisibilityUpdateEvent;
-import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
-import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
-import org.betonquest.betonquest.api.instruction.argument.parser.VectorParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.quest.npc.Npc;
 import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.NpcManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.kernel.processor.StartTask;
-import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
@@ -57,9 +52,9 @@ public class NpcHologramLoop extends HologramLoop implements Listener, StartTask
     private final Plugin plugin;
 
     /**
-     * Feature API.
+     * The npc manager to get npcs from.
      */
-    private final FeatureApi featureApi;
+    private final NpcManager npcManager;
 
     /**
      * The Npc Registry to create identifier strings from Npcs.
@@ -72,27 +67,25 @@ public class NpcHologramLoop extends HologramLoop implements Listener, StartTask
      *
      * @param loggerFactory     logger factory to use
      * @param log               the logger that will be used for logging
-     * @param placeholders      the {@link Placeholders} to create and resolve placeholders
      * @param instructionApi    the instruction api to use
      * @param packManager       the quest package manager to get quest packages from
      * @param plugin            the plugin to schedule tasks
      * @param hologramProvider  the hologram provider to create new holograms
      * @param identifierFactory the identifier factory to create {@link HologramIdentifier}s for this type
-     * @param featureApi        the Feature API to get NPC instances
-     * @param parsers           the argument parsers
+     * @param npcManager        the npc manager to get npcs from
      * @param npcRegistry       the registry to create identifier strings from Npcs
      * @param textParser        the text parser used to parse text and colors
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public NpcHologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
-                           final Placeholders placeholders, final InstructionApi instructionApi, final QuestPackageManager packManager, final Plugin plugin,
-                           final HologramProvider hologramProvider, final ArgumentParsers parsers,
+                           final BetonQuestInstructions instructionApi, final QuestPackageManager packManager, final Plugin plugin,
+                           final HologramProvider hologramProvider,
                            final IdentifierFactory<HologramIdentifier> identifierFactory,
-                           final FeatureApi featureApi, final NpcRegistry npcRegistry, final TextParser textParser) {
-        super(loggerFactory, log, placeholders, instructionApi, packManager, hologramProvider,
-                "Npc Hologram", "npc_holograms", textParser, parsers, identifierFactory);
+                           final NpcManager npcManager, final NpcRegistry npcRegistry, final TextParser textParser) {
+        super(loggerFactory, log, instructionApi, packManager, hologramProvider,
+                "Npc Hologram", "npc_holograms", textParser, identifierFactory);
         this.plugin = plugin;
-        this.featureApi = featureApi;
+        this.npcManager = npcManager;
         this.npcRegistry = npcRegistry;
         npcHolograms = new ArrayList<>();
         followTask = plugin.getServer().getScheduler().runTaskTimer(plugin,
@@ -119,12 +112,10 @@ public class NpcHologramLoop extends HologramLoop implements Listener, StartTask
     @Override
     protected List<BetonHologram> getHologramsFor(final SectionInstruction instruction) throws QuestException {
         final ConfigurationSection section = instruction.getSection();
-        final QuestPackage pack = instruction.getPackage();
         final Vector vector = new Vector(0, 3, 0);
         final String stringVector = section.getString("vector");
-        final VectorParser vectorParser = new VectorParser();
         if (stringVector != null) {
-            vector.add(new DefaultArgument<>(placeholders, pack, "(" + stringVector + ")", vectorParser).getValue(null));
+            vector.add(instruction.chainForArgument("(" + stringVector + ")").vector().get().getValue(null));
         }
         final List<NpcIdentifier> npcIDs = instruction.read().value("npcs").identifier(NpcIdentifier.class).list().get().getValue(null);
         final boolean follow = section.getBoolean("follow", false);
@@ -149,7 +140,7 @@ public class NpcHologramLoop extends HologramLoop implements Listener, StartTask
                     final NpcIdentifier npcID = entry.getKey();
                     final Npc<?> npc;
                     try {
-                        npc = featureApi.getNpc(npcID, null);
+                        npc = npcManager.get(null, npcID);
                     } catch (final QuestException exception) {
                         log.warn("Could not get Npc for id '" + npcID + "' at hologram creation: " + exception.getMessage(), exception);
                         continue;
@@ -178,7 +169,7 @@ public class NpcHologramLoop extends HologramLoop implements Listener, StartTask
                     final BetonHologram hologram = entry.getValue();
                     final Npc<?> npc;
                     try {
-                        npc = featureApi.getNpc(npcID, null);
+                        npc = npcManager.get(null, npcID);
                     } catch (final QuestException exception) {
                         log.warn("Could not get Npc for id '" + npcID + "' in hologram loop: " + exception.getMessage(), exception);
                         return;

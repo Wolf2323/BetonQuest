@@ -38,8 +38,8 @@ public class MagicIntegrator implements Integrator, Listener {
     public void hook(final BetonQuestApi api) {
         final PluginManager manager = plugin.getServer().getPluginManager();
         final MagicAPI magicApi = Objects.requireNonNull((MagicAPI) manager.getPlugin("Magic"));
-        api.getQuestRegistries().condition().register("wand", new WandConditionFactory(api.getLoggerFactory(), magicApi));
-        manager.registerEvents(new InventoryListener(BetonQuest.getInstance().getPlayerDataStorage(), api.getProfileProvider()), plugin);
+        api.registries().conditions().register("wand", new WandConditionFactory(api.loggers(), magicApi));
+        manager.registerEvents(new InventoryListener(BetonQuest.getInstance().getPlayerDataStorage(), api.profiles()), plugin);
     }
 
     @Override

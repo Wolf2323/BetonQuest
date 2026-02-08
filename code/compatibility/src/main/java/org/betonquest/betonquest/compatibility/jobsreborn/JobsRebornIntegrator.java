@@ -2,10 +2,10 @@ package org.betonquest.betonquest.compatibility.jobsreborn;
 
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
 import org.betonquest.betonquest.api.quest.action.ActionRegistry;
 import org.betonquest.betonquest.api.quest.condition.ConditionRegistry;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveRegistry;
+import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.jobsreborn.action.AddExpActionFactory;
 import org.betonquest.betonquest.compatibility.jobsreborn.action.AddLevelActionFactory;
@@ -41,14 +41,14 @@ public class JobsRebornIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final QuestTypeRegistries questRegistries = api.getQuestRegistries();
-        final ConditionRegistry conditionRegistry = questRegistries.condition();
+        final BetonQuestRegistries questRegistries = api.registries();
+        final ConditionRegistry conditionRegistry = questRegistries.conditions();
         conditionRegistry.register("nujobs_canlevel", new CanLevelConditionFactory());
         conditionRegistry.register("nujobs_hasjob", new HasJobConditionFactory());
         conditionRegistry.register("nujobs_jobfull", new JobFullConditionFactory());
         conditionRegistry.register("nujobs_joblevel", new JobLevelConditionFactory());
 
-        final ActionRegistry actionRegistry = questRegistries.action();
+        final ActionRegistry actionRegistry = questRegistries.actions();
         actionRegistry.register("nujobs_addexp", new AddExpActionFactory());
         actionRegistry.register("nujobs_addlevel", new AddLevelActionFactory());
         actionRegistry.register("nujobs_dellevel", new DelLevelActionFactory());
@@ -56,11 +56,11 @@ public class JobsRebornIntegrator implements Integrator {
         actionRegistry.register("nujobs_leavejob", new LeaveJobActionFactory());
         actionRegistry.register("nujobs_setlevel", new SetLevelActionFactory());
 
-        final ObjectiveRegistry objectiveRegistry = questRegistries.objective();
+        final ObjectiveRegistry objectiveRegistry = questRegistries.objectives();
         objectiveRegistry.register("nujobs_joinjob", new JoinJobObjectiveFactory());
         objectiveRegistry.register("nujobs_leavejob", new LeaveJobObjectiveFactory());
         objectiveRegistry.register("nujobs_levelup", new LevelUpObjectiveFactory());
-        objectiveRegistry.register("nujobs_payment", new PaymentObjectiveFactory(api.getLoggerFactory(), plugin.getPluginMessage()));
+        objectiveRegistry.register("nujobs_payment", new PaymentObjectiveFactory(api.loggers(), plugin.getPluginMessage()));
     }
 
     @Override

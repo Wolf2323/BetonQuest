@@ -10,7 +10,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -73,14 +73,14 @@ public final class Utils {
      * Gets the party of the location.
      * A range of 0 means worldwide and -1 means server-wide.
      *
-     * @param questTypeApi the Quest Type API to check the conditions
-     * @param profiles     the online profiles in question
-     * @param location     the location to get the party of
-     * @param range        the range of the party
-     * @param conditions   conditions that the party members must meet
+     * @param conditionManager the condition manager to use
+     * @param profiles         the online profiles in question
+     * @param location         the location to get the party of
+     * @param range            the range of the party
+     * @param conditions       conditions that the party members must meet
      * @return the party of the location
      */
-    public static Map<OnlineProfile, Double> getParty(final QuestTypeApi questTypeApi, final Collection<OnlineProfile> profiles,
+    public static Map<OnlineProfile, Double> getParty(final ConditionManager conditionManager, final Collection<OnlineProfile> profiles,
                                                       final Location location, final double range, final List<ConditionIdentifier> conditions) {
         final World world = location.getWorld();
         final double squared = range * range;
@@ -90,7 +90,7 @@ public final class Utils {
         final Stream<Pair<OnlineProfile, Double>> distancePlayers = worldPlayers.map(profile -> Pair.of(profile, getDistanceSquared(profile, location)));
         final Stream<Pair<OnlineProfile, Double>> rangePlayers = range <= 0 ? distancePlayers : distancePlayers.filter(pair -> pair.right() <= squared);
         return rangePlayers
-                .filter(pair -> questTypeApi.conditions(pair.left(), conditions))
+                .filter(pair -> conditionManager.testAll(pair.left(), conditions))
                 .collect(Collectors.toMap(Pair::left, Pair::right));
     }
 

@@ -1,8 +1,8 @@
 package org.betonquest.betonquest.kernel.registry.feature;
 
-import org.betonquest.betonquest.api.feature.FeatureRegistries;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
+import org.betonquest.betonquest.api.legacy.LegacyFeatureRegistries;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.text.TextParserRegistry;
 import org.betonquest.betonquest.kernel.registry.FactoryRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.NpcTypeRegistry;
@@ -26,7 +26,7 @@ public record BaseFeatureRegistries(
         NpcTypeRegistry npc,
         NotifyIORegistry notifyIO,
         ScheduleRegistry actionScheduling
-) implements FeatureRegistries {
+) implements LegacyFeatureRegistries {
 
     /**
      * Create a new other factory registry for quest elements not based on the Instruction object.
@@ -35,7 +35,7 @@ public record BaseFeatureRegistries(
      * @param instructionApi the instruction api
      * @return the newly created registries
      */
-    public static BaseFeatureRegistries create(final BetonQuestLoggerFactory loggerFactory, final InstructionApi instructionApi) {
+    public static BaseFeatureRegistries create(final BetonQuestLoggerFactory loggerFactory, final BetonQuestInstructions instructionApi) {
         return new BaseFeatureRegistries(
                 new ConversationIORegistry(loggerFactory.create(ConversationIORegistry.class)),
                 new ItemTypeRegistry(loggerFactory.create(ItemTypeRegistry.class)),

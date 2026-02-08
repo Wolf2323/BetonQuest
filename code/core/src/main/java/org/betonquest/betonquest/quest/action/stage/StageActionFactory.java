@@ -5,9 +5,9 @@ import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.betonquest.betonquest.quest.objective.stage.StageObjective;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,17 +19,17 @@ import java.util.Locale;
 public class StageActionFactory implements PlayerActionFactory {
 
     /**
-     * Quest Type API.
+     * The objective manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ObjectiveManager objectiveManager;
 
     /**
      * Creates the stage action factory.
      *
-     * @param questTypeApi the Quest Type API
+     * @param objectiveManager the objective manager
      */
-    public StageActionFactory(final QuestTypeApi questTypeApi) {
-        this.questTypeApi = questTypeApi;
+    public StageActionFactory(final ObjectiveManager objectiveManager) {
+        this.objectiveManager = objectiveManager;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class StageActionFactory implements PlayerActionFactory {
     }
 
     private StageObjective getStageObjective(final ObjectiveIdentifier objectiveID) throws QuestException {
-        if (questTypeApi.getObjective(objectiveID) instanceof final StageObjective stageObjective) {
+        if (objectiveManager.getObjective(objectiveID) instanceof final StageObjective stageObjective) {
             return stageObjective;
         }
         throw new QuestException("Objective '" + objectiveID + "' is not a stage objective");

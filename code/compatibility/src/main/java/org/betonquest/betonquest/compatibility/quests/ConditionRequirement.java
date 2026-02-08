@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -25,9 +25,9 @@ public class ConditionRequirement extends BukkitCustomRequirement {
     private final BetonQuestLogger log;
 
     /**
-     * Quest Type API.
+     * The BetonQuest ConditionManager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ConditionManager conditionManager;
 
     /**
      * The profile provider instance.
@@ -43,15 +43,15 @@ public class ConditionRequirement extends BukkitCustomRequirement {
      * Create a new 'Quests' Condition Requirement.
      *
      * @param log               the custom logger
-     * @param questTypeApi      the Quest Type API
+     * @param conditionManager  the condition manager
      * @param profileProvider   the profile provider instance
      * @param identifierFactory the identifier factory
      */
-    public ConditionRequirement(final BetonQuestLogger log, final QuestTypeApi questTypeApi, final ProfileProvider profileProvider,
+    public ConditionRequirement(final BetonQuestLogger log, final ConditionManager conditionManager, final ProfileProvider profileProvider,
                                 final IdentifierFactory<ConditionIdentifier> identifierFactory) {
         super();
         this.log = log;
-        this.questTypeApi = questTypeApi;
+        this.conditionManager = conditionManager;
         this.profileProvider = profileProvider;
         this.identifierFactory = identifierFactory;
         setName("BetonQuest condition");
@@ -74,7 +74,7 @@ public class ConditionRequirement extends BukkitCustomRequirement {
                 return false;
             }
             final ConditionIdentifier condition = identifierFactory.parseIdentifier(null, string);
-            return questTypeApi.condition(profileProvider.getProfile(player), condition);
+            return conditionManager.test(profileProvider.getProfile(player), condition);
         } catch (final QuestException e) {
             log.warn("Error while checking quest requirement - BetonQuest condition '" + string + "' not found: " + e.getMessage(), e);
             return false;

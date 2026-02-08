@@ -4,12 +4,12 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.condition.NullableConditionAdapter;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessConditionFactory;
+import org.betonquest.betonquest.api.service.ConditionManager;
 
 import java.util.List;
 
@@ -19,17 +19,17 @@ import java.util.List;
 public class AlternativeConditionFactory implements PlayerConditionFactory, PlayerlessConditionFactory {
 
     /**
-     * Quest Type API.
+     * The condition manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ConditionManager conditionManager;
 
     /**
      * Create the alternative condition factory.
      *
-     * @param questTypeApi the Quest Type API to check conditions
+     * @param conditionManager the condition manager
      */
-    public AlternativeConditionFactory(final QuestTypeApi questTypeApi) {
-        this.questTypeApi = questTypeApi;
+    public AlternativeConditionFactory(final ConditionManager conditionManager) {
+        this.conditionManager = conditionManager;
     }
 
     @Override
@@ -44,6 +44,6 @@ public class AlternativeConditionFactory implements PlayerConditionFactory, Play
 
     private AlternativeCondition parseAlternative(final Instruction instruction) throws QuestException {
         final Argument<List<ConditionIdentifier>> conditionIDs = instruction.identifier(ConditionIdentifier.class).list().get();
-        return new AlternativeCondition(questTypeApi, conditionIDs);
+        return new AlternativeCondition(conditionManager, conditionIDs);
     }
 }

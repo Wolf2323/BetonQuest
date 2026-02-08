@@ -1,10 +1,10 @@
 package org.betonquest.betonquest.schedule.impl;
 
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.schedule.CatchupStrategy;
 import org.betonquest.betonquest.api.schedule.Schedule;
 import org.betonquest.betonquest.api.schedule.Scheduler;
+import org.betonquest.betonquest.api.service.ActionManager;
 import org.betonquest.betonquest.schedule.impl.realtime.daily.RealtimeDailyScheduler;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -51,23 +51,23 @@ public abstract class ExecutorServiceScheduler<S extends Schedule, T> extends Sc
     /**
      * Constructor to create a new instance of this scheduler.
      *
-     * @param log          the logger that will be used for logging
-     * @param questTypeApi the class for executing actions
+     * @param log           the logger that will be used for logging
+     * @param actionManager the class for executing actions
      */
-    public ExecutorServiceScheduler(final BetonQuestLogger log, final QuestTypeApi questTypeApi) {
-        this(log, questTypeApi, Executors::newSingleThreadScheduledExecutor);
+    public ExecutorServiceScheduler(final BetonQuestLogger log, final ActionManager actionManager) {
+        this(log, actionManager, Executors::newSingleThreadScheduledExecutor);
     }
 
     /**
      * Constructor to create a new instance of this scheduler with a custom executor.
      *
-     * @param log          the logger that will be used for logging
-     * @param executor     supplier used to create new instances of the executor used by this scheduler
-     * @param questTypeApi the class for executing actions
+     * @param log           the logger that will be used for logging
+     * @param executor      supplier used to create new instances of the executor used by this scheduler
+     * @param actionManager the class for executing actions
      */
-    public ExecutorServiceScheduler(final BetonQuestLogger log, final QuestTypeApi questTypeApi,
+    public ExecutorServiceScheduler(final BetonQuestLogger log, final ActionManager actionManager,
                                     final Supplier<ScheduledExecutorService> executor) {
-        super(log, questTypeApi);
+        super(log, actionManager);
         this.log = log;
         this.executorServiceSupplier = executor;
     }

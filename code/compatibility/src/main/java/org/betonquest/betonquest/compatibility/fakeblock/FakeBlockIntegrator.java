@@ -45,7 +45,7 @@ public class FakeBlockIntegrator implements Integrator {
         final RegisteredServiceProvider<GroupService> groupService = getServiceProvider(GroupService.class);
         final RegisteredServiceProvider<PlayerGroupService> playerGroupService = getServiceProvider(PlayerGroupService.class);
 
-        api.getQuestRegistries().action().register("fakeblock", new FakeBlockActionFactory(groupService, playerGroupService));
+        api.registries().actions().register("fakeblock", new FakeBlockActionFactory(groupService, playerGroupService));
     }
 
     private void checkRequiredVersion() throws UnsupportedVersionException {

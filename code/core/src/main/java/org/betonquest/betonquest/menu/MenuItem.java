@@ -12,7 +12,8 @@ import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -33,9 +34,14 @@ public class MenuItem {
     private final BetonQuestLogger log;
 
     /**
-     * The Quest TypeAPI.
+     * The ActionManager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
+
+    /**
+     * The ConditionManager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * The betonquest quest item this item is based on.
@@ -71,21 +77,24 @@ public class MenuItem {
     /**
      * Creates a new Menu Item.
      *
-     * @param log          the custom logger for this class
-     * @param questTypeApi the Quest Type API
-     * @param item         the item to display
-     * @param itemId       the id of the item
-     * @param descriptions the descriptions overriding name and lore of the Item
-     * @param clickActions the actions to execute on click
-     * @param conditions   the conditions required to show the item
-     * @param close        if the item click closes
+     * @param log              the custom logger for this class
+     * @param item             the item to display
+     * @param itemId           the id of the item
+     * @param descriptions     the descriptions overriding name and lore of the Item
+     * @param clickActions     the actions to execute on click
+     * @param actionManager    the action manager
+     * @param conditionManager the condition manager
+     * @param conditions       the conditions required to show the item
+     * @param close            if the item click closes
      */
-    public MenuItem(final BetonQuestLogger log, final QuestTypeApi questTypeApi, final Argument<ItemWrapper> item,
+    public MenuItem(final BetonQuestLogger log, final Argument<ItemWrapper> item,
+                    final ActionManager actionManager, final ConditionManager conditionManager,
                     final MenuItemIdentifier itemId, @Nullable final Text descriptions, final ClickActions clickActions,
                     final Argument<List<ConditionIdentifier>> conditions, final Argument<Boolean> close) {
         this.log = log;
-        this.questTypeApi = questTypeApi;
         this.item = item;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
         this.itemId = itemId;
         this.descriptions = descriptions;
         this.clickActions = clickActions;
@@ -120,7 +129,7 @@ public class MenuItem {
             return false;
         }
         log.debug(itemId.getPackage(), "Item " + itemId + ": Run actions");
-        questTypeApi.actions(profile, resolved);
+        actionManager.run(profile, resolved);
         try {
             return this.close.getValue(profile);
         } catch (final QuestException e) {
@@ -137,7 +146,7 @@ public class MenuItem {
      */
     public boolean display(final Profile profile) {
         try {
-            final boolean result = questTypeApi.conditions(profile, this.conditions.getValue(profile));
+            final boolean result = conditionManager.testAll(profile, this.conditions.getValue(profile));
             log.debug(itemId.getPackage(), "Item '" + itemId + "' display check for profile '" + profile + "': " + result);
             return result;
         } catch (final QuestException exception) {

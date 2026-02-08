@@ -7,7 +7,7 @@ import org.betonquest.betonquest.api.instruction.MockedInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.config.DefaultConfigAccessorFactory;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.config.quest.QuestPackageImpl;
@@ -84,7 +84,7 @@ class JournalActionFactoryIntegrationTest {
     private ActionAdapterFactory createJournalActionFactory(final BetonQuestLogger logger) {
         final ProfileProvider profileProvider = new UUIDProfileProvider(mock(Server.class));
         final JournalActionFactory journalActionFactory = new JournalActionFactory(new SingletonLoggerFactory(logger), mock(PluginMessage.class), dataStorage, InstantSource.fixed(now), saver, profileProvider);
-        return new ActionAdapterFactory(mock(BetonQuestLoggerFactory.class), mock(QuestTypeApi.class), journalActionFactory, journalActionFactory);
+        return new ActionAdapterFactory(mock(BetonQuestLoggerFactory.class), () -> mock(ConditionManager.class), journalActionFactory, journalActionFactory);
     }
 
     @Test

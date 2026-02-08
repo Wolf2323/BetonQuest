@@ -6,14 +6,13 @@ import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.MenuIdentifier;
 import org.betonquest.betonquest.api.identifier.MenuItemIdentifier;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
-import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.menu.betonquest.MenuActionFactory;
 import org.betonquest.betonquest.menu.betonquest.MenuConditionFactory;
@@ -76,37 +75,36 @@ public class RPGMenu {
      * @param pluginConfig    the plugin config
      * @param pluginMessage   the plugin message instance
      * @param textCreator     the text creator to parse text
-     * @param questTypeApi    the Quest Type API
      * @param profileProvider the profile provider instance
      * @param parsers         the argument parsers to use
      * @throws QuestException if there is an error while loading the menus
      */
     public RPGMenu(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                   final InstructionApi instructionApi, final ConfigAccessor pluginConfig,
+                   final BetonQuestInstructions instructionApi, final ConfigAccessor pluginConfig,
                    final PluginMessage pluginMessage, final ParsedSectionTextCreator textCreator,
-                   final QuestTypeApi questTypeApi, final ProfileProvider profileProvider,
-                   final ArgumentParsers parsers) throws QuestException {
+                   final ProfileProvider profileProvider, final ArgumentParsers parsers) throws QuestException {
         this.log = log;
         this.loggerFactory = loggerFactory;
         final BetonQuest betonQuest = BetonQuest.getInstance();
         final String menu = "menu";
-        final QuestTypeRegistries questRegistries = betonQuest.getQuestRegistries();
+        final BetonQuestRegistries questRegistries = betonQuest.getBetonQuestRegistries();
         final Server server = betonQuest.getServer();
-        questRegistries.condition().register(menu, new MenuConditionFactory(loggerFactory));
-        questRegistries.objective().register(menu, new MenuObjectiveFactory(loggerFactory, this));
-        questRegistries.action().register(menu, new MenuActionFactory(loggerFactory, this));
-        questRegistries.placeholder().register(menu, new MenuPlaceholderFactory());
-        final IdentifierFactory<MenuIdentifier> menuIdentifierFactory = questRegistries.identifier().getFactory(MenuIdentifier.class);
+        questRegistries.conditions().register(menu, new MenuConditionFactory(loggerFactory));
+        questRegistries.objectives().register(menu, new MenuObjectiveFactory(loggerFactory, this));
+        questRegistries.actions().register(menu, new MenuActionFactory(loggerFactory, this));
+        questRegistries.placeholders().register(menu, new MenuPlaceholderFactory());
+        final IdentifierFactory<MenuIdentifier> menuIdentifierFactory = questRegistries.identifiers().getFactory(MenuIdentifier.class);
         this.pluginCommand = new RPGMenuCommand(loggerFactory.create(RPGMenuCommand.class), this,
                 menuIdentifierFactory);
         pluginCommand.register();
         pluginCommand.syncCraftBukkitCommands();
         this.menuItemProcessor = new MenuItemProcessor(loggerFactory.create(MenuItemProcessor.class), loggerFactory,
-                instructionApi, textCreator, questRegistries.identifier().getFactory(MenuItemIdentifier.class),
-                questTypeApi, pluginConfig, parsers);
+                instructionApi, textCreator, questRegistries.identifiers().getFactory(MenuItemIdentifier.class),
+                pluginConfig, parsers, betonQuest.getBetonQuestManagers().actions(), betonQuest.getBetonQuestManagers().conditions());
         betonQuest.addProcessor(menuItemProcessor);
         this.menuProcessor = new MenuProcessor(loggerFactory.create(MenuProcessor.class), loggerFactory,
-                instructionApi, textCreator, questTypeApi, parsers, this, menuIdentifierFactory, profileProvider);
+                instructionApi, textCreator, betonQuest.getBetonQuestManagers().actions(),
+                betonQuest.getBetonQuestManagers().conditions(), parsers, this, menuIdentifierFactory, profileProvider);
         betonQuest.addProcessor(menuProcessor);
         this.menuItemListener = new MenuItemListener(loggerFactory.create(MenuItemListener.class), this,
                 menuProcessor, profileProvider, pluginMessage);
@@ -133,16 +131,6 @@ public class RPGMenu {
     public static boolean hasOpenedMenu(final OnlineProfile onlineProfile, @Nullable final MenuIdentifier menuID) {
         final OpenedMenu menu = OpenedMenu.getMenu(onlineProfile);
         return menu != null && (menuID == null || menu.getId().equals(menuID));
-    }
-
-    /**
-     * Returns if the player has opened any menu.
-     *
-     * @param onlineProfile guess what: the onlineprofile of the player!
-     * @return true if player has opened a menu, false if not
-     */
-    public static boolean hasOpenedMenu(final OnlineProfile onlineProfile) {
-        return hasOpenedMenu(onlineProfile, null);
     }
 
     /**

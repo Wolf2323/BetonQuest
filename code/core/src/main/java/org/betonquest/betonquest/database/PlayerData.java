@@ -6,13 +6,13 @@ import org.betonquest.betonquest.api.bukkit.event.PlayerTagAddEvent;
 import org.betonquest.betonquest.api.bukkit.event.PlayerTagRemoveEvent;
 import org.betonquest.betonquest.api.bukkit.event.PlayerUpdatePointEvent;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
+import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
-import org.betonquest.betonquest.api.identifier.factory.IdentifierRegistry;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.objective.Objective;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.betonquest.betonquest.conversation.PlayerConversationState;
 import org.betonquest.betonquest.database.Saver.Record;
 import org.betonquest.betonquest.feature.journal.Journal;
@@ -58,9 +58,9 @@ public class PlayerData implements TagData, PointData {
     private final Server server;
 
     /**
-     * Quest Type API.
+     * The objective manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ObjectiveManager objectiveManager;
 
     /**
      * Factory to create a new Journal.
@@ -132,18 +132,18 @@ public class PlayerData implements TagData, PointData {
      * @param saver              the saver to persist data changes
      * @param server             the server to determine if an event should be stated as async
      * @param identifierRegistry the identifier registry to resolve identifiers
-     * @param questTypeApi       the Quest Type API
+     * @param objectiveManager   the objective manager
      * @param journalFactory     the factory to create a new journal
      * @param profile            the profile to load the data for
      */
     public PlayerData(final BetonQuestLogger log, final Saver saver, final Server server,
-                      final IdentifierRegistry identifierRegistry, final QuestTypeApi questTypeApi,
+                      final IdentifierRegistry identifierRegistry, final ObjectiveManager objectiveManager,
                       final JournalFactory journalFactory, final Profile profile) {
         this.log = log;
         this.identifierRegistry = identifierRegistry;
+        this.objectiveManager = objectiveManager;
         this.saver = saver;
         this.server = server;
-        this.questTypeApi = questTypeApi;
         this.journalFactory = journalFactory;
         this.profile = profile;
         this.profileID = profile.getProfileUUID().toString();
@@ -339,7 +339,7 @@ public class PlayerData implements TagData, PointData {
             final String objective = entry.getKey();
             try {
                 final ObjectiveIdentifier objectiveIdentifier = identifierRegistry.getFactory(ObjectiveIdentifier.class).parseIdentifier(null, objective);
-                questTypeApi.resumeObjective(profile, objectiveIdentifier, entry.getValue());
+                objectiveManager.start(profile, objectiveIdentifier, entry.getValue());
             } catch (final QuestException e) {
                 log.warn("Loaded '" + objective
                         + "' objective from the database, but it is not defined in configuration. Skipping.", e);
@@ -366,7 +366,7 @@ public class PlayerData implements TagData, PointData {
     public void addNewRawObjective(final ObjectiveIdentifier objectiveID) {
         final Objective obj;
         try {
-            obj = questTypeApi.getObjective(objectiveID);
+            obj = objectiveManager.getObjective(objectiveID);
         } catch (final QuestException e) {
             log.warn(objectiveID.getPackage(), "Cannot add objective to player data: " + e.getMessage(), e);
             return;
@@ -556,8 +556,8 @@ public class PlayerData implements TagData, PointData {
      * Purges all profile's data from the database and from this object.
      */
     public void purgePlayer() {
-        for (final Objective obj : questTypeApi.getPlayerObjectives(profile)) {
-            questTypeApi.cancelObjective(profile, obj.getObjectiveID());
+        for (final Objective obj : objectiveManager.getForProfile(profile)) {
+            objectiveManager.cancel(profile, obj.getObjectiveID());
         }
         // clear all lists
         objectives.clear();

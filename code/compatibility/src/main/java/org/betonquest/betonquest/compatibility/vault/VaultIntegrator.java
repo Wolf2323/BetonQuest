@@ -5,7 +5,7 @@ import net.milkbowl.vault.permission.Permission;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
+import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.vault.action.MoneyActionFactory;
 import org.betonquest.betonquest.compatibility.vault.action.PermissionActionFactory;
@@ -34,7 +34,7 @@ public class VaultIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final BetonQuestLogger log = api.getLoggerFactory().create(VaultIntegrator.class);
+        final BetonQuestLogger log = api.loggers().create(VaultIntegrator.class);
 
         final ServicesManager servicesManager = Bukkit.getServer().getServicesManager();
         final RegisteredServiceProvider<Economy> economyProvider = servicesManager.getRegistration(Economy.class);
@@ -42,12 +42,12 @@ public class VaultIntegrator implements Integrator {
             log.warn("There is no economy plugin on the server!");
         } else {
             final Economy economy = economyProvider.getProvider();
-            final QuestTypeRegistries registries = api.getQuestRegistries();
+            final BetonQuestRegistries registries = api.registries();
 
-            registries.action().register("money", new MoneyActionFactory(economy, api.getLoggerFactory(),
+            registries.actions().register("money", new MoneyActionFactory(economy, api.loggers(),
                     plugin.getPluginMessage()));
-            registries.condition().register("money", new MoneyConditionFactory(economy));
-            registries.placeholder().register("money", new MoneyPlaceholderFactory(economy));
+            registries.conditions().register("money", new MoneyConditionFactory(economy));
+            registries.placeholders().register("money", new MoneyPlaceholderFactory(economy));
         }
 
         final RegisteredServiceProvider<Permission> permissionProvider = servicesManager.getRegistration(Permission.class);
@@ -55,7 +55,7 @@ public class VaultIntegrator implements Integrator {
             log.warn("Could not get permission provider!");
         } else {
             final Permission permission = permissionProvider.getProvider();
-            api.getQuestRegistries().action().register("permission", new PermissionActionFactory(permission));
+            api.registries().actions().register("permission", new PermissionActionFactory(permission));
         }
     }
 

@@ -5,9 +5,9 @@ import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholder;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholderFactory;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.config.PluginMessage;
 
 /**
@@ -16,23 +16,23 @@ import org.betonquest.betonquest.config.PluginMessage;
 public class ConditionPlaceholderFactory implements PlayerPlaceholderFactory {
 
     /**
-     * Quest Type API.
-     */
-    private final QuestTypeApi questTypeApi;
-
-    /**
      * The {@link PluginMessage} instance.
      */
     private final PluginMessage pluginMessage;
 
     /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
+
+    /**
      * Create the Condition Placeholder Factory.
      *
-     * @param questTypeApi  the Quest Type API
-     * @param pluginMessage the {@link PluginMessage} instance
+     * @param conditionManager the condition manager
+     * @param pluginMessage    the {@link PluginMessage} instance
      */
-    public ConditionPlaceholderFactory(final QuestTypeApi questTypeApi, final PluginMessage pluginMessage) {
-        this.questTypeApi = questTypeApi;
+    public ConditionPlaceholderFactory(final ConditionManager conditionManager, final PluginMessage pluginMessage) {
+        this.conditionManager = conditionManager;
         this.pluginMessage = pluginMessage;
     }
 
@@ -40,6 +40,6 @@ public class ConditionPlaceholderFactory implements PlayerPlaceholderFactory {
     public PlayerPlaceholder parsePlayer(final Instruction instruction) throws QuestException {
         final Argument<ConditionIdentifier> conditionId = instruction.identifier(ConditionIdentifier.class).get();
         final FlagArgument<Boolean> papiMode = instruction.bool().getFlag("papiMode", true);
-        return new ConditionPlaceholder(pluginMessage, conditionId, papiMode, questTypeApi);
+        return new ConditionPlaceholder(pluginMessage, conditionId, conditionManager, papiMode);
     }
 }

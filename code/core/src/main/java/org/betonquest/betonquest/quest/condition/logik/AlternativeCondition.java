@@ -4,21 +4,21 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.condition.NullableCondition;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 /**
- * One of specified conditions has to be true.
+ * One of the specified conditions has to be true.
  */
 public class AlternativeCondition implements NullableCondition {
 
     /**
-     * Quest Type API.
+     * The condition manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ConditionManager conditionManager;
 
     /**
      * List of condition IDs.
@@ -28,17 +28,17 @@ public class AlternativeCondition implements NullableCondition {
     /**
      * Create a new alternative condition.
      *
-     * @param questTypeApi the Quest Type API to check conditions
-     * @param conditionIDs the condition IDs
+     * @param conditionManager the condition manager
+     * @param conditionIDs     the condition IDs
      */
-    public AlternativeCondition(final QuestTypeApi questTypeApi, final Argument<List<ConditionIdentifier>> conditionIDs) {
-        this.questTypeApi = questTypeApi;
+    public AlternativeCondition(final ConditionManager conditionManager, final Argument<List<ConditionIdentifier>> conditionIDs) {
+        this.conditionManager = conditionManager;
         this.conditionIDs = conditionIDs;
     }
 
     @Override
     public boolean check(@Nullable final Profile profile) throws QuestException {
         final List<ConditionIdentifier> conditionIDs = this.conditionIDs.getValue(profile);
-        return questTypeApi.conditionsAny(profile, conditionIDs);
+        return conditionManager.testAny(profile, conditionIDs);
     }
 }

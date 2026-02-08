@@ -2,9 +2,9 @@ package org.betonquest.betonquest.quest.action.compass;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.bukkit.event.QuestCompassTargetChangeEvent;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.CompassIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
+import org.betonquest.betonquest.api.legacy.LegacyFeatureApi;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.data.PlayerDataStorage;
@@ -26,7 +26,7 @@ public class CompassAction implements PlayerAction {
     /**
      * Feature API.
      */
-    private final FeatureApi featureApi;
+    private final LegacyFeatureApi featureApi;
 
     /**
      * Storage to get the offline player data.
@@ -51,7 +51,7 @@ public class CompassAction implements PlayerAction {
      * @param action     the action to perform
      * @param compassId  the compass point
      */
-    public CompassAction(final FeatureApi featureApi, final PlayerDataStorage storage,
+    public CompassAction(final LegacyFeatureApi featureApi, final PlayerDataStorage storage,
                          final Argument<CompassTargetOperation> action, final Argument<CompassIdentifier> compassId) {
         this.featureApi = featureApi;
         this.dataStorage = storage;

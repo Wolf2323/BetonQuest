@@ -13,6 +13,7 @@ import org.apache.commons.lang3.function.TriFunction;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
+import org.betonquest.betonquest.api.legacy.LegacyFeatureRegistries;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.UnsupportedVersionException;
@@ -75,14 +76,15 @@ public class PacketEventsIntegrator implements Integrator {
 
         final TriFunction<Player, ConversationAction, Boolean, ConversationSession> inputFunction = (player, control, setSpeed) ->
                 new FakeArmorStandPassengerController(plugin, packetEventsAPI, player, control, setSpeed);
-        api.getFeatureRegistries().conversationIO().register("packetevents", new MenuConvIOFactory(inputFunction, plugin, plugin.getTextParser(),
+        final LegacyFeatureRegistries legacyFeatureRegistries = BetonQuest.getInstance().getLegacyFeatureRegistries();
+        legacyFeatureRegistries.conversationIO().register("packetevents", new MenuConvIOFactory(inputFunction, plugin, plugin.getTextParser(),
                 plugin.getFontRegistry(), pluginConfig, plugin.getConversationColors()));
 
         final boolean displayHistory = pluginConfig.getBoolean("conversation.interceptor.display_history");
         final ChatHistory chatHistory = displayHistory ? getPacketChatHistory(packetEventsAPI, pluginManager, plugin) : new NoneChatHistory();
-        api.getFeatureRegistries().interceptor().register("packetevents", new PacketEventsInterceptorFactory(packetEventsAPI, chatHistory));
+        legacyFeatureRegistries.interceptor().register("packetevents", new PacketEventsInterceptorFactory(packetEventsAPI, chatHistory));
 
-        api.getQuestRegistries().action().register("freeze", new FreezeActionFactory(plugin, packetEventsAPI, api.getLoggerFactory()));
+        api.registries().actions().register("freeze", new FreezeActionFactory(plugin, packetEventsAPI, api.loggers()));
     }
 
     private PacketChatHistory getPacketChatHistory(final PacketEventsAPI<?> packetEventsAPI, final PluginManager pluginManager, final BetonQuest plugin) {

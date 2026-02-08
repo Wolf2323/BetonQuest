@@ -6,9 +6,10 @@ import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,9 +20,14 @@ import java.util.List;
 public class RunForAllActionFactory implements PlayerlessActionFactory {
 
     /**
-     * Quest Type API.
+     * The action manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * The profile provider instance.
@@ -31,12 +37,14 @@ public class RunForAllActionFactory implements PlayerlessActionFactory {
     /**
      * Create new {@link RunForAllActionFactory}.
      *
-     * @param questTypeApi    the Quest Type API
-     * @param profileProvider the profile provider instance
+     * @param profileProvider  the profile provider instance
+     * @param actionManager    the action manager
+     * @param conditionManager the condition manager
      */
-    public RunForAllActionFactory(final QuestTypeApi questTypeApi, final ProfileProvider profileProvider) {
-        this.questTypeApi = questTypeApi;
+    public RunForAllActionFactory(final ProfileProvider profileProvider, final ActionManager actionManager, final ConditionManager conditionManager) {
         this.profileProvider = profileProvider;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
     }
 
     @Override
@@ -45,6 +53,6 @@ public class RunForAllActionFactory implements PlayerlessActionFactory {
                 .list().get("actions", Collections.emptyList());
         final Argument<List<ConditionIdentifier>> conditions = instruction.identifier(ConditionIdentifier.class)
                 .list().get("where", Collections.emptyList());
-        return new RunForAllAction(profileProvider::getOnlineProfiles, questTypeApi, actions, conditions);
+        return new RunForAllAction(profileProvider::getOnlineProfiles, actions, actionManager, conditionManager, conditions);
     }
 }

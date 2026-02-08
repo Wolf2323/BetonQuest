@@ -29,6 +29,7 @@ import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
 import org.betonquest.betonquest.api.quest.objective.Objective;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.compatibility.IntegrationData;
 import org.betonquest.betonquest.compatibility.IntegrationSource;
@@ -43,6 +44,7 @@ import org.betonquest.betonquest.database.Saver.Record;
 import org.betonquest.betonquest.database.UpdateType;
 import org.betonquest.betonquest.feature.journal.Journal;
 import org.betonquest.betonquest.feature.journal.Pointer;
+import org.betonquest.betonquest.kernel.processor.quest.ObjectiveProcessor;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.betonquest.betonquest.logger.BetonQuestLogRecord;
 import org.betonquest.betonquest.logger.PlayerLogWatcher;
@@ -445,7 +447,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                 return;
             }
             final OnlineAction give = new GiveAction(
-                    new DefaultArgument<>(List.of(new Item(instance.getFeatureApi()::getItem, itemID, new DefaultArgument<>(1)))),
+                    new DefaultArgument<>(List.of(new Item(instance.getBetonQuestManagers().items()::getItem, itemID, new DefaultArgument<>(1)))),
                     new NoNotificationSender(),
                     new IngameNotificationSender(log, pluginMessage, itemID.getPackage(), itemID.getFull(), NotificationLevel.ERROR,
                             "inventory_full_backpack", "inventory_full"),
@@ -804,7 +806,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         final ItemStack item = player.getInventory().getItemInMainHand();
         final String instructions;
         try {
-            instructions = instance.getFeatureRegistries().item().getSerializer(args[2]).serialize(item);
+            instructions = instance.getBetonQuestRegistries().items().getSerializer(args[2]).serialize(item);
         } catch (final QuestException e) {
             sendMessage(sender, "error",
                     new VariableReplacement("error", Component.text(e.getMessage())));
@@ -840,7 +842,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             return completeId(args, AccessorType.ITEMS);
         }
         if (args.length == 3) {
-            return Optional.of(List.copyOf(instance.getFeatureRegistries().item().serializerKeySet()));
+            return Optional.of(List.copyOf(instance.getBetonQuestRegistries().items().serializerKeySet()));
         }
         return Optional.of(new ArrayList<>());
     }
@@ -869,7 +871,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             return;
         }
         final Profile profile = "-".equals(args[1]) ? null : profileProvider.getProfile(Bukkit.getOfflinePlayer(args[1]));
-        instance.getQuestTypeApi().action(profile, actionID);
+        instance.getBetonQuestManagers().actions().run(profile, actionID);
         sendMessage(sender, "player_action",
                 new VariableReplacement("action", Component.text(actionID.readRawInstruction())));
     }
@@ -917,7 +919,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         final Profile profile = "-".equals(args[1]) ? null : profileProvider.getProfile(Bukkit.getOfflinePlayer(args[1]));
         sendMessage(sender, "player_condition",
                 new VariableReplacement("condition", Component.text((conditionID.isInverted() ? "! " : "") + conditionID.readRawInstruction())),
-                new VariableReplacement("result", Component.text(instance.getQuestTypeApi().condition(profile, conditionID))));
+                new VariableReplacement("result", Component.text(instance.getBetonQuestManagers().conditions().test(profile, conditionID))));
     }
 
     /**
@@ -1084,7 +1086,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             final Stream<String> objectives;
             if (isOnline) {
                 // if the player is online then just retrieve tags from his active objectives
-                objectives = instance.getQuestTypeApi().getPlayerObjectives(profile).stream()
+                objectives = instance.getBetonQuestManagers().objectives().getForProfile(profile).stream()
                         .map(defaultObjective -> defaultObjective.getObjectiveID().getFull());
             } else {
                 // if player is offline then convert his raw objective strings to tags
@@ -1105,9 +1107,10 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         // get the objective
         final ObjectiveIdentifier objectiveID;
         final Objective objective;
+        final ObjectiveManager objectiveManager = instance.getBetonQuestManagers().objectives();
         try {
             objectiveID = getIdentifier(ObjectiveIdentifier.class, args[3]);
-            objective = instance.getQuestTypeApi().getObjective(objectiveID);
+            objective = objectiveManager.getObjective(objectiveID);
         } catch (final QuestException e) {
             sendMessage(sender, "error",
                     new VariableReplacement("error", Component.text(e.getMessage())));
@@ -1118,7 +1121,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             case "start", "s", "add", "a" -> {
                 log.debug("Adding new objective " + objectiveID + " for " + profile);
                 if (isOnline) {
-                    instance.getQuestTypeApi().newObjective(profile, objectiveID);
+                    objectiveManager.start(profile, objectiveID);
                 } else {
                     playerData.addNewRawObjective(objectiveID);
                 }
@@ -1126,7 +1129,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             }
             case "remove", "delete", "del", "r", "d" -> {
                 log.debug("Deleting objective " + objectiveID + " for " + profile);
-                instance.getQuestTypeApi().cancelObjective(profile, objectiveID);
+                objectiveManager.cancel(profile, objectiveID);
                 playerData.removeRawObjective(objectiveID);
                 sendMessage(sender, "objective_removed");
             }
@@ -1251,7 +1254,8 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                     log.reportException(e);
                     return;
                 }
-                instance.getQuestTypeApi().renameObjective(nameID, renameID);
+                final ObjectiveProcessor objectiveProcessor = (ObjectiveProcessor) instance.getBetonQuestManagers().objectives();
+                objectiveProcessor.renameObjective(nameID, renameID);
                 nameID.getPackage().getConfig().set(nameID.get(), null);
                 try {
                     nameID.getPackage().saveAll();
@@ -1291,7 +1295,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                     break;
                 }
 
-                instance.getFeatureApi().renameJournalEntry(oldEntryID, newEntryID);
+                instance.getLegacyFeatureApi().renameJournalEntry(oldEntryID, newEntryID);
                 for (final OnlineProfile onlineProfile : onlineProfiles) {
                     final Journal journal = dataStorage.get(onlineProfile).getJournal();
                     final List<Pointer> journalPointers = new ArrayList<>();
@@ -1373,7 +1377,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                     break;
                 }
                 for (final OnlineProfile onlineProfile : onlineProfiles) {
-                    instance.getQuestTypeApi().cancelObjective(onlineProfile, objectiveID);
+                    instance.getBetonQuestManagers().objectives().cancel(onlineProfile, objectiveID);
                     dataStorage.get(onlineProfile).removeRawObjective(objectiveID);
                 }
             }
@@ -1737,7 +1741,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         final Objective tmp;
         try {
             objectiveID = getIdentifier(ObjectiveIdentifier.class, args[2]);
-            tmp = instance.getQuestTypeApi().getObjective(objectiveID);
+            tmp = instance.getBetonQuestManagers().objectives().getObjective(objectiveID);
         } catch (final QuestException e) {
             sendMessage(sender, "error",
                     new VariableReplacement("error", Component.text(e.getMessage())));
@@ -1916,7 +1920,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
     }
 
     private <I extends Identifier> I getIdentifier(final Class<I> identifierClass, final String identifier) throws QuestException {
-        final IdentifierFactory<I> identifierFactory = instance.getQuestRegistries().identifier().getFactory(identifierClass);
+        final IdentifierFactory<I> identifierFactory = instance.getBetonQuestRegistries().identifiers().getFactory(identifierClass);
         return identifierFactory.parseIdentifier(null, identifier);
     }
 

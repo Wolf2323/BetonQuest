@@ -7,15 +7,15 @@ import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.feature.FeatureRegistries;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
+import org.betonquest.betonquest.api.legacy.LegacyFeatureRegistries;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.FeatureRegistry;
-import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
 import org.betonquest.betonquest.api.quest.action.ActionRegistry;
 import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.npc.citizens.action.move.CitizensMoveAction;
@@ -62,10 +62,10 @@ public class CitizensIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) throws HookException {
-        final QuestTypeRegistries questRegistries = api.getQuestRegistries();
+        final BetonQuestRegistries questRegistries = api.registries();
         final IdentifierFactory<NpcIdentifier> npcIdentifierFactory;
         try {
-            npcIdentifierFactory = questRegistries.identifier().getFactory(NpcIdentifier.class);
+            npcIdentifierFactory = questRegistries.identifiers().getFactory(NpcIdentifier.class);
         } catch (final QuestException e) {
             throw new HookException(plugin, "Could not load npc identifier factory while hooking into citizens.", e);
         }
@@ -75,19 +75,19 @@ public class CitizensIntegrator implements Integrator {
         final PluginManager manager = plugin.getServer().getPluginManager();
         manager.registerEvents(citizensWalkingListener, plugin);
 
-        final BetonQuestLoggerFactory loggerFactory = api.getLoggerFactory();
+        final BetonQuestLoggerFactory loggerFactory = api.loggers();
         citizensMoveController = new CitizensMoveController(loggerFactory.create(CitizensMoveController.class),
-                plugin, api.getQuestTypeApi(), citizensWalkingListener);
+                plugin, api.managers().actions(), citizensWalkingListener);
 
-        final InstructionApi instructionApi = api.getInstructionApi();
-        final ActionRegistry actionRegistry = questRegistries.action();
+        final BetonQuestInstructions instructionApi = api.instructions();
+        final ActionRegistry actionRegistry = questRegistries.actions();
         manager.registerEvents(citizensMoveController, plugin);
         final CitizensArgument citizensArgument = new CitizensArgument(instructionApi, npcIdentifierFactory);
-        questRegistries.objective().register("npckill", new NPCKillObjectiveFactory(citizensArgument, instructionApi, citizensNpcRegistry));
-        actionRegistry.register("npcmove", new CitizensMoveActionFactory(api.getFeatureApi(), citizensArgument, citizensMoveController));
-        actionRegistry.registerCombined("npcstop", new CitizensStopActionFactory(api.getFeatureApi(), citizensArgument, citizensMoveController));
+        questRegistries.objectives().register("npckill", new NPCKillObjectiveFactory(citizensArgument, instructionApi, citizensNpcRegistry));
+        actionRegistry.register("npcmove", new CitizensMoveActionFactory(api.managers().npcs(), citizensArgument, citizensMoveController));
+        actionRegistry.registerCombined("npcstop", new CitizensStopActionFactory(api.managers().npcs(), citizensArgument, citizensMoveController));
 
-        final FeatureRegistries featureRegistries = api.getFeatureRegistries();
+        final LegacyFeatureRegistries featureRegistries = BetonQuest.getInstance().getLegacyFeatureRegistries();
         final FeatureRegistry<ConversationIOFactory> conversationIORegistry = featureRegistries.conversationIO();
         final ConfigAccessor pluginConfig = plugin.getPluginConfig();
         final FontRegistry fontRegistry = plugin.getFontRegistry();
@@ -97,7 +97,7 @@ public class CitizensIntegrator implements Integrator {
         conversationIORegistry.register("combined", new CitizensInventoryConvIOFactory(loggerFactory,
                 fontRegistry, colors, pluginConfig, true));
 
-        final NpcRegistry npcRegistry = featureRegistries.npc();
+        final NpcRegistry npcRegistry = questRegistries.npcs();
         manager.registerEvents(new CitizensInteractCatcher(plugin.getProfileProvider(), npcRegistry, citizensNpcRegistry,
                 citizensMoveController), plugin);
         npcRegistry.register("citizens", new CitizensNpcFactory(citizensNpcRegistry));

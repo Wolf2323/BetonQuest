@@ -28,10 +28,10 @@ public class FabledIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final ConditionRegistry conditionRegistry = api.getQuestRegistries().condition();
+        final ConditionRegistry conditionRegistry = api.registries().conditions();
         conditionRegistry.register("fabledclass", new FabledClassConditionFactory());
         conditionRegistry.register("fabledlevel", new FabledLevelConditionFactory());
-        plugin.getServer().getPluginManager().registerEvents(new FabledKillListener(api.getProfileProvider()), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new FabledKillListener(api.profiles()), plugin);
     }
 
     @Override

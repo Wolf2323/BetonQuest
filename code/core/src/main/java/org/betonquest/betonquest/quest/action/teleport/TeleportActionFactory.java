@@ -1,9 +1,9 @@
 package org.betonquest.betonquest.quest.action.teleport;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.ConversationApi;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
+import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
@@ -23,7 +23,7 @@ public class TeleportActionFactory implements PlayerActionFactory {
     /**
      * Conversation API.
      */
-    private final ConversationApi conversationApi;
+    private final LegacyConversationApi conversationApi;
 
     /**
      * Create the teleport action factory.
@@ -31,7 +31,7 @@ public class TeleportActionFactory implements PlayerActionFactory {
      * @param loggerFactory   the logger factory to create a logger for the actions
      * @param conversationApi the Conversation API
      */
-    public TeleportActionFactory(final BetonQuestLoggerFactory loggerFactory, final ConversationApi conversationApi) {
+    public TeleportActionFactory(final BetonQuestLoggerFactory loggerFactory, final LegacyConversationApi conversationApi) {
         this.loggerFactory = loggerFactory;
         this.conversationApi = conversationApi;
     }

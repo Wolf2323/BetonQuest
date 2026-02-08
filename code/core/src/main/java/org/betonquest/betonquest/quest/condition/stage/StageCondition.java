@@ -4,8 +4,8 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.betonquest.betonquest.quest.condition.number.Operation;
 import org.betonquest.betonquest.quest.objective.stage.StageObjective;
 
@@ -13,6 +13,11 @@ import org.betonquest.betonquest.quest.objective.stage.StageObjective;
  * The stage condition class to compare the players stage with a given stage.
  */
 public class StageCondition implements PlayerCondition {
+
+    /**
+     * The objective manager.
+     */
+    private final ObjectiveManager objectiveManager;
 
     /**
      * The stage objective.
@@ -30,21 +35,16 @@ public class StageCondition implements PlayerCondition {
     private final Argument<Operation> operation;
 
     /**
-     * Quest Type API.
-     */
-    private final QuestTypeApi questTypeApi;
-
-    /**
      * Creates the stage condition.
      *
-     * @param questTypeApi the Quest Type API
-     * @param objectiveID  the objective ID
-     * @param targetStage  the target stage
-     * @param operation    the operation
+     * @param objectiveManager the objective manager
+     * @param objectiveID      the objective ID
+     * @param targetStage      the target stage
+     * @param operation        the operation
      */
-    public StageCondition(final QuestTypeApi questTypeApi, final Argument<ObjectiveIdentifier> objectiveID, final Argument<String> targetStage,
-                          final Argument<Operation> operation) {
-        this.questTypeApi = questTypeApi;
+    public StageCondition(final ObjectiveManager objectiveManager, final Argument<ObjectiveIdentifier> objectiveID,
+                          final Argument<String> targetStage, final Argument<Operation> operation) {
+        this.objectiveManager = objectiveManager;
         this.objectiveID = objectiveID;
         this.targetStage = targetStage;
         this.operation = operation;
@@ -78,7 +78,7 @@ public class StageCondition implements PlayerCondition {
     }
 
     private StageObjective getStageObjective(final ObjectiveIdentifier objectiveID) throws QuestException {
-        if (questTypeApi.getObjective(objectiveID) instanceof final StageObjective stageObjective) {
+        if (objectiveManager.getObjective(objectiveID) instanceof final StageObjective stageObjective) {
             return stageObjective;
         }
         throw new QuestException("Objective '" + objectiveID + "' is not a stage objective");

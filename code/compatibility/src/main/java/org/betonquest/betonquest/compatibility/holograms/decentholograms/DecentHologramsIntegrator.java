@@ -8,8 +8,8 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.holograms.BetonHologram;
 import org.betonquest.betonquest.compatibility.holograms.HologramIntegrator;
@@ -38,7 +38,7 @@ public class DecentHologramsIntegrator extends HologramIntegrator {
     /**
      * The instruction api to use.
      */
-    private final InstructionApi instructionApi;
+    private final BetonQuestInstructions instructionApi;
 
     /**
      * Creates a new DecentHologramsIntegrator for DecentHolograms.
@@ -47,7 +47,8 @@ public class DecentHologramsIntegrator extends HologramIntegrator {
      * @param identifierFactory the identifier factory for placeholders
      * @param instructionApi    the instruction api to use
      */
-    public DecentHologramsIntegrator(final BetonQuestLogger log, final IdentifierFactory<PlaceholderIdentifier> identifierFactory, final InstructionApi instructionApi) {
+    public DecentHologramsIntegrator(final BetonQuestLogger log, final IdentifierFactory<PlaceholderIdentifier> identifierFactory,
+                                     final BetonQuestInstructions instructionApi) {
         super("DecentHolograms", "2.7.5");
         this.log = log;
         this.identifierFactory = identifierFactory;
@@ -85,7 +86,7 @@ public class DecentHologramsIntegrator extends HologramIntegrator {
             final String group = match.group();
             try {
                 final PlaceholderIdentifier placeholderIdentifier = identifierFactory.parseIdentifier(pack, group);
-                final Instruction instruction = instructionApi.createPlaceholderInstruction(placeholderIdentifier, placeholderIdentifier.readRawInstruction());
+                final Instruction instruction = instructionApi.createPlaceholder(placeholderIdentifier, placeholderIdentifier.readRawInstruction());
                 return "%betonquest_" + placeholderIdentifier.getPackage().getQuestPath() + ":" + instruction + "%";
             } catch (final QuestException exception) {
                 log.warn("Could not create placeholder '" + group + "': " + exception.getMessage(), exception);

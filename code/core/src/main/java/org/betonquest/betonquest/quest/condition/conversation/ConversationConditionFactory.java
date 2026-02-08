@@ -1,10 +1,10 @@
 package org.betonquest.betonquest.quest.condition.conversation;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.ConversationApi;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
+import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 
@@ -16,14 +16,14 @@ public class ConversationConditionFactory implements PlayerConditionFactory {
     /**
      * Conversation API.
      */
-    private final ConversationApi conversationApi;
+    private final LegacyConversationApi conversationApi;
 
     /**
      * Creates a new ConversationConditionFactory.
      *
      * @param conversationApi the Conversation API
      */
-    public ConversationConditionFactory(final ConversationApi conversationApi) {
+    public ConversationConditionFactory(final LegacyConversationApi conversationApi) {
         this.conversationApi = conversationApi;
     }
 

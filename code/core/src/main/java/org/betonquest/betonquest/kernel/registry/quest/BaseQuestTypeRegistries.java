@@ -1,8 +1,10 @@
 package org.betonquest.betonquest.kernel.registry.quest;
 
-import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
+import org.betonquest.betonquest.api.service.ConditionManager;
+
+import java.util.function.Supplier;
 
 /**
  * Registry for quest core elements.
@@ -24,14 +26,14 @@ public record BaseQuestTypeRegistries(
     /**
      * Create a new quest registry for quest core elements.
      *
-     * @param loggerFactory the logger factory to create individual class logger
-     * @param betonQuest    the plugin instance to get QuestTypeApi from once initialized
+     * @param loggerFactory    the logger factory to create individual class logger
+     * @param conditionManager the condition manager to use for condition checking
      * @return the newly created registries
      */
-    public static BaseQuestTypeRegistries create(final BetonQuestLoggerFactory loggerFactory, final BetonQuestApi betonQuest) {
+    public static BaseQuestTypeRegistries create(final BetonQuestLoggerFactory loggerFactory, final Supplier<ConditionManager> conditionManager) {
         return new BaseQuestTypeRegistries(
                 new ConditionTypeRegistry(loggerFactory.create(ConditionTypeRegistry.class)),
-                new ActionTypeRegistry(loggerFactory.create(ActionTypeRegistry.class), loggerFactory, betonQuest),
+                new ActionTypeRegistry(loggerFactory.create(ActionTypeRegistry.class), loggerFactory, conditionManager),
                 new ObjectiveTypeRegistry(loggerFactory.create(ObjectiveTypeRegistry.class)),
                 new PlaceholderTypeRegistry(loggerFactory.create(PlaceholderTypeRegistry.class)),
                 new IdentifierTypeRegistry(loggerFactory.create(IdentifierTypeRegistry.class))

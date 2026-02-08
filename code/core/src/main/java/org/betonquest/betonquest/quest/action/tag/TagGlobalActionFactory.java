@@ -1,6 +1,5 @@
 package org.betonquest.betonquest.quest.action.tag;
 
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
@@ -8,6 +7,7 @@ import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
+import org.betonquest.betonquest.database.GlobalData;
 
 import java.util.List;
 import java.util.Locale;
@@ -18,17 +18,17 @@ import java.util.Locale;
 public class TagGlobalActionFactory implements PlayerActionFactory, PlayerlessActionFactory {
 
     /**
-     * BetonQuest instance to provide to actions.
+     * The global data handling global tags.
      */
-    private final BetonQuest betonQuest;
+    private final GlobalData globalData;
 
     /**
      * Create the global tag action factory.
      *
-     * @param betonQuest BetonQuest instance to pass on
+     * @param globalData the global data
      */
-    public TagGlobalActionFactory(final BetonQuest betonQuest) {
-        this.betonQuest = betonQuest;
+    public TagGlobalActionFactory(final GlobalData globalData) {
+        this.globalData = globalData;
     }
 
     @Override
@@ -55,21 +55,21 @@ public class TagGlobalActionFactory implements PlayerActionFactory, PlayerlessAc
 
     private PlayerlessAction createStaticAddTagAction(final Argument<List<String>> tags) {
         final TagChanger tagChanger = new AddTagChanger(tags);
-        return new PlayerlessTagAction(betonQuest.getGlobalData(), tagChanger);
+        return new PlayerlessTagAction(globalData, tagChanger);
     }
 
     private PlayerlessAction createStaticDeleteTagAction(final Argument<List<String>> tags) {
         final TagChanger tagChanger = new DeleteTagChanger(tags);
-        return new PlayerlessTagAction(betonQuest.getGlobalData(), tagChanger);
+        return new PlayerlessTagAction(globalData, tagChanger);
     }
 
     private PlayerAction createAddTagAction(final Argument<List<String>> tags) {
         final TagChanger tagChanger = new AddTagChanger(tags);
-        return new TagAction(profile -> betonQuest.getGlobalData(), tagChanger);
+        return new TagAction(profile -> globalData, tagChanger);
     }
 
     private PlayerAction createDeleteTagAction(final Argument<List<String>> tags) {
         final TagChanger tagChanger = new DeleteTagChanger(tags);
-        return new TagAction(profile -> betonQuest.getGlobalData(), tagChanger);
+        return new TagAction(profile -> globalData, tagChanger);
     }
 }

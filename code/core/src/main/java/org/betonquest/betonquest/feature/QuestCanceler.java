@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.common.component.VariableReplacement;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
@@ -16,7 +15,10 @@ import org.betonquest.betonquest.api.instruction.argument.parser.PackageIdentifi
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.ItemManager;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.data.PlayerDataStorage;
@@ -44,9 +46,24 @@ public class QuestCanceler {
     private final BetonQuestLogger log;
 
     /**
-     * Quest Type API.
+     * The action manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
+
+    /**
+     * The objective manager.
+     */
+    private final ObjectiveManager objectiveManager;
+
+    /**
+     * The item manager.
+     */
+    private final ItemManager itemManager;
 
     /**
      * Player Data storage.
@@ -57,11 +74,6 @@ public class QuestCanceler {
      * Identifier of the canceler.
      */
     private final QuestCancelerIdentifier cancelerID;
-
-    /**
-     * Feature API.
-     */
-    private final FeatureApi featureApi;
 
     /**
      * Names to displaying in different languages.
@@ -92,26 +104,30 @@ public class QuestCanceler {
     /**
      * Creates a new canceler.
      *
-     * @param log           the custom logger for this class
-     * @param questTypeApi  the Quest Type API
-     * @param playerStorage the player data storage
-     * @param cancelerID    the log identifier
-     * @param featureApi    the Feature API
-     * @param pluginMessage the {@link PluginMessage} instance
-     * @param names         the names used for displaying in different languages
-     * @param item          the custom item used for displaying
-     * @param pack          the {@link QuestPackage} of the canceler
-     * @param cancelData    the relevant data to cancel a quest
+     * @param log              the custom logger for this class
+     * @param actionManager    the action manager
+     * @param conditionManager the condition manager
+     * @param objectiveManager the objective manager
+     * @param itemManager      the item manager
+     * @param playerStorage    the player data storage
+     * @param cancelerID       the log identifier
+     * @param pluginMessage    the {@link PluginMessage} instance
+     * @param names            the names used for displaying in different languages
+     * @param item             the custom item used for displaying
+     * @param pack             the {@link QuestPackage} of the canceler
+     * @param cancelData       the relevant data to cancel a quest
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
-    public QuestCanceler(final BetonQuestLogger log, final QuestTypeApi questTypeApi, final PlayerDataStorage playerStorage,
-                         final QuestCancelerIdentifier cancelerID, final FeatureApi featureApi, final PluginMessage pluginMessage,
+    public QuestCanceler(final BetonQuestLogger log, final ActionManager actionManager, final ConditionManager conditionManager, final ObjectiveManager objectiveManager,
+                         final ItemManager itemManager, final PlayerDataStorage playerStorage, final QuestCancelerIdentifier cancelerID, final PluginMessage pluginMessage,
                          final Text names, @Nullable final ItemIdentifier item, final QuestPackage pack, final CancelData cancelData) {
         this.log = log;
-        this.questTypeApi = questTypeApi;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
+        this.objectiveManager = objectiveManager;
+        this.itemManager = itemManager;
         this.playerStorage = playerStorage;
         this.cancelerID = cancelerID;
-        this.featureApi = featureApi;
         this.names = names;
         this.item = item;
         this.data = cancelData;
@@ -127,7 +143,7 @@ public class QuestCanceler {
      * @throws QuestException if the conditions cannot be checked
      */
     public boolean isCancelable(final Profile profile) throws QuestException {
-        return questTypeApi.conditions(profile, data.conditions.getValue(profile));
+        return conditionManager.testAll(profile, data.conditions.getValue(profile));
     }
 
     /**
@@ -177,7 +193,7 @@ public class QuestCanceler {
         try {
             for (final ObjectiveIdentifier objectiveID : data.objectives.getValue(profile)) {
                 log.debug(objectiveID.getPackage(), "  Removing objective " + objectiveID);
-                questTypeApi.cancelObjective(profile, objectiveID);
+                objectiveManager.cancel(profile, objectiveID);
                 playerData.removeRawObjective(objectiveID);
             }
         } catch (final QuestException e) {
@@ -200,7 +216,7 @@ public class QuestCanceler {
 
     private void executeActions(final OnlineProfile onlineProfile) {
         try {
-            questTypeApi.actions(onlineProfile, data.actions.getValue(onlineProfile));
+            actionManager.run(onlineProfile, data.actions.getValue(onlineProfile));
         } catch (final QuestException e) {
             log.warn(pack, "Cannot execute actions in QuestCanceler " + cancelerID + ": " + e.getMessage(), e);
         }
@@ -245,7 +261,7 @@ public class QuestCanceler {
         ItemStack stack = new ItemStack(Material.BONE);
         if (item != null) {
             try {
-                stack = featureApi.getItem(item, profile).generate(1);
+                stack = itemManager.getItem(profile, item).generate(1);
             } catch (final QuestException e) {
                 log.warn(pack, "Could not load cancel button: " + e.getMessage(), e);
             }

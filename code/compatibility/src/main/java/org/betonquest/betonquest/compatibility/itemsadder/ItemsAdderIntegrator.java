@@ -2,10 +2,10 @@ package org.betonquest.betonquest.compatibility.itemsadder;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.item.ItemRegistry;
-import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
 import org.betonquest.betonquest.api.quest.action.ActionRegistry;
 import org.betonquest.betonquest.api.quest.condition.ConditionRegistry;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveRegistry;
+import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.UnsupportedVersionException;
@@ -43,19 +43,19 @@ public class ItemsAdderIntegrator implements Integrator {
     public void hook(final BetonQuestApi api) throws HookException {
         validateVersion();
 
-        final ItemRegistry itemRegistry = api.getFeatureRegistries().item();
+        final ItemRegistry itemRegistry = api.registries().items();
         itemRegistry.register(ITEMS_ADDER, new ItemsAdderItemFactory());
         itemRegistry.registerSerializer(ITEMS_ADDER, new ItemsAdderQuestItemSerializer());
 
-        final QuestTypeRegistries questRegistries = api.getQuestRegistries();
-        final ConditionRegistry condition = questRegistries.condition();
+        final BetonQuestRegistries questRegistries = api.registries();
+        final ConditionRegistry condition = questRegistries.conditions();
         condition.registerCombined(ITEMS_ADDER + "Block", new IABlockConditionFactory());
 
-        final ActionRegistry action = questRegistries.action();
+        final ActionRegistry action = questRegistries.actions();
         action.register(ITEMS_ADDER + "Block", new IASetBlockAtActionFactory());
-        action.register(ITEMS_ADDER + "Animation", new IAPlayAnimationActionFactory(api.getLoggerFactory()));
+        action.register(ITEMS_ADDER + "Animation", new IAPlayAnimationActionFactory(api.loggers()));
 
-        final ObjectiveRegistry objective = questRegistries.objective();
+        final ObjectiveRegistry objective = questRegistries.objectives();
         objective.register(ITEMS_ADDER + "BlockBreak", new IABlockBreakObjectiveFactory());
         objective.register(ITEMS_ADDER + "BlockPlace", new IABlockPlaceObjectiveFactory());
     }

@@ -2,7 +2,7 @@ package org.betonquest.betonquest.quest.placeholder.name;
 
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.ConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholder;
 import org.betonquest.betonquest.conversation.Conversation;
@@ -15,14 +15,14 @@ public class QuesterPlaceholder implements PlayerPlaceholder {
     /**
      * Conversation API.
      */
-    private final ConversationApi conversationApi;
+    private final LegacyConversationApi conversationApi;
 
     /**
      * Create a NpcName placeholder.
      *
      * @param conversationApi the Conversation API
      */
-    public QuesterPlaceholder(final ConversationApi conversationApi) {
+    public QuesterPlaceholder(final LegacyConversationApi conversationApi) {
         this.conversationApi = conversationApi;
     }
 

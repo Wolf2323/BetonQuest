@@ -1,4 +1,4 @@
-package org.betonquest.betonquest.api.feature;
+package org.betonquest.betonquest.api.legacy;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Handles interaction with Conversations.
  */
-public interface ConversationApi {
+public interface LegacyConversationApi {
 
     /**
      * Gets stored Conversation Data.

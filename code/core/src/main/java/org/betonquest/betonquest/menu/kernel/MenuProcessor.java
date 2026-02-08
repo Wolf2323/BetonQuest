@@ -8,7 +8,6 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.MenuIdentifier;
 import org.betonquest.betonquest.api.identifier.MenuItemIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.chain.InstructionChainParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
@@ -16,7 +15,9 @@ import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.menu.Menu;
 import org.betonquest.betonquest.menu.RPGMenu;
@@ -62,17 +63,18 @@ public class MenuProcessor extends RPGMenuProcessor<MenuIdentifier, Menu> {
      * @param loggerFactory     the logger factory to class specific loggers with
      * @param instructionApi    the instruction api to use
      * @param textCreator       the text creator to parse text
-     * @param questTypeApi      the QuestTypeApi
+     * @param actionManager     the ActionManager
+     * @param conditionManager  the ConditionManager
      * @param parsers           the argument parsers
      * @param rpgMenu           the RPG Menu instance
      * @param identifierFactory the identifier factory to create {@link MenuIdentifier}s for this type
      * @param profileProvider   the Profile Provider
      */
     public MenuProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                         final InstructionApi instructionApi, final ParsedSectionTextCreator textCreator,
-                         final QuestTypeApi questTypeApi, final ArgumentParsers parsers, final RPGMenu rpgMenu,
+                         final BetonQuestInstructions instructionApi, final ParsedSectionTextCreator textCreator,
+                         final ActionManager actionManager, final ConditionManager conditionManager, final ArgumentParsers parsers, final RPGMenu rpgMenu,
                          final IdentifierFactory<MenuIdentifier> identifierFactory, final ProfileProvider profileProvider) {
-        super(log, instructionApi, "Menu", "menus", loggerFactory, textCreator, parsers, identifierFactory, questTypeApi);
+        super(log, instructionApi, "Menu", "menus", loggerFactory, textCreator, parsers, identifierFactory, actionManager, conditionManager);
         this.rpgMenu = rpgMenu;
         this.profileProvider = profileProvider;
         this.boundCommands = new HashSet<>();
@@ -108,7 +110,7 @@ public class MenuProcessor extends RPGMenuProcessor<MenuIdentifier, Menu> {
         final Argument<ItemWrapper> boundItem = instruction.read().value("bind").item().getOptional(null);
 
         final Menu.MenuData menuData = new Menu.MenuData(title, heightValue, slots, openConditions, openActions, closeActions);
-        final Menu menu = new Menu(log, identifier, questTypeApi, menuData, section.isSet("bind") ? boundItem : null);
+        final Menu menu = new Menu(log, identifier, actionManager, conditionManager, menuData, section.isSet("bind") ? boundItem : null);
         final Argument<String> command = instruction.read().value("command").string().getOptional("");
         final String commandValue = command.getValue(null);
         if (!commandValue.isEmpty()) {

@@ -7,13 +7,14 @@ import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.PrimaryThreadEnforceable;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Wrapper for player and playerless actions.
@@ -28,7 +29,7 @@ public class ActionAdapter extends QuestAdapter<PlayerAction, PlayerlessAction> 
     /**
      * QuestTypeApi to check conditions.
      */
-    private final QuestTypeApi questTypeApi;
+    private final Supplier<ConditionManager> conditionManager;
 
     /**
      * Instruction used to create the types.
@@ -43,18 +44,19 @@ public class ActionAdapter extends QuestAdapter<PlayerAction, PlayerlessAction> 
     /**
      * Create a new Wrapper for placeholders with instruction.
      *
-     * @param log          the custom logger for this class
-     * @param questTypeApi the QuestTypeApi
-     * @param instruction  the instruction used to create the types
-     * @param player       the type requiring a profile for execution
-     * @param playerless   the type working without a profile
+     * @param log              the custom logger for this class
+     * @param conditionManager the condition manager
+     * @param instruction      the instruction used to create the types
+     * @param player           the type requiring a profile for execution
+     * @param playerless       the type working without a profile
      * @throws IllegalArgumentException if there is no type provided
      * @throws QuestException           when there was an error parsing conditions
      */
-    public ActionAdapter(final BetonQuestLogger log, final QuestTypeApi questTypeApi, final Instruction instruction, @Nullable final PlayerAction player, @Nullable final PlayerlessAction playerless) throws QuestException {
+    public ActionAdapter(final BetonQuestLogger log, final Supplier<ConditionManager> conditionManager, final Instruction instruction,
+                         @Nullable final PlayerAction player, @Nullable final PlayerlessAction playerless) throws QuestException {
         super(instruction.getPackage(), player, playerless);
         this.log = log;
-        this.questTypeApi = questTypeApi;
+        this.conditionManager = conditionManager;
         this.instruction = instruction;
         conditions = instruction.identifier(ConditionIdentifier.class).list().get("conditions", Collections.emptyList());
     }
@@ -73,7 +75,7 @@ public class ActionAdapter extends QuestAdapter<PlayerAction, PlayerlessAction> 
         log.debug(getPackage(), "Action will be fired for "
                 + (profile.getOnlineProfile().isPresent() ? "online" : "offline") + " profile.");
 
-        if (!questTypeApi.conditions(profile, conditions.getValue(profile))) {
+        if (!conditionManager.get().testAll(profile, conditions.getValue(profile))) {
             log.debug(getPackage(), "Action conditions were not met for " + profile);
             return false;
         }
@@ -88,7 +90,7 @@ public class ActionAdapter extends QuestAdapter<PlayerAction, PlayerlessAction> 
             return false;
         }
         log.debug(getPackage(), "Static action will be fired without a profile.");
-        if (!questTypeApi.conditions(null, conditions.getValue(null))) {
+        if (!conditionManager.get().testAll(null, conditions.getValue(null))) {
             log.debug(getPackage(), "Action conditions were not met");
             return false;
         }

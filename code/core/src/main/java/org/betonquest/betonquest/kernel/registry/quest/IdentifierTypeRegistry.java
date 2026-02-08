@@ -3,7 +3,7 @@ package org.betonquest.betonquest.kernel.registry.quest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.Identifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
-import org.betonquest.betonquest.api.identifier.factory.IdentifierRegistry;
+import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 
 import java.util.HashMap;

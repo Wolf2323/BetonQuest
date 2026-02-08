@@ -1,12 +1,12 @@
 package org.betonquest.betonquest.quest.condition.npc;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.condition.NullableCondition;
 import org.betonquest.betonquest.api.quest.npc.Npc;
+import org.betonquest.betonquest.api.service.NpcManager;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,9 +18,9 @@ import java.util.Optional;
 public class NpcLocationCondition implements NullableCondition {
 
     /**
-     * Feature API.
+     * The npc manager.
      */
-    private final FeatureApi featureApi;
+    private final NpcManager npcManager;
 
     /**
      * Id of the npc.
@@ -40,14 +40,14 @@ public class NpcLocationCondition implements NullableCondition {
     /**
      * Create a new NPCLocationCondition.
      *
-     * @param featureApi the Quest Type API
+     * @param npcManager the npc manager
      * @param npcId      the id of the npc
      * @param location   the location where the npc has to be around
      * @param radius     the maximal distance between the npc and the radius location
      */
-    public NpcLocationCondition(final FeatureApi featureApi, final Argument<NpcIdentifier> npcId,
+    public NpcLocationCondition(final NpcManager npcManager, final Argument<NpcIdentifier> npcId,
                                 final Argument<Location> location, final Argument<Number> radius) {
-        this.featureApi = featureApi;
+        this.npcManager = npcManager;
         this.npcId = npcId;
         this.location = location;
         this.radius = radius;
@@ -55,7 +55,7 @@ public class NpcLocationCondition implements NullableCondition {
 
     @Override
     public boolean check(@Nullable final Profile profile) throws QuestException {
-        final Npc<?> npc = featureApi.getNpc(npcId.getValue(profile), profile);
+        final Npc<?> npc = npcManager.get(profile, npcId.getValue(profile));
         final Location location = this.location.getValue(profile);
         final Optional<Location> loc = npc.getLocation();
         if (loc.isEmpty()) {

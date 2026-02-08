@@ -1,12 +1,12 @@
 package org.betonquest.betonquest.compatibility.worldguard.npc;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.condition.NullableCondition;
 import org.betonquest.betonquest.api.quest.npc.Npc;
+import org.betonquest.betonquest.api.service.NpcManager;
 import org.betonquest.betonquest.compatibility.worldguard.WorldGuardIntegrator;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
@@ -19,9 +19,9 @@ import java.util.Optional;
 public class NpcRegionCondition implements NullableCondition {
 
     /**
-     * Quest Type API.
+     * The npc manager to get npcs.
      */
-    private final FeatureApi featureApi;
+    private final NpcManager npcManager;
 
     /**
      * The Npc id.
@@ -36,19 +36,19 @@ public class NpcRegionCondition implements NullableCondition {
     /**
      * Create a new NpcRegionCondition.
      *
-     * @param featureApi the Feature API
+     * @param npcManager the npc manager to get npcs
      * @param npcId      the npc id, null or positive
      * @param region     the name of the region where the NPC should be
      */
-    public NpcRegionCondition(final FeatureApi featureApi, final Argument<NpcIdentifier> npcId, final Argument<String> region) {
-        this.featureApi = featureApi;
+    public NpcRegionCondition(final NpcManager npcManager, final Argument<NpcIdentifier> npcId, final Argument<String> region) {
+        this.npcManager = npcManager;
         this.npcId = npcId;
         this.region = region;
     }
 
     @Override
     public boolean check(@Nullable final Profile profile) throws QuestException {
-        final Npc<?> npc = featureApi.getNpc(npcId.getValue(profile), profile);
+        final Npc<?> npc = npcManager.get(profile, npcId.getValue(profile));
         if (!npc.isSpawned()) {
             return false;
         }

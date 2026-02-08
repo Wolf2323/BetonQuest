@@ -4,9 +4,9 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.objective.Objective;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.betonquest.betonquest.quest.objective.variable.VariableObjective;
 
 /**
@@ -15,9 +15,9 @@ import org.betonquest.betonquest.quest.objective.variable.VariableObjective;
 public class VariableAction implements PlayerAction {
 
     /**
-     * Quest Type API.
+     * The objective manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ObjectiveManager objectiveManager;
 
     /**
      * The variable objective id to change the variable in.
@@ -37,13 +37,13 @@ public class VariableAction implements PlayerAction {
     /**
      * Create a new variable action.
      *
-     * @param questTypeApi the Quest Type API
-     * @param objectiveID  the objective id of the variable objective
-     * @param key          the key of the variable to store
-     * @param value        the value of the variable to store
+     * @param objectiveManager the objective manager
+     * @param objectiveID      the objective id of the variable objective
+     * @param key              the key of the variable to store
+     * @param value            the value of the variable to store
      */
-    public VariableAction(final QuestTypeApi questTypeApi, final Argument<ObjectiveIdentifier> objectiveID, final Argument<String> key, final Argument<String> value) {
-        this.questTypeApi = questTypeApi;
+    public VariableAction(final ObjectiveManager objectiveManager, final Argument<ObjectiveIdentifier> objectiveID, final Argument<String> key, final Argument<String> value) {
+        this.objectiveManager = objectiveManager;
         this.objectiveID = objectiveID;
         this.key = key;
         this.value = value;
@@ -52,7 +52,7 @@ public class VariableAction implements PlayerAction {
     @Override
     public void execute(final Profile profile) throws QuestException {
         final ObjectiveIdentifier resolved = this.objectiveID.getValue(profile);
-        final Objective obj = questTypeApi.getObjective(resolved);
+        final Objective obj = objectiveManager.getObjective(resolved);
         if (!(obj instanceof final VariableObjective objective)) {
             throw new QuestException(resolved + " is not a variable objective");
         }

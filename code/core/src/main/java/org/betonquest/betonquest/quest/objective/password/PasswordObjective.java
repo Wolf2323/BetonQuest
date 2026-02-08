@@ -100,7 +100,7 @@ public class PasswordObjective extends DefaultObjective {
             return !fromCommand || !prefix.isEmpty();
         }
         try {
-            BetonQuest.getInstance().getQuestTypeApi().actions(onlineProfile, failActions.getValue(onlineProfile));
+            BetonQuest.getInstance().getBetonQuestManagers().actions().run(onlineProfile, failActions.getValue(onlineProfile));
         } catch (final QuestException e) {
             throw new QuestException("Failed to resolve fail actions: " + e.getMessage(), e);
         }

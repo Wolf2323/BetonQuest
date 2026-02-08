@@ -9,13 +9,10 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.identifier.ReadableIdentifier;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
-import org.betonquest.betonquest.api.quest.objective.Objective;
 import org.betonquest.betonquest.api.quest.objective.service.DefaultObjectiveServiceProvider;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.bstats.InstructionMetricsSupplier;
 import org.betonquest.betonquest.kernel.processor.quest.ActionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ConditionProcessor;
@@ -25,10 +22,7 @@ import org.betonquest.betonquest.kernel.registry.quest.BaseQuestTypeRegistries;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,7 +39,7 @@ public record CoreQuestRegistry(
         ActionProcessor actions,
         PlaceholderProcessor placeholders,
         ObjectiveProcessor objectives
-) implements QuestTypeApi {
+) {
 
     /**
      * Create a new Registry for storing and using Core Quest Types.
@@ -64,7 +58,7 @@ public record CoreQuestRegistry(
     public static CoreQuestRegistry create(final BetonQuestLoggerFactory loggerFactory, final QuestPackageManager packManager,
                                            final BaseQuestTypeRegistries questTypeRegistries, final PluginManager pluginManager,
                                            final BukkitScheduler scheduler, final ProfileProvider profileProvider, final Plugin plugin,
-                                           final InstructionApi instructionApi) throws QuestException {
+                                           final BetonQuestInstructions instructionApi) throws QuestException {
         final IdentifierFactory<ObjectiveIdentifier> objectiveIdentifierFactory = questTypeRegistries.identifier().getFactory(ObjectiveIdentifier.class);
         final IdentifierFactory<ActionIdentifier> actionIdentifierFactory = questTypeRegistries.identifier().getFactory(ActionIdentifier.class);
         final IdentifierFactory<ConditionIdentifier> conditionIdentifierFactory = questTypeRegistries.identifier().getFactory(ConditionIdentifier.class);
@@ -127,65 +121,5 @@ public record CoreQuestRegistry(
     public String readableSize() {
         return String.join(", ", conditions.readableSize(), actions.readableSize(),
                 objectives.readableSize(), placeholders.readableSize());
-    }
-
-    @Override
-    public boolean conditions(@Nullable final Profile profile, final Collection<ConditionIdentifier> conditionIDs) {
-        return conditions().checks(profile, conditionIDs, true);
-    }
-
-    @Override
-    public boolean conditionsAny(@Nullable final Profile profile, final Collection<ConditionIdentifier> conditionIDs) {
-        return conditions().checks(profile, conditionIDs, false);
-    }
-
-    @Override
-    public boolean condition(@Nullable final Profile profile, final ConditionIdentifier conditionID) {
-        return conditions().test(profile, conditionID);
-    }
-
-    @Override
-    public boolean actions(@Nullable final Profile profile, final Collection<ActionIdentifier> actionIDS) {
-        return actions().run(profile, actionIDS);
-    }
-
-    @Override
-    public boolean action(@Nullable final Profile profile, final ActionIdentifier actionID) {
-        return actions().run(profile, actionID);
-    }
-
-    @Override
-    public void newObjective(final Profile profile, final ObjectiveIdentifier objectiveID) {
-        objectives().start(profile, objectiveID);
-    }
-
-    @Override
-    public void pauseObjective(final Profile profile, final ObjectiveIdentifier objectiveID) {
-        objectives().pause(profile, objectiveID);
-    }
-
-    @Override
-    public void cancelObjective(final Profile profile, final ObjectiveIdentifier objectiveID) {
-        objectives().cancel(profile, objectiveID);
-    }
-
-    @Override
-    public void resumeObjective(final Profile profile, final ObjectiveIdentifier objectiveID, final String instruction) {
-        objectives().start(profile, objectiveID, instruction);
-    }
-
-    @Override
-    public void renameObjective(final ObjectiveIdentifier name, final ObjectiveIdentifier rename) {
-        objectives().renameObjective(name, rename);
-    }
-
-    @Override
-    public List<Objective> getPlayerObjectives(final Profile profile) {
-        return objectives().getForProfile(profile);
-    }
-
-    @Override
-    public Objective getObjective(final ObjectiveIdentifier objectiveID) throws QuestException {
-        return objectives().get(objectiveID);
     }
 }

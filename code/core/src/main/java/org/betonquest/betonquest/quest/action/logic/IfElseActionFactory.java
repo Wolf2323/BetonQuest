@@ -5,12 +5,13 @@ import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.NullableActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
 
 /**
  * Factory to create if-else actions from {@link Instruction}s.
@@ -23,17 +24,24 @@ public class IfElseActionFactory implements PlayerActionFactory, PlayerlessActio
     private static final String ELSE_KEYWORD = "else";
 
     /**
-     * Quest Type API.
+     * The action manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * The action constructor.
      *
-     * @param questTypeApi the Quest Type API
+     * @param actionManager    the action manager
+     * @param conditionManager the condition manager
      */
-    public IfElseActionFactory(final QuestTypeApi questTypeApi) {
-        this.questTypeApi = questTypeApi;
+    public IfElseActionFactory(final ActionManager actionManager, final ConditionManager conditionManager) {
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
     }
 
     @Override
@@ -53,6 +61,6 @@ public class IfElseActionFactory implements PlayerActionFactory, PlayerlessActio
             throw new QuestException("Missing 'else' keyword");
         }
         final Argument<ActionIdentifier> elseAction = instruction.identifier(ActionIdentifier.class).get();
-        return new NullableActionAdapter(new IfElseAction(condition, action, elseAction, questTypeApi));
+        return new NullableActionAdapter(new IfElseAction(condition, action, actionManager, conditionManager, elseAction));
     }
 }

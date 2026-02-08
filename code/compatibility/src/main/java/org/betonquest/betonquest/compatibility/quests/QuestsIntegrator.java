@@ -8,8 +8,7 @@ import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
-import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
+import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.bukkit.Bukkit;
@@ -34,28 +33,27 @@ public class QuestsIntegrator implements Integrator {
         final Quests questsInstance = (Quests) plugin;
         Objects.requireNonNull(questsInstance);
 
-        final QuestTypeRegistries questRegistries = api.getQuestRegistries();
-        questRegistries.condition().register("quest", new QuestsConditionFactory(questsInstance));
-        questRegistries.action().register("quest", new QuestsActionFactory(questsInstance));
+        final BetonQuestRegistries questRegistries = api.registries();
+        questRegistries.conditions().register("quest", new QuestsConditionFactory(questsInstance));
+        questRegistries.actions().register("quest", new QuestsActionFactory(questsInstance));
 
-        final BetonQuestLoggerFactory loggerFactory = api.getLoggerFactory();
-        final QuestTypeApi questTypeApi = api.getQuestTypeApi();
-        final ProfileProvider profileProvider = api.getProfileProvider();
+        final BetonQuestLoggerFactory loggerFactory = api.loggers();
+        final ProfileProvider profileProvider = api.profiles();
         try {
             final IdentifierFactory<ActionIdentifier> actionIdentifierFactory =
-                    api.getQuestRegistries().identifier().getFactory(ActionIdentifier.class);
+                    questRegistries.identifiers().getFactory(ActionIdentifier.class);
             questsInstance.getCustomRewards().add(new ActionReward(
                     loggerFactory.create(ActionReward.class),
-                    questTypeApi, profileProvider, actionIdentifierFactory));
+                    api.managers().actions(), profileProvider, actionIdentifierFactory));
         } catch (final QuestException e) {
             throw new HookException(plugin, "Could not add custom action reward while hooking into Quests.", e);
         }
         try {
             final IdentifierFactory<ConditionIdentifier> conditionIdentifierFactory =
-                    api.getQuestRegistries().identifier().getFactory(ConditionIdentifier.class);
+                    questRegistries.identifiers().getFactory(ConditionIdentifier.class);
             questsInstance.getCustomRequirements().add(new ConditionRequirement(
                     loggerFactory.create(ConditionRequirement.class),
-                    questTypeApi, profileProvider, conditionIdentifierFactory));
+                    api.managers().conditions(), profileProvider, conditionIdentifierFactory));
         } catch (final QuestException e) {
             throw new HookException(plugin, "Could not add custom condition requirement while hooking into Quests.", e);
         }

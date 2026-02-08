@@ -1,6 +1,6 @@
 package org.betonquest.betonquest.api.service;
 
-import org.betonquest.betonquest.api.BetonQuestApiInstance;
+import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.BetonQuestApiService;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 /**
  * The default implementation of the {@link BetonQuestApiService}.
  */
-public class DefaultBetonQuestApi implements BetonQuestApiInstance {
+public class DefaultBetonQuestApi implements BetonQuestApi {
 
     /**
      * The {@link ProfileProvider} supplier.
@@ -73,37 +73,37 @@ public class DefaultBetonQuestApi implements BetonQuestApiInstance {
     }
 
     @Override
-    public ProfileProvider getProfiles() {
+    public ProfileProvider profiles() {
         return profileProvider.get();
     }
 
     @Override
-    public QuestPackageManager getPackages() {
+    public QuestPackageManager packages() {
         return packageManager.get();
     }
 
     @Override
-    public BetonQuestLoggerFactory getLoggers() {
+    public BetonQuestLoggerFactory loggers() {
         return loggerFactory.get();
     }
 
     @Override
-    public BetonQuestInstructions getInstructions() {
+    public BetonQuestInstructions instructions() {
         return instructions.get();
     }
 
     @Override
-    public BetonQuestConversations getConversations() {
+    public BetonQuestConversations conversations() {
         return conversations.get();
     }
 
     @Override
-    public BetonQuestRegistries getRegistries() {
+    public BetonQuestRegistries registries() {
         return registries.get();
     }
 
     @Override
-    public BetonQuestManagers getManagers() {
+    public BetonQuestManagers managers() {
         return managers.get();
     }
 }

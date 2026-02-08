@@ -5,10 +5,10 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.identifier.Identifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +25,7 @@ public abstract class SectionProcessor<I extends Identifier, T> extends QuestPro
     /**
      * The {@link Placeholders} to create and resolve placeholders.
      */
-    private final InstructionApi instructionApi;
+    private final BetonQuestInstructions instructionApi;
 
     /**
      * Create a new QuestProcessor to store and execute type logic.
@@ -36,7 +36,7 @@ public abstract class SectionProcessor<I extends Identifier, T> extends QuestPro
      * @param readable          the type name used for logging, with the first letter in uppercase
      * @param internal          the section name and/or bstats topic identifier
      */
-    public SectionProcessor(final BetonQuestLogger log, final InstructionApi instructionApi,
+    public SectionProcessor(final BetonQuestLogger log, final BetonQuestInstructions instructionApi,
                             final IdentifierFactory<I> identifierFactory,
                             final String readable, final String internal) {
         super(log, identifierFactory, readable, internal);
@@ -46,7 +46,7 @@ public abstract class SectionProcessor<I extends Identifier, T> extends QuestPro
     @Override
     public void load(final QuestPackage pack) {
         try {
-            final SectionInstruction instruction = instructionApi.createSectionInstruction(pack, pack.getConfig());
+            final SectionInstruction instruction = instructionApi.createSection(pack, pack.getConfig());
             final Argument<List<Map.Entry<I, T>>> sections = instruction.read().list(internal).namedSections(this::loadSection)
                     .withoutEarlyValidation().getOptional(Collections.emptyList());
             final List<Map.Entry<I, T>> entries = sections.getValue(null);
