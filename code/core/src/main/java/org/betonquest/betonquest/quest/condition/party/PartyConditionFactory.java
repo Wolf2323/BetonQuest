@@ -11,6 +11,7 @@ import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessConditionFactory;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.lib.instruction.argument.DefaultArguments;
 import org.betonquest.betonquest.quest.condition.ThrowExceptionPlayerlessCondition;
 import org.bukkit.Location;
 
@@ -45,8 +46,7 @@ public class PartyConditionFactory implements PlayerConditionFactory, Playerless
 
     @Override
     public PlayerCondition parsePlayer(final Instruction instruction) throws QuestException {
-        final String locationRaw = instruction.string().get("location", "%location%").getValue(null);
-        final Argument<Location> location = instruction.chainForArgument(locationRaw).location().get();
+        final Argument<Location> location = instruction.location().get("location").orElse(DefaultArguments.PLAYER_LOCATION);
         return new NullableConditionAdapter(parse(instruction, location));
     }
 

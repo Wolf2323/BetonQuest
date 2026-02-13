@@ -8,6 +8,7 @@ import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessConditionFactory;
+import org.betonquest.betonquest.lib.instruction.argument.DefaultArguments;
 import org.betonquest.betonquest.quest.action.weather.Weather;
 import org.betonquest.betonquest.quest.condition.ThrowExceptionPlayerlessCondition;
 import org.bukkit.World;
@@ -28,8 +29,7 @@ public class WeatherConditionFactory implements PlayerConditionFactory, Playerle
     @Override
     public PlayerCondition parsePlayer(final Instruction instruction) throws QuestException {
         final Argument<Weather> weather = instruction.parse(Weather::parseWeather).get();
-        final Argument<String> locationWorld = instruction.string().get("world", "%location.world%");
-        final Argument<World> world = instruction.chainForArgument(locationWorld.getValue(null)).world().get();
+        final Argument<World> world = instruction.world().get("world").orElse(DefaultArguments.PLAYER_WORLD);
         return new NullableConditionAdapter(new WeatherCondition(weather, world));
     }
 

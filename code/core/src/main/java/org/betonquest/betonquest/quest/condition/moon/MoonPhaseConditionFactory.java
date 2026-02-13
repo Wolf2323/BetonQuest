@@ -9,6 +9,7 @@ import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessConditionFactory;
+import org.betonquest.betonquest.lib.instruction.argument.DefaultArguments;
 import org.betonquest.betonquest.quest.condition.ThrowExceptionPlayerlessCondition;
 import org.bukkit.World;
 
@@ -28,8 +29,7 @@ public class MoonPhaseConditionFactory implements PlayerConditionFactory, Player
     @Override
     public PlayerCondition parsePlayer(final Instruction instruction) throws QuestException {
         final Argument<List<MoonPhase>> moonPhases = instruction.enumeration(MoonPhase.class).list().get();
-        final String worldRaw = instruction.string().get("world", "%location.world%").getValue(null);
-        final Argument<World> world = instruction.chainForArgument(worldRaw).world().get();
+        final Argument<World> world = instruction.world().get("world").orElse(DefaultArguments.PLAYER_WORLD);
         return new NullableConditionAdapter(new MoonPhaseCondition(world, moonPhases));
     }
 

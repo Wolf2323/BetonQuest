@@ -10,6 +10,7 @@ import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
+import org.betonquest.betonquest.lib.instruction.argument.DefaultArguments;
 import org.betonquest.betonquest.quest.action.DoNothingPlayerlessAction;
 import org.bukkit.World;
 
@@ -62,8 +63,7 @@ public class WeatherActionFactory implements PlayerActionFactory, PlayerlessActi
 
     private NullableActionAdapter parseWeatherAction(final Instruction instruction) throws QuestException {
         final Argument<Weather> weather = instruction.parse(Weather::parseWeather).get();
-        final String worldPart = instruction.string().get("world", "%location.world%").getValue(null);
-        final Argument<World> world = instruction.chainForArgument(worldPart).world().get();
+        final Argument<World> world = instruction.world().get("world").orElse(DefaultArguments.PLAYER_WORLD);
         final Argument<Number> duration = instruction.number().get("duration", 0);
         return new NullableActionAdapter(new WeatherAction(weather, world, duration));
     }
