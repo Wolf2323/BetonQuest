@@ -93,6 +93,7 @@ public class ObjectiveAction implements NullableAction {
      * @param action            the action to do with the objectives
      * @throws QuestException if the action is invalid
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public ObjectiveAction(final Plugin plugin, final ProfileProvider profileProvider, final Saver saver, final BetonQuestLogger log,
                            final ObjectiveManager objectiveManager, final PlayerDataStorage playerDataStorage,
                            final QuestPackage questPackage, final Argument<List<ObjectiveIdentifier>> objectives,

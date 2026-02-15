@@ -87,6 +87,7 @@ public record QuestRegistry(
      * @param profileProvider   the profile provider instance
      * @param playerDataStorage the storage to get player data
      * @param identifiers       the available identifiers
+     * @param instructions      the betonquest instructions instance
      * @return the newly created QuestRegistry
      * @throws QuestException if identifier factories are not registered
      */

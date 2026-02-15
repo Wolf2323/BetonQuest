@@ -70,6 +70,7 @@ public class MenuProcessor extends RPGMenuProcessor<MenuIdentifier, Menu> {
      * @param identifierFactory the identifier factory to create {@link MenuIdentifier}s for this type
      * @param profileProvider   the Profile Provider
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public MenuProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
                          final BetonQuestInstructions instructionApi, final ParsedSectionTextCreator textCreator,
                          final ActionManager actionManager, final ConditionManager conditionManager, final ArgumentParsers parsers, final RPGMenu rpgMenu,

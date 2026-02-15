@@ -97,7 +97,6 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
      * @param textParser        the text parser used to parse text and colors
      * @param identifierFactory the identifier factory to create {@link HologramIdentifier}s for this type
      */
-    @SuppressWarnings("PMD.ExcessiveParameterList")
     public HologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
                         final BetonQuestInstructions instructionApi, final QuestPackageManager packManager,
                         final HologramProvider hologramProvider, final String readable, final String internal,

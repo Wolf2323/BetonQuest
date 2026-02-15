@@ -37,7 +37,6 @@ public class LocationHologramLoop extends HologramLoop implements StartTask {
      * @param plugin            the plugin to start tasks
      * @param textParser        the text parser used to parse text and colors
      */
-    @SuppressWarnings("PMD.ExcessiveParameterList")
     public LocationHologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
                                 final BetonQuestInstructions instructionApi, final QuestPackageManager packManager,
                                 final IdentifierFactory<HologramIdentifier> identifierFactory,

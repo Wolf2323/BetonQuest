@@ -16,94 +16,94 @@ public class DefaultBetonQuestApi implements BetonQuestApi {
     /**
      * The {@link ProfileProvider} supplier.
      */
-    private final Supplier<ProfileProvider> profileProvider;
+    private final Supplier<ProfileProvider> profileProviderSupplier;
 
     /**
      * The {@link QuestPackageManager} supplier.
      */
-    private final Supplier<QuestPackageManager> packageManager;
+    private final Supplier<QuestPackageManager> questPackageManagerSupplier;
 
     /**
      * The {@link BetonQuestLoggerFactory} supplier.
      */
-    private final Supplier<BetonQuestLoggerFactory> loggerFactory;
+    private final Supplier<BetonQuestLoggerFactory> loggerFactorySupplier;
 
     /**
      * The {@link BetonQuestInstructions} supplier.
      */
-    private final Supplier<BetonQuestInstructions> instructions;
+    private final Supplier<BetonQuestInstructions> instructionsSupplier;
 
     /**
      * The {@link BetonQuestConversations} supplier.
      */
-    private final Supplier<BetonQuestConversations> conversations;
+    private final Supplier<BetonQuestConversations> conversationsSupplier;
 
     /**
      * The {@link BetonQuestRegistries} supplier.
      */
-    private final Supplier<BetonQuestRegistries> registries;
+    private final Supplier<BetonQuestRegistries> registriesSupplier;
 
     /**
      * The {@link BetonQuestManagers} supplier.
      */
-    private final Supplier<BetonQuestManagers> managers;
+    private final Supplier<BetonQuestManagers> managersSupplier;
 
     /**
      * Creates a new instance of the {@link DefaultBetonQuestApi}.
      *
-     * @param profileProvider the {@link ProfileProvider} supplier
-     * @param packageManager  the {@link QuestPackageManager} supplier
-     * @param loggerFactory   the {@link BetonQuestLoggerFactory} supplier
-     * @param instructions    the {@link BetonQuestInstructions} supplier
-     * @param conversations   the {@link BetonQuestConversations} supplier
-     * @param registries      the {@link BetonQuestRegistries} supplier
-     * @param managers        the {@link BetonQuestManagers} supplier
+     * @param profileProviderSupplier the {@link ProfileProvider} supplier
+     * @param packageManagerSupplier  the {@link QuestPackageManager} supplier
+     * @param loggerFactorySupplier   the {@link BetonQuestLoggerFactory} supplier
+     * @param instructionsSupplier    the {@link BetonQuestInstructions} supplier
+     * @param conversationsSupplier   the {@link BetonQuestConversations} supplier
+     * @param registriesSupplier      the {@link BetonQuestRegistries} supplier
+     * @param managersSupplier        the {@link BetonQuestManagers} supplier
      */
-    public DefaultBetonQuestApi(final Supplier<ProfileProvider> profileProvider, final Supplier<QuestPackageManager> packageManager,
-                                final Supplier<BetonQuestLoggerFactory> loggerFactory, final Supplier<BetonQuestInstructions> instructions,
-                                final Supplier<BetonQuestConversations> conversations, final Supplier<BetonQuestRegistries> registries,
-                                final Supplier<BetonQuestManagers> managers) {
-        this.profileProvider = profileProvider;
-        this.packageManager = packageManager;
-        this.loggerFactory = loggerFactory;
-        this.instructions = instructions;
-        this.conversations = conversations;
-        this.registries = registries;
-        this.managers = managers;
+    public DefaultBetonQuestApi(final Supplier<ProfileProvider> profileProviderSupplier, final Supplier<QuestPackageManager> packageManagerSupplier,
+                                final Supplier<BetonQuestLoggerFactory> loggerFactorySupplier, final Supplier<BetonQuestInstructions> instructionsSupplier,
+                                final Supplier<BetonQuestConversations> conversationsSupplier, final Supplier<BetonQuestRegistries> registriesSupplier,
+                                final Supplier<BetonQuestManagers> managersSupplier) {
+        this.profileProviderSupplier = profileProviderSupplier;
+        this.questPackageManagerSupplier = packageManagerSupplier;
+        this.loggerFactorySupplier = loggerFactorySupplier;
+        this.instructionsSupplier = instructionsSupplier;
+        this.conversationsSupplier = conversationsSupplier;
+        this.registriesSupplier = registriesSupplier;
+        this.managersSupplier = managersSupplier;
     }
 
     @Override
     public ProfileProvider profiles() {
-        return profileProvider.get();
+        return profileProviderSupplier.get();
     }
 
     @Override
     public QuestPackageManager packages() {
-        return packageManager.get();
+        return questPackageManagerSupplier.get();
     }
 
     @Override
     public BetonQuestLoggerFactory loggers() {
-        return loggerFactory.get();
+        return loggerFactorySupplier.get();
     }
 
     @Override
     public BetonQuestInstructions instructions() {
-        return instructions.get();
+        return instructionsSupplier.get();
     }
 
     @Override
     public BetonQuestConversations conversations() {
-        return conversations.get();
+        return conversationsSupplier.get();
     }
 
     @Override
     public BetonQuestRegistries registries() {
-        return registries.get();
+        return registriesSupplier.get();
     }
 
     @Override
     public BetonQuestManagers managers() {
-        return managers.get();
+        return managersSupplier.get();
     }
 }

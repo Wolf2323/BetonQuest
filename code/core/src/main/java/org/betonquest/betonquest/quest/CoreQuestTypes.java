@@ -231,7 +231,7 @@ import java.time.InstantSource;
 /**
  * Registers the Conditions, Actions, Objectives and Placeholders that come with BetonQuest.
  */
-@SuppressWarnings({"PMD.NcssCount", "PMD.AvoidDuplicateLiterals"})
+@SuppressWarnings({"PMD.NcssCount", "PMD.AvoidDuplicateLiterals", "PMD.CouplingBetweenObjects"})
 public class CoreQuestTypes {
 
     /**

@@ -102,6 +102,7 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
      * @param conditionManager    the condition manager
      * @param identifierFactory   the identifier factory to create {@link ConversationIdentifier}s for this type
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public ConversationProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
                                  final BetonQuest plugin, final ParsedSectionTextCreator textCreator,
                                  final ConversationIORegistry convIORegistry, final InterceptorRegistry interceptorRegistry,

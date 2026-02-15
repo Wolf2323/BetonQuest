@@ -60,6 +60,7 @@ public abstract class RPGMenuProcessor<I extends Identifier, T> extends SectionP
      * @param actionManager     the ActionManager
      * @param conditionManager  the ConditionManager
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public RPGMenuProcessor(final BetonQuestLogger log, final BetonQuestInstructions instructionApi, final String readable,
                             final String internal, final BetonQuestLoggerFactory loggerFactory,
                             final ParsedSectionTextCreator textCreator, final ArgumentParsers parsers,

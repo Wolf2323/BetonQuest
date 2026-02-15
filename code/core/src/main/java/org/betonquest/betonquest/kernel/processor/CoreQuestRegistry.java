@@ -33,7 +33,6 @@ import java.util.Map;
  * @param objectives   Objective logic.
  * @param placeholders Placeholder logic.
  */
-@SuppressWarnings("PMD.CouplingBetweenObjects")
 public record CoreQuestRegistry(
         ConditionProcessor conditions,
         ActionProcessor actions,

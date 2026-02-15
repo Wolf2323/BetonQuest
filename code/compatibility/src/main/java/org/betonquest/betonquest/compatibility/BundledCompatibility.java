@@ -45,9 +45,15 @@ import org.betonquest.betonquest.compatibility.worldguard.WorldGuardIntegratorFa
 import org.bukkit.plugin.Plugin;
 
 /**
- * Allows to register the 3rd party compatibility.
+ * Allows registering the 3rd party compatibility.
  */
-public class BundledCompatibility {
+public final class BundledCompatibility {
+
+    /**
+     * Default constructor.
+     */
+    private BundledCompatibility() {
+    }
 
     /**
      * Registers the compatible factories.

@@ -28,6 +28,7 @@ import java.util.Map;
 /**
  * Processor to create and store {@link MenuItem}s.
  */
+@SuppressWarnings("PMD.CouplingBetweenObjects")
 public class MenuItemProcessor extends RPGMenuProcessor<MenuItemIdentifier, MenuItem> {
 
     /**

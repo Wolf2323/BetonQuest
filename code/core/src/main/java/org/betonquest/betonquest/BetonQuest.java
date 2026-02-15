@@ -733,6 +733,11 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         return loggerFactory;
     }
 
+    /**
+     * Returns the {@link ArgumentParsers} instance.
+     *
+     * @return the {@link ArgumentParsers} instance
+     */
     public ArgumentParsers getArgumentParsers() {
         try {
             return new DefaultArgumentParsers(getBetonQuestManagers().items()::getItem, getTextParser(), getServer(), getBetonQuestRegistries().identifiers());
@@ -773,10 +778,20 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         return pluginMessage;
     }
 
+    /**
+     * Returns the {@link ProfileProvider} instance.
+     *
+     * @return the {@link ProfileProvider} instance
+     */
     public ProfileProvider getProfileProvider() {
         return profileProvider;
     }
 
+    /**
+     * Returns the {@link QuestPackageManager} instance.
+     *
+     * @return the {@link QuestPackageManager} instance
+     */
     public QuestPackageManager getQuestPackageManager() {
         return questManager;
     }
@@ -862,14 +877,29 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         return playerDataStorage;
     }
 
+    /**
+     * Returns the {@link LegacyFeatureApi} instance.
+     *
+     * @return the LegacyFeatureApi instance
+     */
     public LegacyFeatureApi getLegacyFeatureApi() {
         return questRegistry;
     }
 
+    /**
+     * Returns the {@link LegacyFeatureRegistries} instance.
+     *
+     * @return the LegacyFeatureRegistries instance
+     */
     public LegacyFeatureRegistries getLegacyFeatureRegistries() {
         return featureRegistries;
     }
 
+    /**
+     * Returns the {@link LegacyConversationApi} instance.
+     *
+     * @return the LegacyConversationApi instance
+     */
     public LegacyConversationApi getLegacyConversationApi() {
         return questRegistry.conversations();
     }
