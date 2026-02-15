@@ -105,8 +105,8 @@ public record QuestRegistry(
                 loggerFactory.create(ActionScheduling.class, "Schedules"), instructions,
                 otherRegistries.actionScheduling(), identifiers.getFactory(ScheduleIdentifier.class));
         final CancelerProcessor cancelers = new CancelerProcessor(loggerFactory.create(CancelerProcessor.class),
-                loggerFactory, pluginMessage, instructions, plugin.getBetonQuestManagers(), textCreator,
-                playerDataStorage, identifiers.getFactory(QuestCancelerIdentifier.class));
+                loggerFactory, pluginMessage, instructions, coreQuestRegistry.actions(), coreQuestRegistry.conditions(),
+                coreQuestRegistry.objectives(), items, textCreator, playerDataStorage, identifiers.getFactory(QuestCancelerIdentifier.class));
         final CompassProcessor compasses = new CompassProcessor(loggerFactory.create(CompassProcessor.class),
                 instructions, textCreator, identifiers.getFactory(CompassIdentifier.class));
         final ConversationProcessor conversations = new ConversationProcessor(loggerFactory.create(ConversationProcessor.class),

@@ -13,8 +13,11 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
+import org.betonquest.betonquest.api.service.ActionManager;
 import org.betonquest.betonquest.api.service.BetonQuestInstructions;
-import org.betonquest.betonquest.api.service.BetonQuestManagers;
+import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.ItemManager;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.data.PlayerDataStorage;
@@ -55,9 +58,24 @@ public class CancelerProcessor extends SectionProcessor<QuestCancelerIdentifier,
     private final PlayerDataStorage playerDataStorage;
 
     /**
-     * All BetonQuest managers.
+     * The action manager.
      */
-    private final BetonQuestManagers managers;
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
+
+    /**
+     * The objective manager.
+     */
+    private final ObjectiveManager objectiveManager;
+
+    /**
+     * The item manager.
+     */
+    private final ItemManager itemManager;
 
     /**
      * Create a new Quest Canceler Processor to store them.
@@ -66,19 +84,27 @@ public class CancelerProcessor extends SectionProcessor<QuestCancelerIdentifier,
      * @param loggerFactory     the logger factory to create a new class-specific logger
      * @param pluginMessage     the {@link PluginMessage} instance
      * @param instructionApi    the instruction api to use
-     * @param managers          the available managers
+     * @param actionManager     the action manager
+     * @param conditionManager  the condition manager
+     * @param objectiveManager  the objective manager
+     * @param itemManager       the item manager
      * @param textCreator       the text creator to parse text
      * @param playerDataStorage the storage for player data
      * @param identifierFactory the identifier factory to create {@link QuestCancelerIdentifier}s for this type
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public CancelerProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
                              final PluginMessage pluginMessage, final BetonQuestInstructions instructionApi,
-                             final BetonQuestManagers managers, final ParsedSectionTextCreator textCreator, final PlayerDataStorage playerDataStorage,
+                             final ActionManager actionManager, final ConditionManager conditionManager, final ObjectiveManager objectiveManager,
+                             final ItemManager itemManager, final ParsedSectionTextCreator textCreator, final PlayerDataStorage playerDataStorage,
                              final IdentifierFactory<QuestCancelerIdentifier> identifierFactory) {
         super(log, instructionApi, identifierFactory, "Quest Canceler", "cancel");
         this.loggerFactory = loggerFactory;
         this.pluginMessage = pluginMessage;
-        this.managers = managers;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
+        this.objectiveManager = objectiveManager;
+        this.itemManager = itemManager;
         this.textCreator = textCreator;
         this.playerDataStorage = playerDataStorage;
     }
@@ -101,8 +127,8 @@ public class CancelerProcessor extends SectionProcessor<QuestCancelerIdentifier,
         final QuestCanceler.CancelData cancelData = new QuestCanceler.CancelData(conditions, actions, objectives, tags, points, journal, location.orElse(null));
         final BetonQuestLogger logger = loggerFactory.create(QuestCanceler.class);
         final QuestCancelerIdentifier identifier = getIdentifier(pack, sectionName);
-        final QuestCanceler questCanceler = new QuestCanceler(logger, managers.actions(), managers.conditions(), managers.objectives(),
-                managers.items(), playerDataStorage, identifier, pluginMessage, name, item, pack, cancelData);
+        final QuestCanceler questCanceler = new QuestCanceler(logger, actionManager, conditionManager, objectiveManager,
+                itemManager, playerDataStorage, identifier, pluginMessage, name, item, pack, cancelData);
         return Map.entry(identifier, questCanceler);
     }
 }

@@ -165,11 +165,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     private QuestRegistry questRegistry;
 
     /**
-     * Registry for quest core elements.
-     */
-    private BaseQuestTypeRegistries questTypeRegistries;
-
-    /**
      * Stores Registry for ConvIO, Interceptor, NotifyIO and ActionScheduling.
      */
     private BaseFeatureRegistries featureRegistries;
@@ -384,7 +379,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         this.betonQuestInstructions = new DefaultBetonQuestInstructions(this::getPlaceholderProcessor,
                 this::getQuestPackageManager, this::getArgumentParsers, this::getLoggerFactory);
 
-        questTypeRegistries = BaseQuestTypeRegistries.create(loggerFactory, betonQuestManagers::conditions);
+        final BaseQuestTypeRegistries questTypeRegistries = BaseQuestTypeRegistries.create(loggerFactory, () -> getBetonQuestManagers().conditions());
         CoreQuestTypes.registerIdentifierTypes(getQuestPackageManager(), questTypeRegistries.identifier());
         final CoreQuestRegistry coreQuestRegistry;
         try {
@@ -401,6 +396,10 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
                 playerDataFactory, coreQuestRegistry.objectives(), profileProvider);
 
         featureRegistries = BaseFeatureRegistries.create(loggerFactory, betonQuestInstructions);
+
+        this.betonQuestRegistries = new DefaultBetonQuestRegistries(questTypeRegistries::action,
+                questTypeRegistries::condition, questTypeRegistries::objective, featureRegistries::item,
+                featureRegistries::npc, questTypeRegistries::placeholder, questTypeRegistries::identifier);
 
         final String defaultParser = config.getString("text_parser", "legacyminimessage");
         textParser = new DecidingTextParser(featureRegistries.textParser(), new TagTextParserDecider(defaultParser));
@@ -421,6 +420,9 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
             throw new IllegalStateException("Could not load the quest feature registries!", e);
         }
 
+        this.betonQuestManagers = new DefaultBetonQuestManagers(coreQuestRegistry::actions, coreQuestRegistry::conditions,
+                coreQuestRegistry::objectives, questRegistry::items, questRegistry::npcs, coreQuestRegistry::placeholders);
+
         setupUpdater();
         registerListener(coreQuestRegistry, questTypeRegistries);
 
@@ -437,7 +439,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
                 questRegistry.conversations(), config, conversationColors, coreQuestRegistry.actions(), textParser, fontRegistry, pluginMessage)
                 .register(featureRegistries);
 
-        setupApi(coreQuestRegistry);
+        setupApi();
 
         try {
             conversationColors.load();
@@ -484,12 +486,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         log.info("BetonQuest successfully enabled!");
     }
 
-    private void setupApi(final CoreQuestRegistry processors) {
-        this.betonQuestRegistries = new DefaultBetonQuestRegistries(questTypeRegistries::action,
-                questTypeRegistries::condition, questTypeRegistries::objective, featureRegistries::item,
-                featureRegistries::npc, questTypeRegistries::placeholder, questTypeRegistries::identifier);
-        this.betonQuestManagers = new DefaultBetonQuestManagers(processors::actions, processors::conditions,
-                processors::objectives, questRegistry::items, questRegistry::npcs, processors::placeholders);
+    private void setupApi() {
         this.betonQuestApi = new DefaultBetonQuestApi(this::getProfileProvider, this::getQuestPackageManager, this::getLoggerFactory,
                 () -> betonQuestInstructions, questRegistry::conversations, () -> betonQuestRegistries, () -> betonQuestManagers);
         Bukkit.getServicesManager().register(BetonQuestApiService.class, new DefaultBetonQuestApiService(plugin -> {
