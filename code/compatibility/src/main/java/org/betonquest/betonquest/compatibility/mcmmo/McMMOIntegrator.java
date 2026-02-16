@@ -28,12 +28,12 @@ public class McMMOIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final BetonQuestLoggerFactory loggerFactory = api.loggers();
+        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
 
         final BetonQuestRegistries questRegistries = api.registries();
         questRegistries.conditions().register("mcmmolevel", new McMMOSkillLevelConditionFactory(loggerFactory));
         questRegistries.actions().register("mcmmoexp", new McMMOAddExpActionFactory(loggerFactory));
-        final BetonQuestLogger log = api.loggers().create(McMMOIntegrator.class);
+        final BetonQuestLogger log = api.loggerFactory().create(McMMOIntegrator.class);
         try {
             plugin.getServer().getPluginManager().registerEvents(new MCMMOQuestItemHandler(), plugin);
             log.debug("Enabled MCMMO QuestItemHandler");

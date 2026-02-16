@@ -10,8 +10,8 @@ import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.service.NpcManager;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -70,7 +70,7 @@ public class DefaultNpcHider {
     /**
      * Instruction API to resolve {@link SectionInstruction}s.
      */
-    private final BetonQuestInstructions instructionApi;
+    private final Instructions instructionApi;
 
     /**
      * The task refreshing npc visibility.
@@ -92,7 +92,7 @@ public class DefaultNpcHider {
     public DefaultNpcHider(final BetonQuestLogger log, final NpcManager npcManager,
                            final ConditionManager conditionManager, final ProfileProvider profileProvider,
                            final NpcRegistry npcTypes, final IdentifierRegistry identifierRegistry,
-                           final BetonQuestInstructions instructionApi) {
+                           final Instructions instructionApi) {
         this.log = log;
         this.identifierRegistry = identifierRegistry;
         this.instructionApi = instructionApi;

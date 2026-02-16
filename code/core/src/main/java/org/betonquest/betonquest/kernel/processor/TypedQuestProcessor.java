@@ -7,7 +7,7 @@ import org.betonquest.betonquest.api.identifier.ReadableIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.quest.TypeFactory;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.bstats.CompositeInstructionMetricsSupplier;
 import org.betonquest.betonquest.kernel.registry.FactoryTypeRegistry;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,7 +31,7 @@ public abstract class TypedQuestProcessor<I extends ReadableIdentifier, T> exten
     /**
      * Instruction API.
      */
-    protected final BetonQuestInstructions instructionApi;
+    protected final Instructions instructionApi;
 
     /**
      * Create a new QuestProcessor to store and execute type logic.
@@ -45,7 +45,7 @@ public abstract class TypedQuestProcessor<I extends ReadableIdentifier, T> exten
      */
     public TypedQuestProcessor(final BetonQuestLogger log,
                                final FactoryTypeRegistry<T> types, final IdentifierFactory<I> identifierFactory,
-                               final BetonQuestInstructions instructionApi, final String readable, final String internal) {
+                               final Instructions instructionApi, final String readable, final String internal) {
         super(log, identifierFactory, readable, internal);
         this.types = types;
         this.instructionApi = instructionApi;

@@ -14,8 +14,8 @@ import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.service.ActionManager;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.service.ItemManager;
 import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.betonquest.betonquest.api.text.Text;
@@ -94,7 +94,7 @@ public class CancelerProcessor extends SectionProcessor<QuestCancelerIdentifier,
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public CancelerProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                             final PluginMessage pluginMessage, final BetonQuestInstructions instructionApi,
+                             final PluginMessage pluginMessage, final Instructions instructionApi,
                              final ActionManager actionManager, final ConditionManager conditionManager, final ObjectiveManager objectiveManager,
                              final ItemManager itemManager, final ParsedSectionTextCreator textCreator, final PlayerDataStorage playerDataStorage,
                              final IdentifierFactory<QuestCancelerIdentifier> identifierFactory) {

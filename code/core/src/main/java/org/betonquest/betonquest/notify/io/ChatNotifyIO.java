@@ -3,7 +3,7 @@ package org.betonquest.betonquest.notify.io;
 import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.conversation.Conversation;
@@ -20,7 +20,7 @@ public class ChatNotifyIO extends NotifyIO {
     /**
      * Conversation API.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * Create a new Chat Notify IO.
@@ -31,7 +31,7 @@ public class ChatNotifyIO extends NotifyIO {
      * @param conversationApi the Conversation API
      * @throws QuestException when data could not be parsed
      */
-    public ChatNotifyIO(final Placeholders placeholders, @Nullable final QuestPackage pack, final Map<String, String> data, final LegacyConversationApi conversationApi) throws QuestException {
+    public ChatNotifyIO(final Placeholders placeholders, @Nullable final QuestPackage pack, final Map<String, String> data, final LegacyConversations conversationApi) throws QuestException {
         super(placeholders, pack, data);
         this.conversationApi = conversationApi;
     }

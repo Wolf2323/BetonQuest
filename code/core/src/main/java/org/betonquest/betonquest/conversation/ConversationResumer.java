@@ -2,7 +2,7 @@ package org.betonquest.betonquest.conversation;
 
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.database.Saver.Record;
 import org.betonquest.betonquest.database.UpdateType;
@@ -32,7 +32,7 @@ public class ConversationResumer implements Listener {
     /**
      * Conversation API.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * The profile to resume the conversation for.
@@ -52,7 +52,7 @@ public class ConversationResumer implements Listener {
      * @param onlineProfile   the profile to resume the conversation for
      * @param state           the state of a suspended conversation
      */
-    public ConversationResumer(final ConfigAccessor config, final LegacyConversationApi conversationApi,
+    public ConversationResumer(final ConfigAccessor config, final LegacyConversations conversationApi,
                                final OnlineProfile onlineProfile, final PlayerConversationState state) {
         this.conversationApi = conversationApi;
         this.onlineProfile = onlineProfile;

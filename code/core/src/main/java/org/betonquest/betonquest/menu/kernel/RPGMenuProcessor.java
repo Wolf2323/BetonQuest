@@ -8,8 +8,8 @@ import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.service.ActionManager;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.processor.SectionProcessor;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
 
@@ -61,7 +61,7 @@ public abstract class RPGMenuProcessor<I extends Identifier, T> extends SectionP
      * @param conditionManager  the ConditionManager
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
-    public RPGMenuProcessor(final BetonQuestLogger log, final BetonQuestInstructions instructionApi, final String readable,
+    public RPGMenuProcessor(final BetonQuestLogger log, final Instructions instructionApi, final String readable,
                             final String internal, final BetonQuestLoggerFactory loggerFactory,
                             final ParsedSectionTextCreator textCreator, final ArgumentParsers parsers,
                             final IdentifierFactory<I> identifierFactory, final ActionManager actionManager, final ConditionManager conditionManager) {

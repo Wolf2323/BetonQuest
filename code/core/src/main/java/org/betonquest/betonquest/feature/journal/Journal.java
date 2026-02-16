@@ -16,7 +16,7 @@ import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalMainPageIdentifier;
-import org.betonquest.betonquest.api.legacy.LegacyFeatureApi;
+import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
@@ -72,14 +72,14 @@ public class Journal {
     private final PluginMessage pluginMessage;
 
     /**
-     * The Feature API.
-     */
-    private final LegacyFeatureApi featureApi;
-
-    /**
      * The Condition Manager.
      */
     private final ConditionManager conditionManager;
+
+    /**
+     * The Feature API.
+     */
+    private final LegacyFeatures featureApi;
 
     /**
      * The text parser used to parse text in the journal.
@@ -136,7 +136,7 @@ public class Journal {
      * @param config           a {@link ConfigAccessor} that contains the plugin's configuration
      */
     public Journal(final BetonQuestLogger log, final PluginMessage pluginMessage, final ConditionManager conditionManager,
-                   final LegacyFeatureApi featureApi, final TextParser textParser, final FontRegistry fontRegistry,
+                   final LegacyFeatures featureApi, final TextParser textParser, final FontRegistry fontRegistry,
                    final Profile profile, final List<Pointer> list, final ConfigAccessor config) {
         this.log = log;
         this.pluginMessage = pluginMessage;

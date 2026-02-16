@@ -14,7 +14,7 @@ import org.betonquest.betonquest.api.identifier.ConversationOptionIdentifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.argument.DecoratedArgumentParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.Placeholders;
@@ -70,7 +70,7 @@ public class DefaultConversationData implements ConversationData {
     /**
      * Conversation API.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * The {@link SectionInstruction}.
@@ -121,7 +121,7 @@ public class DefaultConversationData implements ConversationData {
      */
     public DefaultConversationData(final BetonQuestLogger log, final QuestPackageManager packManager,
                                    final Placeholders placeholders, final ConditionManager conditionManager, final SectionInstruction instruction,
-                                   final LegacyConversationApi conversationApi, final ParsedSectionTextCreator textCreator,
+                                   final LegacyConversations conversationApi, final ParsedSectionTextCreator textCreator,
                                    final ConfigurationSection convSection, final ConversationPublicData publicData) throws QuestException {
         this.log = log;
         this.packManager = packManager;

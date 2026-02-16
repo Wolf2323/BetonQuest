@@ -10,7 +10,7 @@ import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.Placeholders;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.config.DefaultConfigAccessorFactory;
 import org.betonquest.betonquest.config.quest.QuestPackageImpl;
@@ -118,7 +118,7 @@ class BStatsMetricsTest {
         when(server.getBukkitVersion()).thenReturn("1.18.2-R0.1");
 
         final Metrics metrics = mock(Metrics.class);
-        new BStatsMetrics(plugin, metrics, Collections.emptyMap(), mock(Compatibility.class), mock(BetonQuestInstructions.class));
+        new BStatsMetrics(plugin, metrics, Collections.emptyMap(), mock(Compatibility.class), mock(Instructions.class));
     }
 
     @Test
@@ -151,7 +151,7 @@ class BStatsMetricsTest {
 
         final InstructionMetricsSupplier<ReadableIdentifier> metricsSupplier = new CompositeInstructionMetricsSupplier<>(ids::keySet, types::keySet);
 
-        final BetonQuestInstructions instructionApi = mock(BetonQuestInstructions.class);
+        final Instructions instructionApi = mock(Instructions.class);
         when(instructionApi.create(firstId, TEST_INSTRUCTION)).thenReturn(firstInstruction);
 
         final ReadableIdentifier secondId = mock(ReadableIdentifier.class);

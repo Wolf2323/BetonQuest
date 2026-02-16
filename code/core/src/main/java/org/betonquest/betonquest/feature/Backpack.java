@@ -10,7 +10,7 @@ import org.betonquest.betonquest.api.identifier.CompassIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.identifier.QuestCancelerIdentifier;
-import org.betonquest.betonquest.api.legacy.LegacyFeatureApi;
+import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.config.PluginMessage;
@@ -427,7 +427,7 @@ public class Backpack implements Listener {
         public Cancelers() {
             super();
             final List<QuestCanceler> cancelers = new ArrayList<>();
-            for (final Map.Entry<QuestCancelerIdentifier, QuestCanceler> entry : BetonQuest.getInstance().getLegacyFeatureApi().getCancelers().entrySet()) {
+            for (final Map.Entry<QuestCancelerIdentifier, QuestCanceler> entry : BetonQuest.getInstance().getLegacyFeatures().getCancelers().entrySet()) {
                 try {
                     if (entry.getValue().isCancelable(onlineProfile)) {
                         cancelers.add(entry.getValue());
@@ -490,7 +490,7 @@ public class Backpack implements Listener {
         public Compass() {
             super();
             int counter = 0;
-            final LegacyFeatureApi featureApi = BetonQuest.getInstance().getLegacyFeatureApi();
+            final LegacyFeatures featureApi = BetonQuest.getInstance().getLegacyFeatures();
             for (final Map.Entry<CompassIdentifier, QuestCompass> entry : featureApi.getCompasses().entrySet()) {
                 if (playerData.hasTag(entry.getKey().getTag())) {
                     compasses.put(counter, entry.getValue());

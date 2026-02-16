@@ -11,8 +11,8 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.BetonQuestRegistries;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.menu.betonquest.MenuActionFactory;
 import org.betonquest.betonquest.menu.betonquest.MenuConditionFactory;
@@ -80,7 +80,7 @@ public class RPGMenu {
      * @throws QuestException if there is an error while loading the menus
      */
     public RPGMenu(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                   final BetonQuestInstructions instructionApi, final ConfigAccessor pluginConfig,
+                   final Instructions instructionApi, final ConfigAccessor pluginConfig,
                    final PluginMessage pluginMessage, final ParsedSectionTextCreator textCreator,
                    final ProfileProvider profileProvider, final ArgumentParsers parsers) throws QuestException {
         this.log = log;

@@ -3,7 +3,7 @@ package org.betonquest.betonquest.compatibility.holograms.holographicdisplays;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.IntegratorFactory;
 
@@ -20,7 +20,7 @@ public class HolographicDisplaysIntegratorFactory implements IntegratorFactory {
     /**
      * The instruction api to use.
      */
-    private final BetonQuestInstructions instructionApi;
+    private final Instructions instructionApi;
 
     /**
      * The identifier factory for placeholders.
@@ -35,7 +35,7 @@ public class HolographicDisplaysIntegratorFactory implements IntegratorFactory {
      * @param identifierFactory the identifier factory to create placeholders
      */
     public HolographicDisplaysIntegratorFactory(final BetonQuestLoggerFactory loggerFactory,
-                                                final BetonQuestInstructions instructionApi,
+                                                final Instructions instructionApi,
                                                 final IdentifierFactory<PlaceholderIdentifier> identifierFactory) {
         this.loggerFactory = loggerFactory;
         this.instructionApi = instructionApi;

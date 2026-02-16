@@ -183,7 +183,7 @@ public class Conversation {
         this.startSender = new IngameNotificationSender(log, pluginMessage, pack, conversationID.getFull(), NotificationLevel.INFO, "conversation_start");
         this.endSender = new IngameNotificationSender(log, pluginMessage, pack, conversationID.getFull(), NotificationLevel.INFO, "conversation_end");
 
-        this.data = plugin.getLegacyConversationApi().getData(conversationID);
+        this.data = plugin.getLegacyConversations().getData(conversationID);
         this.inOut = data.getPublicData().convIO().getValue(onlineProfile).parse(this, onlineProfile);
         this.interceptor = data.getPublicData().interceptor().getValue(onlineProfile).create(onlineProfile);
     }

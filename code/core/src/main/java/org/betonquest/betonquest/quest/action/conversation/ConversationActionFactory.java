@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
@@ -24,7 +24,7 @@ public class ConversationActionFactory implements PlayerActionFactory {
     /**
      * Conversation API.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * Create the conversation action factory.
@@ -33,7 +33,7 @@ public class ConversationActionFactory implements PlayerActionFactory {
      * @param conversationApi the Conversation API
      */
     public ConversationActionFactory(final BetonQuestLoggerFactory loggerFactory,
-                                     final LegacyConversationApi conversationApi) {
+                                     final LegacyConversations conversationApi) {
         this.loggerFactory = loggerFactory;
         this.conversationApi = conversationApi;
     }

@@ -8,16 +8,16 @@ import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.service.ActionManager;
-import org.betonquest.betonquest.api.service.BetonQuestConversations;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Conversations;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.Conversation;
@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Stores Conversation Data and validates it.
  */
 @SuppressWarnings("PMD.CouplingBetweenObjects")
-public class ConversationProcessor extends SectionProcessor<ConversationIdentifier, DefaultConversationData> implements LegacyConversationApi, BetonQuestConversations {
+public class ConversationProcessor extends SectionProcessor<ConversationIdentifier, DefaultConversationData> implements LegacyConversations, Conversations {
 
     /**
      * Factory to create class-specific logger.
@@ -106,7 +106,7 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
     public ConversationProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
                                  final BetonQuest plugin, final ParsedSectionTextCreator textCreator,
                                  final ConversationIORegistry convIORegistry, final InterceptorRegistry interceptorRegistry,
-                                 final BetonQuestInstructions placeholders, final PluginMessage pluginMessage,
+                                 final Instructions placeholders, final PluginMessage pluginMessage,
                                  final ActionManager actionManager, final ConditionManager conditionManager,
                                  final IdentifierFactory<ConversationIdentifier> identifierFactory) {
         super(log, placeholders, identifierFactory, "Conversation", "conversations");
@@ -153,7 +153,7 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
 
         final ConversationPublicData publicData = new ConversationPublicData(identifier, quester, stop, finalActions, conversationIO, interceptor, interceptorDelay, invincible);
         final DefaultConversationData conversationData = new DefaultConversationData(loggerFactory.create(DefaultConversationData.class), plugin.getQuestPackageManager(),
-                plugin.getPlaceholderProcessor(), plugin.getBetonQuestManagers().conditions(), instruction, plugin.getLegacyConversationApi(), textCreator, section, publicData);
+                plugin.getPlaceholderProcessor(), plugin.getBetonQuestManagers().conditions(), instruction, plugin.getLegacyConversations(), textCreator, section, publicData);
         return Map.entry(identifier, conversationData);
     }
 

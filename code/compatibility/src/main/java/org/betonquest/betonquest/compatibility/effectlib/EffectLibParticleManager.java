@@ -10,8 +10,8 @@ import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.service.NpcManager;
 import org.betonquest.betonquest.compatibility.effectlib.identifier.ParticleIdentifier;
 import org.betonquest.betonquest.kernel.processor.SectionProcessor;
@@ -71,7 +71,7 @@ public class EffectLibParticleManager extends SectionProcessor<ParticleIdentifie
      * @param plugin            the plugin to start new tasks with
      */
     public EffectLibParticleManager(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                                    final ProfileProvider profileProvider, final BetonQuestInstructions instructionApi,
+                                    final ProfileProvider profileProvider, final Instructions instructionApi,
                                     final IdentifierFactory<ParticleIdentifier> identifierFactory,
                                     final NpcManager npcManager, final ConditionManager conditionManager,
                                     final EffectManager manager, final Plugin plugin) {

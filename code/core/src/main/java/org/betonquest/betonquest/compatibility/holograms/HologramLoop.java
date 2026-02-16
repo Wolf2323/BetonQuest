@@ -14,7 +14,7 @@ import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.logger.QuestExceptionHandler;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.compatibility.holograms.lines.AbstractLine;
 import org.betonquest.betonquest.compatibility.holograms.lines.ItemLine;
@@ -77,7 +77,7 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
     /**
      * The BetonQuest instruction API.
      */
-    private final BetonQuestInstructions instructionApi;
+    private final Instructions instructionApi;
 
     /**
      * Default refresh Interval for Holograms.
@@ -98,7 +98,7 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
      * @param identifierFactory the identifier factory to create {@link HologramIdentifier}s for this type
      */
     public HologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
-                        final BetonQuestInstructions instructionApi, final QuestPackageManager packManager,
+                        final Instructions instructionApi, final QuestPackageManager packManager,
                         final HologramProvider hologramProvider, final String readable, final String internal,
                         final TextParser textParser, final IdentifierFactory<HologramIdentifier> identifierFactory) {
         super(log, instructionApi, identifierFactory, readable, internal);

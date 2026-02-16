@@ -2,7 +2,6 @@ package org.betonquest.betonquest.compatibility.effectlib;
 
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.util.DynamicLocation;
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
@@ -148,7 +147,7 @@ public class EffectLibRunnable extends BukkitRunnable {
                 }
                 final Player player = profile.getPlayer();
 
-                if (!location.get().getWorld().equals(player.getWorld()) || BetonQuest.getInstance().getBetonQuestManagers().npcs().isHidden(npcId, profile)) {
+                if (!location.get().getWorld().equals(player.getWorld()) || npcManager.isHidden(npcId, profile)) {
                     continue;
                 }
 

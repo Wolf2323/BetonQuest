@@ -7,7 +7,7 @@ import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.schedule.Schedule;
 import org.betonquest.betonquest.api.schedule.Scheduler;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.processor.SectionProcessor;
 import org.betonquest.betonquest.kernel.registry.feature.ScheduleRegistry;
 
@@ -32,7 +32,7 @@ public class ActionScheduling extends SectionProcessor<ScheduleIdentifier, Sched
      * @param scheduleTypes     map containing the schedule types, provided by {@link org.betonquest.betonquest.BetonQuest}
      * @param identifierFactory the identifier factory to create {@link ScheduleIdentifier}s for this type
      */
-    public ActionScheduling(final BetonQuestLogger log, final BetonQuestInstructions instructionApi,
+    public ActionScheduling(final BetonQuestLogger log, final Instructions instructionApi,
                             final ScheduleRegistry scheduleTypes, final IdentifierFactory<ScheduleIdentifier> identifierFactory) {
         super(log, instructionApi, identifierFactory, "Schedules", "schedules");
         this.scheduleTypes = scheduleTypes;

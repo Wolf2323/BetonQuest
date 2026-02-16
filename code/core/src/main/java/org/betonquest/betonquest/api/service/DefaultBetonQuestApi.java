@@ -29,14 +29,14 @@ public class DefaultBetonQuestApi implements BetonQuestApi {
     private final Supplier<BetonQuestLoggerFactory> loggerFactorySupplier;
 
     /**
-     * The {@link BetonQuestInstructions} supplier.
+     * The {@link Instructions} supplier.
      */
-    private final Supplier<BetonQuestInstructions> instructionsSupplier;
+    private final Supplier<Instructions> instructionsSupplier;
 
     /**
-     * The {@link BetonQuestConversations} supplier.
+     * The {@link Conversations} supplier.
      */
-    private final Supplier<BetonQuestConversations> conversationsSupplier;
+    private final Supplier<Conversations> conversationsSupplier;
 
     /**
      * The {@link BetonQuestRegistries} supplier.
@@ -54,14 +54,14 @@ public class DefaultBetonQuestApi implements BetonQuestApi {
      * @param profileProviderSupplier the {@link ProfileProvider} supplier
      * @param packageManagerSupplier  the {@link QuestPackageManager} supplier
      * @param loggerFactorySupplier   the {@link BetonQuestLoggerFactory} supplier
-     * @param instructionsSupplier    the {@link BetonQuestInstructions} supplier
-     * @param conversationsSupplier   the {@link BetonQuestConversations} supplier
+     * @param instructionsSupplier    the {@link Instructions} supplier
+     * @param conversationsSupplier   the {@link Conversations} supplier
      * @param registriesSupplier      the {@link BetonQuestRegistries} supplier
      * @param managersSupplier        the {@link BetonQuestManagers} supplier
      */
     public DefaultBetonQuestApi(final Supplier<ProfileProvider> profileProviderSupplier, final Supplier<QuestPackageManager> packageManagerSupplier,
-                                final Supplier<BetonQuestLoggerFactory> loggerFactorySupplier, final Supplier<BetonQuestInstructions> instructionsSupplier,
-                                final Supplier<BetonQuestConversations> conversationsSupplier, final Supplier<BetonQuestRegistries> registriesSupplier,
+                                final Supplier<BetonQuestLoggerFactory> loggerFactorySupplier, final Supplier<Instructions> instructionsSupplier,
+                                final Supplier<Conversations> conversationsSupplier, final Supplier<BetonQuestRegistries> registriesSupplier,
                                 final Supplier<BetonQuestManagers> managersSupplier) {
         this.profileProviderSupplier = profileProviderSupplier;
         this.questPackageManagerSupplier = packageManagerSupplier;
@@ -83,17 +83,17 @@ public class DefaultBetonQuestApi implements BetonQuestApi {
     }
 
     @Override
-    public BetonQuestLoggerFactory loggers() {
+    public BetonQuestLoggerFactory loggerFactory() {
         return loggerFactorySupplier.get();
     }
 
     @Override
-    public BetonQuestInstructions instructions() {
+    public Instructions instructions() {
         return instructionsSupplier.get();
     }
 
     @Override
-    public BetonQuestConversations conversations() {
+    public Conversations conversations() {
         return conversationsSupplier.get();
     }
 

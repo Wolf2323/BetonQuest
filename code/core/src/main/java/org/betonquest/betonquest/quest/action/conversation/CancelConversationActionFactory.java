@@ -1,7 +1,7 @@
 package org.betonquest.betonquest.quest.action.conversation;
 
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
@@ -20,7 +20,7 @@ public class CancelConversationActionFactory implements PlayerActionFactory {
     /**
      * Conversation API.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * Create the conversation cancel action factory.
@@ -28,7 +28,7 @@ public class CancelConversationActionFactory implements PlayerActionFactory {
      * @param loggerFactory   the logger factory to create a logger for the actions
      * @param conversationApi the Conversation API
      */
-    public CancelConversationActionFactory(final BetonQuestLoggerFactory loggerFactory, final LegacyConversationApi conversationApi) {
+    public CancelConversationActionFactory(final BetonQuestLoggerFactory loggerFactory, final LegacyConversations conversationApi) {
         this.loggerFactory = loggerFactory;
         this.conversationApi = conversationApi;
     }

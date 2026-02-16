@@ -29,19 +29,39 @@ import java.util.Locale;
 public class ObjectiveAction implements NullableAction {
 
     /**
+     * The BetonQuest instance.
+     */
+    private final Plugin plugin;
+
+    /**
      * Custom {@link BetonQuestLogger} instance for this class.
      */
     private final BetonQuestLogger log;
 
     /**
+     * The profile provider.
+     */
+    private final ProfileProvider profileProvider;
+
+    /**
+     * The database saver.
+     */
+    private final Saver saver;
+
+    /**
+     * The objective manager.
+     */
+    private final ObjectiveManager objectiveManager;
+
+    /**
+     * The player data storage.
+     */
+    private final PlayerDataStorage playerDataStorage;
+
+    /**
      * The quest package.
      */
     private final QuestPackage questPackage;
-
-    /**
-     * The BetonQuest instance.
-     */
-    private final Plugin plugin;
 
     /**
      * All objectives affected by this action.
@@ -59,32 +79,12 @@ public class ObjectiveAction implements NullableAction {
     private final String action;
 
     /**
-     * The player data storage.
-     */
-    private final PlayerDataStorage playerDataStorage;
-
-    /**
-     * The database saver.
-     */
-    private final Saver saver;
-
-    /**
-     * The profile provider.
-     */
-    private final ProfileProvider profileProvider;
-
-    /**
-     * The objective manager.
-     */
-    private final ObjectiveManager objectiveManager;
-
-    /**
      * Creates a new ObjectiveAction.
      *
      * @param plugin            the BetonQuest instance
+     * @param log               the logger
      * @param profileProvider   the profile provider
      * @param saver             the database saver
-     * @param log               the logger
      * @param objectiveManager  the objective manager
      * @param playerDataStorage the player data storage
      * @param questPackage      the quest package of the instruction
@@ -94,7 +94,7 @@ public class ObjectiveAction implements NullableAction {
      * @throws QuestException if the action is invalid
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
-    public ObjectiveAction(final Plugin plugin, final ProfileProvider profileProvider, final Saver saver, final BetonQuestLogger log,
+    public ObjectiveAction(final Plugin plugin, final BetonQuestLogger log, final ProfileProvider profileProvider, final Saver saver,
                            final ObjectiveManager objectiveManager, final PlayerDataStorage playerDataStorage,
                            final QuestPackage questPackage, final Argument<List<ObjectiveIdentifier>> objectives,
                            final PlayerDataFactory playerDataFactory, final String action) throws QuestException {

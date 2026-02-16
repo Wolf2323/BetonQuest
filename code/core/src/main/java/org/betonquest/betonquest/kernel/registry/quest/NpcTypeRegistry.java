@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.quest.npc.Npc;
 import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
 import org.betonquest.betonquest.api.quest.npc.NpcReverseIdentifier;
 import org.betonquest.betonquest.api.quest.npc.NpcWrapper;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.registry.FactoryTypeRegistry;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +26,7 @@ public class NpcTypeRegistry extends FactoryTypeRegistry<NpcWrapper<?>> implemen
     /**
      * Instruction API.
      */
-    protected final BetonQuestInstructions instructionApi;
+    protected final Instructions instructionApi;
 
     /**
      * Identifier to get {@link NpcIdentifier}s from a specific Npc.
@@ -39,7 +39,7 @@ public class NpcTypeRegistry extends FactoryTypeRegistry<NpcWrapper<?>> implemen
      * @param log            the logger that will be used for logging
      * @param instructionApi the instruction api
      */
-    public NpcTypeRegistry(final BetonQuestLogger log, final BetonQuestInstructions instructionApi) {
+    public NpcTypeRegistry(final BetonQuestLogger log, final Instructions instructionApi) {
         super(log, "npc");
         this.instructionApi = instructionApi;
         this.reverseIdentifiers = new ArrayList<>();

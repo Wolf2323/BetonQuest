@@ -35,7 +35,7 @@ public class HeroesIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final BetonQuestLoggerFactory loggerFactory = api.loggers();
+        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
         final CharacterManager characterManager = Heroes.getInstance().getCharacterManager();
         final HeroClassManager classManager = Heroes.getInstance().getClassManager();
 

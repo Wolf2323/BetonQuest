@@ -8,7 +8,7 @@ import org.betonquest.betonquest.api.common.component.BookPageWrapper;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.service.ActionManager;
@@ -79,7 +79,7 @@ public class CoreFeatureFactories {
     /**
      * The conversation api.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * The Config.
@@ -129,7 +129,7 @@ public class CoreFeatureFactories {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public CoreFeatureFactories(final BetonQuestLoggerFactory loggerFactory, final QuestPackageManager packManager,
                                 final LastExecutionCache lastExecutionCache,
-                                final Placeholders placeholders, final LegacyConversationApi conversationApi,
+                                final Placeholders placeholders, final LegacyConversations conversationApi,
                                 final ConfigAccessor config, final ConversationColors colors,
                                 final ActionManager actionManager,
                                 final TextParser textParser, final FontRegistry fontRegistry, final PluginMessage pluginMessage) {

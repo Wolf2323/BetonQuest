@@ -7,7 +7,7 @@ import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.processor.adapter.ActionAdapter;
 import org.betonquest.betonquest.kernel.registry.quest.ActionTypeRegistry;
 import org.betonquest.betonquest.quest.action.eval.EvalAction;
@@ -26,17 +26,17 @@ public class RunActionFactory implements PlayerActionFactory, PlayerlessActionFa
     private final ActionTypeRegistry actionTypeRegistry;
 
     /**
-     * The {@link BetonQuestInstructions} to use.
+     * The {@link Instructions} to use.
      */
-    private final BetonQuestInstructions instructions;
+    private final Instructions instructions;
 
     /**
      * Create a run action factory with the given BetonQuest instance.
      *
-     * @param instructions       the {@link BetonQuestInstructions} to use
+     * @param instructions       the {@link Instructions} to use
      * @param actionTypeRegistry the action type registry providing factories to parse the evaluated instruction
      */
-    public RunActionFactory(final BetonQuestInstructions instructions, final ActionTypeRegistry actionTypeRegistry) {
+    public RunActionFactory(final Instructions instructions, final ActionTypeRegistry actionTypeRegistry) {
         this.instructions = instructions;
         this.actionTypeRegistry = actionTypeRegistry;
     }

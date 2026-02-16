@@ -3,7 +3,7 @@ package org.betonquest.betonquest.quest.condition.conversation;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.conversation.Conversation;
@@ -17,7 +17,7 @@ public class InConversationCondition implements PlayerCondition {
     /**
      * Conversation API.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * Identifier of the conversation.
@@ -31,7 +31,7 @@ public class InConversationCondition implements PlayerCondition {
      * @param conversationApi the Conversation API
      * @param conversationID  the conversation identifier
      */
-    public InConversationCondition(final LegacyConversationApi conversationApi, @Nullable final Argument<ConversationIdentifier> conversationID) {
+    public InConversationCondition(final LegacyConversations conversationApi, @Nullable final Argument<ConversationIdentifier> conversationID) {
         this.conversationApi = conversationApi;
         this.conversationID = conversationID;
     }

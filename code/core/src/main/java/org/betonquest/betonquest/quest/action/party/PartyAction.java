@@ -28,6 +28,16 @@ public class PartyAction implements OnlineAction {
     private final ProfileProvider profileProvider;
 
     /**
+     * The action manager.
+     */
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
+
+    /**
      * The range of the party.
      */
     private final Argument<Number> range;
@@ -49,30 +59,21 @@ public class PartyAction implements OnlineAction {
     private final Argument<List<ActionIdentifier>> actions;
 
     /**
-     * The action manager.
-     */
-    private final ActionManager actionManager;
-
-    /**
-     * The condition manager.
-     */
-    private final ConditionManager conditionManager;
-
-    /**
      * Creates a new PartyAction instance.
      *
      * @param profileProvider  the profile provider instance
-     * @param range            the range of the party
      * @param actionManager    the action manager
      * @param conditionManager the condition manager
+     * @param range            the range of the party
      * @param amount           the optional maximum number of players affected by this party,
      *                         null or negative values set no maximum amount
      * @param conditions       the conditions that must be met by the party members
      * @param actions          the actions to fire
      */
-    public PartyAction(final ProfileProvider profileProvider, final Argument<Number> range,
-                       final ActionManager actionManager, final ConditionManager conditionManager,
-                       @Nullable final Argument<Number> amount, final Argument<List<ConditionIdentifier>> conditions, final Argument<List<ActionIdentifier>> actions) {
+    public PartyAction(final ProfileProvider profileProvider, final ActionManager actionManager,
+                       final ConditionManager conditionManager, final Argument<Number> range,
+                       @Nullable final Argument<Number> amount, final Argument<List<ConditionIdentifier>> conditions,
+                       final Argument<List<ActionIdentifier>> actions) {
         this.profileProvider = profileProvider;
         this.range = range;
         this.actionManager = actionManager;

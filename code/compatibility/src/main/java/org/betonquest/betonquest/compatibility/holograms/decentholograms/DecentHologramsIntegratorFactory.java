@@ -3,7 +3,7 @@ package org.betonquest.betonquest.compatibility.holograms.decentholograms;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.IntegratorFactory;
 
@@ -25,7 +25,7 @@ public class DecentHologramsIntegratorFactory implements IntegratorFactory {
     /**
      * Instruction api to use.
      */
-    private final BetonQuestInstructions instructionApi;
+    private final Instructions instructionApi;
 
     /**
      * Creates a new instance of the factory.
@@ -34,7 +34,7 @@ public class DecentHologramsIntegratorFactory implements IntegratorFactory {
      * @param instructionApi    the instruction api to use
      * @param identifierFactory the identifier factory to create placeholders
      */
-    public DecentHologramsIntegratorFactory(final BetonQuestLoggerFactory loggerFactory, final BetonQuestInstructions instructionApi,
+    public DecentHologramsIntegratorFactory(final BetonQuestLoggerFactory loggerFactory, final Instructions instructionApi,
                                             final IdentifierFactory<PlaceholderIdentifier> identifierFactory) {
         this.loggerFactory = loggerFactory;
         this.instructionApi = instructionApi;

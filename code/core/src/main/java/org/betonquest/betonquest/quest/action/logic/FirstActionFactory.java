@@ -19,12 +19,12 @@ import java.util.List;
 public class FirstActionFactory implements PlayerActionFactory, PlayerlessActionFactory {
 
     /**
-     * The action manager.
+     * The action manager to handle actions.
      */
     private final ActionManager actionManager;
 
     /**
-     * Empty constructor.
+     * Sole constructor.
      *
      * @param actionManager The action manager.
      */

@@ -15,10 +15,10 @@ import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveRegistry;
-import org.betonquest.betonquest.api.service.BetonQuestConversations;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.BetonQuestManagers;
 import org.betonquest.betonquest.api.service.BetonQuestRegistries;
+import org.betonquest.betonquest.api.service.Conversations;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -68,7 +68,7 @@ public interface BetonQuestApi {
      * @return the logger factory offering functionality to create loggers
      * @see BetonQuestLogger
      */
-    BetonQuestLoggerFactory loggers();
+    BetonQuestLoggerFactory loggerFactory();
 
     /**
      * Offers functionality to create instructions to parse values containing placeholders.
@@ -82,7 +82,7 @@ public interface BetonQuestApi {
      * @see Instruction
      * @see SectionInstruction
      */
-    BetonQuestInstructions instructions();
+    Instructions instructions();
 
     /**
      * Offers functionality to access conversation in BetonQuest.
@@ -91,7 +91,7 @@ public interface BetonQuestApi {
      *
      * @return the conversation api offering functionality to access conversations
      */
-    BetonQuestConversations conversations();
+    Conversations conversations();
 
     /**
      * Offers functionality to register custom features.

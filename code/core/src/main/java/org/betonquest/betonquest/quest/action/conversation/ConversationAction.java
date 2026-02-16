@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
 
@@ -16,7 +16,7 @@ public class ConversationAction implements OnlineAction {
     /**
      * Conversation API.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * The conversation to start.
@@ -29,7 +29,7 @@ public class ConversationAction implements OnlineAction {
      * @param conversationApi the Conversation API
      * @param conversation    the conversation and option to start as a pair
      */
-    public ConversationAction(final LegacyConversationApi conversationApi, final Argument<Pair<ConversationIdentifier, String>> conversation) {
+    public ConversationAction(final LegacyConversations conversationApi, final Argument<Pair<ConversationIdentifier, String>> conversation) {
         this.conversationApi = conversationApi;
         this.conversation = conversation;
     }

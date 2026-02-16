@@ -14,8 +14,8 @@ import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.FeatureRegistry;
 import org.betonquest.betonquest.api.quest.action.ActionRegistry;
 import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.BetonQuestRegistries;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.npc.citizens.action.move.CitizensMoveAction;
@@ -75,11 +75,11 @@ public class CitizensIntegrator implements Integrator {
         final PluginManager manager = plugin.getServer().getPluginManager();
         manager.registerEvents(citizensWalkingListener, plugin);
 
-        final BetonQuestLoggerFactory loggerFactory = api.loggers();
+        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
         citizensMoveController = new CitizensMoveController(loggerFactory.create(CitizensMoveController.class),
                 plugin, api.managers().actions(), citizensWalkingListener);
 
-        final BetonQuestInstructions instructionApi = api.instructions();
+        final Instructions instructionApi = api.instructions();
         final ActionRegistry actionRegistry = questRegistries.actions();
         manager.registerEvents(citizensMoveController, plugin);
         final CitizensArgument citizensArgument = new CitizensArgument(instructionApi, npcIdentifierFactory);

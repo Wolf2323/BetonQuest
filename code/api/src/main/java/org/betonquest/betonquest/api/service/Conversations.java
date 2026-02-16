@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * Each conversation is uniquely identified by a {@link ConversationIdentifier} which consists of the user-defined name
  * in the configuration as well as the {@link QuestPackage} the conversation belongs to.
  */
-public interface BetonQuestConversations {
+public interface Conversations {
 
     /**
      * Evaluates whether a conversation can be started by a given {@link Profile}.

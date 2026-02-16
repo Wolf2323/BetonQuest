@@ -49,6 +49,6 @@ public class ActionTypeRegistry extends QuestTypeRegistry<PlayerAction, Playerle
     protected TypeFactory<ActionAdapter> getFactoryAdapter(
             @Nullable final PlayerQuestFactory<PlayerAction> playerFactory,
             @Nullable final PlayerlessQuestFactory<PlayerlessAction> playerlessFactory) {
-        return new ActionAdapterFactory(loggerFactory, conditionManager, playerFactory, playerlessFactory);
+        return new ActionAdapterFactory(loggerFactory, conditionManager.get(), playerFactory, playerlessFactory);
     }
 }

@@ -34,7 +34,7 @@ public class VaultIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final BetonQuestLogger log = api.loggers().create(VaultIntegrator.class);
+        final BetonQuestLogger log = api.loggerFactory().create(VaultIntegrator.class);
 
         final ServicesManager servicesManager = Bukkit.getServer().getServicesManager();
         final RegisteredServiceProvider<Economy> economyProvider = servicesManager.getRegistration(Economy.class);
@@ -44,7 +44,7 @@ public class VaultIntegrator implements Integrator {
             final Economy economy = economyProvider.getProvider();
             final BetonQuestRegistries registries = api.registries();
 
-            registries.actions().register("money", new MoneyActionFactory(economy, api.loggers(),
+            registries.actions().register("money", new MoneyActionFactory(economy, api.loggerFactory(),
                     plugin.getPluginMessage()));
             registries.conditions().register("money", new MoneyConditionFactory(economy));
             registries.placeholders().register("money", new MoneyPlaceholderFactory(economy));

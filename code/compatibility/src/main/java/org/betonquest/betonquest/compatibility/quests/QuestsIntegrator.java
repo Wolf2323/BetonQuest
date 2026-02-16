@@ -37,7 +37,7 @@ public class QuestsIntegrator implements Integrator {
         questRegistries.conditions().register("quest", new QuestsConditionFactory(questsInstance));
         questRegistries.actions().register("quest", new QuestsActionFactory(questsInstance));
 
-        final BetonQuestLoggerFactory loggerFactory = api.loggers();
+        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
         final ProfileProvider profileProvider = api.profiles();
         try {
             final IdentifierFactory<ActionIdentifier> actionIdentifierFactory =

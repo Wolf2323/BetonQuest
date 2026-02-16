@@ -14,7 +14,7 @@ import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveState;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveService;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveServiceProvider;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.betonquest.betonquest.bstats.CompositeInstructionMetricsSupplier;
 import org.betonquest.betonquest.data.PlayerDataStorage;
@@ -42,7 +42,7 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
     /**
      * Instruction API.
      */
-    protected final BetonQuestInstructions instructionApi;
+    protected final Instructions instructionApi;
 
     /**
      * Manager to register listener.
@@ -83,7 +83,7 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
     public ObjectiveProcessor(final BetonQuestLogger log, final ObjectiveTypeRegistry objectiveTypes,
                               final IdentifierFactory<ObjectiveIdentifier> objectiveIdentifierFactory,
                               final PluginManager pluginManager, final ObjectiveServiceProvider service,
-                              final BetonQuestInstructions instructionApi, final Plugin plugin) {
+                              final Instructions instructionApi, final Plugin plugin) {
         super(log, objectiveIdentifierFactory, "Objective", "objectives");
         this.instructionApi = instructionApi;
         this.pluginManager = pluginManager;

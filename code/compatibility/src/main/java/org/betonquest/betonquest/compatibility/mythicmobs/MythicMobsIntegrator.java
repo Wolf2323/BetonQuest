@@ -68,7 +68,7 @@ public class MythicMobsIntegrator implements Integrator {
         mythicHider.reload(plugin.getPluginConfig().getInt("hider.npc_update_interval", 5 * 20));
         manager.registerEvents(mythicHider, plugin);
 
-        final BetonQuestLoggerFactory loggerFactory = api.loggers();
+        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
         final BetonQuestRegistries questRegistries = api.registries();
         questRegistries.conditions().register("mythicmobdistance", new MythicMobDistanceConditionFactory(loggerFactory, mobExecutor, new MythicMobParser(mobExecutor)));
         questRegistries.objectives().register("mmobkill", new MythicMobKillObjectiveFactory());

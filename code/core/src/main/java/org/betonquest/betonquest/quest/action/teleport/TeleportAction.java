@@ -2,7 +2,7 @@ package org.betonquest.betonquest.quest.action.teleport;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
 import org.betonquest.betonquest.conversation.Conversation;
@@ -16,7 +16,7 @@ public class TeleportAction implements OnlineAction {
     /**
      * Conversation API.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * Location to teleport to.
@@ -29,7 +29,7 @@ public class TeleportAction implements OnlineAction {
      * @param conversationApi the Conversation API
      * @param location        location to teleport to
      */
-    public TeleportAction(final LegacyConversationApi conversationApi, final Argument<Location> location) {
+    public TeleportAction(final LegacyConversations conversationApi, final Argument<Location> location) {
         this.conversationApi = conversationApi;
         this.location = location;
     }

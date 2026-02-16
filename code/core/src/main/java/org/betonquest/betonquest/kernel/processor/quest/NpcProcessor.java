@@ -18,8 +18,8 @@ import org.betonquest.betonquest.api.quest.npc.Npc;
 import org.betonquest.betonquest.api.quest.npc.NpcConversation;
 import org.betonquest.betonquest.api.quest.npc.NpcWrapper;
 import org.betonquest.betonquest.api.service.ActionManager;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.service.NpcManager;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.CombatTagger;
@@ -145,7 +145,7 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
                         final NpcTypeRegistry npcTypes, final PluginMessage pluginMessage, final BetonQuest plugin,
                         final ProfileProvider profileProvider, final ActionManager actionManager,
                         final ConditionManager conditionManager, final ConversationStarter convStarter,
-                        final BetonQuestInstructions instructionApi) {
+                        final Instructions instructionApi) {
         super(log, npcTypes, npcIdentifierFactory, instructionApi, "Npc", "npcs");
         this.loggerFactory = loggerFactory;
         this.pluginMessage = pluginMessage;

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Handles interaction with Conversations.
  */
-public interface LegacyConversationApi {
+public interface LegacyConversations {
 
     /**
      * Gets stored Conversation Data.

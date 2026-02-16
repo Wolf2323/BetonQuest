@@ -1,7 +1,7 @@
 package org.betonquest.betonquest.kernel.processor.feature;
 
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
@@ -27,7 +27,7 @@ public class ConversationListener implements Listener {
     /**
      * Map of Profiles with their active conversation.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * The profile provider instance.
@@ -58,7 +58,7 @@ public class ConversationListener implements Listener {
      * @param pluginMessage   the plugin message instance to use for ingame notifications
      * @param config          the config to load values from
      */
-    public ConversationListener(final BetonQuestLogger log, final LegacyConversationApi conversationApi,
+    public ConversationListener(final BetonQuestLogger log, final LegacyConversations conversationApi,
                                 final ProfileProvider profileProvider, final PluginMessage pluginMessage,
                                 final ConfigAccessor config) {
         this.conversationApi = conversationApi;

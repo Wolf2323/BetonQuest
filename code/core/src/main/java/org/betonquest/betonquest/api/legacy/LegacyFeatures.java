@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * The FeatureApi provides access to more complex features, often based on basic features.
  */
-public interface LegacyFeatureApi {
+public interface LegacyFeatures {
 
     /**
      * Get the loaded Quest Canceler.

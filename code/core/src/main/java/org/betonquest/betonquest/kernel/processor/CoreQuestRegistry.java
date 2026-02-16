@@ -12,7 +12,7 @@ import org.betonquest.betonquest.api.identifier.ReadableIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.objective.service.DefaultObjectiveServiceProvider;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.bstats.InstructionMetricsSupplier;
 import org.betonquest.betonquest.kernel.processor.quest.ActionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ConditionProcessor;
@@ -57,7 +57,7 @@ public record CoreQuestRegistry(
     public static CoreQuestRegistry create(final BetonQuestLoggerFactory loggerFactory, final QuestPackageManager packManager,
                                            final BaseQuestTypeRegistries questTypeRegistries, final PluginManager pluginManager,
                                            final BukkitScheduler scheduler, final ProfileProvider profileProvider, final Plugin plugin,
-                                           final BetonQuestInstructions instructionApi) throws QuestException {
+                                           final Instructions instructionApi) throws QuestException {
         final IdentifierFactory<ObjectiveIdentifier> objectiveIdentifierFactory = questTypeRegistries.identifier().getFactory(ObjectiveIdentifier.class);
         final IdentifierFactory<ActionIdentifier> actionIdentifierFactory = questTypeRegistries.identifier().getFactory(ActionIdentifier.class);
         final IdentifierFactory<ConditionIdentifier> conditionIdentifierFactory = questTypeRegistries.identifier().getFactory(ConditionIdentifier.class);

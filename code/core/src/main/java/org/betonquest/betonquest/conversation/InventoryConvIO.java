@@ -383,7 +383,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
     @EventHandler
     public void onConsume(final PlayerItemConsumeEvent event) {
         final Profile profile = betonQuest.getProfileProvider().getProfile(event.getPlayer());
-        if (betonQuest.getLegacyConversationApi().hasActive(profile)) {
+        if (betonQuest.getLegacyConversations().hasActive(profile)) {
             event.setCancelled(true);
         }
     }

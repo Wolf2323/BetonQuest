@@ -53,7 +53,7 @@ public class ItemsAdderIntegrator implements Integrator {
 
         final ActionRegistry action = questRegistries.actions();
         action.register(ITEMS_ADDER + "Block", new IASetBlockAtActionFactory());
-        action.register(ITEMS_ADDER + "Animation", new IAPlayAnimationActionFactory(api.loggers()));
+        action.register(ITEMS_ADDER + "Animation", new IAPlayAnimationActionFactory(api.loggerFactory()));
 
         final ObjectiveRegistry objective = questRegistries.objectives();
         objective.register(ITEMS_ADDER + "BlockBreak", new IABlockBreakObjectiveFactory());

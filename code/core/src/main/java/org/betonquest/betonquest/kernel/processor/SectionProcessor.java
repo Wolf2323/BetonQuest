@@ -8,7 +8,7 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.quest.Placeholders;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +25,7 @@ public abstract class SectionProcessor<I extends Identifier, T> extends QuestPro
     /**
      * The {@link Placeholders} to create and resolve placeholders.
      */
-    private final BetonQuestInstructions instructionApi;
+    private final Instructions instructionApi;
 
     /**
      * Create a new QuestProcessor to store and execute type logic.
@@ -36,7 +36,7 @@ public abstract class SectionProcessor<I extends Identifier, T> extends QuestPro
      * @param readable          the type name used for logging, with the first letter in uppercase
      * @param internal          the section name and/or bstats topic identifier
      */
-    public SectionProcessor(final BetonQuestLogger log, final BetonQuestInstructions instructionApi,
+    public SectionProcessor(final BetonQuestLogger log, final Instructions instructionApi,
                             final IdentifierFactory<I> identifierFactory,
                             final String readable, final String internal) {
         super(log, identifierFactory, readable, internal);

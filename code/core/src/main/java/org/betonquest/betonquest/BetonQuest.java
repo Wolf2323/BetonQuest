@@ -19,22 +19,22 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.argument.parser.DefaultArgumentParsers;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
-import org.betonquest.betonquest.api.legacy.LegacyFeatureApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.legacy.LegacyFeatureRegistries;
+import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.BetonQuestManagers;
 import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestApi;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestApiService;
-import org.betonquest.betonquest.api.service.DefaultBetonQuestInstructions;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestManagers;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestRegistries;
+import org.betonquest.betonquest.api.service.DefaultInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.bstats.BStatsMetrics;
 import org.betonquest.betonquest.command.BackpackCommand;
@@ -273,7 +273,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     /**
      * The api instance for creating instructions.
      */
-    private BetonQuestInstructions betonQuestInstructions;
+    private Instructions betonQuestInstructions;
 
     /**
      * The api instance for accessing registries.
@@ -376,7 +376,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         }
         lastExecutionCache = new LastExecutionCache(loggerFactory.create(LastExecutionCache.class, "Cache"), cache);
 
-        this.betonQuestInstructions = new DefaultBetonQuestInstructions(this::getPlaceholderProcessor,
+        this.betonQuestInstructions = new DefaultInstructions(this::getPlaceholderProcessor,
                 this::getQuestPackageManager, this::getArgumentParsers, this::getLoggerFactory);
 
         final BaseQuestTypeRegistries questTypeRegistries = BaseQuestTypeRegistries.create(loggerFactory, () -> getBetonQuestManagers().conditions());
@@ -456,7 +456,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         getServer().getScheduler().scheduleSyncDelayedTask(this, () -> {
             compatibility.postHook();
             loadData();
-            playerDataStorage.initProfiles(profileProvider.getOnlineProfiles(), getLegacyConversationApi());
+            playerDataStorage.initProfiles(profileProvider.getOnlineProfiles(), getLegacyConversations());
 
             try {
                 playerHider = new PlayerHider(this, getBetonQuestManagers().conditions(), getBetonQuestInstructions(), getQuestPackageManager(), profileProvider, config);
@@ -558,7 +558,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
                 new QuestItemConvertListener(loggerFactory.create(QuestItemConvertListener.class),
                         () -> config.getBoolean("item.quest.update_legacy_on_join"), pluginMessage, profileProvider),
                 new JoinQuitListener(config, coreQuestRegistry.objectives(), playerDataStorage,
-                        getLegacyConversationApi(), profileProvider, updater)
+                        getLegacyConversations(), profileProvider, updater)
         ).forEach(listener -> pluginManager.registerEvents(listener, this));
     }
 
@@ -803,11 +803,11 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     }
 
     /**
-     * Returns the {@link BetonQuestInstructions} instance.
+     * Returns the {@link Instructions} instance.
      *
-     * @return the {@link BetonQuestInstructions} instance
+     * @return the {@link Instructions} instance
      */
-    public BetonQuestInstructions getBetonQuestInstructions() {
+    public Instructions getBetonQuestInstructions() {
         return betonQuestInstructions;
     }
 
@@ -875,11 +875,11 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     }
 
     /**
-     * Returns the {@link LegacyFeatureApi} instance.
+     * Returns the {@link LegacyFeatures} instance.
      *
      * @return the LegacyFeatureApi instance
      */
-    public LegacyFeatureApi getLegacyFeatureApi() {
+    public LegacyFeatures getLegacyFeatures() {
         return questRegistry;
     }
 
@@ -893,11 +893,11 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     }
 
     /**
-     * Returns the {@link LegacyConversationApi} instance.
+     * Returns the {@link LegacyConversations} instance.
      *
      * @return the LegacyConversationApi instance
      */
-    public LegacyConversationApi getLegacyConversationApi() {
+    public LegacyConversations getLegacyConversations() {
         return questRegistry.conversations();
     }
 

@@ -10,7 +10,7 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.npc.Npc;
 import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.service.NpcManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.kernel.processor.StartTask;
@@ -78,7 +78,7 @@ public class NpcHologramLoop extends HologramLoop implements Listener, StartTask
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public NpcHologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
-                           final BetonQuestInstructions instructionApi, final QuestPackageManager packManager, final Plugin plugin,
+                           final Instructions instructionApi, final QuestPackageManager packManager, final Plugin plugin,
                            final HologramProvider hologramProvider,
                            final IdentifierFactory<HologramIdentifier> identifierFactory,
                            final NpcManager npcManager, final NpcRegistry npcRegistry, final TextParser textParser) {

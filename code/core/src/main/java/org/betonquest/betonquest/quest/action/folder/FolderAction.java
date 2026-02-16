@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Folder action is a collection of other actions, that can be run after a delay and with a periode between the action.
+ * The folder action is a collection of other actions that can be run after a delay and with a periode between the action.
  * The actions can be randomly chosen to run or not.
  */
 public class FolderAction implements NullableAction {
 
     /**
-     * The BetonQuest instance.
+     * The plugin instance used for bukkit scheduling purposes.
      */
     private final Plugin plugin;
 
@@ -102,7 +102,7 @@ public class FolderAction implements NullableAction {
     /**
      * Create a folder action with the given parameters.
      *
-     * @param plugin           the BetonQuest instance
+     * @param plugin           the plugin instance used for bukkit scheduling purposes
      * @param log              custom logger for this class
      * @param pluginManager    the plugin manager to register the quit listener
      * @param actionManager    the action manager

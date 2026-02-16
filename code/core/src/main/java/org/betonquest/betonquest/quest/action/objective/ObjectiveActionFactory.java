@@ -64,16 +64,16 @@ public class ObjectiveActionFactory implements PlayerActionFactory, PlayerlessAc
      * Creates a new factory for {@link ObjectiveAction}s.
      *
      * @param plugin            the plugin instance
+     * @param loggerFactory     the logger factory to create a logger for the actions
      * @param profileProvider   the profile provider instance
      * @param saver             the database saver
      * @param objectiveManager  the objective manager
      * @param playerDataStorage the player data storage
-     * @param loggerFactory     the logger factory to create a logger for the actions
      * @param playerDataFactory the factory to create player data
      */
-    public ObjectiveActionFactory(final Plugin plugin, final ProfileProvider profileProvider, final Saver saver,
-                                  final ObjectiveManager objectiveManager, final PlayerDataStorage playerDataStorage, final BetonQuestLoggerFactory loggerFactory,
-                                  final PlayerDataFactory playerDataFactory) {
+    public ObjectiveActionFactory(final Plugin plugin, final BetonQuestLoggerFactory loggerFactory,
+                                  final ProfileProvider profileProvider, final Saver saver, final ObjectiveManager objectiveManager,
+                                  final PlayerDataStorage playerDataStorage, final PlayerDataFactory playerDataFactory) {
         this.plugin = plugin;
         this.profileProvider = profileProvider;
         this.saver = saver;
@@ -96,7 +96,7 @@ public class ObjectiveActionFactory implements PlayerActionFactory, PlayerlessAc
     private NullableActionAdapter createObjectiveAction(final Instruction instruction) throws QuestException {
         final String action = instruction.string().map(s -> s.toLowerCase(Locale.ROOT)).get().getValue(null);
         final Argument<List<ObjectiveIdentifier>> objectives = instruction.identifier(ObjectiveIdentifier.class).list().get();
-        return new NullableActionAdapter(new ObjectiveAction(plugin, profileProvider, saver, loggerFactory.create(ObjectiveAction.class),
+        return new NullableActionAdapter(new ObjectiveAction(plugin, loggerFactory.create(ObjectiveAction.class), profileProvider, saver,
                 objectiveManager, playerDataStorage, instruction.getPackage(), objectives, playerDataFactory, action));
     }
 }

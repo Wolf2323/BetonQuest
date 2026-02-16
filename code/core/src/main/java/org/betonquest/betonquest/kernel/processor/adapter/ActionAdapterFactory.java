@@ -10,8 +10,6 @@ import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.service.ConditionManager;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 /**
  * Wrapper for factories creating actions.
  */
@@ -25,7 +23,7 @@ public class ActionAdapterFactory extends QuestAdapterFactory<PlayerAction, Play
     /**
      * The condition manager.
      */
-    private final Supplier<ConditionManager> conditionManager;
+    private final ConditionManager conditionManager;
 
     /**
      * Create a new adapter factory from {@link org.betonquest.betonquest.api.quest QuestFactories} for
@@ -37,7 +35,7 @@ public class ActionAdapterFactory extends QuestAdapterFactory<PlayerAction, Play
      * @param playerlessFactory the playerless factory to use
      * @throws IllegalArgumentException if no factory is given
      */
-    public ActionAdapterFactory(final BetonQuestLoggerFactory loggerFactory, final Supplier<ConditionManager> conditionManager,
+    public ActionAdapterFactory(final BetonQuestLoggerFactory loggerFactory, final ConditionManager conditionManager,
                                 @Nullable final PlayerQuestFactory<PlayerAction> playerFactory,
                                 @Nullable final PlayerlessQuestFactory<PlayerlessAction> playerlessFactory) {
         super(playerFactory, playerlessFactory);

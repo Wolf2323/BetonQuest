@@ -7,7 +7,7 @@ import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessConditionFactory;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -20,7 +20,7 @@ public class EvalConditionFactory implements PlayerConditionFactory, PlayerlessC
     /**
      * The BetonQuest instructions used to parse instructions.
      */
-    private final BetonQuestInstructions instructions;
+    private final Instructions instructions;
 
     /**
      * The condition type registry providing factories to parse the evaluated instruction.
@@ -45,7 +45,7 @@ public class EvalConditionFactory implements PlayerConditionFactory, PlayerlessC
      * @param scheduler             the scheduler to use for synchronous execution
      * @param plugin                the plugin instance
      */
-    public EvalConditionFactory(final BetonQuestInstructions instructions,
+    public EvalConditionFactory(final Instructions instructions,
                                 final ConditionTypeRegistry conditionTypeRegistry, final BukkitScheduler scheduler, final Plugin plugin) {
         this.instructions = instructions;
         this.conditionTypeRegistry = conditionTypeRegistry;

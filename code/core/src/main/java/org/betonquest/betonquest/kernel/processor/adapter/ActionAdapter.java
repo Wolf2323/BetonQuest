@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Wrapper for player and playerless actions.
@@ -27,9 +26,9 @@ public class ActionAdapter extends QuestAdapter<PlayerAction, PlayerlessAction> 
     private final BetonQuestLogger log;
 
     /**
-     * QuestTypeApi to check conditions.
+     * Condition Manager to check conditions.
      */
-    private final Supplier<ConditionManager> conditionManager;
+    private final ConditionManager conditionManager;
 
     /**
      * Instruction used to create the types.
@@ -52,7 +51,7 @@ public class ActionAdapter extends QuestAdapter<PlayerAction, PlayerlessAction> 
      * @throws IllegalArgumentException if there is no type provided
      * @throws QuestException           when there was an error parsing conditions
      */
-    public ActionAdapter(final BetonQuestLogger log, final Supplier<ConditionManager> conditionManager, final Instruction instruction,
+    public ActionAdapter(final BetonQuestLogger log, final ConditionManager conditionManager, final Instruction instruction,
                          @Nullable final PlayerAction player, @Nullable final PlayerlessAction playerless) throws QuestException {
         super(instruction.getPackage(), player, playerless);
         this.log = log;
@@ -75,7 +74,7 @@ public class ActionAdapter extends QuestAdapter<PlayerAction, PlayerlessAction> 
         log.debug(getPackage(), "Action will be fired for "
                 + (profile.getOnlineProfile().isPresent() ? "online" : "offline") + " profile.");
 
-        if (!conditionManager.get().testAll(profile, conditions.getValue(profile))) {
+        if (!conditionManager.testAll(profile, conditions.getValue(profile))) {
             log.debug(getPackage(), "Action conditions were not met for " + profile);
             return false;
         }
@@ -90,7 +89,7 @@ public class ActionAdapter extends QuestAdapter<PlayerAction, PlayerlessAction> 
             return false;
         }
         log.debug(getPackage(), "Static action will be fired without a profile.");
-        if (!conditionManager.get().testAll(null, conditions.getValue(null))) {
+        if (!conditionManager.testAll(null, conditions.getValue(null))) {
             log.debug(getPackage(), "Action conditions were not met");
             return false;
         }

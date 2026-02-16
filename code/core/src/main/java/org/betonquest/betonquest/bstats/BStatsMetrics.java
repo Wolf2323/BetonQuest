@@ -4,7 +4,7 @@ import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ReadableIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
@@ -27,7 +27,7 @@ public class BStatsMetrics {
     /**
      * Instruction API.
      */
-    protected final BetonQuestInstructions instructionApi;
+    protected final Instructions instructionApi;
 
     /**
      * The metrics instance to send metrics.
@@ -50,7 +50,7 @@ public class BStatsMetrics {
      */
     public BStatsMetrics(final Plugin plugin, final Metrics metrics,
                          final Map<String, InstructionMetricsSupplier<? extends ReadableIdentifier>> metricsSuppliers,
-                         final Compatibility compatibility, final BetonQuestInstructions instructionApi) {
+                         final Compatibility compatibility, final Instructions instructionApi) {
         this.instructionApi = instructionApi;
         this.plugin = plugin;
         this.metrics = metrics;

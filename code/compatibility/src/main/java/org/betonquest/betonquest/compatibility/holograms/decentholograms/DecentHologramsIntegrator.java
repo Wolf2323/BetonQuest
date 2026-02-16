@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.holograms.BetonHologram;
 import org.betonquest.betonquest.compatibility.holograms.HologramIntegrator;
@@ -38,7 +38,7 @@ public class DecentHologramsIntegrator extends HologramIntegrator {
     /**
      * The instruction api to use.
      */
-    private final BetonQuestInstructions instructionApi;
+    private final Instructions instructionApi;
 
     /**
      * Creates a new DecentHologramsIntegrator for DecentHolograms.
@@ -48,7 +48,7 @@ public class DecentHologramsIntegrator extends HologramIntegrator {
      * @param instructionApi    the instruction api to use
      */
     public DecentHologramsIntegrator(final BetonQuestLogger log, final IdentifierFactory<PlaceholderIdentifier> identifierFactory,
-                                     final BetonQuestInstructions instructionApi) {
+                                     final Instructions instructionApi) {
         super("DecentHolograms", "2.7.5");
         this.log = log;
         this.identifierFactory = identifierFactory;

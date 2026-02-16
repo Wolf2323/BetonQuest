@@ -14,8 +14,8 @@ import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.service.ActionManager;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.menu.MenuItem;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
@@ -55,7 +55,7 @@ public class MenuItemProcessor extends RPGMenuProcessor<MenuItemIdentifier, Menu
      * @param conditionManager  the ConditionManager
      */
     public MenuItemProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                             final BetonQuestInstructions instructionApi, final ParsedSectionTextCreator textCreator,
+                             final Instructions instructionApi, final ParsedSectionTextCreator textCreator,
                              final IdentifierFactory<MenuItemIdentifier> identifierFactory,
                              final ConfigAccessor config, final ArgumentParsers parsers,
                              final ActionManager actionManager, final ConditionManager conditionManager) {

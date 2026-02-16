@@ -1,7 +1,7 @@
 package org.betonquest.betonquest.quest.placeholder.name;
 
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholder;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholderFactory;
 
@@ -13,14 +13,14 @@ public class QuesterPlaceholderFactory implements PlayerPlaceholderFactory {
     /**
      * Conversation API.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * Create a NpcName placeholder factory.
      *
      * @param conversationApi the Conversation API
      */
-    public QuesterPlaceholderFactory(final LegacyConversationApi conversationApi) {
+    public QuesterPlaceholderFactory(final LegacyConversations conversationApi) {
         this.conversationApi = conversationApi;
     }
 

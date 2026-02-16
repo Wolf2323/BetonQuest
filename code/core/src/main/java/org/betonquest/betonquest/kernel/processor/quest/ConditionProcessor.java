@@ -5,8 +5,8 @@ import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.processor.TypedQuestProcessor;
 import org.betonquest.betonquest.kernel.processor.adapter.ConditionAdapter;
 import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;
@@ -52,7 +52,7 @@ public class ConditionProcessor extends TypedQuestProcessor<ConditionIdentifier,
     public ConditionProcessor(final BetonQuestLogger log,
                               final ConditionTypeRegistry conditionTypes, final BukkitScheduler scheduler,
                               final IdentifierFactory<ConditionIdentifier> conditionIdentifierFactory, final Plugin plugin,
-                              final BetonQuestInstructions instructionApi) {
+                              final Instructions instructionApi) {
         super(log, conditionTypes, conditionIdentifierFactory, instructionApi, "Condition", "conditions");
         this.scheduler = scheduler;
         this.plugin = plugin;

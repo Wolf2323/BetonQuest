@@ -84,7 +84,7 @@ class JournalActionFactoryIntegrationTest {
     private ActionAdapterFactory createJournalActionFactory(final BetonQuestLogger logger) {
         final ProfileProvider profileProvider = new UUIDProfileProvider(mock(Server.class));
         final JournalActionFactory journalActionFactory = new JournalActionFactory(new SingletonLoggerFactory(logger), mock(PluginMessage.class), dataStorage, InstantSource.fixed(now), saver, profileProvider);
-        return new ActionAdapterFactory(mock(BetonQuestLoggerFactory.class), () -> mock(ConditionManager.class), journalActionFactory, journalActionFactory);
+        return new ActionAdapterFactory(mock(BetonQuestLoggerFactory.class), mock(ConditionManager.class), journalActionFactory, journalActionFactory);
     }
 
     @Test

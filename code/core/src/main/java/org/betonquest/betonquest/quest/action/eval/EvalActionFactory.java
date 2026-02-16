@@ -7,7 +7,7 @@ import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.registry.quest.ActionTypeRegistry;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -20,7 +20,7 @@ public class EvalActionFactory implements PlayerActionFactory, PlayerlessActionF
     /**
      * The BetonQuest instructions to use to parse instructions.
      */
-    private final BetonQuestInstructions instructions;
+    private final Instructions instructions;
 
     /**
      * The action type registry providing factories to parse the evaluated instruction.
@@ -45,7 +45,7 @@ public class EvalActionFactory implements PlayerActionFactory, PlayerlessActionF
      * @param scheduler          the scheduler to use for synchronous execution
      * @param plugin             the plugin instance
      */
-    public EvalActionFactory(final BetonQuestInstructions instructions, final ActionTypeRegistry actionTypeRegistry, final BukkitScheduler scheduler, final Plugin plugin) {
+    public EvalActionFactory(final Instructions instructions, final ActionTypeRegistry actionTypeRegistry, final BukkitScheduler scheduler, final Plugin plugin) {
         this.instructions = instructions;
         this.actionTypeRegistry = actionTypeRegistry;
         this.scheduler = scheduler;

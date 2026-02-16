@@ -47,7 +47,7 @@ public class ZNPCsPlusIntegrator implements Integrator {
         final ProfileProvider profileProvider = api.profiles();
         final PluginManager manager = plugin.getServer().getPluginManager();
         manager.registerEvents(new ZNPCsPlusCatcher(profileProvider, npcRegistry), plugin);
-        final ZNPCsPlusHider hider = new ZNPCsPlusHider(BetonQuest.getInstance().getLegacyFeatureApi().getNpcHider());
+        final ZNPCsPlusHider hider = new ZNPCsPlusHider(BetonQuest.getInstance().getLegacyFeatures().getNpcHider());
         manager.registerEvents(hider, plugin);
         npcRegistry.register(PREFIX, new ZNPCsPlusFactory(NpcApiProvider.get().getNpcRegistry()));
         npcRegistry.registerIdentifier(new ZNPCsPlusIdentifier(PREFIX));

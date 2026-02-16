@@ -5,8 +5,8 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.BetonQuestRegistries;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.compatibility.auraskills.AuraSkillsIntegratorFactory;
 import org.betonquest.betonquest.compatibility.brewery.BreweryIntegratorFactory;
 import org.betonquest.betonquest.compatibility.craftengine.CraftEngineIntegratorFactory;
@@ -66,7 +66,7 @@ public final class BundledCompatibility {
      * @param plugin        the plugin instance
      */
     public static void registerCompatiblePlugins(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger logger,
-                                                 final Compatibility compatibility, final BetonQuestInstructions instructions,
+                                                 final Compatibility compatibility, final Instructions instructions,
                                                  final BetonQuestRegistries registries, final Plugin plugin) {
         compatibility.registerPlugin("MythicMobs", new MythicMobsIntegratorFactory());
         compatibility.registerPlugin("Citizens", new CitizensIntegratorFactory());

@@ -23,7 +23,7 @@ public class BreweryIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final BetonQuestLoggerFactory loggerFactory = api.loggers();
+        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
         final ConditionRegistry conditionRegistry = api.registries().conditions();
         conditionRegistry.register("drunk", new DrunkConditionFactory(loggerFactory));
         conditionRegistry.register("drunkquality", new DrunkQualityConditionFactory(loggerFactory));

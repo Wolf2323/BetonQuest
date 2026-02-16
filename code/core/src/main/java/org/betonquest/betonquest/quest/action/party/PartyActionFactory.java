@@ -63,7 +63,7 @@ public class PartyActionFactory implements PlayerActionFactory {
         final Argument<List<ConditionIdentifier>> conditions = instruction.identifier(ConditionIdentifier.class).list().get();
         final Argument<List<ActionIdentifier>> actions = instruction.identifier(ActionIdentifier.class).list().get();
         return new OnlineActionAdapter(
-                new PartyAction(profileProvider, range, actionManager, conditionManager, amount, conditions, actions),
+                new PartyAction(profileProvider, actionManager, conditionManager, range, amount, conditions, actions),
                 loggerFactory.create(PartyAction.class),
                 instruction.getPackage()
         );

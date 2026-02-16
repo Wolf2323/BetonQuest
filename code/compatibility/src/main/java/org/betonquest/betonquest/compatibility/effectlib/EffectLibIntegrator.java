@@ -36,7 +36,7 @@ public class EffectLibIntegrator implements Integrator {
     @Override
     public void hook(final BetonQuestApi api) {
         manager = new EffectManager(plugin);
-        final BetonQuestLoggerFactory loggerFactory = api.loggers();
+        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
         final ParticleIdentifierFactory factory = new ParticleIdentifierFactory(api.packages());
         api.registries().identifiers().register(ParticleIdentifier.class, factory);
         api.registries().actions().register("particle", new ParticleActionFactory(loggerFactory, manager));

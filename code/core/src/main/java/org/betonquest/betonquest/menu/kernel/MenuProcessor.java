@@ -16,8 +16,8 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.service.ActionManager;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.menu.Menu;
 import org.betonquest.betonquest.menu.RPGMenu;
@@ -72,7 +72,7 @@ public class MenuProcessor extends RPGMenuProcessor<MenuIdentifier, Menu> {
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public MenuProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                         final BetonQuestInstructions instructionApi, final ParsedSectionTextCreator textCreator,
+                         final Instructions instructionApi, final ParsedSectionTextCreator textCreator,
                          final ActionManager actionManager, final ConditionManager conditionManager, final ArgumentParsers parsers, final RPGMenu rpgMenu,
                          final IdentifierFactory<MenuIdentifier> identifierFactory, final ProfileProvider profileProvider) {
         super(log, instructionApi, "Menu", "menus", loggerFactory, textCreator, parsers, identifierFactory, actionManager, conditionManager);

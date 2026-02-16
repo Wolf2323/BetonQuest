@@ -7,7 +7,7 @@ import org.betonquest.betonquest.api.item.QuestItem;
 import org.betonquest.betonquest.api.item.QuestItemWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.service.ItemManager;
 import org.betonquest.betonquest.kernel.processor.TypedQuestProcessor;
 import org.betonquest.betonquest.kernel.registry.feature.ItemTypeRegistry;
@@ -29,7 +29,7 @@ public class ItemProcessor extends TypedQuestProcessor<ItemIdentifier, QuestItem
     public ItemProcessor(final BetonQuestLogger log,
                          final IdentifierFactory<ItemIdentifier> itemIdentifierFactory,
                          final ItemTypeRegistry types,
-                         final BetonQuestInstructions instructionApi) {
+                         final Instructions instructionApi) {
         super(log, types, itemIdentifierFactory, instructionApi, "Item", "items");
     }
 

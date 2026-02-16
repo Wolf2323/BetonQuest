@@ -2,7 +2,7 @@ package org.betonquest.betonquest.feature.journal;
 
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.legacy.LegacyFeatureApi;
+import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.Profile;
@@ -28,14 +28,14 @@ public class JournalFactory {
     private final PluginMessage pluginMessage;
 
     /**
+     * Feature API.
+     */
+    private final LegacyFeatures featureApi;
+
+    /**
      * The Condition Manager.
      */
     private final ConditionManager conditionManager;
-
-    /**
-     * Feature API.
-     */
-    private final LegacyFeatureApi featureApi;
 
     /**
      * A {@link ConfigAccessor} that contains the journal's configuration.
@@ -64,7 +64,7 @@ public class JournalFactory {
      * @param fontRegistry     the font registry to get the width of the characters
      */
     public JournalFactory(final BetonQuestLoggerFactory loggerFactory, final PluginMessage pluginMessage,
-                          final LegacyFeatureApi featureApi, final ConditionManager conditionManager,
+                          final LegacyFeatures featureApi, final ConditionManager conditionManager,
                           final ConfigAccessor config, final TextParser textParser, final FontRegistry fontRegistry) {
         this.loggerFactory = loggerFactory;
         this.pluginMessage = pluginMessage;

@@ -33,7 +33,7 @@ public class ShopkeepersIntegrator implements Integrator {
         }
         final BetonQuestRegistries questRegistries = api.registries();
         questRegistries.conditions().register("shopamount", new HavingShopConditionFactory());
-        questRegistries.actions().register("shopkeeper", new OpenShopActionFactory(api.loggers()));
+        questRegistries.actions().register("shopkeeper", new OpenShopActionFactory(api.loggerFactory()));
     }
 
     @Override

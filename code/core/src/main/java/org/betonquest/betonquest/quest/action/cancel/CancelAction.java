@@ -4,7 +4,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.QuestCancelerIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
-import org.betonquest.betonquest.api.legacy.LegacyFeatureApi;
+import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
 
@@ -16,7 +16,7 @@ public class CancelAction implements OnlineAction {
     /**
      * Feature API.
      */
-    private final LegacyFeatureApi featureApi;
+    private final LegacyFeatures featureApi;
 
     /**
      * The canceler to use.
@@ -35,7 +35,7 @@ public class CancelAction implements OnlineAction {
      * @param cancelerID the canceler to use
      * @param bypass     whether the canceler conditions should be ignored for canceling
      */
-    public CancelAction(final LegacyFeatureApi featureApi, final Argument<QuestCancelerIdentifier> cancelerID, final FlagArgument<Boolean> bypass) {
+    public CancelAction(final LegacyFeatures featureApi, final Argument<QuestCancelerIdentifier> cancelerID, final FlagArgument<Boolean> bypass) {
         this.featureApi = featureApi;
         this.cancelerID = cancelerID;
         this.bypass = bypass;

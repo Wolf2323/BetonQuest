@@ -10,7 +10,7 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.quest.TypeFactory;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.processor.TypedQuestProcessor;
 import org.betonquest.betonquest.kernel.processor.adapter.PlaceholderAdapter;
 import org.betonquest.betonquest.kernel.registry.quest.PlaceholderTypeRegistry;
@@ -75,7 +75,7 @@ public class PlaceholderProcessor extends TypedQuestProcessor<PlaceholderIdentif
     public PlaceholderProcessor(final BetonQuestLogger log, final QuestPackageManager packManager,
                                 final PlaceholderTypeRegistry placeholderTypes, final BukkitScheduler scheduler,
                                 final IdentifierFactory<PlaceholderIdentifier> placeholderIdentifierFactory,
-                                final BetonQuestInstructions instructionApi, final Plugin plugin) {
+                                final Instructions instructionApi, final Plugin plugin) {
         super(log, placeholderTypes, placeholderIdentifierFactory,
                 instructionApi, "Placeholders", "placeholders");
         this.packManager = packManager;

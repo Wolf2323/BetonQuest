@@ -4,7 +4,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.CompassIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.legacy.LegacyFeatureApi;
+import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.data.PlayerDataStorage;
@@ -17,7 +17,7 @@ public class CompassActionFactory implements PlayerActionFactory {
     /**
      * Feature API.
      */
-    private final LegacyFeatureApi featureApi;
+    private final LegacyFeatures featureApi;
 
     /**
      * Storage to get the offline player data.
@@ -30,7 +30,7 @@ public class CompassActionFactory implements PlayerActionFactory {
      * @param featureApi  the Feature API
      * @param dataStorage the storage for used player data
      */
-    public CompassActionFactory(final LegacyFeatureApi featureApi, final PlayerDataStorage dataStorage) {
+    public CompassActionFactory(final LegacyFeatures featureApi, final PlayerDataStorage dataStorage) {
         this.featureApi = featureApi;
         this.dataStorage = dataStorage;
     }

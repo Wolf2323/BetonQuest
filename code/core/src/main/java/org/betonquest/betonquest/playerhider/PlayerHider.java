@@ -8,8 +8,8 @@ import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
@@ -44,14 +44,14 @@ public class PlayerHider {
     private final Plugin plugin;
 
     /**
-     * The profile provider instance.
-     */
-    private final ProfileProvider profileProvider;
-
-    /**
      * The condition manager instance.
      */
     private final ConditionManager conditionManager;
+
+    /**
+     * The profile provider instance.
+     */
+    private final ProfileProvider profileProvider;
 
     /**
      * Initialize and start a new {@link PlayerHider}.
@@ -64,7 +64,7 @@ public class PlayerHider {
      * @param config              the config to load from
      * @throws QuestException Thrown if there is a configuration error.
      */
-    public PlayerHider(final Plugin plugin, final ConditionManager conditionManager, final BetonQuestInstructions instructions,
+    public PlayerHider(final Plugin plugin, final ConditionManager conditionManager, final Instructions instructions,
                        final QuestPackageManager questPackageManager, final ProfileProvider profileProvider, final ConfigAccessor config) throws QuestException {
         this.plugin = plugin;
         this.conditionManager = conditionManager;
@@ -95,7 +95,7 @@ public class PlayerHider {
         bukkitTask.cancel();
     }
 
-    private Collection<ConditionIdentifier> getConditions(final BetonQuestInstructions instructions, final QuestPackage pack, final String key,
+    private Collection<ConditionIdentifier> getConditions(final Instructions instructions, final QuestPackage pack, final String key,
                                                           @Nullable final String rawConditions) throws QuestException {
         if (rawConditions == null || rawConditions.isEmpty()) {
             return new ArrayList<>();

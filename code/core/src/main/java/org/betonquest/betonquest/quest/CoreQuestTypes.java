@@ -18,16 +18,16 @@ import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.identifier.QuestCancelerIdentifier;
 import org.betonquest.betonquest.api.identifier.ScheduleIdentifier;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
-import org.betonquest.betonquest.api.legacy.LegacyFeatureApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
+import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.FeatureRegistry;
 import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
 import org.betonquest.betonquest.api.service.ActionManager;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.GlobalData;
@@ -260,7 +260,7 @@ public class CoreQuestTypes {
     /**
      * Feature API.
      */
-    private final LegacyFeatureApi featureApi;
+    private final LegacyFeatures featureApi;
 
     /**
      * The {@link PluginMessage} instance.
@@ -305,12 +305,12 @@ public class CoreQuestTypes {
     /**
      * The betonquest instructions instance.
      */
-    private final BetonQuestInstructions instructions;
+    private final Instructions instructions;
 
     /**
      * The legacy conversation api.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * Create a new Core Quest Types class for registering.
@@ -332,11 +332,11 @@ public class CoreQuestTypes {
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public CoreQuestTypes(final BetonQuestLoggerFactory loggerFactory, final Server server, final BetonQuest betonQuest,
-                          final LegacyFeatureApi featureApi, final PluginMessage pluginMessage,
+                          final LegacyFeatures featureApi, final PluginMessage pluginMessage,
                           final Placeholders placeholders, final GlobalData globalData, final Saver saver,
                           final PlayerDataStorage dataStorage, final ProfileProvider profileProvider,
                           final LanguageProvider languageProvider, final PlayerDataFactory playerDataFactory,
-                          final BetonQuestInstructions instructions, final LegacyConversationApi conversationApi) {
+                          final Instructions instructions, final LegacyConversations conversationApi) {
         this.loggerFactory = loggerFactory;
         this.server = server;
         this.betonQuest = betonQuest;
@@ -492,8 +492,8 @@ public class CoreQuestTypes {
         actionTypes.register("notify", new NotifyActionFactory(loggerFactory, betonQuest.getTextParser(), dataStorage, languageProvider));
         actionTypes.registerCombined("notifyall", new NotifyAllActionFactory(loggerFactory, betonQuest.getTextParser(), dataStorage, profileProvider, languageProvider));
         actionTypes.registerCombined("npcteleport", new NpcTeleportActionFactory(betonQuest.getBetonQuestManagers().npcs()));
-        actionTypes.registerCombined("objective", new ObjectiveActionFactory(plugin, profileProvider, saver,
-                betonQuest.getBetonQuestManagers().objectives(), dataStorage, loggerFactory, playerDataFactory));
+        actionTypes.registerCombined("objective", new ObjectiveActionFactory(plugin, loggerFactory, profileProvider, saver,
+                betonQuest.getBetonQuestManagers().objectives(), dataStorage, playerDataFactory));
         actionTypes.register("opsudo", new OpSudoActionFactory(loggerFactory, server));
         actionTypes.register("party", new PartyActionFactory(loggerFactory, profileProvider, actionManager, conditionManager));
         actionTypes.registerCombined("pickrandom", new PickRandomActionFactory(actionManager));

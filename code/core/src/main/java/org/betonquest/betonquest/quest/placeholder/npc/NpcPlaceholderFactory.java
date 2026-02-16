@@ -4,7 +4,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.legacy.LegacyConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.quest.placeholder.NullablePlaceholder;
 import org.betonquest.betonquest.api.quest.placeholder.NullablePlaceholderAdapter;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholder;
@@ -33,9 +33,9 @@ import org.betonquest.betonquest.quest.placeholder.name.QuesterPlaceholder;
 public class NpcPlaceholderFactory implements PlayerPlaceholderFactory, PlayerlessPlaceholderFactory {
 
     /**
-     * Feature API.
+     * The legacy conversation api.
      */
-    private final LegacyConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * The NPC Manager.
@@ -48,7 +48,7 @@ public class NpcPlaceholderFactory implements PlayerPlaceholderFactory, Playerle
      * @param conversationApi the conversation API
      * @param npcManager      the NPC Manager
      */
-    public NpcPlaceholderFactory(final LegacyConversationApi conversationApi, final NpcManager npcManager) {
+    public NpcPlaceholderFactory(final LegacyConversations conversationApi, final NpcManager npcManager) {
         this.conversationApi = conversationApi;
         this.npcManager = npcManager;
     }

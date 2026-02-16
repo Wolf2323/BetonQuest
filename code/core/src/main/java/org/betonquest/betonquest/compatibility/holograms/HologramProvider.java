@@ -95,7 +95,7 @@ public class HologramProvider implements Integrator {
     @Override
     public void hook(final BetonQuestApi api) {
         final BetonQuest plugin = BetonQuest.getInstance();
-        final BetonQuestLoggerFactory loggerFactory = api.loggers();
+        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
         final TextParser textParser = plugin.getTextParser();
         final IdentifierFactory<HologramIdentifier> hologramIdentifierFactory = new HologramIdentifierFactory(api.packages());
         api.registries().identifiers().register(HologramIdentifier.class, hologramIdentifierFactory);

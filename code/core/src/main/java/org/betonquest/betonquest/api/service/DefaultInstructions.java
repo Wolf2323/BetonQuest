@@ -25,9 +25,9 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * The default implementation of the {@link BetonQuestInstructions}.
+ * The default implementation of the {@link Instructions}.
  */
-public class DefaultBetonQuestInstructions implements BetonQuestInstructions {
+public class DefaultInstructions implements Instructions {
 
     /**
      * The {@link Placeholders} supplier.
@@ -50,15 +50,15 @@ public class DefaultBetonQuestInstructions implements BetonQuestInstructions {
     private final Supplier<BetonQuestLoggerFactory> loggerFactory;
 
     /**
-     * Creates a new instance of the {@link DefaultBetonQuestInstructions}.
+     * Creates a new instance of the {@link DefaultInstructions}.
      *
      * @param placeholders    the {@link Placeholders} supplier
      * @param packageManager  the {@link QuestPackageManager} supplier
      * @param argumentParsers the {@link ArgumentParsers} supplier
      * @param loggerFactory   the {@link BetonQuestLoggerFactory} supplier
      */
-    public DefaultBetonQuestInstructions(final Supplier<Placeholders> placeholders, final Supplier<QuestPackageManager> packageManager,
-                                         final Supplier<ArgumentParsers> argumentParsers, final Supplier<BetonQuestLoggerFactory> loggerFactory) {
+    public DefaultInstructions(final Supplier<Placeholders> placeholders, final Supplier<QuestPackageManager> packageManager,
+                               final Supplier<ArgumentParsers> argumentParsers, final Supplier<BetonQuestLoggerFactory> loggerFactory) {
         this.placeholders = placeholders;
         this.packageManager = packageManager;
         this.argumentParsers = argumentParsers;

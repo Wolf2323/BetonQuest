@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.kernel.processor.StartTask;
 import org.bukkit.Location;
@@ -38,7 +38,7 @@ public class LocationHologramLoop extends HologramLoop implements StartTask {
      * @param textParser        the text parser used to parse text and colors
      */
     public LocationHologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
-                                final BetonQuestInstructions instructionApi, final QuestPackageManager packManager,
+                                final Instructions instructionApi, final QuestPackageManager packManager,
                                 final IdentifierFactory<HologramIdentifier> identifierFactory,
                                 final HologramProvider hologramProvider, final Plugin plugin, final TextParser textParser) {
         super(loggerFactory, log, instructionApi, packManager, hologramProvider, "Hologram", "holograms",

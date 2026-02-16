@@ -1295,7 +1295,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                     break;
                 }
 
-                instance.getLegacyFeatureApi().renameJournalEntry(oldEntryID, newEntryID);
+                instance.getLegacyFeatures().renameJournalEntry(oldEntryID, newEntryID);
                 for (final OnlineProfile onlineProfile : onlineProfiles) {
                     final Journal journal = dataStorage.get(onlineProfile).getJournal();
                     final List<Pointer> journalPointers = new ArrayList<>();

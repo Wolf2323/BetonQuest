@@ -14,7 +14,7 @@ import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveState;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.processor.quest.ActionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ConditionProcessor;
 import org.betonquest.betonquest.lib.bukkit.event.DefaultBukkitEventService;
@@ -67,7 +67,7 @@ public class DefaultObjectiveServiceProvider implements ObjectiveServiceProvider
     /**
      * The instruction api to use.
      */
-    private final BetonQuestInstructions instructionApi;
+    private final Instructions instructionApi;
 
     /**
      * The map holding the objectives service data.
@@ -86,7 +86,7 @@ public class DefaultObjectiveServiceProvider implements ObjectiveServiceProvider
      */
     public DefaultObjectiveServiceProvider(final Plugin plugin, final ConditionProcessor conditionProcessor, final ActionProcessor actionProcessor,
                                            final BetonQuestLoggerFactory factory, final ProfileProvider profileProvider,
-                                           final BetonQuestInstructions instructionApi) {
+                                           final Instructions instructionApi) {
         this.eventService = new DefaultBukkitEventService(plugin, factory);
         this.factory = factory;
         this.instructionApi = instructionApi;

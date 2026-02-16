@@ -60,7 +60,7 @@ public class JobsRebornIntegrator implements Integrator {
         objectiveRegistry.register("nujobs_joinjob", new JoinJobObjectiveFactory());
         objectiveRegistry.register("nujobs_leavejob", new LeaveJobObjectiveFactory());
         objectiveRegistry.register("nujobs_levelup", new LevelUpObjectiveFactory());
-        objectiveRegistry.register("nujobs_payment", new PaymentObjectiveFactory(api.loggers(), plugin.getPluginMessage()));
+        objectiveRegistry.register("nujobs_payment", new PaymentObjectiveFactory(api.loggerFactory(), plugin.getPluginMessage()));
     }
 
     @Override

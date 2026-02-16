@@ -2,7 +2,7 @@ package org.betonquest.betonquest.kernel.registry.feature;
 
 import org.betonquest.betonquest.api.legacy.LegacyFeatureRegistries;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.TextParserRegistry;
 import org.betonquest.betonquest.kernel.registry.FactoryRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.NpcTypeRegistry;
@@ -35,7 +35,7 @@ public record BaseFeatureRegistries(
      * @param instructionApi the instruction api
      * @return the newly created registries
      */
-    public static BaseFeatureRegistries create(final BetonQuestLoggerFactory loggerFactory, final BetonQuestInstructions instructionApi) {
+    public static BaseFeatureRegistries create(final BetonQuestLoggerFactory loggerFactory, final Instructions instructionApi) {
         return new BaseFeatureRegistries(
                 new ConversationIORegistry(loggerFactory.create(ConversationIORegistry.class)),
                 new ItemTypeRegistry(loggerFactory.create(ItemTypeRegistry.class)),

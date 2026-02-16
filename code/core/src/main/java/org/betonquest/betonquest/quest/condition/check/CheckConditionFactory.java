@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessConditionFactory;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.processor.adapter.ConditionAdapter;
 import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;
 import org.jetbrains.annotations.Nullable;
@@ -23,23 +23,23 @@ import java.util.List;
 public class CheckConditionFactory implements PlayerConditionFactory, PlayerlessConditionFactory {
 
     /**
+     * The betonquest instructions creation instance.
+     */
+    private final Instructions instructions;
+
+    /**
      * The condition type registry providing factories to parse the evaluated instruction.
      */
     private final ConditionTypeRegistry conditionTypeRegistry;
 
     /**
-     * The betonquest instructions creation instance.
-     */
-    private final BetonQuestInstructions betonQuestInstructions;
-
-    /**
      * Create the check condition factory.
      *
-     * @param betonQuestInstructions the betonquest instructions creation instance
-     * @param conditionTypeRegistry  the condition type registry providing factories to parse the evaluated instruction
+     * @param instructions          the betonquest instructions creation instance
+     * @param conditionTypeRegistry the condition type registry providing factories to parse the evaluated instruction
      */
-    public CheckConditionFactory(final BetonQuestInstructions betonQuestInstructions, final ConditionTypeRegistry conditionTypeRegistry) {
-        this.betonQuestInstructions = betonQuestInstructions;
+    public CheckConditionFactory(final Instructions instructions, final ConditionTypeRegistry conditionTypeRegistry) {
+        this.instructions = instructions;
         this.conditionTypeRegistry = conditionTypeRegistry;
     }
 
@@ -87,7 +87,7 @@ public class CheckConditionFactory implements PlayerConditionFactory, Playerless
         }
         final TypeFactory<ConditionAdapter> conditionFactory = conditionTypeRegistry.getFactory(parts[0]);
         try {
-            final Instruction innerInstruction = betonQuestInstructions.create(questPackage, instruction);
+            final Instruction innerInstruction = instructions.create(questPackage, instruction);
             return conditionFactory.parseInstruction(innerInstruction);
         } catch (final QuestException e) {
             throw new QuestException("Error in internal condition: " + e.getMessage(), e);

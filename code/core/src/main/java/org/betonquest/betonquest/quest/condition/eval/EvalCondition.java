@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.quest.TypeFactory;
 import org.betonquest.betonquest.api.quest.condition.NullableCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.processor.adapter.ConditionAdapter;
 import org.betonquest.betonquest.kernel.registry.QuestTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;
@@ -28,7 +28,7 @@ public class EvalCondition implements NullableCondition {
     /**
      * The BetonQuest instructions to use to parse instructions.
      */
-    private final BetonQuestInstructions instructions;
+    private final Instructions instructions;
 
     /**
      * The condition type registry providing factories to parse the evaluated instruction.
@@ -58,14 +58,14 @@ public class EvalCondition implements NullableCondition {
     /**
      * Creates a new Eval condition.
      *
-     * @param instructions          the {@link BetonQuestInstructions} to use to parse instructions
+     * @param instructions          the {@link Instructions} to use to parse instructions
      * @param conditionTypeRegistry the condition type registry providing factories to parse the evaluated instruction
      * @param pack                  the quest package to relate the condition to
      * @param evaluation            the evaluation input
      * @param scheduler             the scheduler to use for synchronous execution
      * @param plugin                the plugin instance
      */
-    public EvalCondition(final BetonQuestInstructions instructions, final ConditionTypeRegistry conditionTypeRegistry,
+    public EvalCondition(final Instructions instructions, final ConditionTypeRegistry conditionTypeRegistry,
                          final QuestPackage pack, final Argument<String> evaluation, final BukkitScheduler scheduler, final Plugin plugin) {
         this.instructions = instructions;
         this.conditionTypeRegistry = conditionTypeRegistry;
@@ -78,14 +78,14 @@ public class EvalCondition implements NullableCondition {
     /**
      * Constructs a condition with a given instruction and returns it.
      *
-     * @param instructions          the {@link BetonQuestInstructions} to use to parse instructions
+     * @param instructions          the {@link Instructions} to use to parse instructions
      * @param instruction           the instruction string to parse
      * @param conditionTypeRegistry the condition type registry providing factories to parse the evaluated instruction
      * @param pack                  the quest package to relate the condition to
      * @return the condition
      * @throws QuestException if the condition could not be created
      */
-    public static ConditionAdapter createCondition(final BetonQuestInstructions instructions, final QuestTypeRegistry<PlayerCondition, PlayerlessCondition,
+    public static ConditionAdapter createCondition(final Instructions instructions, final QuestTypeRegistry<PlayerCondition, PlayerlessCondition,
             ConditionAdapter> conditionTypeRegistry, final QuestPackage pack, final String instruction) throws QuestException {
         final Instruction conditionInstruction = instructions.create(pack, instruction);
         final TypeFactory<ConditionAdapter> conditionFactory = conditionTypeRegistry.getFactory(conditionInstruction.getPart(0));

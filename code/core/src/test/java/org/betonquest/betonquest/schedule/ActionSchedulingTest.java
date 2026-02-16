@@ -18,7 +18,7 @@ import org.betonquest.betonquest.api.schedule.CatchupStrategy;
 import org.betonquest.betonquest.api.schedule.FictiveTime;
 import org.betonquest.betonquest.api.schedule.Schedule;
 import org.betonquest.betonquest.api.schedule.Scheduler;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.id.schedule.ScheduleIdentifierFactory;
 import org.betonquest.betonquest.kernel.registry.feature.ScheduleRegistry;
 import org.betonquest.betonquest.lib.instruction.section.DefaultSectionInstruction;
@@ -60,7 +60,7 @@ class ActionSchedulingTest {
     void setUp(final BetonQuestLoggerFactory loggerFactory) throws QuestException {
         scheduleTypes = new ScheduleRegistry(mock(BetonQuestLogger.class));
         final QuestPackageManager packManager = mock(QuestPackageManager.class);
-        final BetonQuestInstructions instructionApi = mock(BetonQuestInstructions.class);
+        final Instructions instructionApi = mock(Instructions.class);
         lenient().when(instructionApi.createSection(any(), any())).thenAnswer(onMock ->
                 new DefaultSectionInstruction(mock(ArgumentParsers.class), mock(Placeholders.class),
                         packManager, onMock.getArgument(0), onMock.getArgument(1), loggerFactory));

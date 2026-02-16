@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.quest.objective.Objective;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveService;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.compatibility.npc.citizens.CitizensArgument;
 
 /**
@@ -20,7 +20,7 @@ public class NPCKillObjectiveFactory implements ObjectiveFactory {
     /**
      * The instruction api to use.
      */
-    private final BetonQuestInstructions instructionApi;
+    private final Instructions instructionApi;
 
     /**
      * Source Registry of NPCs to use.
@@ -39,7 +39,7 @@ public class NPCKillObjectiveFactory implements ObjectiveFactory {
      * @param instructionApi   the instruction api to use
      * @param registry         the registry of NPCs to use
      */
-    public NPCKillObjectiveFactory(final CitizensArgument citizensArgument, final BetonQuestInstructions instructionApi, final NPCRegistry registry) {
+    public NPCKillObjectiveFactory(final CitizensArgument citizensArgument, final Instructions instructionApi, final NPCRegistry registry) {
         this.instructionApi = instructionApi;
         this.registry = registry;
         this.citizensArgument = citizensArgument;

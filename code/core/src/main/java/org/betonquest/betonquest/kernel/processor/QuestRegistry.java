@@ -12,12 +12,12 @@ import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.identifier.QuestCancelerIdentifier;
 import org.betonquest.betonquest.api.identifier.ReadableIdentifier;
 import org.betonquest.betonquest.api.identifier.ScheduleIdentifier;
-import org.betonquest.betonquest.api.legacy.LegacyFeatureApi;
+import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.npc.DefaultNpcHider;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.bstats.InstructionMetricsSupplier;
 import org.betonquest.betonquest.config.PluginMessage;
@@ -72,7 +72,7 @@ public record QuestRegistry(
         JournalMainPageProcessor journalMainPages,
         NpcProcessor npcs,
         List<QuestProcessor<?, ?>> additional
-) implements LegacyFeatureApi {
+) implements LegacyFeatures {
 
     /**
      * Create a new Registry for storing and using Processors.
@@ -97,7 +97,7 @@ public record QuestRegistry(
                                        final BaseFeatureRegistries otherRegistries, final PluginMessage pluginMessage,
                                        final ParsedSectionTextCreator textCreator, final ProfileProvider profileProvider,
                                        final PlayerDataStorage playerDataStorage, final IdentifierTypeRegistry identifiers,
-                                       final BetonQuestInstructions instructions) throws QuestException {
+                                       final Instructions instructions) throws QuestException {
 
         final ItemProcessor items = new ItemProcessor(loggerFactory.create(ItemProcessor.class),
                 identifiers.getFactory(ItemIdentifier.class), otherRegistries.item(), instructions);
