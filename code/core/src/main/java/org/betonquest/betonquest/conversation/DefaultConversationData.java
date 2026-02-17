@@ -18,7 +18,7 @@ import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
@@ -58,9 +58,9 @@ public class DefaultConversationData implements ConversationData {
     private final QuestPackageManager packManager;
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * The condition manager.
@@ -109,7 +109,7 @@ public class DefaultConversationData implements ConversationData {
      *
      * @param log              the custom logger for this class
      * @param packManager      the quest package manager to get quest packages from
-     * @param placeholders     the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders     the {@link PlaceholderManager} to create and resolve placeholders
      * @param conditionManager the condition manager
      * @param instruction      the instruction to parse the conversation from
      * @param conversationApi  the Conversation API
@@ -120,7 +120,7 @@ public class DefaultConversationData implements ConversationData {
      *                        when conversation options cannot be resolved or {@code convSection} is null
      */
     public DefaultConversationData(final BetonQuestLogger log, final QuestPackageManager packManager,
-                                   final Placeholders placeholders, final ConditionManager conditionManager, final SectionInstruction instruction,
+                                   final PlaceholderManager placeholders, final ConditionManager conditionManager, final SectionInstruction instruction,
                                    final LegacyConversations conversationApi, final ParsedSectionTextCreator textCreator,
                                    final ConfigurationSection convSection, final ConversationPublicData publicData) throws QuestException {
         this.log = log;

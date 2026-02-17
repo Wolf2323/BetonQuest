@@ -3,7 +3,7 @@ package org.betonquest.betonquest.compatibility.holograms.holographicdisplays;
 import me.filoghost.holographicdisplays.api.placeholder.GlobalPlaceholder;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -17,17 +17,17 @@ public class HologramGlobalPlaceholder implements GlobalPlaceholder {
     private final BetonQuestLogger log;
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * Creates new instance of HologramGlobalPlaceholder.
      *
      * @param log          the logger that will be used for logging
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      */
-    public HologramGlobalPlaceholder(final BetonQuestLogger log, final Placeholders placeholders) {
+    public HologramGlobalPlaceholder(final BetonQuestLogger log, final PlaceholderManager placeholders) {
         this.log = log;
         this.placeholders = placeholders;
     }

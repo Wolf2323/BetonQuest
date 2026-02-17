@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.npc.Npc;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.service.npc.NpcManager;
 import org.betonquest.betonquest.api.service.npc.NpcRegistry;
 import org.betonquest.betonquest.api.text.TextParser;

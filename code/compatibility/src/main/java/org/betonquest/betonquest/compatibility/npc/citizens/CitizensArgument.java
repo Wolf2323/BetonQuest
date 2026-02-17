@@ -7,8 +7,8 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
-import org.betonquest.betonquest.api.service.Instructions;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 
 /**
  * Parses a string to a Citizens Npc ID.
@@ -37,7 +37,7 @@ public class CitizensArgument implements InstructionArgumentParser<NpcIdentifier
     }
 
     @Override
-    public NpcIdentifier apply(final Placeholders placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String string) throws QuestException {
+    public NpcIdentifier apply(final PlaceholderManager placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String string) throws QuestException {
         final NpcIdentifier npcId = identifierFactory.parseIdentifier(pack, string);
         final Instruction npcInstruction = instructionApi.create(npcId, npcId.readRawInstruction());
         if (!"citizens".equals(npcInstruction.getPart(0))) {

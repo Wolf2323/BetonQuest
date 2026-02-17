@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.Identifier;
 import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 
 /**
  * Parses a string to an identifier of the specified type I.
@@ -37,7 +37,7 @@ public class IdentifierParser<I extends Identifier> implements InstructionArgume
     }
 
     @Override
-    public I apply(final Placeholders placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String string) throws QuestException {
+    public I apply(final PlaceholderManager placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String string) throws QuestException {
         return registry.getFactory(identifierClass).parseIdentifier(pack, string);
     }
 }

@@ -3,7 +3,7 @@ package org.betonquest.betonquest.compatibility.holograms.holographicdisplays;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.IntegratorFactory;
 

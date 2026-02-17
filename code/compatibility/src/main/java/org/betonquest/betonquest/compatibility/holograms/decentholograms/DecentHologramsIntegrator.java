@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.holograms.BetonHologram;
 import org.betonquest.betonquest.compatibility.holograms.HologramIntegrator;

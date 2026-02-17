@@ -34,7 +34,7 @@ import org.betonquest.betonquest.api.service.DefaultBetonQuestApiService;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestManagers;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestRegistries;
 import org.betonquest.betonquest.api.service.DefaultInstructions;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.bstats.BStatsMetrics;
 import org.betonquest.betonquest.command.BackpackCommand;

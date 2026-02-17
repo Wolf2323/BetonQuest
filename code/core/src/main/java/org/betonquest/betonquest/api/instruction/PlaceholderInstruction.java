@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.Identifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.tokenizer.Tokenizer;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 
 /**
  * The {@link PlaceholderInstruction}. Primary object for placeholder input parsing.
@@ -21,7 +21,7 @@ public class PlaceholderInstruction extends DefaultInstruction {
     /**
      * Constructs a new {@link PlaceholderInstruction} with the given quest package, placeholder identifier, and instruction.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      * @param packManager  the quest package manager to get quest packages from
      * @param pack         The quest package that this instruction belongs to.
      * @param identifier   The identifier of the placeholder.
@@ -30,7 +30,7 @@ public class PlaceholderInstruction extends DefaultInstruction {
      * @throws QuestException if the instruction could not be tokenized,
      *                        or if the instruction does not start and end with '%' character.
      */
-    public PlaceholderInstruction(final Placeholders placeholders, final QuestPackageManager packManager, final QuestPackage pack,
+    public PlaceholderInstruction(final PlaceholderManager placeholders, final QuestPackageManager packManager, final QuestPackage pack,
                                   final Identifier identifier, final ArgumentParsers parsers, final String instruction) throws QuestException {
         super(placeholders, packManager, DOT_TOKENIZER, pack, identifier, parsers, cleanInstruction(instruction));
     }

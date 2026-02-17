@@ -7,7 +7,7 @@ import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentPar
 import org.betonquest.betonquest.api.instruction.argument.SimpleArgumentParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.instruction.section.SubSectionArgumentParser;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class EncapsulatedListSectionParser<T> implements InstructionArgumentPars
     }
 
     @Override
-    public List<T> apply(final Placeholders placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String path) throws QuestException {
+    public List<T> apply(final PlaceholderManager placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String path) throws QuestException {
         final List<String> list = parentInstruction.getSection().getStringList(path);
         final List<T> values = new ArrayList<>(list.size());
         for (final String value : list) {

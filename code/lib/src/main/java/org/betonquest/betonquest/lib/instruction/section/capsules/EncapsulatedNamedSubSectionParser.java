@@ -7,7 +7,7 @@ import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentPar
 import org.betonquest.betonquest.api.instruction.section.NamedSubSectionArgumentParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class EncapsulatedNamedSubSectionParser<T> implements InstructionArgument
     }
 
     @Override
-    public List<T> apply(final Placeholders placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String path) throws QuestException {
+    public List<T> apply(final PlaceholderManager placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String path) throws QuestException {
         final ConfigurationSection sectionWithNamedSubSections = parentInstruction.getSection().getConfigurationSection(path);
         if (sectionWithNamedSubSections == null) {
             throw new QuestException("Section with named subsections not found: %s".formatted(path));

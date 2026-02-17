@@ -3,7 +3,7 @@ package org.betonquest.betonquest.util.math;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.instruction.argument.parser.NumberParser;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.betonquest.betonquest.quest.placeholder.math.MathPlaceholder;
 import org.betonquest.betonquest.util.math.tokens.AbsoluteValue;
@@ -39,9 +39,9 @@ public class Tokenizer {
     private static final Pattern ESCAPE_REGEX = Pattern.compile("\\\\(.)");
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * Name of the package in which the tokenizer is operating.
@@ -51,10 +51,10 @@ public class Tokenizer {
     /**
      * Create a new Tokenizer in given package.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      * @param pack         name of the package
      */
-    public Tokenizer(final Placeholders placeholders, final QuestPackage pack) {
+    public Tokenizer(final PlaceholderManager placeholders, final QuestPackage pack) {
         this.placeholders = placeholders;
         this.pack = pack;
     }

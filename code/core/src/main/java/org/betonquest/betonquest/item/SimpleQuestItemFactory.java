@@ -10,7 +10,7 @@ import org.betonquest.betonquest.api.item.QuestItem;
 import org.betonquest.betonquest.api.item.QuestItemWrapper;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.TypeFactory;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.item.typehandler.BookHandler;
@@ -63,20 +63,20 @@ public class SimpleQuestItemFactory implements TypeFactory<QuestItemWrapper> {
     protected final Supplier<PluginMessage> questItemLoreSupplier;
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * Creates a new simple Quest Item Factory.
      *
-     * @param placeholders          the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders          the {@link PlaceholderManager} to create and resolve placeholders
      * @param packManager           the quest package manager to get quest packages from
      * @param textParser            the text parser used to parse text
      * @param bookPageWrapper       the book page wrapper used to split pages
      * @param questItemLoreSupplier supplies the plugin message instance if the "quest item" lore line should be added
      */
-    public SimpleQuestItemFactory(final Placeholders placeholders, final QuestPackageManager packManager, final TextParser textParser,
+    public SimpleQuestItemFactory(final PlaceholderManager placeholders, final QuestPackageManager packManager, final TextParser textParser,
                                   final BookPageWrapper bookPageWrapper, final Supplier<PluginMessage> questItemLoreSupplier) {
         this.placeholders = placeholders;
         this.packManager = packManager;

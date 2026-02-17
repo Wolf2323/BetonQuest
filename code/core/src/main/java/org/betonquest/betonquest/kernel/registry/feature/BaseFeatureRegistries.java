@@ -2,7 +2,7 @@ package org.betonquest.betonquest.kernel.registry.feature;
 
 import org.betonquest.betonquest.api.legacy.LegacyFeatureRegistries;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.text.TextParserRegistry;
 import org.betonquest.betonquest.kernel.registry.FactoryRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.NpcTypeRegistry;

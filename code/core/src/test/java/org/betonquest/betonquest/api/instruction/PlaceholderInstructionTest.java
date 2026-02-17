@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.NoID;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.id.placeholder.PlaceholderIdentifierFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ class PlaceholderInstructionTest {
     protected QuestPackage questPackage;
 
     private PlaceholderInstruction createNoIDInstruction(final String instruction) throws QuestException {
-        return new PlaceholderInstruction(mock(Placeholders.class), mock(QuestPackageManager.class),
+        return new PlaceholderInstruction(mock(PlaceholderManager.class), mock(QuestPackageManager.class),
                 questPackage, new NoID(questPackage), mock(ArgumentParsers.class), instruction);
     }
 
@@ -59,7 +59,7 @@ class PlaceholderInstructionTest {
     void copyWithNewIDShouldReturnNewPlaceholderInstructionWithNewID() throws QuestException {
         final PlaceholderIdentifier placeholderID1 = mock(PlaceholderIdentifier.class);
         final PlaceholderIdentifier placeholderID2 = mock(PlaceholderIdentifier.class);
-        final PlaceholderInstruction original = new PlaceholderInstruction(mock(Placeholders.class), mock(QuestPackageManager.class),
+        final PlaceholderInstruction original = new PlaceholderInstruction(mock(PlaceholderManager.class), mock(QuestPackageManager.class),
                 questPackage, placeholderID1, mock(ArgumentParsers.class), "%instruction%");
         final Instruction copy = original.copy(placeholderID2);
         assertEquals(original.toString(), copy.toString(), "Should have the same instruction");
@@ -85,7 +85,7 @@ class PlaceholderInstructionTest {
         final PlaceholderIdentifier placeholderIdentifier = factory.parseIdentifier(questPackage, "%OtherPack>instruction.part%");
 
         assertEquals(otherPack, placeholderIdentifier.getPackage(), "Cross package reference should resolve to correct pack");
-        final PlaceholderInstruction instruction = new PlaceholderInstruction(mock(Placeholders.class), packageManager,
+        final PlaceholderInstruction instruction = new PlaceholderInstruction(mock(PlaceholderManager.class), packageManager,
                 placeholderIdentifier.getPackage(), new NoID(placeholderIdentifier.getPackage()),
                 mock(ArgumentParsers.class), placeholderIdentifier.readRawInstruction());
         assertEquals("instruction.part", instruction.toString(), "Instruction should not contain pack");

@@ -7,7 +7,7 @@ import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.TypeFactory;
 import org.betonquest.betonquest.api.quest.action.NullableAction;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.kernel.processor.adapter.ActionAdapter;
 import org.betonquest.betonquest.kernel.registry.quest.ActionTypeRegistry;
 import org.bukkit.Bukkit;

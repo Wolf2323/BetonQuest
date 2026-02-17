@@ -2,7 +2,7 @@ package org.betonquest.betonquest.notify.io;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.notify.NotifyIO;
 import org.betonquest.betonquest.notify.NotifyIOFactory;
 import org.bukkit.plugin.Plugin;
@@ -16,9 +16,9 @@ import java.util.Map;
 public class AdvancementNotifyIOFactory implements NotifyIOFactory {
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * Plugin to start tasks.
@@ -28,10 +28,10 @@ public class AdvancementNotifyIOFactory implements NotifyIOFactory {
     /**
      * Create a new factory.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      * @param plugin       the plugin to start tasks
      */
-    public AdvancementNotifyIOFactory(final Placeholders placeholders, final Plugin plugin) {
+    public AdvancementNotifyIOFactory(final PlaceholderManager placeholders, final Plugin plugin) {
         this.placeholders = placeholders;
         this.plugin = plugin;
     }

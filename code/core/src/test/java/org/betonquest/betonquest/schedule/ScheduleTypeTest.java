@@ -17,7 +17,7 @@ import org.betonquest.betonquest.api.schedule.CatchupStrategy;
 import org.betonquest.betonquest.api.schedule.FictiveTime;
 import org.betonquest.betonquest.api.schedule.Schedule;
 import org.betonquest.betonquest.api.schedule.Scheduler;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.id.action.ActionIdentifierFactory;
 import org.betonquest.betonquest.id.item.ItemIdentifierFactory;
@@ -48,10 +48,10 @@ import static org.mockito.Mockito.*;
 class ScheduleTypeTest {
 
     /**
-     * {@link Placeholders} to create and resolve placeholders.
+     * {@link PlaceholderManager} to create and resolve placeholders.
      */
     @Mock
-    private Placeholders placeholders;
+    private PlaceholderManager placeholders;
 
     /**
      * The quest package manager to get quest packages from.

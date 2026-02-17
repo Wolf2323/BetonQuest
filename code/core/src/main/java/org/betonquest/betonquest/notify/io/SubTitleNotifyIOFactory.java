@@ -2,7 +2,7 @@ package org.betonquest.betonquest.notify.io;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.notify.NotifyIO;
 import org.betonquest.betonquest.notify.NotifyIOFactory;
 import org.jetbrains.annotations.Nullable;
@@ -15,16 +15,16 @@ import java.util.Map;
 public class SubTitleNotifyIOFactory implements NotifyIOFactory {
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * Create a new Sub Title Notify IO factory.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      */
-    public SubTitleNotifyIOFactory(final Placeholders placeholders) {
+    public SubTitleNotifyIOFactory(final PlaceholderManager placeholders) {
         this.placeholders = placeholders;
     }
 

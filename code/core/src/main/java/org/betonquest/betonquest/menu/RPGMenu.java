@@ -12,7 +12,7 @@ import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.service.BetonQuestRegistries;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.menu.betonquest.MenuActionFactory;
 import org.betonquest.betonquest.menu.betonquest.MenuConditionFactory;

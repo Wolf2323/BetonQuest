@@ -5,6 +5,8 @@ import org.betonquest.betonquest.api.BetonQuestApiService;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
 
 import java.util.function.Supplier;
 

@@ -11,7 +11,7 @@ import org.betonquest.betonquest.api.instruction.FlagState;
 import org.betonquest.betonquest.api.instruction.ValueParser;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
 import org.betonquest.betonquest.api.instruction.chain.ChainableInstruction;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 
 import java.util.Map;
 import java.util.Optional;
@@ -22,9 +22,9 @@ import java.util.Optional;
 public class DefaultChainableInstruction implements ChainableInstruction {
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * The package manager.
@@ -54,14 +54,14 @@ public class DefaultChainableInstruction implements ChainableInstruction {
     /**
      * Sole constructor.
      *
-     * @param placeholders         the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders         the {@link PlaceholderManager} to create and resolve placeholders
      * @param packManager          the package manager
      * @param pack                 the related package
      * @param nextElementSupplier  the provider for the next element
      * @param nextOptionalFunction the provider for the next element by key
      * @param nextFlagFunction     the provider for the next flag by key
      */
-    public DefaultChainableInstruction(final Placeholders placeholders, final QuestPackageManager packManager,
+    public DefaultChainableInstruction(final PlaceholderManager placeholders, final QuestPackageManager packManager,
                                        final QuestPackage pack, final QuestSupplier<String> nextElementSupplier,
                                        final QuestFunction<String, String> nextOptionalFunction,
                                        final QuestFunction<String, Map.Entry<FlagState, String>> nextFlagFunction) {

@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.instruction.FlagState;
 import org.betonquest.betonquest.api.instruction.ValueParser;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -44,13 +44,13 @@ public class DefaultFlagArgument<T> extends DefaultArgument<Optional<T>> impleme
     /**
      * Constructor creating a {@link FlagState#DEFINED} flag argument using an input and parser.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      * @param pack         the related package
      * @param input        the raw argument value
      * @param valueParser  the parser
      * @throws QuestException if an error occurs on creation
      */
-    public DefaultFlagArgument(final Placeholders placeholders, @Nullable final QuestPackage pack, final String input,
+    public DefaultFlagArgument(final PlaceholderManager placeholders, @Nullable final QuestPackage pack, final String input,
                                final ValueParser<Optional<T>> valueParser) throws QuestException {
         super(placeholders, pack, input, valueParser);
         this.state = FlagState.DEFINED;

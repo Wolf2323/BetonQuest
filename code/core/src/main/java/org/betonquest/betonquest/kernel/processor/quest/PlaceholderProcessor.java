@@ -9,8 +9,8 @@ import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.TypeFactory;
-import org.betonquest.betonquest.api.service.Instructions;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.kernel.processor.TypedQuestProcessor;
 import org.betonquest.betonquest.kernel.processor.adapter.PlaceholderAdapter;
 import org.betonquest.betonquest.kernel.registry.quest.PlaceholderTypeRegistry;
@@ -24,12 +24,12 @@ import java.util.concurrent.ExecutionException;
 /**
  * Stores Placeholders and resolve them.
  */
-public class PlaceholderProcessor extends TypedQuestProcessor<PlaceholderIdentifier, PlaceholderAdapter> implements Placeholders {
+public class PlaceholderProcessor extends TypedQuestProcessor<PlaceholderIdentifier, PlaceholderAdapter> implements PlaceholderManager {
 
     /**
      * Empty placeholders to satisfy the object structure.
      */
-    public static final Placeholders EMPTY_PLACEHOLDER = new Placeholders() {
+    public static final PlaceholderManager EMPTY_PLACEHOLDER = new PlaceholderManager() {
         @Override
         public PlaceholderAdapter create(@Nullable final QuestPackage pack, final String instruction) throws QuestException {
             throw new QuestException("Not valid");
@@ -62,7 +62,7 @@ public class PlaceholderProcessor extends TypedQuestProcessor<PlaceholderIdentif
     private final Plugin plugin;
 
     /**
-     * Create a new {@link Placeholders} to store placeholders, resolves them and create new.
+     * Create a new {@link PlaceholderManager} to store placeholders, resolves them and create new.
      *
      * @param log                          the custom logger for this class
      * @param packManager                  the quest package manager to get quest packages from

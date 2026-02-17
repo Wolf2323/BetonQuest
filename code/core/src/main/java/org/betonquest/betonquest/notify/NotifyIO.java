@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.argument.parser.NumberParser;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,9 +24,9 @@ public abstract class NotifyIO {
     protected static final String CATCH_MESSAGE_TYPE = "%s with the name '%s' does not exists!";
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    protected final Placeholders placeholders;
+    protected final PlaceholderManager placeholders;
 
     /**
      * Customization data.
@@ -47,23 +47,23 @@ public abstract class NotifyIO {
     /**
      * Create a new Notify IO.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      * @param pack         the source pack to resolve placeholders
      * @throws QuestException when data could not be parsed
      */
-    protected NotifyIO(final Placeholders placeholders, final QuestPackage pack) throws QuestException {
+    protected NotifyIO(final PlaceholderManager placeholders, final QuestPackage pack) throws QuestException {
         this(placeholders, pack, new HashMap<>());
     }
 
     /**
      * Create a new Notify IO.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      * @param pack         the source pack to resolve placeholders
      * @param data         the customization data for notifications
      * @throws QuestException when data could not be parsed
      */
-    protected NotifyIO(final Placeholders placeholders, @Nullable final QuestPackage pack, final Map<String, String> data) throws QuestException {
+    protected NotifyIO(final PlaceholderManager placeholders, @Nullable final QuestPackage pack, final Map<String, String> data) throws QuestException {
         this.placeholders = placeholders;
         this.data = data;
         this.pack = pack;

@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholder;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.kernel.processor.adapter.PlaceholderAdapter;
 import org.betonquest.betonquest.logger.util.BetonQuestLoggerService;
 import org.betonquest.betonquest.util.math.tokens.Token;
@@ -39,9 +39,9 @@ class TokenizerTest {
     private static final QuestPackage TEST_PACK = mock(QuestPackage.class);
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders = mock(Placeholders.class);
+    private final PlaceholderManager placeholders = mock(PlaceholderManager.class);
 
     @BeforeAll
     static void setUp() {

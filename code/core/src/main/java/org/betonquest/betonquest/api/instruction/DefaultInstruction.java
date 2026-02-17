@@ -19,7 +19,7 @@ import org.betonquest.betonquest.api.instruction.tokenizer.Tokenizer;
 import org.betonquest.betonquest.api.instruction.tokenizer.TokenizerException;
 import org.betonquest.betonquest.api.instruction.type.BlockSelector;
 import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
-import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultChainableInstruction;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultInstructionChainParser;
 import org.betonquest.betonquest.lib.instruction.chain.DefaultDecoratableChainRetriever;
@@ -43,9 +43,9 @@ import java.util.UUID;
 public class DefaultInstruction implements Instruction {
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * The quest package manager to get quest packages from.
@@ -86,7 +86,7 @@ public class DefaultInstruction implements Instruction {
     /**
      * Create an instruction using the quoting tokenizer.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      * @param packManager  the quest package manager to get quest packages from
      * @param pack         quest package the instruction belongs to
      * @param identifier   identifier of the instruction
@@ -94,7 +94,7 @@ public class DefaultInstruction implements Instruction {
      * @param instruction  instruction string to parse
      * @throws QuestException if the instruction could not be tokenized
      */
-    public DefaultInstruction(final Placeholders placeholders, final QuestPackageManager packManager, final QuestPackage pack,
+    public DefaultInstruction(final PlaceholderManager placeholders, final QuestPackageManager packManager, final QuestPackage pack,
                               @Nullable final Identifier identifier, final ArgumentParsers parsers, final String instruction) throws QuestException {
         this(placeholders, packManager, new QuotingTokenizer(), pack, useFallbackIdIfNecessary(pack, identifier), parsers, instruction);
     }
@@ -102,7 +102,7 @@ public class DefaultInstruction implements Instruction {
     /**
      * Create an instruction using the given tokenizer.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      * @param packManager  the quest package manager to get quest packages from
      * @param tokenizer    Tokenizer that can split on spaces but interpret quotes and escapes.
      * @param pack         quest package the instruction belongs to
@@ -111,7 +111,7 @@ public class DefaultInstruction implements Instruction {
      * @param instruction  instruction string to parse
      * @throws QuestException if the instruction could not be tokenized
      */
-    public DefaultInstruction(final Placeholders placeholders, final QuestPackageManager packManager, final Tokenizer tokenizer,
+    public DefaultInstruction(final PlaceholderManager placeholders, final QuestPackageManager packManager, final Tokenizer tokenizer,
                               final QuestPackage pack, final Identifier identifier, final ArgumentParsers parsers, final String instruction) throws QuestException {
         this.placeholders = placeholders;
         this.packManager = packManager;
