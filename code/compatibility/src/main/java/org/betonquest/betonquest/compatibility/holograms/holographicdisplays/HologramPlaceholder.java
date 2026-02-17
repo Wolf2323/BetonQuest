@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,9 +20,9 @@ public class HologramPlaceholder implements IndividualPlaceholder {
     private final BetonQuestLogger log;
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * The profile provider instance.
@@ -33,10 +33,10 @@ public class HologramPlaceholder implements IndividualPlaceholder {
      * Creates new instance of HologramPlaceholder.
      *
      * @param log             the logger that will be used for logging
-     * @param placeholders    the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders    the {@link PlaceholderManager} to create and resolve placeholders
      * @param profileProvider the profile provider instance
      */
-    public HologramPlaceholder(final BetonQuestLogger log, final Placeholders placeholders,
+    public HologramPlaceholder(final BetonQuestLogger log, final PlaceholderManager placeholders,
                                final ProfileProvider profileProvider) {
         this.log = log;
         this.placeholders = placeholders;

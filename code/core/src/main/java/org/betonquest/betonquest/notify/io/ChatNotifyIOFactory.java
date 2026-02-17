@@ -3,7 +3,7 @@ package org.betonquest.betonquest.notify.io;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.legacy.LegacyConversations;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.notify.NotifyIO;
 import org.betonquest.betonquest.notify.NotifyIOFactory;
 import org.jetbrains.annotations.Nullable;
@@ -16,9 +16,9 @@ import java.util.Map;
 public class ChatNotifyIOFactory implements NotifyIOFactory {
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * Conversation API.
@@ -28,10 +28,10 @@ public class ChatNotifyIOFactory implements NotifyIOFactory {
     /**
      * Create a new Chat Notify IO.
      *
-     * @param placeholders    the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders    the {@link PlaceholderManager} to create and resolve placeholders
      * @param conversationApi the Conversation API
      */
-    public ChatNotifyIOFactory(final Placeholders placeholders, final LegacyConversations conversationApi) {
+    public ChatNotifyIOFactory(final PlaceholderManager placeholders, final LegacyConversations conversationApi) {
         this.placeholders = placeholders;
         this.conversationApi = conversationApi;
     }

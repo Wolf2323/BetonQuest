@@ -10,7 +10,7 @@ import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
-import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.action.ActionManager;
 
 import java.util.List;
 import java.util.regex.Matcher;

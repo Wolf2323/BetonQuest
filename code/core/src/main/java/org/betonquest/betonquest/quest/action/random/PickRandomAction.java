@@ -4,7 +4,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.action.NullableAction;
-import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;

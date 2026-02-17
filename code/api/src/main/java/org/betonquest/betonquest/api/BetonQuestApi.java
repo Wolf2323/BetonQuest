@@ -14,12 +14,12 @@ import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
-import org.betonquest.betonquest.api.quest.objective.ObjectiveRegistry;
 import org.betonquest.betonquest.api.service.BetonQuestManagers;
 import org.betonquest.betonquest.api.service.BetonQuestRegistries;
-import org.betonquest.betonquest.api.service.Conversations;
-import org.betonquest.betonquest.api.service.Instructions;
-import org.betonquest.betonquest.api.service.ObjectiveManager;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 

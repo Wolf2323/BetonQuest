@@ -4,6 +4,7 @@ import org.betonquest.betonquest.api.bukkit.event.npc.NpcInteractEvent;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
+import org.betonquest.betonquest.api.service.npc.NpcRegistry;
 import org.betonquest.betonquest.quest.objective.interact.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;

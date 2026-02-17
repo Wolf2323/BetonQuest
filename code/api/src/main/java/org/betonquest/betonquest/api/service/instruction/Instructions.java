@@ -1,4 +1,4 @@
-package org.betonquest.betonquest.api.service;
+package org.betonquest.betonquest.api.service.instruction;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.common.function.QuestSupplier;

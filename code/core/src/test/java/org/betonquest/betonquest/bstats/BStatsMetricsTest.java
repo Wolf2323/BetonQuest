@@ -9,8 +9,8 @@ import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.Placeholders;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.config.DefaultConfigAccessorFactory;
 import org.betonquest.betonquest.config.quest.QuestPackageImpl;
@@ -142,7 +142,7 @@ class BStatsMetricsTest {
 
         final ReadableIdentifier firstId = mock(ReadableIdentifier.class);
         when(firstId.readRawInstruction()).thenReturn(TEST_INSTRUCTION);
-        final Instruction firstInstruction = new DefaultInstruction(mock(Placeholders.class),
+        final Instruction firstInstruction = new DefaultInstruction(mock(PlaceholderManager.class),
                 mock(QuestPackageManager.class), questPackage, firstId, mock(ArgumentParsers.class), TEST_INSTRUCTION);
 
         ids.put(firstId, null);
@@ -156,13 +156,13 @@ class BStatsMetricsTest {
 
         final ReadableIdentifier secondId = mock(ReadableIdentifier.class);
         when(secondId.readRawInstruction()).thenReturn(TEST_INSTRUCTION);
-        final Instruction secondInstruction = new DefaultInstruction(mock(Placeholders.class), mock(QuestPackageManager.class),
+        final Instruction secondInstruction = new DefaultInstruction(mock(PlaceholderManager.class), mock(QuestPackageManager.class),
                 questPackage, secondId, mock(ArgumentParsers.class), TEST_INSTRUCTION);
         when(instructionApi.create(secondId, TEST_INSTRUCTION)).thenReturn(secondInstruction);
 
         final ReadableIdentifier thirdId = mock(ReadableIdentifier.class);
         when(thirdId.readRawInstruction()).thenReturn(OTHER_INSTRUCTION);
-        final Instruction thirdInstruction = new DefaultInstruction(mock(Placeholders.class), mock(QuestPackageManager.class),
+        final Instruction thirdInstruction = new DefaultInstruction(mock(PlaceholderManager.class), mock(QuestPackageManager.class),
                 questPackage, thirdId, mock(ArgumentParsers.class), OTHER_INSTRUCTION);
         when(instructionApi.create(thirdId, OTHER_INSTRUCTION)).thenReturn(thirdInstruction);
 

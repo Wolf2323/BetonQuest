@@ -2,7 +2,7 @@ package org.betonquest.betonquest.kernel.registry.quest;
 
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
-import org.betonquest.betonquest.api.quest.objective.ObjectiveRegistry;
+import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
 import org.betonquest.betonquest.kernel.registry.FactoryRegistry;
 
 /**

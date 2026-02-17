@@ -14,7 +14,7 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.argument.parser.StringParser;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.data.PlayerDataStorage;
@@ -65,9 +65,9 @@ public class PluginMessage {
     private final BetonQuestLogger log;
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * The {@link TextParser} instance.
@@ -104,14 +104,14 @@ public class PluginMessage {
      *
      * @param log                   the logger for invalid file names
      * @param instance              the BetonQuest instance
-     * @param placeholders          the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders          the {@link PlaceholderManager} to create and resolve placeholders
      * @param playerDataStorage     the {@link PlayerDataStorage} instance
      * @param textParser            the {@link TextParser} instance
      * @param configAccessorFactory the config accessor factory
      * @param languageProvider      the {@link LanguageProvider} instance
      * @throws QuestException if the messages could not be loaded
      */
-    public PluginMessage(final BetonQuestLogger log, final BetonQuest instance, final Placeholders placeholders,
+    public PluginMessage(final BetonQuestLogger log, final BetonQuest instance, final PlaceholderManager placeholders,
                          final PlayerDataStorage playerDataStorage, final TextParser textParser,
                          final ConfigAccessorFactory configAccessorFactory, final LanguageProvider languageProvider)
             throws QuestException {

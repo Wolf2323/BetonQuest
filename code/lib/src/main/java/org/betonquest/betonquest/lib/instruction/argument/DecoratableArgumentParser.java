@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.instruction.ValueValidator;
 import org.betonquest.betonquest.api.instruction.argument.DecoratedArgumentParser;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
 import org.betonquest.betonquest.api.instruction.argument.ListArgumentParser;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class DecoratableArgumentParser<T> implements DecoratedArgumentParser<T> 
     }
 
     @Override
-    public T apply(final Placeholders placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String string) throws QuestException {
+    public T apply(final PlaceholderManager placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String string) throws QuestException {
         return argumentParser.apply(placeholders, packManager, pack, string);
     }
 
@@ -84,7 +84,7 @@ public class DecoratableArgumentParser<T> implements DecoratedArgumentParser<T> 
                 Optional.ofNullable(expected.equalsIgnoreCase(string) ? fixedValue : apply(placeholders, packManager, pack, string)));
     }
 
-    private <R, A> R parseCollect(final Placeholders placeholders, final QuestPackageManager packManager, final QuestPackage pack,
+    private <R, A> R parseCollect(final PlaceholderManager placeholders, final QuestPackageManager packManager, final QuestPackage pack,
                                   final String string, final Collector<T, A, R> collector) throws QuestException {
         final String[] elements = StringUtils.split(string, ",");
         final Stream.Builder<T> streamBuilder = Stream.builder();
@@ -95,7 +95,7 @@ public class DecoratableArgumentParser<T> implements DecoratedArgumentParser<T> 
         return streamBuilder.build().collect(collector);
     }
 
-    private T validateLocal(final ValueValidator<T> checker, final String errorMessage, final Placeholders placeholders,
+    private T validateLocal(final ValueValidator<T> checker, final String errorMessage, final PlaceholderManager placeholders,
                             final QuestPackageManager packManager, final QuestPackage pack, final String string) throws QuestException {
         final T value = apply(placeholders, packManager, pack, string);
         if (!checker.validate(value)) {

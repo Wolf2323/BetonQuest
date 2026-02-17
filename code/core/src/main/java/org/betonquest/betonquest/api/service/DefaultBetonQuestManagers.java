@@ -1,6 +1,11 @@
 package org.betonquest.betonquest.api.service;
 
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.item.ItemManager;
+import org.betonquest.betonquest.api.service.npc.NpcManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 
 import java.util.function.Supplier;
 
@@ -35,9 +40,9 @@ public class DefaultBetonQuestManagers implements BetonQuestManagers {
     private final Supplier<NpcManager> npcManager;
 
     /**
-     * The {@link Placeholders} supplier.
+     * The {@link PlaceholderManager} supplier.
      */
-    private final Supplier<Placeholders> placeholderManager;
+    private final Supplier<PlaceholderManager> placeholderManager;
 
     /**
      * Creates a new instance of the {@link DefaultBetonQuestManagers}.
@@ -47,11 +52,11 @@ public class DefaultBetonQuestManagers implements BetonQuestManagers {
      * @param objectiveManager   the {@link ObjectiveManager} supplier
      * @param itemManager        the {@link ItemManager} supplier
      * @param npcManager         the {@link NpcManager} supplier
-     * @param placeholderManager the {@link Placeholders} supplier
+     * @param placeholderManager the {@link PlaceholderManager} supplier
      */
     public DefaultBetonQuestManagers(final Supplier<ActionManager> actionManager, final Supplier<ConditionManager> conditionManager,
                                      final Supplier<ObjectiveManager> objectiveManager, final Supplier<ItemManager> itemManager,
-                                     final Supplier<NpcManager> npcManager, final Supplier<Placeholders> placeholderManager) {
+                                     final Supplier<NpcManager> npcManager, final Supplier<PlaceholderManager> placeholderManager) {
         this.actionManager = actionManager;
         this.conditionManager = conditionManager;
         this.objectiveManager = objectiveManager;
@@ -86,7 +91,7 @@ public class DefaultBetonQuestManagers implements BetonQuestManagers {
     }
 
     @Override
-    public Placeholders placeholders() {
+    public PlaceholderManager placeholders() {
         return placeholderManager.get();
     }
 }

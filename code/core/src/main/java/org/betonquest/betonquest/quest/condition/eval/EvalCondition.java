@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.quest.TypeFactory;
 import org.betonquest.betonquest.api.quest.condition.NullableCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.kernel.processor.adapter.ConditionAdapter;
 import org.betonquest.betonquest.kernel.registry.QuestTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;

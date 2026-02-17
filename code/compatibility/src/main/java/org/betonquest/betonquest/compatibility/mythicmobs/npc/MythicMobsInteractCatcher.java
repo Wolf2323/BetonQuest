@@ -9,7 +9,7 @@ import io.papermc.paper.event.entity.EntityMoveEvent;
 import org.betonquest.betonquest.api.bukkit.event.npc.NpcVisibilityUpdateEvent;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.npc.NpcInteractCatcher;
-import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
+import org.betonquest.betonquest.api.service.npc.NpcRegistry;
 import org.betonquest.betonquest.compatibility.mythicmobs.MythicHider;
 import org.betonquest.betonquest.quest.objective.interact.Interaction;
 import org.bukkit.entity.Player;

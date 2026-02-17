@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.instruction.ValueValidator;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
 import org.betonquest.betonquest.api.instruction.chain.DecoratableChainRetriever;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -98,7 +98,7 @@ public interface DecoratableSectionRetriever<T> extends SectionRetriever<T> {
      * Returns a new {@link DecoratableChainRetriever} that checks for the given expected string before
      * applying the parser this method is called on.
      * If the expected string matches the {@link String} argument of
-     * {@link InstructionArgumentParser#apply(Placeholders, QuestPackageManager, QuestPackage, String)}
+     * {@link InstructionArgumentParser#apply(PlaceholderManager, QuestPackageManager, QuestPackage, String)}
      * by {@link String#equalsIgnoreCase(String)}, the fixedValue is returned.
      * Otherwise, the apply method of the parser instance is called.
      *
@@ -112,7 +112,7 @@ public interface DecoratableSectionRetriever<T> extends SectionRetriever<T> {
      * Returns a new {@link DecoratableChainRetriever} that checks for the given expected string before
      * applying the parser this method is called on.
      * If the expected string matches the {@link String} argument of
-     * {@link InstructionArgumentParser#apply(Placeholders, QuestPackageManager, QuestPackage, String)}
+     * {@link InstructionArgumentParser#apply(PlaceholderManager, QuestPackageManager, QuestPackage, String)}
      * by {@link String#equalsIgnoreCase(String)}, the fixedValue is returned.
      * Otherwise, the apply method of the parser instance is called.
      * Since it must not return null, this method returns an {@link Optional} of the result.

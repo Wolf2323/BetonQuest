@@ -7,8 +7,8 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.quest.Placeholders;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.Map;
 public abstract class SectionProcessor<I extends Identifier, T> extends QuestProcessor<I, T> {
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
     private final Instructions instructionApi;
 

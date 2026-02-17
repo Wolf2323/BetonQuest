@@ -2,12 +2,12 @@ package org.betonquest.betonquest.quest.placeholder.math;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.quest.placeholder.NullablePlaceholderAdapter;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholder;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholderFactory;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerlessPlaceholder;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerlessPlaceholderFactory;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.util.math.Tokenizer;
 import org.betonquest.betonquest.util.math.tokens.Token;
 
@@ -26,16 +26,16 @@ public class MathPlaceholderFactory implements PlayerPlaceholderFactory, Playerl
     public static final Pattern CALC_REGEX = Pattern.compile("calc:(?<expression>.+)");
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * Create a new factory to create Math Placeholders.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      */
-    public MathPlaceholderFactory(final Placeholders placeholders) {
+    public MathPlaceholderFactory(final PlaceholderManager placeholders) {
         this.placeholders = placeholders;
     }
 

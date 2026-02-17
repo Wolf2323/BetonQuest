@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
-import org.betonquest.betonquest.api.service.NpcManager;
+import org.betonquest.betonquest.api.service.npc.NpcManager;
 import org.betonquest.betonquest.compatibility.npc.citizens.CitizensArgument;
 
 /**

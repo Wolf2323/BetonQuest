@@ -13,7 +13,7 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.compatibility.npc.citizens.CitizensWalkingListener;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;

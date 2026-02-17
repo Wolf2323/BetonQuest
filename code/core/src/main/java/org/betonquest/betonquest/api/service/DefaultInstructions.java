@@ -15,7 +15,8 @@ import org.betonquest.betonquest.api.instruction.chain.ChainableInstruction;
 import org.betonquest.betonquest.api.instruction.chain.InstructionChainParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultChainableInstruction;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultInstructionChainParser;
 import org.betonquest.betonquest.lib.instruction.section.DefaultSectionInstruction;
@@ -30,9 +31,9 @@ import java.util.function.Supplier;
 public class DefaultInstructions implements Instructions {
 
     /**
-     * The {@link Placeholders} supplier.
+     * The {@link PlaceholderManager} supplier.
      */
-    private final Supplier<Placeholders> placeholders;
+    private final Supplier<PlaceholderManager> placeholders;
 
     /**
      * The {@link QuestPackageManager} supplier.
@@ -52,12 +53,12 @@ public class DefaultInstructions implements Instructions {
     /**
      * Creates a new instance of the {@link DefaultInstructions}.
      *
-     * @param placeholders    the {@link Placeholders} supplier
+     * @param placeholders    the {@link PlaceholderManager} supplier
      * @param packageManager  the {@link QuestPackageManager} supplier
      * @param argumentParsers the {@link ArgumentParsers} supplier
      * @param loggerFactory   the {@link BetonQuestLoggerFactory} supplier
      */
-    public DefaultInstructions(final Supplier<Placeholders> placeholders, final Supplier<QuestPackageManager> packageManager,
+    public DefaultInstructions(final Supplier<PlaceholderManager> placeholders, final Supplier<QuestPackageManager> packageManager,
                                final Supplier<ArgumentParsers> argumentParsers, final Supplier<BetonQuestLoggerFactory> loggerFactory) {
         this.placeholders = placeholders;
         this.packageManager = packageManager;

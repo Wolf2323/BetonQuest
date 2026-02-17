@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.conversation.Conversation;
 import org.betonquest.betonquest.notify.NotifyIO;
 import org.jetbrains.annotations.Nullable;
@@ -25,13 +25,13 @@ public class ChatNotifyIO extends NotifyIO {
     /**
      * Create a new Chat Notify IO.
      *
-     * @param placeholders    the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders    the {@link PlaceholderManager} to create and resolve placeholders
      * @param pack            the source pack to resolve placeholders
      * @param data            the customization data for notifications
      * @param conversationApi the Conversation API
      * @throws QuestException when data could not be parsed
      */
-    public ChatNotifyIO(final Placeholders placeholders, @Nullable final QuestPackage pack, final Map<String, String> data, final LegacyConversations conversationApi) throws QuestException {
+    public ChatNotifyIO(final PlaceholderManager placeholders, @Nullable final QuestPackage pack, final Map<String, String> data, final LegacyConversations conversationApi) throws QuestException {
         super(placeholders, pack, data);
         this.conversationApi = conversationApi;
     }

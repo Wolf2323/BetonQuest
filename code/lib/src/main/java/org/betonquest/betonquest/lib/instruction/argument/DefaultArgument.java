@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.ValueParser;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -46,14 +46,14 @@ public class DefaultArgument<T> implements Argument<T> {
     /**
      * Resolves a string that may contain placeholders to an {@link Argument} of the given type.
      *
-     * @param placeholders    the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders    the {@link PlaceholderManager} to create and resolve placeholders
      * @param pack            the package of the instruction in which the argument is used
      * @param input           the string that may contain placeholders
      * @param valueParser     the valueParser to convert the resolved argument to the given type
      * @param earlyValidation whether to validate the input early to discover bugs and mistakes on creation
      * @throws QuestException if the placeholders could not be created or resolved to the given type
      */
-    public DefaultArgument(final Placeholders placeholders, @Nullable final QuestPackage pack, final String input,
+    public DefaultArgument(final PlaceholderManager placeholders, @Nullable final QuestPackage pack, final String input,
                            final ValueParser<T> valueParser, final boolean earlyValidation) throws QuestException {
         final Map<String, Argument<String>> foundPlaceholders = getPlaceholders(placeholders, pack, input);
         if (foundPlaceholders.isEmpty()) {
@@ -69,21 +69,21 @@ public class DefaultArgument<T> implements Argument<T> {
 
     /**
      * Resolves a string that may contain placeholders to an {@link Argument} of the given type.
-     * Forwards to {@link #DefaultArgument(Placeholders, QuestPackage, String, ValueParser, boolean)}
+     * Forwards to {@link #DefaultArgument(PlaceholderManager, QuestPackage, String, ValueParser, boolean)}
      * with earlyValidation set to true by default.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      * @param pack         the package of the instruction in which the argument is used
      * @param input        the string that may contain placeholders
      * @param valueParser  the valueParser to convert the resolved argument to the given type
      * @throws QuestException if the placeholders could not be created or resolved to the given type
      */
-    public DefaultArgument(final Placeholders placeholders, @Nullable final QuestPackage pack, final String input,
+    public DefaultArgument(final PlaceholderManager placeholders, @Nullable final QuestPackage pack, final String input,
                            final ValueParser<T> valueParser) throws QuestException {
         this(placeholders, pack, input, valueParser, true);
     }
 
-    private Map<String, Argument<String>> getPlaceholders(final Placeholders placeholders, @Nullable final QuestPackage pack,
+    private Map<String, Argument<String>> getPlaceholders(final PlaceholderManager placeholders, @Nullable final QuestPackage pack,
                                                           final String input)
             throws QuestException {
         final Map<String, Argument<String>> foundPlaceholders = new HashMap<>();

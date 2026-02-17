@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
 import org.betonquest.betonquest.api.instruction.section.NamedSubSectionArgumentParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class EncapsulatedNamedFlatSectionParser<T> implements InstructionArgumen
     }
 
     @Override
-    public List<Map.Entry<String, T>> apply(final Placeholders placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String path) throws QuestException {
+    public List<Map.Entry<String, T>> apply(final PlaceholderManager placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String path) throws QuestException {
         final ConfigurationSection sectionWithNamedFlatSections = parentInstruction.getSection().getConfigurationSection(path);
         if (sectionWithNamedFlatSections == null) {
             throw new QuestException("Section with named flat subsections not found: %s".formatted(path));

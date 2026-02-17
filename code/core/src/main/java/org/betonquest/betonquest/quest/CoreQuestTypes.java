@@ -23,11 +23,11 @@ import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.FeatureRegistry;
-import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
-import org.betonquest.betonquest.api.service.ActionManager;
-import org.betonquest.betonquest.api.service.ConditionManager;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.GlobalData;
@@ -268,9 +268,9 @@ public class CoreQuestTypes {
     private final PluginMessage pluginMessage;
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * Storage for global data.
@@ -320,7 +320,7 @@ public class CoreQuestTypes {
      * @param betonQuest        the plugin used for primary server access and type registration
      * @param featureApi        the Feature API
      * @param pluginMessage     the plugin message instance
-     * @param placeholders      the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders      the {@link PlaceholderManager} to create and resolve placeholders
      * @param globalData        the storage providing global data
      * @param saver             the database saver
      * @param dataStorage       the storage providing player data
@@ -333,7 +333,7 @@ public class CoreQuestTypes {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public CoreQuestTypes(final BetonQuestLoggerFactory loggerFactory, final Server server, final BetonQuest betonQuest,
                           final LegacyFeatures featureApi, final PluginMessage pluginMessage,
-                          final Placeholders placeholders, final GlobalData globalData, final Saver saver,
+                          final PlaceholderManager placeholders, final GlobalData globalData, final Saver saver,
                           final PlayerDataStorage dataStorage, final ProfileProvider profileProvider,
                           final LanguageProvider languageProvider, final PlayerDataFactory playerDataFactory,
                           final Instructions instructions, final LegacyConversations conversationApi) {

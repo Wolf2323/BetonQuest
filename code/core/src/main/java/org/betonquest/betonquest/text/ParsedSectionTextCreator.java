@@ -3,7 +3,7 @@ package org.betonquest.betonquest.text;
 import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.data.PlayerDataStorage;
@@ -31,20 +31,20 @@ public class ParsedSectionTextCreator {
     protected final LanguageProvider languageProvider;
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    protected final Placeholders placeholders;
+    protected final PlaceholderManager placeholders;
 
     /**
      * Creates a new text Factory.
      *
-     * @param placeholders      the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders      the {@link PlaceholderManager} to create and resolve placeholders
      * @param textParser        the text parser to parse the text
      * @param playerDataStorage the player data storage to get the player's language
      * @param languageProvider  the language provider to get the default language
      */
     public ParsedSectionTextCreator(final TextParser textParser, final PlayerDataStorage playerDataStorage,
-                                    final LanguageProvider languageProvider, final Placeholders placeholders) {
+                                    final LanguageProvider languageProvider, final PlaceholderManager placeholders) {
         this.textParser = textParser;
         this.playerDataStorage = playerDataStorage;
         this.languageProvider = languageProvider;

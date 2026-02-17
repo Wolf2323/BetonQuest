@@ -1,7 +1,12 @@
 package org.betonquest.betonquest.api.service;
 
-import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.quest.objective.Objective;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.item.ItemManager;
+import org.betonquest.betonquest.api.service.npc.NpcManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 
 /**
  * The BetonQuest managers are responsible to grant access to existing and loaded types
@@ -51,10 +56,10 @@ public interface BetonQuestManagers {
     NpcManager npcs();
 
     /**
-     * Obtain the {@link Placeholders} instance.
+     * Obtain the {@link PlaceholderManager} instance.
      * The placeholder manager offers functionality to resolve placeholders.
      *
      * @return the placeholder manager
      */
-    Placeholders placeholders();
+    PlaceholderManager placeholders();
 }

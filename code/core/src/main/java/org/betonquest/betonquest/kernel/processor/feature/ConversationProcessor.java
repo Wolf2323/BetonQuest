@@ -13,11 +13,11 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.Placeholders;
-import org.betonquest.betonquest.api.service.ActionManager;
-import org.betonquest.betonquest.api.service.ConditionManager;
-import org.betonquest.betonquest.api.service.Conversations;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.Conversation;
@@ -96,7 +96,7 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
      * @param textCreator         the text creator to parse text
      * @param convIORegistry      the registry for available ConversationIOs
      * @param interceptorRegistry the registry for available Interceptors
-     * @param placeholders        the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders        the {@link PlaceholderManager} to create and resolve placeholders
      * @param pluginMessage       the plugin message instance to use for ingame notifications
      * @param actionManager       the action manager
      * @param conditionManager    the condition manager

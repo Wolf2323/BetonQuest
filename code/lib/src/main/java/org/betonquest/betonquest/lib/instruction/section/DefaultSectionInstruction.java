@@ -13,7 +13,7 @@ import org.betonquest.betonquest.api.instruction.section.SectionTraverser;
 import org.betonquest.betonquest.api.instruction.source.DefaultedValueSource;
 import org.betonquest.betonquest.api.instruction.source.ValueSource;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultChainableInstruction;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultInstructionChainParser;
@@ -32,7 +32,7 @@ public class DefaultSectionInstruction implements SectionInstruction {
     /**
      * The placeholder provider used to resolve placeholders in the section.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * The parsers used to parse the section.
@@ -69,7 +69,7 @@ public class DefaultSectionInstruction implements SectionInstruction {
      * @param section        the section to parse
      * @param loggerFactory  the logger factory to use
      */
-    public DefaultSectionInstruction(final ArgumentParsers parsers, final Placeholders placeholders,
+    public DefaultSectionInstruction(final ArgumentParsers parsers, final PlaceholderManager placeholders,
                                      final QuestPackageManager packageManager, final QuestPackage questPackage,
                                      final ConfigurationSection section, final BetonQuestLoggerFactory loggerFactory) {
         this.parsers = parsers;

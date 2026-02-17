@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.argument.parser.StringParser;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
@@ -23,7 +23,7 @@ public class ParsedSectionText extends ParsedText {
      * Loads value(s) from a key in a section, potentially identified by a language key.
      * When there is no section, the value will be identified by the default language.
      *
-     * @param placeholders      the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders      the {@link PlaceholderManager} to create and resolve placeholders
      * @param textParser        the text parser to parse the text
      * @param playerDataStorage the player data storage to get the player's language
      * @param pack              the pack to resolve placeholders
@@ -32,14 +32,14 @@ public class ParsedSectionText extends ParsedText {
      * @param languageProvider  the language provider to get the default language
      * @throws QuestException if there is no value, the default language is missing or the section format is invalid
      */
-    public ParsedSectionText(final Placeholders placeholders, final TextParser textParser,
+    public ParsedSectionText(final PlaceholderManager placeholders, final TextParser textParser,
                              final PlayerDataStorage playerDataStorage, final QuestPackage pack,
                              final ConfigurationSection section, final String path,
                              final LanguageProvider languageProvider) throws QuestException {
         super(textParser, parse(placeholders, pack, section, path, languageProvider), playerDataStorage, languageProvider);
     }
 
-    private static Map<String, Argument<String>> parse(final Placeholders placeholders, final QuestPackage pack,
+    private static Map<String, Argument<String>> parse(final PlaceholderManager placeholders, final QuestPackage pack,
                                                        final ConfigurationSection section, final String path,
                                                        final LanguageProvider languageProvider) throws QuestException {
         final StringParser stringParser = new StringParser();
@@ -60,7 +60,7 @@ public class ParsedSectionText extends ParsedText {
         throw new QuestException("The '" + path + "' is missing!");
     }
 
-    private static Map<String, Argument<String>> parseSection(final Placeholders placeholders, final QuestPackage pack,
+    private static Map<String, Argument<String>> parseSection(final PlaceholderManager placeholders, final QuestPackage pack,
                                                               final ConfigurationSection textSection, final String path,
                                                               final StringParser stringParser) throws QuestException {
         final ConfigurationSection subSection = textSection.getConfigurationSection(path);

@@ -10,8 +10,8 @@ import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.Placeholders;
-import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.api.text.TextParserRegistry;
 import org.betonquest.betonquest.config.PluginMessage;
@@ -72,9 +72,9 @@ public class CoreFeatureFactories {
     private final LastExecutionCache lastExecutionCache;
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * The conversation api.
@@ -117,7 +117,7 @@ public class CoreFeatureFactories {
      * @param loggerFactory      the factory to create new class specific loggers
      * @param packManager        the quest package manager to get quest packages from
      * @param lastExecutionCache the cache to catch up missed schedulers
-     * @param placeholders       the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders       the {@link PlaceholderManager} to create and resolve placeholders
      * @param conversationApi    the conversation api
      * @param config             the config
      * @param colors             the colors to use for the conversation
@@ -129,7 +129,7 @@ public class CoreFeatureFactories {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public CoreFeatureFactories(final BetonQuestLoggerFactory loggerFactory, final QuestPackageManager packManager,
                                 final LastExecutionCache lastExecutionCache,
-                                final Placeholders placeholders, final LegacyConversations conversationApi,
+                                final PlaceholderManager placeholders, final LegacyConversations conversationApi,
                                 final ConfigAccessor config, final ConversationColors colors,
                                 final ActionManager actionManager,
                                 final TextParser textParser, final FontRegistry fontRegistry, final PluginMessage pluginMessage) {

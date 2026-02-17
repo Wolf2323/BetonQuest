@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.notify.NotifyIO;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -60,14 +60,14 @@ public class BossBarNotifyIO extends NotifyIO {
     /**
      * Create a new Boss Bar Notify IO.
      *
-     * @param placeholders the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders the {@link PlaceholderManager} to create and resolve placeholders
      * @param pack         the source pack to resolve placeholders
      * @param data         the customization data for notifications
      * @param plugin       the plugin to start tasks
      * @throws QuestException when data could not be parsed
      */
     @SuppressWarnings("PMD.CyclomaticComplexity")
-    public BossBarNotifyIO(final Placeholders placeholders, @Nullable final QuestPackage pack, final Map<String, String> data, final Plugin plugin) throws QuestException {
+    public BossBarNotifyIO(final PlaceholderManager placeholders, @Nullable final QuestPackage pack, final Map<String, String> data, final Plugin plugin) throws QuestException {
         super(placeholders, pack, data);
         this.plugin = plugin;
 

@@ -1,4 +1,4 @@
-package org.betonquest.betonquest.api.quest;
+package org.betonquest.betonquest.api.service.placeholder;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Resolves placeholders in strings to their values.
  */
-public interface Placeholders {
+public interface PlaceholderManager {
 
     /**
      * Generates a new instance of a {@link Argument} of type {@link String}. If a similar one was already

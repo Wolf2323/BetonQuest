@@ -12,8 +12,8 @@ import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.Placeholders;
-import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.holograms.BetonHologram;
 import org.betonquest.betonquest.compatibility.holograms.HologramIntegrator;
@@ -40,7 +40,7 @@ public class HolographicDisplaysIntegrator extends HologramIntegrator {
     private final Plugin plugin;
 
     /**
-     * {@link Placeholders} to create and resolve placeholders.
+     * {@link PlaceholderManager} to create and resolve placeholders.
      */
     private final PlaceholderProcessor placeholderProcessor;
 

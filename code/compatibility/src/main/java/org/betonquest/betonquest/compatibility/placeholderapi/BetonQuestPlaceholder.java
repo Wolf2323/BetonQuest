@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +27,9 @@ public class BetonQuestPlaceholder extends PlaceholderExpansion {
     private final ProfileProvider profileProvider;
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The {@link PlaceholderManager} to create and resolve placeholders.
      */
-    private final Placeholders placeholders;
+    private final PlaceholderManager placeholders;
 
     /**
      * The combined authors.
@@ -46,11 +46,11 @@ public class BetonQuestPlaceholder extends PlaceholderExpansion {
      *
      * @param log             the custom logger for this class
      * @param profileProvider the profile provider instance
-     * @param placeholders    the {@link Placeholders} to create and resolve placeholders
+     * @param placeholders    the {@link PlaceholderManager} to create and resolve placeholders
      * @param authors         the combined author string
      * @param version         the version string
      */
-    public BetonQuestPlaceholder(final BetonQuestLogger log, final ProfileProvider profileProvider, final Placeholders placeholders,
+    public BetonQuestPlaceholder(final BetonQuestLogger log, final ProfileProvider profileProvider, final PlaceholderManager placeholders,
                                  final String authors, final String version) {
         super();
         this.log = log;
