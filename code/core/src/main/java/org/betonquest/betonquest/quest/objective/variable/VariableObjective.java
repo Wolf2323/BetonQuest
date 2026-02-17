@@ -211,7 +211,7 @@ public class VariableObjective extends DefaultObjective {
         public void add(final String key, @Nullable final String value) {
             final ObjectiveService service;
             try {
-                service = BetonQuest.getInstance().getQuestTypeApi().getObjective(objID).getService();
+                service = BetonQuest.getInstance().getBetonQuestManagers().objectives().getObjective(objID).getService();
             } catch (final QuestException e) {
                 throw new IllegalStateException("Could not get objective service for objective '" + objID + "'", e);
             }

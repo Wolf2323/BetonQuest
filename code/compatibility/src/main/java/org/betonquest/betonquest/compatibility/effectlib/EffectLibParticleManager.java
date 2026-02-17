@@ -2,17 +2,17 @@ package org.betonquest.betonquest.compatibility.effectlib;
 
 import de.slikey.effectlib.EffectManager;
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.NpcManager;
 import org.betonquest.betonquest.compatibility.effectlib.identifier.ParticleIdentifier;
 import org.betonquest.betonquest.kernel.processor.SectionProcessor;
 import org.bukkit.Location;
@@ -33,19 +33,19 @@ public class EffectLibParticleManager extends SectionProcessor<ParticleIdentifie
     private final BetonQuestLoggerFactory loggerFactory;
 
     /**
-     * The Quest Type API.
-     */
-    private final QuestTypeApi questTypeApi;
-
-    /**
-     * The Feature API.
-     */
-    private final FeatureApi featureApi;
-
-    /**
      * The profile provider instance.
      */
     private final ProfileProvider profileProvider;
+
+    /**
+     * The npc manager instance to pass down to the {@link EffectLibRunnable}.
+     */
+    private final NpcManager npcManager;
+
+    /**
+     * The condition manager instance to pass down to the {@link EffectLibRunnable}.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * Effect Manager starting and controlling particles.
@@ -62,24 +62,24 @@ public class EffectLibParticleManager extends SectionProcessor<ParticleIdentifie
      *
      * @param log               the custom logger for this class
      * @param loggerFactory     the logger factory to create new custom loggers
-     * @param questTypeApi      the Quest Type API
-     * @param featureApi        the Feature API
      * @param profileProvider   the profile provider instance
      * @param instructionApi    the instruction api to use
      * @param identifierFactory the identifier factory
+     * @param npcManager        the npc manager instance
+     * @param conditionManager  the condition manager instance
      * @param manager           the effect manager starting and controlling particles
      * @param plugin            the plugin to start new tasks with
      */
     public EffectLibParticleManager(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                                    final QuestTypeApi questTypeApi, final FeatureApi featureApi,
-                                    final ProfileProvider profileProvider, final InstructionApi instructionApi,
+                                    final ProfileProvider profileProvider, final Instructions instructionApi,
                                     final IdentifierFactory<ParticleIdentifier> identifierFactory,
+                                    final NpcManager npcManager, final ConditionManager conditionManager,
                                     final EffectManager manager, final Plugin plugin) {
         super(log, instructionApi, identifierFactory, "Effect", "effectlib");
         this.loggerFactory = loggerFactory;
-        this.questTypeApi = questTypeApi;
-        this.featureApi = featureApi;
         this.profileProvider = profileProvider;
+        this.npcManager = npcManager;
+        this.conditionManager = conditionManager;
         this.manager = manager;
         this.plugin = plugin;
     }
@@ -96,7 +96,8 @@ public class EffectLibParticleManager extends SectionProcessor<ParticleIdentifie
                 .identifier(ConditionIdentifier.class).list().getOptional(Collections.emptyList());
 
         final EffectConfiguration configuration = new EffectConfiguration(effectClass, locations, npcs, conditions, instruction.getSection(), checkInterval);
-        final EffectLibRunnable libRunnable = new EffectLibRunnable(loggerFactory.create(EffectLibRunnable.class), questTypeApi, featureApi, profileProvider, manager, configuration);
+        final EffectLibRunnable libRunnable = new EffectLibRunnable(loggerFactory.create(EffectLibRunnable.class),
+                profileProvider, manager, configuration, npcManager, conditionManager);
         libRunnable.runTaskTimer(plugin, 1, interval.getValue(null).intValue());
 
         return Map.entry(getIdentifier(instruction.getPackage(), sectionName), libRunnable);

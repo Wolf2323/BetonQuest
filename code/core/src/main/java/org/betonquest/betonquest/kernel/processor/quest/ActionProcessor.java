@@ -3,10 +3,10 @@ package org.betonquest.betonquest.kernel.processor.quest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.processor.TypedQuestProcessor;
 import org.betonquest.betonquest.kernel.processor.adapter.ActionAdapter;
 import org.betonquest.betonquest.kernel.registry.quest.ActionTypeRegistry;
@@ -50,7 +50,7 @@ public class ActionProcessor extends TypedQuestProcessor<ActionIdentifier, Actio
     public ActionProcessor(final BetonQuestLogger log,
                            final IdentifierFactory<ActionIdentifier> actionIdentifierFactory,
                            final ActionTypeRegistry actionTypes, final BukkitScheduler scheduler,
-                           final InstructionApi instructionApi, final Plugin plugin) {
+                           final Instructions instructionApi, final Plugin plugin) {
         super(log, actionTypes, actionIdentifierFactory, instructionApi, "Action", "actions");
         this.scheduler = scheduler;
         this.plugin = plugin;

@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.api.service;
 
+import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.item.ItemRegistry;
 import org.betonquest.betonquest.api.quest.action.ActionRegistry;
 import org.betonquest.betonquest.api.quest.condition.ConditionRegistry;
@@ -45,6 +46,11 @@ public class DefaultBetonQuestRegistries implements BetonQuestRegistries {
     private final Supplier<PlaceholderRegistry> placeholderRegistry;
 
     /**
+     * The {@link IdentifierRegistry} supplier.
+     */
+    private final Supplier<IdentifierRegistry> identifierRegistry;
+
+    /**
      * Creates a new instance of the {@link DefaultBetonQuestRegistries}.
      *
      * @param actionRegistry      the {@link ActionRegistry} supplier
@@ -53,45 +59,53 @@ public class DefaultBetonQuestRegistries implements BetonQuestRegistries {
      * @param itemRegistry        the {@link ItemRegistry} supplier
      * @param npcRegistry         the {@link NpcRegistry} supplier
      * @param placeholderRegistry the {@link PlaceholderRegistry} supplier
+     * @param identifierRegistry  the {@link IdentifierRegistry} supplier
      */
     public DefaultBetonQuestRegistries(final Supplier<ActionRegistry> actionRegistry, final Supplier<ConditionRegistry> conditionRegistry,
                                        final Supplier<ObjectiveRegistry> objectiveRegistry, final Supplier<ItemRegistry> itemRegistry,
-                                       final Supplier<NpcRegistry> npcRegistry, final Supplier<PlaceholderRegistry> placeholderRegistry) {
+                                       final Supplier<NpcRegistry> npcRegistry, final Supplier<PlaceholderRegistry> placeholderRegistry,
+                                       final Supplier<IdentifierRegistry> identifierRegistry) {
         this.actionRegistry = actionRegistry;
         this.conditionRegistry = conditionRegistry;
         this.objectiveRegistry = objectiveRegistry;
         this.itemRegistry = itemRegistry;
         this.npcRegistry = npcRegistry;
         this.placeholderRegistry = placeholderRegistry;
+        this.identifierRegistry = identifierRegistry;
     }
 
     @Override
-    public ActionRegistry getActions() {
+    public ActionRegistry actions() {
         return actionRegistry.get();
     }
 
     @Override
-    public ConditionRegistry getConditions() {
+    public ConditionRegistry conditions() {
         return conditionRegistry.get();
     }
 
     @Override
-    public ObjectiveRegistry getObjectives() {
+    public ObjectiveRegistry objectives() {
         return objectiveRegistry.get();
     }
 
     @Override
-    public ItemRegistry getItems() {
+    public ItemRegistry items() {
         return itemRegistry.get();
     }
 
     @Override
-    public NpcRegistry getNpcs() {
+    public NpcRegistry npcs() {
         return npcRegistry.get();
     }
 
     @Override
-    public PlaceholderRegistry getPlaceholders() {
+    public PlaceholderRegistry placeholders() {
         return placeholderRegistry.get();
+    }
+
+    @Override
+    public IdentifierRegistry identifiers() {
+        return identifierRegistry.get();
     }
 }

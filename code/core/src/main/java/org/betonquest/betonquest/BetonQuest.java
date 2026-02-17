@@ -5,7 +5,6 @@ import net.kyori.adventure.key.Key;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
-import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.BetonQuestApiService;
 import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.QuestException;
@@ -16,25 +15,26 @@ import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
 import org.betonquest.betonquest.api.config.FileConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
-import org.betonquest.betonquest.api.feature.FeatureApi;
-import org.betonquest.betonquest.api.feature.FeatureRegistries;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
-import org.betonquest.betonquest.api.instruction.DefaultInstructionApi;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.argument.parser.DefaultArgumentParsers;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
+import org.betonquest.betonquest.api.legacy.LegacyFeatureRegistries;
+import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
+import org.betonquest.betonquest.api.service.BetonQuestManagers;
+import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestApi;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestApiService;
-import org.betonquest.betonquest.api.service.DefaultBetonQuestInstructions;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestManagers;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestRegistries;
+import org.betonquest.betonquest.api.service.DefaultInstructions;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.bstats.BStatsMetrics;
 import org.betonquest.betonquest.command.BackpackCommand;
@@ -132,7 +132,7 @@ import java.util.logging.Handler;
  */
 @SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass", "PMD.TooManyMethods",
         "PMD.TooManyFields", "PMD.CyclomaticComplexity", "NullAway.Init"})
-public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguageProvider {
+public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
     /**
      * BStats Plugin id.
@@ -165,17 +165,12 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
     private QuestRegistry questRegistry;
 
     /**
-     * Registry for quest core elements.
-     */
-    private BaseQuestTypeRegistries questTypeRegistries;
-
-    /**
      * Stores Registry for ConvIO, Interceptor, NotifyIO and ActionScheduling.
      */
     private BaseFeatureRegistries featureRegistries;
 
     /**
-     * Factory to create new class specific loggers.
+     * Factory to create new class-specific loggers.
      */
     private BetonQuestLoggerFactory loggerFactory;
 
@@ -276,6 +271,26 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
     private Compatibility compatibility;
 
     /**
+     * The api instance for creating instructions.
+     */
+    private Instructions betonQuestInstructions;
+
+    /**
+     * The api instance for accessing registries.
+     */
+    private BetonQuestRegistries betonQuestRegistries;
+
+    /**
+     * The api instance for managing instances produced by registered factories.
+     */
+    private BetonQuestManagers betonQuestManagers;
+
+    /**
+     * The betonQuestApi instance.
+     */
+    private DefaultBetonQuestApi betonQuestApi;
+
+    /**
      * The required default constructor without arguments for plugin creation.
      */
     public BetonQuest() {
@@ -361,23 +376,30 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
         }
         lastExecutionCache = new LastExecutionCache(loggerFactory.create(LastExecutionCache.class, "Cache"), cache);
 
-        questTypeRegistries = BaseQuestTypeRegistries.create(loggerFactory, this);
+        this.betonQuestInstructions = new DefaultInstructions(this::getPlaceholderProcessor,
+                this::getQuestPackageManager, this::getArgumentParsers, this::getLoggerFactory);
+
+        final BaseQuestTypeRegistries questTypeRegistries = BaseQuestTypeRegistries.create(loggerFactory, () -> getBetonQuestManagers().conditions());
         CoreQuestTypes.registerIdentifierTypes(getQuestPackageManager(), questTypeRegistries.identifier());
         final CoreQuestRegistry coreQuestRegistry;
         try {
             coreQuestRegistry = CoreQuestRegistry.create(loggerFactory, questManager, questTypeRegistries,
-                    getServer().getPluginManager(), getServer().getScheduler(), profileProvider, this, getInstructionApi());
+                    getServer().getPluginManager(), getServer().getScheduler(), profileProvider, this, betonQuestInstructions);
         } catch (final QuestException e) {
             throw new IllegalStateException("Could not load the core quests registries!", e);
         }
 
         final PlayerDataFactory playerDataFactory = new PlayerDataFactory(loggerFactory, saver, getServer(),
-                questTypeRegistries.identifier(), coreQuestRegistry, Suppliers.memoize(() -> new JournalFactory(loggerFactory, pluginMessage,
-                coreQuestRegistry, questRegistry, config, textParser, fontRegistry)));
+                questTypeRegistries.identifier(), coreQuestRegistry.objectives(), Suppliers.memoize(() -> new JournalFactory(loggerFactory, pluginMessage,
+                questRegistry, coreQuestRegistry.conditions(), config, textParser, fontRegistry)));
         playerDataStorage = new PlayerDataStorage(loggerFactory.create(PlayerDataStorage.class), config,
                 playerDataFactory, coreQuestRegistry.objectives(), profileProvider);
 
-        featureRegistries = BaseFeatureRegistries.create(loggerFactory, getInstructionApi());
+        featureRegistries = BaseFeatureRegistries.create(loggerFactory, betonQuestInstructions);
+
+        this.betonQuestRegistries = new DefaultBetonQuestRegistries(questTypeRegistries::action,
+                questTypeRegistries::condition, questTypeRegistries::objective, featureRegistries::item,
+                featureRegistries::npc, questTypeRegistries::placeholder, questTypeRegistries::identifier);
 
         final String defaultParser = config.getString("text_parser", "legacyminimessage");
         textParser = new DecidingTextParser(featureRegistries.textParser(), new TagTextParserDecider(defaultParser));
@@ -393,28 +415,31 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
         try {
             questRegistry = QuestRegistry.create(loggerFactory.create(QuestRegistry.class), loggerFactory, this,
                     coreQuestRegistry, featureRegistries, pluginMessage, textCreator, profileProvider, playerDataStorage,
-                    questTypeRegistries.identifier());
+                    questTypeRegistries.identifier(), betonQuestInstructions);
         } catch (final QuestException e) {
             throw new IllegalStateException("Could not load the quest feature registries!", e);
         }
+
+        this.betonQuestManagers = new DefaultBetonQuestManagers(coreQuestRegistry::actions, coreQuestRegistry::conditions,
+                coreQuestRegistry::objectives, questRegistry::items, questRegistry::npcs, coreQuestRegistry::placeholders);
 
         setupUpdater();
         registerListener(coreQuestRegistry, questTypeRegistries);
 
         new CoreQuestTypes(loggerFactory, getServer(), this,
-                coreQuestRegistry, questRegistry, pluginMessage, coreQuestRegistry.placeholders(), globalData, playerDataStorage,
-                profileProvider, this, playerDataFactory)
+                questRegistry, pluginMessage, coreQuestRegistry.placeholders(), globalData, saver, playerDataStorage,
+                profileProvider, this, playerDataFactory, betonQuestInstructions, questRegistry.conversations())
                 .register(questTypeRegistries);
 
         conversationColors = new ConversationColors(textParser, config);
 
         setupFontRegistry();
 
-        new CoreFeatureFactories(loggerFactory, questManager, lastExecutionCache, coreQuestRegistry, coreQuestRegistry.placeholders(),
-                questRegistry, config, conversationColors, textParser, fontRegistry, pluginMessage)
+        new CoreFeatureFactories(loggerFactory, questManager, lastExecutionCache, coreQuestRegistry.placeholders(),
+                questRegistry.conversations(), config, conversationColors, coreQuestRegistry.actions(), textParser, fontRegistry, pluginMessage)
                 .register(featureRegistries);
 
-        setupApi(coreQuestRegistry);
+        setupApi();
 
         try {
             conversationColors.load();
@@ -422,7 +447,7 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
             throw new IllegalStateException("Could not load conversation colors! " + e.getMessage(), e);
         }
 
-        compatibility = new Compatibility(loggerFactory.create(Compatibility.class), this, config, version);
+        compatibility = new Compatibility(loggerFactory.create(Compatibility.class), betonQuestApi, config, version);
 
         registerCommands(receiverSelector, debugHistoryHandler, playerDataFactory);
 
@@ -431,10 +456,10 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
         getServer().getScheduler().scheduleSyncDelayedTask(this, () -> {
             compatibility.postHook();
             loadData();
-            playerDataStorage.initProfiles(profileProvider.getOnlineProfiles(), getFeatureApi().conversationApi());
+            playerDataStorage.initProfiles(profileProvider.getOnlineProfiles(), getLegacyConversations());
 
             try {
-                playerHider = new PlayerHider(this, this, getQuestTypeApi().placeholders(), profileProvider, config);
+                playerHider = new PlayerHider(this, getBetonQuestManagers().conditions(), getBetonQuestInstructions(), getQuestPackageManager(), profileProvider, config);
             } catch (final QuestException e) {
                 log.error("Could not start PlayerHider! " + e.getMessage(), e);
             }
@@ -449,11 +474,11 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
             log.warn("Could not disable /betonquestanswer logging", e);
         }
 
-        new BStatsMetrics(this, new Metrics(this, BSTATS_METRICS_ID), questRegistry.metricsSupplier(), compatibility, getInstructionApi());
+        new BStatsMetrics(this, new Metrics(this, BSTATS_METRICS_ID), questRegistry.metricsSupplier(), compatibility, betonQuestInstructions);
 
         try {
-            rpgMenu = new RPGMenu(loggerFactory.create(RPGMenu.class), loggerFactory, getInstructionApi(), config,
-                    pluginMessage, textCreator, coreQuestRegistry, profileProvider, getArgumentParsers());
+            rpgMenu = new RPGMenu(loggerFactory.create(RPGMenu.class), loggerFactory, betonQuestInstructions, config,
+                    pluginMessage, textCreator, profileProvider, getArgumentParsers());
         } catch (final QuestException e) {
             throw new IllegalStateException("Could not load the RPGMenu!", e);
         }
@@ -461,16 +486,9 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
         log.info("BetonQuest successfully enabled!");
     }
 
-    private void setupApi(final CoreQuestRegistry processors) {
-        final DefaultBetonQuestInstructions instructions = new DefaultBetonQuestInstructions(this::getPlaceholderProcessor,
-                this::getQuestPackageManager, this::getArgumentParsers, this::getLoggerFactory);
-        final DefaultBetonQuestRegistries registries = new DefaultBetonQuestRegistries(questTypeRegistries::action,
-                questTypeRegistries::condition, questTypeRegistries::objective, featureRegistries::item,
-                featureRegistries::npc, questTypeRegistries::placeholder);
-        final DefaultBetonQuestManagers managers = new DefaultBetonQuestManagers(processors::actions, processors::conditions,
-                processors::objectives, questRegistry::items, questRegistry::npcs);
-        final DefaultBetonQuestApi betonQuestApi = new DefaultBetonQuestApi(this::getProfileProvider, this::getQuestPackageManager, this::getLoggerFactory,
-                () -> instructions, questRegistry::conversations, () -> registries, () -> managers);
+    private void setupApi() {
+        this.betonQuestApi = new DefaultBetonQuestApi(this::getProfileProvider, this::getQuestPackageManager, this::getLoggerFactory,
+                () -> betonQuestInstructions, questRegistry::conversations, () -> betonQuestRegistries, () -> betonQuestManagers);
         Bukkit.getServicesManager().register(BetonQuestApiService.class, new DefaultBetonQuestApiService(plugin -> {
             log.debug("Loading API for plugin " + plugin.getName());
             return betonQuestApi;
@@ -535,12 +553,12 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
         List.of(
                 new CombatTagger(profileProvider, config.getInt("conversation.damage.combat_delay")),
                 new MobKillListener(profileProvider),
-                new CustomDropListener(loggerFactory.create(CustomDropListener.class), this, questRegistry, itemIdentifierFactory),
+                new CustomDropListener(loggerFactory.create(CustomDropListener.class), this, questRegistry.items(), itemIdentifierFactory),
                 new QuestItemHandler(config, playerDataStorage, profileProvider),
                 new QuestItemConvertListener(loggerFactory.create(QuestItemConvertListener.class),
                         () -> config.getBoolean("item.quest.update_legacy_on_join"), pluginMessage, profileProvider),
                 new JoinQuitListener(config, coreQuestRegistry.objectives(), playerDataStorage,
-                        getFeatureApi().conversationApi(), profileProvider, updater)
+                        getLegacyConversations(), profileProvider, updater)
         ).forEach(listener -> pluginManager.registerEvents(listener, this));
     }
 
@@ -650,7 +668,7 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
             playerHider.stop();
         }
         try {
-            playerHider = new PlayerHider(this, this, getQuestTypeApi().placeholders(), profileProvider, config);
+            playerHider = new PlayerHider(this, getBetonQuestManagers().conditions(), getBetonQuestInstructions(), getQuestPackageManager(), profileProvider, config);
         } catch (final QuestException e) {
             log.error("Could not start PlayerHider! " + e.getMessage(), e);
         }
@@ -703,41 +721,26 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
         questRegistry.additional().add(processor);
     }
 
-    @Override
+    /**
+     * Returns the {@link BetonQuestLoggerFactory} instance.
+     *
+     * @return the {@link BetonQuestLoggerFactory} instance
+     */
     public BetonQuestLoggerFactory getLoggerFactory() {
         return loggerFactory;
     }
 
-    @Override
+    /**
+     * Returns the {@link ArgumentParsers} instance.
+     *
+     * @return the {@link ArgumentParsers} instance
+     */
     public ArgumentParsers getArgumentParsers() {
         try {
-            return new DefaultArgumentParsers(getFeatureApi()::getItem, getTextParser(), getServer(), getQuestRegistries().identifier());
+            return new DefaultArgumentParsers(getBetonQuestManagers().items()::getItem, getTextParser(), getServer(), getBetonQuestRegistries().identifiers());
         } catch (final QuestException e) {
             throw new IllegalStateException("Could not create default argument parsers!", e);
         }
-    }
-
-    @Override
-    public InstructionApi getInstructionApi() {
-        return new DefaultInstructionApi(() -> getQuestTypeApi().placeholders(), getQuestPackageManager(), this::getArgumentParsers, loggerFactory);
-    }
-
-    /**
-     * Get the ConfigAccessor factory.
-     *
-     * @return The ConfigAccessor factory.
-     */
-    public ConfigAccessorFactory getConfigAccessorFactory() {
-        return configAccessorFactory;
-    }
-
-    /**
-     * Get the RPG Menu instance.
-     *
-     * @return The RPG Menu instance.
-     */
-    public RPGMenu getRpgMenu() {
-        return rpgMenu;
     }
 
     /**
@@ -772,24 +775,49 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
         return pluginMessage;
     }
 
-    @Override
+    /**
+     * Returns the {@link ProfileProvider} instance.
+     *
+     * @return the {@link ProfileProvider} instance
+     */
     public ProfileProvider getProfileProvider() {
         return profileProvider;
     }
 
-    @Override
+    /**
+     * Returns the {@link QuestPackageManager} instance.
+     *
+     * @return the {@link QuestPackageManager} instance
+     */
     public QuestPackageManager getQuestPackageManager() {
         return questManager;
     }
 
-    @Override
-    public QuestTypeApi getQuestTypeApi() {
-        return questRegistry.core();
+    /**
+     * Returns the {@link BetonQuestRegistries} instance.
+     *
+     * @return the {@link BetonQuestRegistries} instance
+     */
+    public BetonQuestRegistries getBetonQuestRegistries() {
+        return betonQuestRegistries;
     }
 
-    @Override
-    public FeatureApi getFeatureApi() {
-        return questRegistry;
+    /**
+     * Returns the {@link Instructions} instance.
+     *
+     * @return the {@link Instructions} instance
+     */
+    public Instructions getBetonQuestInstructions() {
+        return betonQuestInstructions;
+    }
+
+    /**
+     * Returns the {@link BetonQuestManagers} instance.
+     *
+     * @return the {@link BetonQuestManagers} instance
+     */
+    public BetonQuestManagers getBetonQuestManagers() {
+        return betonQuestManagers;
     }
 
     /**
@@ -846,14 +874,31 @@ public class BetonQuest extends JavaPlugin implements BetonQuestApi, LanguagePro
         return playerDataStorage;
     }
 
-    @Override
-    public QuestTypeRegistries getQuestRegistries() {
-        return questTypeRegistries;
+    /**
+     * Returns the {@link LegacyFeatures} instance.
+     *
+     * @return the LegacyFeatureApi instance
+     */
+    public LegacyFeatures getLegacyFeatures() {
+        return questRegistry;
     }
 
-    @Override
-    public FeatureRegistries getFeatureRegistries() {
+    /**
+     * Returns the {@link LegacyFeatureRegistries} instance.
+     *
+     * @return the LegacyFeatureRegistries instance
+     */
+    public LegacyFeatureRegistries getLegacyFeatureRegistries() {
         return featureRegistries;
+    }
+
+    /**
+     * Returns the {@link LegacyConversations} instance.
+     *
+     * @return the LegacyConversationApi instance
+     */
+    public LegacyConversations getLegacyConversations() {
+        return questRegistry.conversations();
     }
 
     private boolean isPaper() {

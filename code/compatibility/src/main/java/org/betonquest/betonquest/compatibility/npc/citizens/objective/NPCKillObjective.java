@@ -8,9 +8,9 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveService;
+import org.betonquest.betonquest.api.service.Instructions;
 
 /**
  * Player has to kill an NPC.
@@ -30,7 +30,7 @@ public class NPCKillObjective extends CountingObjective {
     /**
      * Instruction API to use.
      */
-    private final InstructionApi instructionApi;
+    private final Instructions instructionApi;
 
     /**
      * Create a new Citizens NPC kill objective.
@@ -43,7 +43,7 @@ public class NPCKillObjective extends CountingObjective {
      * @throws QuestException when the instruction cannot be parsed or is invalid
      */
     public NPCKillObjective(final ObjectiveService service, final NPCRegistry registry, final Argument<Number> targetAmount,
-                            final Argument<NpcIdentifier> npcID, final InstructionApi instructionApi) throws QuestException {
+                            final Argument<NpcIdentifier> npcID, final Instructions instructionApi) throws QuestException {
         super(service, targetAmount, "mobs_to_kill");
         this.instructionApi = instructionApi;
         this.registry = registry;
@@ -63,7 +63,7 @@ public class NPCKillObjective extends CountingObjective {
             return;
         }
         final NpcIdentifier npcIdentifier = npcID.getValue(profile);
-        final Instruction npcInstruction = instructionApi.createInstruction(npcIdentifier, npcIdentifier.readRawInstruction());
+        final Instruction npcInstruction = instructionApi.create(npcIdentifier, npcIdentifier.readRawInstruction());
         final String argument = npcInstruction.getPart(1);
         final boolean byName = npcInstruction.bool().getFlag("byName", true)
                 .getValue(profile).orElse(false);

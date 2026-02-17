@@ -3,19 +3,21 @@ package org.betonquest.betonquest.kernel.processor.feature;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.feature.ConversationApi;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.Placeholders;
-import org.betonquest.betonquest.api.service.BetonQuestConversations;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Conversations;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.Conversation;
@@ -43,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Stores Conversation Data and validates it.
  */
 @SuppressWarnings("PMD.CouplingBetweenObjects")
-public class ConversationProcessor extends SectionProcessor<ConversationIdentifier, DefaultConversationData> implements ConversationApi, BetonQuestConversations {
+public class ConversationProcessor extends SectionProcessor<ConversationIdentifier, DefaultConversationData> implements LegacyConversations, Conversations {
 
     /**
      * Factory to create class-specific logger.
@@ -96,19 +98,23 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
      * @param interceptorRegistry the registry for available Interceptors
      * @param placeholders        the {@link Placeholders} to create and resolve placeholders
      * @param pluginMessage       the plugin message instance to use for ingame notifications
+     * @param actionManager       the action manager
+     * @param conditionManager    the condition manager
      * @param identifierFactory   the identifier factory to create {@link ConversationIdentifier}s for this type
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public ConversationProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
                                  final BetonQuest plugin, final ParsedSectionTextCreator textCreator,
                                  final ConversationIORegistry convIORegistry, final InterceptorRegistry interceptorRegistry,
-                                 final InstructionApi placeholders, final PluginMessage pluginMessage,
+                                 final Instructions placeholders, final PluginMessage pluginMessage,
+                                 final ActionManager actionManager, final ConditionManager conditionManager,
                                  final IdentifierFactory<ConversationIdentifier> identifierFactory) {
         super(log, placeholders, identifierFactory, "Conversation", "conversations");
 
         this.loggerFactory = loggerFactory;
         this.activeConversations = new ProfileKeyMap<>(plugin.getProfileProvider(), new ConcurrentHashMap<>());
         this.starter = new ConversationStarter(loggerFactory, loggerFactory.create(ConversationStarter.class),
-                activeConversations, plugin, pluginMessage);
+                activeConversations, plugin, pluginMessage, actionManager, conditionManager);
         this.plugin = plugin;
         this.textCreator = textCreator;
         this.convIORegistry = convIORegistry;
@@ -147,7 +153,7 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
 
         final ConversationPublicData publicData = new ConversationPublicData(identifier, quester, stop, finalActions, conversationIO, interceptor, interceptorDelay, invincible);
         final DefaultConversationData conversationData = new DefaultConversationData(loggerFactory.create(DefaultConversationData.class), plugin.getQuestPackageManager(),
-                plugin.getQuestTypeApi().placeholders(), plugin.getQuestTypeApi(), instruction, plugin.getFeatureApi().conversationApi(), textCreator, section, publicData);
+                plugin.getPlaceholderProcessor(), plugin.getBetonQuestManagers().conditions(), instruction, plugin.getLegacyConversations(), textCreator, section, publicData);
         return Map.entry(identifier, conversationData);
     }
 

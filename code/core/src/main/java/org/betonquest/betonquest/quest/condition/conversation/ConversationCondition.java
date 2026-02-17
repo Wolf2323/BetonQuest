@@ -1,9 +1,9 @@
 package org.betonquest.betonquest.quest.condition.conversation;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.ConversationApi;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 
@@ -15,7 +15,7 @@ public class ConversationCondition implements PlayerCondition {
     /**
      * Conversation API.
      */
-    private final ConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * The conversation to check.
@@ -28,7 +28,7 @@ public class ConversationCondition implements PlayerCondition {
      * @param conversationApi the Conversation API
      * @param conversationID  the conversation to check
      */
-    public ConversationCondition(final ConversationApi conversationApi, final Argument<ConversationIdentifier> conversationID) {
+    public ConversationCondition(final LegacyConversations conversationApi, final Argument<ConversationIdentifier> conversationID) {
         this.conversationApi = conversationApi;
         this.conversationID = conversationID;
     }

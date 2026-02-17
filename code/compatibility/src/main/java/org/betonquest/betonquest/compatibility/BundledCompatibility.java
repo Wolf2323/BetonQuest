@@ -1,11 +1,12 @@
 package org.betonquest.betonquest.compatibility;
 
-import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
+import org.betonquest.betonquest.api.service.BetonQuestRegistries;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.compatibility.auraskills.AuraSkillsIntegratorFactory;
 import org.betonquest.betonquest.compatibility.brewery.BreweryIntegratorFactory;
 import org.betonquest.betonquest.compatibility.craftengine.CraftEngineIntegratorFactory;
@@ -44,51 +45,29 @@ import org.betonquest.betonquest.compatibility.worldguard.WorldGuardIntegratorFa
 import org.bukkit.plugin.Plugin;
 
 /**
- * Allows to register the 3rd party compatibility.
+ * Allows registering the 3rd party compatibility.
  */
-public class BundledCompatibility {
+public final class BundledCompatibility {
 
     /**
-     * Compatibility to register at.
+     * Default constructor.
      */
-    private final Compatibility compatibility;
-
-    /**
-     * API used for registering.
-     */
-    private final BetonQuestApi betonQuestApi;
-
-    /**
-     * Plugin to start tasks and register listener.
-     */
-    private final Plugin plugin;
-
-    /**
-     * Logger to use.
-     */
-    private final BetonQuestLogger logger;
-
-    /**
-     * Creates a new Object to register plugin compatibilities.
-     *
-     * @param logger        the logger to use
-     * @param compatibility the compatibility to register at
-     * @param betonQuestApi the API used for registering
-     * @param plugin        the plugin to start tasks and register listener
-     */
-    public BundledCompatibility(final BetonQuestLogger logger, final Compatibility compatibility,
-                                final BetonQuestApi betonQuestApi, final Plugin plugin) {
-        this.logger = logger;
-        this.compatibility = compatibility;
-        this.betonQuestApi = betonQuestApi;
-        this.plugin = plugin;
+    private BundledCompatibility() {
     }
 
     /**
-     * Registers the Factories.
+     * Registers the compatible factories.
+     *
+     * @param loggerFactory the logger factory to use
+     * @param logger        the logger to use
+     * @param compatibility the compatibility instance to register the factories to
+     * @param instructions  the instructions instance
+     * @param registries    the registries instance
+     * @param plugin        the plugin instance
      */
-    public void registerCompatiblePlugins() {
-        final BetonQuestLoggerFactory loggerFactory = betonQuestApi.getLoggerFactory();
+    public static void registerCompatiblePlugins(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger logger,
+                                                 final Compatibility compatibility, final Instructions instructions,
+                                                 final BetonQuestRegistries registries, final Plugin plugin) {
         compatibility.registerPlugin("MythicMobs", new MythicMobsIntegratorFactory());
         compatibility.registerPlugin("Citizens", new CitizensIntegratorFactory());
         compatibility.registerPlugin("Vault", new VaultIntegratorFactory());
@@ -116,11 +95,11 @@ public class BundledCompatibility {
         compatibility.registerPlugin("AuraSkills", new AuraSkillsIntegratorFactory());
         try {
             final IdentifierFactory<PlaceholderIdentifier> placeholderIdentifierFactory =
-                    betonQuestApi.getQuestRegistries().identifier().getFactory(PlaceholderIdentifier.class);
+                    registries.identifiers().getFactory(PlaceholderIdentifier.class);
             compatibility.registerPlugin("DecentHolograms", new DecentHologramsIntegratorFactory(loggerFactory,
-                    betonQuestApi.getInstructionApi(), placeholderIdentifierFactory));
+                    instructions, placeholderIdentifierFactory));
             compatibility.registerPlugin("HolographicDisplays", new HolographicDisplaysIntegratorFactory(loggerFactory,
-                    betonQuestApi.getInstructionApi(), placeholderIdentifierFactory));
+                    instructions, placeholderIdentifierFactory));
         } catch (final QuestException e) {
             logger.warn("Could not register DecentHolograms and HolographicDisplays compatibility.", e);
         }

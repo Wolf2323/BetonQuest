@@ -4,8 +4,8 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
 
 /**
  * Checks if the player has specified objective active.
@@ -13,9 +13,9 @@ import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 public class ObjectiveCondition implements PlayerCondition {
 
     /**
-     * Quest Type API.
+     * The objective manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ObjectiveManager objectiveManager;
 
     /**
      * The objective ID.
@@ -25,16 +25,16 @@ public class ObjectiveCondition implements PlayerCondition {
     /**
      * Creates a new ObjectiveCondition.
      *
-     * @param questTypeApi the Quest Type API
-     * @param objectiveId  the objective ID
+     * @param objectiveManager the objective manager
+     * @param objectiveId      the objective ID
      */
-    public ObjectiveCondition(final QuestTypeApi questTypeApi, final Argument<ObjectiveIdentifier> objectiveId) {
-        this.questTypeApi = questTypeApi;
+    public ObjectiveCondition(final ObjectiveManager objectiveManager, final Argument<ObjectiveIdentifier> objectiveId) {
+        this.objectiveManager = objectiveManager;
         this.objectiveId = objectiveId;
     }
 
     @Override
     public boolean check(final Profile profile) throws QuestException {
-        return questTypeApi.getObjective(objectiveId.getValue(profile)).getService().containsProfile(profile);
+        return objectiveManager.getObjective(objectiveId.getValue(profile)).getService().containsProfile(profile);
     }
 }

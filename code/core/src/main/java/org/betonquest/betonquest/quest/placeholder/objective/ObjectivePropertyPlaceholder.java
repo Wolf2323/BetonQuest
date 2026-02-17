@@ -3,10 +3,10 @@ package org.betonquest.betonquest.quest.placeholder.objective;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.objective.Objective;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveService;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholder;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
 
 /**
  * Resolves to a specified property of an objective.
@@ -14,9 +14,9 @@ import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholder;
 public class ObjectivePropertyPlaceholder implements PlayerPlaceholder {
 
     /**
-     * Quest Type API.
+     * The objective manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ObjectiveManager objectiveManager;
 
     /**
      * The objective ID.
@@ -31,19 +31,19 @@ public class ObjectivePropertyPlaceholder implements PlayerPlaceholder {
     /**
      * Create a new objective property placeholder.
      *
-     * @param questTypeApi the Quest Type API
-     * @param objectiveID  The objective ID.
-     * @param propertyName The property name.
+     * @param objectiveManager The objective manager.
+     * @param objectiveID      The objective ID.
+     * @param propertyName     The property name.
      */
-    public ObjectivePropertyPlaceholder(final QuestTypeApi questTypeApi, final ObjectiveIdentifier objectiveID, final String propertyName) {
-        this.questTypeApi = questTypeApi;
+    public ObjectivePropertyPlaceholder(final ObjectiveManager objectiveManager, final ObjectiveIdentifier objectiveID, final String propertyName) {
+        this.objectiveManager = objectiveManager;
         this.objectiveID = objectiveID;
         this.propertyName = propertyName;
     }
 
     @Override
     public String getValue(final Profile profile) throws QuestException {
-        final Objective objective = questTypeApi.getObjective(objectiveID);
+        final Objective objective = objectiveManager.getObjective(objectiveID);
         final ObjectiveService service = objective.getService();
         if (service.containsProfile(profile)) {
             return service.getProperties().getProperty(propertyName, profile);

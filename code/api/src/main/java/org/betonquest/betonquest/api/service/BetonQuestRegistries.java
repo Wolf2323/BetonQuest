@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.api.service;
 
+import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.item.ItemRegistry;
 import org.betonquest.betonquest.api.item.QuestItem;
 import org.betonquest.betonquest.api.item.QuestItemSerializer;
@@ -26,40 +27,47 @@ public interface BetonQuestRegistries {
      *
      * @return the action registry
      */
-    ActionRegistry getActions();
+    ActionRegistry actions();
 
     /**
      * Obtains the {@link ConditionRegistry} for registering custom conditions.
      *
      * @return the condition registry
      */
-    ConditionRegistry getConditions();
+    ConditionRegistry conditions();
 
     /**
      * Obtains the {@link ObjectiveRegistry} for registering custom {@link Objective}s.
      *
      * @return the objective registry
      */
-    ObjectiveRegistry getObjectives();
+    ObjectiveRegistry objectives();
 
     /**
      * Obtains the {@link ItemRegistry} for registering custom {@link QuestItem}s and {@link QuestItemSerializer}s.
      *
      * @return the item registry
      */
-    ItemRegistry getItems();
+    ItemRegistry items();
 
     /**
      * Obtains the {@link NpcRegistry} for registering custom NPCs.
      *
      * @return the npc registry
      */
-    NpcRegistry getNpcs();
+    NpcRegistry npcs();
 
     /**
      * Obtains the {@link PlaceholderRegistry} for registering custom placeholders.
      *
      * @return the placeholder registry
      */
-    PlaceholderRegistry getPlaceholders();
+    PlaceholderRegistry placeholders();
+
+    /**
+     * Obtains the {@link IdentifierRegistry} for registering custom identifiers.
+     *
+     * @return the identifier registry
+     */
+    IdentifierRegistry identifiers();
 }

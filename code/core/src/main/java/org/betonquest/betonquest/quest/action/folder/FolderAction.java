@@ -1,6 +1,5 @@
 package org.betonquest.betonquest.quest.action.folder;
 
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
@@ -8,12 +7,14 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.NullableAction;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
@@ -25,15 +26,15 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Folder action is a collection of other actions, that can be run after a delay and with a periode between the action.
+ * The folder action is a collection of other actions that can be run after a delay and with a periode between the action.
  * The actions can be randomly chosen to run or not.
  */
 public class FolderAction implements NullableAction {
 
     /**
-     * The BetonQuest instance.
+     * The plugin instance used for bukkit scheduling purposes.
      */
-    private final BetonQuest betonQuest;
+    private final Plugin plugin;
 
     /**
      * Custom {@link BetonQuestLogger} instance for this class.
@@ -46,9 +47,14 @@ public class FolderAction implements NullableAction {
     private final PluginManager pluginManager;
 
     /**
-     * Quest Type API.
+     * The action manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * Random generator used to choose actions to run.
@@ -96,11 +102,12 @@ public class FolderAction implements NullableAction {
     /**
      * Create a folder action with the given parameters.
      *
-     * @param betonQuest       the BetonQuest instance
+     * @param plugin           the plugin instance used for bukkit scheduling purposes
      * @param log              custom logger for this class
      * @param pluginManager    the plugin manager to register the quit listener
+     * @param actionManager    the action manager
+     * @param conditionManager the condition manager
      * @param actions          actions to run
-     * @param questTypeApi     the Quest Type API
      * @param randomGenerator  the random instance to use
      * @param delay            delay to apply before running the actions
      * @param period           delay to apply between each action
@@ -110,15 +117,17 @@ public class FolderAction implements NullableAction {
      * @param cancelConditions conditions to check if the action should be canceled
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
-    public FolderAction(final BetonQuest betonQuest, final BetonQuestLogger log, final PluginManager pluginManager,
-                        final Argument<List<ActionIdentifier>> actions, final QuestTypeApi questTypeApi, final Random randomGenerator,
+    public FolderAction(final Plugin plugin, final BetonQuestLogger log, final PluginManager pluginManager,
+                        final ActionManager actionManager, final ConditionManager conditionManager,
+                        final Argument<List<ActionIdentifier>> actions, final Random randomGenerator,
                         @Nullable final Argument<Number> delay, @Nullable final Argument<Number> period,
                         @Nullable final Argument<Number> random, final Argument<TimeUnit> timeUnit,
                         final FlagArgument<Boolean> cancelOnLogout, final Argument<List<ConditionIdentifier>> cancelConditions) {
-        this.betonQuest = betonQuest;
+        this.plugin = plugin;
         this.log = log;
         this.pluginManager = pluginManager;
-        this.questTypeApi = questTypeApi;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
         this.randomGenerator = randomGenerator;
         this.delay = delay;
         this.period = period;
@@ -132,7 +141,7 @@ public class FolderAction implements NullableAction {
     private boolean checkCancelConditions(@Nullable final Profile profile) {
         try {
             final List<ConditionIdentifier> resolvedCancelConditions = cancelConditions.getValue(profile);
-            return !resolvedCancelConditions.isEmpty() && questTypeApi.conditions(profile, resolvedCancelConditions);
+            return !resolvedCancelConditions.isEmpty() && conditionManager.testAll(profile, resolvedCancelConditions);
         } catch (final QuestException e) {
             log.warn("Exception while checking cancel conditions: " + e.getMessage(), e);
             return false;
@@ -144,7 +153,7 @@ public class FolderAction implements NullableAction {
             if (checkCancelConditions(profile)) {
                 return;
             }
-            questTypeApi.action(profile, action);
+            actionManager.run(profile, action);
         }
     }
 
@@ -170,7 +179,7 @@ public class FolderAction implements NullableAction {
             if (checkCancelConditions(profile)) {
                 return;
             }
-            questTypeApi.action(profile, action);
+            actionManager.run(profile, action);
         }
         if (!chosenList.isEmpty()) {
             final FolderActionCanceler actionCanceler = createFolderActionCanceler(profile);
@@ -183,7 +192,7 @@ public class FolderAction implements NullableAction {
                         this.cancel();
                         return;
                     }
-                    questTypeApi.action(profile, action);
+                    actionManager.run(profile, action);
                 }
             }, delayTicks == 0 ? periodTicks : delayTicks, periodTicks);
         }
@@ -221,7 +230,7 @@ public class FolderAction implements NullableAction {
 
     private FolderActionCanceler createFolderActionCanceler(@Nullable final Profile profile) throws QuestException {
         if (cancelOnLogout.getValue(null).orElse(false) && profile != null) {
-            return new QuitListener(betonQuest, log, pluginManager, profile);
+            return new QuitListener(plugin, log, pluginManager, profile);
         }
         return () -> false;
     }
@@ -229,15 +238,15 @@ public class FolderAction implements NullableAction {
     private void callSameSyncAsyncContext(final BukkitRunnable runnable, final long delay, final long period) {
         if (Bukkit.getServer().isPrimaryThread()) {
             if (period == -1) {
-                runnable.runTaskLater(betonQuest, delay);
+                runnable.runTaskLater(plugin, delay);
             } else {
-                runnable.runTaskTimer(betonQuest, delay, period);
+                runnable.runTaskTimer(plugin, delay, period);
             }
         } else {
             if (period == -1) {
-                runnable.runTaskLaterAsynchronously(betonQuest, delay);
+                runnable.runTaskLaterAsynchronously(plugin, delay);
             } else {
-                runnable.runTaskTimerAsynchronously(betonQuest, delay, period);
+                runnable.runTaskTimerAsynchronously(plugin, delay, period);
             }
         }
     }
@@ -286,16 +295,16 @@ public class FolderAction implements NullableAction {
         /**
          * Create a quit listener for the given profile's player.
          *
-         * @param betonQuest    the betonquest instance
+         * @param plugin        the plugin instance
          * @param log           custom logger for this class
          * @param pluginManager the plugin manager to register the quit listener
          * @param profile       profile to check for
          */
-        public QuitListener(final BetonQuest betonQuest, final BetonQuestLogger log, final PluginManager pluginManager,
+        public QuitListener(final Plugin plugin, final BetonQuestLogger log, final PluginManager pluginManager,
                             final Profile profile) {
             this.log = log;
             this.profile = profile;
-            pluginManager.registerEvents(this, betonQuest);
+            pluginManager.registerEvents(this, plugin);
         }
 
         /**

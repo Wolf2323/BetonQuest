@@ -18,7 +18,7 @@ public class Item implements ItemWrapper {
     /**
      * Feature API function to retrieve items.
      */
-    private final QuestBiFunction<ItemIdentifier, Profile, QuestItem> getItemFunction;
+    private final QuestBiFunction<Profile, ItemIdentifier, QuestItem> getItemFunction;
 
     /**
      * Item id to generate the QuestItem with.
@@ -37,7 +37,7 @@ public class Item implements ItemWrapper {
      * @param itemID          the QuestItemID to create
      * @param amount          the size to set the created ItemStack to
      */
-    public Item(final QuestBiFunction<ItemIdentifier, Profile, QuestItem> getItemFunction, final ItemIdentifier itemID, final Argument<Number> amount) {
+    public Item(final QuestBiFunction<Profile, ItemIdentifier, QuestItem> getItemFunction, final ItemIdentifier itemID, final Argument<Number> amount) {
         this.getItemFunction = getItemFunction;
         this.itemID = itemID;
         this.amount = amount;
@@ -60,7 +60,7 @@ public class Item implements ItemWrapper {
 
     @Override
     public QuestItem getItem(@Nullable final Profile profile) throws QuestException {
-        return getItemFunction.apply(itemID, profile);
+        return getItemFunction.apply(profile, itemID);
     }
 
     @Override

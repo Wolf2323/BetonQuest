@@ -2,7 +2,7 @@ package org.betonquest.betonquest.notify.io;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.feature.ConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.notify.NotifyIO;
 import org.betonquest.betonquest.notify.NotifyIOFactory;
@@ -23,7 +23,7 @@ public class ChatNotifyIOFactory implements NotifyIOFactory {
     /**
      * Conversation API.
      */
-    private final ConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * Create a new Chat Notify IO.
@@ -31,7 +31,7 @@ public class ChatNotifyIOFactory implements NotifyIOFactory {
      * @param placeholders    the {@link Placeholders} to create and resolve placeholders
      * @param conversationApi the Conversation API
      */
-    public ChatNotifyIOFactory(final Placeholders placeholders, final ConversationApi conversationApi) {
+    public ChatNotifyIOFactory(final Placeholders placeholders, final LegacyConversations conversationApi) {
         this.placeholders = placeholders;
         this.conversationApi = conversationApi;
     }

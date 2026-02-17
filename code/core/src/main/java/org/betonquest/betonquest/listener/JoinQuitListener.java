@@ -1,7 +1,7 @@
 package org.betonquest.betonquest.listener;
 
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.feature.ConversationApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
@@ -47,7 +47,7 @@ public class JoinQuitListener implements Listener {
     /**
      * Conversation API.
      */
-    private final ConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * The profile provider instance.
@@ -71,7 +71,7 @@ public class JoinQuitListener implements Listener {
      */
     public JoinQuitListener(final ConfigAccessor config,
                             final ObjectiveProcessor questTypeApi, final PlayerDataStorage playerDataStorage,
-                            final ConversationApi conversationApi, final ProfileProvider profileProvider, final Updater updater) {
+                            final LegacyConversations conversationApi, final ProfileProvider profileProvider, final Updater updater) {
         this.config = config;
         this.questTypeApi = questTypeApi;
         this.playerDataStorage = playerDataStorage;

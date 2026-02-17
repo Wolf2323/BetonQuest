@@ -8,10 +8,10 @@ import org.betonquest.betonquest.api.common.component.BookPageWrapper;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
-import org.betonquest.betonquest.api.feature.FeatureApi;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.Placeholders;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ActionManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.api.text.TextParserRegistry;
 import org.betonquest.betonquest.config.PluginMessage;
@@ -72,19 +72,14 @@ public class CoreFeatureFactories {
     private final LastExecutionCache lastExecutionCache;
 
     /**
-     * Quest Type API.
-     */
-    private final QuestTypeApi questTypeApi;
-
-    /**
      * The {@link Placeholders} to create and resolve placeholders.
      */
     private final Placeholders placeholders;
 
     /**
-     * Feature API.
+     * The conversation api.
      */
-    private final FeatureApi featureApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * The Config.
@@ -95,6 +90,11 @@ public class CoreFeatureFactories {
      * The colors to use for the conversation.
      */
     private final ConversationColors colors;
+
+    /**
+     * The action manager handling actions.
+     */
+    private final ActionManager actionManager;
 
     /**
      * The message parser to use for parsing messages.
@@ -117,29 +117,30 @@ public class CoreFeatureFactories {
      * @param loggerFactory      the factory to create new class specific loggers
      * @param packManager        the quest package manager to get quest packages from
      * @param lastExecutionCache the cache to catch up missed schedulers
-     * @param questTypeApi       the class for executing actions
      * @param placeholders       the {@link Placeholders} to create and resolve placeholders
-     * @param featureApi         the Feature API
+     * @param conversationApi    the conversation api
      * @param config             the config
      * @param colors             the colors to use for the conversation
+     * @param actionManager      the action manager handling actions
      * @param textParser         the text parser to use for parsing text
      * @param fontRegistry       the font registry to use for the conversation
      * @param pluginMessage      the {@link PluginMessage} instance
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public CoreFeatureFactories(final BetonQuestLoggerFactory loggerFactory, final QuestPackageManager packManager,
-                                final LastExecutionCache lastExecutionCache, final QuestTypeApi questTypeApi,
-                                final Placeholders placeholders, final FeatureApi featureApi,
+                                final LastExecutionCache lastExecutionCache,
+                                final Placeholders placeholders, final LegacyConversations conversationApi,
                                 final ConfigAccessor config, final ConversationColors colors,
+                                final ActionManager actionManager,
                                 final TextParser textParser, final FontRegistry fontRegistry, final PluginMessage pluginMessage) {
         this.loggerFactory = loggerFactory;
         this.packManager = packManager;
         this.lastExecutionCache = lastExecutionCache;
-        this.questTypeApi = questTypeApi;
         this.placeholders = placeholders;
-        this.featureApi = featureApi;
+        this.conversationApi = conversationApi;
         this.config = config;
         this.colors = colors;
+        this.actionManager = actionManager;
         this.textParser = textParser;
         this.fontRegistry = fontRegistry;
         this.pluginMessage = pluginMessage;
@@ -172,7 +173,7 @@ public class CoreFeatureFactories {
         final Plugin plugin = BetonQuest.getInstance();
         final NotifyIORegistry notifyIOTypes = registries.notifyIO();
         notifyIOTypes.register("suppress", new SuppressNotifyIOFactory());
-        notifyIOTypes.register("chat", new ChatNotifyIOFactory(placeholders, featureApi.conversationApi()));
+        notifyIOTypes.register("chat", new ChatNotifyIOFactory(placeholders, conversationApi));
         notifyIOTypes.register("advancement", new AdvancementNotifyIOFactory(placeholders, plugin));
         notifyIOTypes.register("actionbar", new ActionBarNotifyIOFactory(placeholders));
         notifyIOTypes.register("bossbar", new BossBarNotifyIOFactory(placeholders, plugin));
@@ -183,10 +184,10 @@ public class CoreFeatureFactories {
 
         final ScheduleRegistry schedulingTypes = registries.actionScheduling();
         schedulingTypes.register("realtime-daily", new RealtimeDailyScheduleFactory(),
-                new RealtimeDailyScheduler(loggerFactory.create(RealtimeDailyScheduler.class, "Schedules"), questTypeApi, lastExecutionCache)
+                new RealtimeDailyScheduler(loggerFactory.create(RealtimeDailyScheduler.class, "Schedules"), actionManager, lastExecutionCache)
         );
         schedulingTypes.register("realtime-cron", new RealtimeCronScheduleFactory(),
-                new RealtimeCronScheduler(loggerFactory.create(RealtimeCronScheduler.class, "Schedules"), questTypeApi, lastExecutionCache)
+                new RealtimeCronScheduler(loggerFactory.create(RealtimeCronScheduler.class, "Schedules"), actionManager, lastExecutionCache)
         );
 
         final TextParserRegistry textParserRegistry = registries.textParser();

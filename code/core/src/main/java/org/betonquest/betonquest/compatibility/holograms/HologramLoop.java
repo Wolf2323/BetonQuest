@@ -8,16 +8,13 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
-import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
-import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
 import org.betonquest.betonquest.api.instruction.argument.parser.PackageIdentifierParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.logger.QuestExceptionHandler;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.compatibility.holograms.lines.AbstractLine;
 import org.betonquest.betonquest.compatibility.holograms.lines.ItemLine;
@@ -63,11 +60,6 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
     protected final HologramProvider hologramProvider;
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
-     */
-    protected final Placeholders placeholders;
-
-    /**
      * The quest package manager to get quest packages from.
      */
     protected final QuestPackageManager packManager;
@@ -83,9 +75,9 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
     private final TextParser textParser;
 
     /**
-     * Parser for the item line.
+     * The BetonQuest instruction API.
      */
-    private final InstructionArgumentParser<ItemWrapper> itemParser;
+    private final Instructions instructionApi;
 
     /**
      * Default refresh Interval for Holograms.
@@ -99,26 +91,22 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
      * @param log               the logger that will be used for logging
      * @param instructionApi    the instruction api to use
      * @param packManager       the quest package manager to get quest packages from
-     * @param placeholders      the {@link Placeholders} to create and resolve placeholders
      * @param hologramProvider  the hologram provider to create new holograms
      * @param readable          the type name used for logging, with the first letter in upper case
      * @param internal          the section name and/or bstats topic identifier
      * @param textParser        the text parser used to parse text and colors
-     * @param parsers           the argument parsers
      * @param identifierFactory the identifier factory to create {@link HologramIdentifier}s for this type
      */
-    @SuppressWarnings("PMD.ExcessiveParameterList")
     public HologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
-                        final Placeholders placeholders, final InstructionApi instructionApi, final QuestPackageManager packManager,
+                        final Instructions instructionApi, final QuestPackageManager packManager,
                         final HologramProvider hologramProvider, final String readable, final String internal,
-                        final TextParser textParser, final ArgumentParsers parsers, final IdentifierFactory<HologramIdentifier> identifierFactory) {
+                        final TextParser textParser, final IdentifierFactory<HologramIdentifier> identifierFactory) {
         super(log, instructionApi, identifierFactory, readable, internal);
         this.loggerFactory = loggerFactory;
         this.hologramProvider = hologramProvider;
-        this.placeholders = placeholders;
+        this.instructionApi = instructionApi;
         this.packManager = packManager;
         this.textParser = textParser;
-        this.itemParser = parsers.item();
     }
 
     @Override
@@ -151,7 +139,7 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
         final QuestExceptionHandler handler = new DefaultQuestExceptionHandler(pack, loggerFactory.create(HologramWrapper.class), identifier.getFull());
         final HologramWrapper hologramWrapper = new HologramWrapper(
                 handler,
-                BetonQuest.getInstance().getQuestTypeApi(),
+                BetonQuest.getInstance().getBetonQuestManagers().conditions(),
                 BetonQuest.getInstance().getProfileProvider(),
                 checkInterval.getValue(null).intValue(),
                 holograms,
@@ -189,7 +177,8 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
 
     private ItemLine parseItemLine(final QuestPackage pack, final String line) throws QuestException {
         try {
-            return new ItemLine(itemParser.apply(placeholders, packManager, pack, line).generate(null));
+            final Argument<ItemWrapper> parsedValue = instructionApi.createForArgument(pack, line).item().get();
+            return new ItemLine(parsedValue.getValue(null).generate(null));
         } catch (final QuestException e) {
             throw new QuestException("Error while loading item: " + e.getMessage(), e);
         }

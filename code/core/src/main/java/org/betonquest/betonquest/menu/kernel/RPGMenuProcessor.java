@@ -2,13 +2,14 @@ package org.betonquest.betonquest.menu.kernel;
 
 import org.betonquest.betonquest.api.identifier.Identifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
 import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.processor.SectionProcessor;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
 
@@ -31,9 +32,14 @@ public abstract class RPGMenuProcessor<I extends Identifier, T> extends SectionP
     protected final ParsedSectionTextCreator textCreator;
 
     /**
-     * The QuestTypeApi.
+     * The ActionManager.
      */
-    protected final QuestTypeApi questTypeApi;
+    protected final ActionManager actionManager;
+
+    /**
+     * The ConditionManager.
+     */
+    protected final ConditionManager conditionManager;
 
     /**
      * The Item Parser instance.
@@ -51,16 +57,19 @@ public abstract class RPGMenuProcessor<I extends Identifier, T> extends SectionP
      * @param textCreator       the text creator to parse text
      * @param parsers           the argument parsers
      * @param identifierFactory the identifier factory
-     * @param questTypeApi      the QuestTypeApi
+     * @param actionManager     the ActionManager
+     * @param conditionManager  the ConditionManager
      */
-    public RPGMenuProcessor(final BetonQuestLogger log, final InstructionApi instructionApi, final String readable,
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    public RPGMenuProcessor(final BetonQuestLogger log, final Instructions instructionApi, final String readable,
                             final String internal, final BetonQuestLoggerFactory loggerFactory,
                             final ParsedSectionTextCreator textCreator, final ArgumentParsers parsers,
-                            final IdentifierFactory<I> identifierFactory, final QuestTypeApi questTypeApi) {
+                            final IdentifierFactory<I> identifierFactory, final ActionManager actionManager, final ConditionManager conditionManager) {
         super(log, instructionApi, identifierFactory, readable, internal);
         this.loggerFactory = loggerFactory;
         this.textCreator = textCreator;
-        this.questTypeApi = questTypeApi;
         this.itemParser = parsers.item();
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
     }
 }

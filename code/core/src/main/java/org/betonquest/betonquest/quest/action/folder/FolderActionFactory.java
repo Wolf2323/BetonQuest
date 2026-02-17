@@ -1,6 +1,5 @@
 package org.betonquest.betonquest.quest.action.folder;
 
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
@@ -8,12 +7,14 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.NullableActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import java.util.Collections;
@@ -27,9 +28,9 @@ import java.util.Random;
 public class FolderActionFactory implements PlayerActionFactory, PlayerlessActionFactory {
 
     /**
-     * The BetonQuest instance.
+     * The plugin instance.
      */
-    private final BetonQuest betonQuest;
+    private final Plugin plugin;
 
     /**
      * Logger factory to create a logger for the actions.
@@ -42,24 +43,31 @@ public class FolderActionFactory implements PlayerActionFactory, PlayerlessActio
     private final PluginManager pluginManager;
 
     /**
-     * Quest Type API.
+     * The action manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * Create a new folder action factory.
      *
-     * @param betonQuest    the BetonQuest instance
-     * @param loggerFactory the logger factory to create a logger for the actions
-     * @param pluginManager the plugin manager to register the quit listener
-     * @param questTypeApi  the Quest Type API
+     * @param plugin           the plugin instance
+     * @param loggerFactory    the logger factory to create a logger for the actions
+     * @param pluginManager    the plugin manager to register the quit listener
+     * @param actionManager    the action manager
+     * @param conditionManager the condition manager
      */
-    public FolderActionFactory(final BetonQuest betonQuest, final BetonQuestLoggerFactory loggerFactory,
-                               final PluginManager pluginManager, final QuestTypeApi questTypeApi) {
-        this.betonQuest = betonQuest;
+    public FolderActionFactory(final Plugin plugin, final BetonQuestLoggerFactory loggerFactory,
+                               final PluginManager pluginManager, final ActionManager actionManager, final ConditionManager conditionManager) {
+        this.plugin = plugin;
         this.loggerFactory = loggerFactory;
         this.pluginManager = pluginManager;
-        this.questTypeApi = questTypeApi;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
     }
 
     @Override
@@ -81,9 +89,8 @@ public class FolderActionFactory implements PlayerActionFactory, PlayerlessActio
         final FlagArgument<Boolean> cancelOnLogout = instruction.bool().getFlag("cancelOnLogout", true);
         final Argument<List<ConditionIdentifier>> cancelConditions = instruction.identifier(ConditionIdentifier.class)
                 .list().get("cancelConditions", Collections.emptyList());
-        return new NullableActionAdapter(new FolderAction(betonQuest, loggerFactory.create(FolderAction.class), pluginManager,
-                actions,
-                questTypeApi, new Random(), delay, period, random, timeUnit, cancelOnLogout, cancelConditions));
+        return new NullableActionAdapter(new FolderAction(plugin, loggerFactory.create(FolderAction.class), pluginManager,
+                actionManager, conditionManager, actions, new Random(), delay, period, random, timeUnit, cancelOnLogout, cancelConditions));
     }
 
     private TimeUnit getTimeUnit(final String input) throws QuestException {

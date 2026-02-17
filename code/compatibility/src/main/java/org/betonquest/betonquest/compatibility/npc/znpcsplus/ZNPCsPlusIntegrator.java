@@ -1,6 +1,7 @@
 package org.betonquest.betonquest.compatibility.npc.znpcsplus;
 
 import lol.pyr.znpcsplus.api.NpcApiProvider;
+import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
@@ -42,11 +43,11 @@ public class ZNPCsPlusIntegrator implements Integrator {
     @Override
     public void hook(final BetonQuestApi api) throws HookException {
         validateVersion();
-        final NpcRegistry npcRegistry = api.getFeatureRegistries().npc();
-        final ProfileProvider profileProvider = api.getProfileProvider();
+        final NpcRegistry npcRegistry = api.registries().npcs();
+        final ProfileProvider profileProvider = api.profiles();
         final PluginManager manager = plugin.getServer().getPluginManager();
         manager.registerEvents(new ZNPCsPlusCatcher(profileProvider, npcRegistry), plugin);
-        final ZNPCsPlusHider hider = new ZNPCsPlusHider(api.getFeatureApi().getNpcHider());
+        final ZNPCsPlusHider hider = new ZNPCsPlusHider(BetonQuest.getInstance().getLegacyFeatures().getNpcHider());
         manager.registerEvents(hider, plugin);
         npcRegistry.register(PREFIX, new ZNPCsPlusFactory(NpcApiProvider.get().getNpcRegistry()));
         npcRegistry.registerIdentifier(new ZNPCsPlusIdentifier(PREFIX));

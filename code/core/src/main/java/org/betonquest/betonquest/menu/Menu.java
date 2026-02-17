@@ -10,7 +10,8 @@ import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,9 +29,14 @@ public class Menu {
     private final BetonQuestLogger log;
 
     /**
-     * Quest Type API.
+     * The Action Manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
+
+    /**
+     * The Condition Manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * The internal id of the menu.
@@ -51,16 +57,19 @@ public class Menu {
     /**
      * Creates a new Menu.
      *
-     * @param log          the custom logger for this class
-     * @param menuID       the id of the menu
-     * @param questTypeApi the Quest Type API
-     * @param menuData     the Menu Data
-     * @param boundItem    the optional bound Item
+     * @param log              the custom logger for this class
+     * @param menuID           the id of the menu
+     * @param actionManager    the Action Manager
+     * @param conditionManager the Condition Manager
+     * @param menuData         the Menu Data
+     * @param boundItem        the optional bound Item
      */
-    public Menu(final BetonQuestLogger log, final MenuIdentifier menuID, final QuestTypeApi questTypeApi,
+    public Menu(final BetonQuestLogger log, final MenuIdentifier menuID,
+                final ActionManager actionManager, final ConditionManager conditionManager,
                 final MenuData menuData, @Nullable final Argument<ItemWrapper> boundItem) {
         this.log = log;
-        this.questTypeApi = questTypeApi;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
         this.menuID = menuID;
         this.data = menuData;
         this.boundItem = boundItem;
@@ -80,7 +89,7 @@ public class Menu {
             log.warn(menuID.getPackage(), "Error while resolving open_conditions in menu '" + menuID + "': " + exception.getMessage(), exception);
             return false;
         }
-        final boolean allowOpen = questTypeApi.conditions(profile, resolved);
+        final boolean allowOpen = conditionManager.testAll(profile, resolved);
         if (!allowOpen) {
             log.debug(menuID.getPackage(), "Denied opening of " + menuID);
         }
@@ -116,7 +125,7 @@ public class Menu {
             return;
         }
         log.debug(menuID.getPackage(), "Menu " + menuID + ": Run actions");
-        questTypeApi.actions(profile, resolved);
+        actionManager.run(profile, resolved);
     }
 
     /**

@@ -15,10 +15,10 @@ import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveRegistry;
-import org.betonquest.betonquest.api.service.BetonQuestConversations;
-import org.betonquest.betonquest.api.service.BetonQuestInstructions;
 import org.betonquest.betonquest.api.service.BetonQuestManagers;
 import org.betonquest.betonquest.api.service.BetonQuestRegistries;
+import org.betonquest.betonquest.api.service.Conversations;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -33,7 +33,7 @@ import java.util.UUID;
  * The API is available and ready to use after BetonQuest itself has finished enabling and may therefore be called
  * the earliest while enabling a plugin explicitly depending on BetonQuest (enabling after BetonQuest).
  */
-public interface BetonQuestApiInstance {
+public interface BetonQuestApi {
 
     /**
      * Offers functionality to retrieve profiles for {@link Player}s, {@link OfflinePlayer}s and {@link UUID}s.
@@ -45,7 +45,7 @@ public interface BetonQuestApiInstance {
      * @see Profile
      * @see OnlineProfile
      */
-    ProfileProvider getProfiles();
+    ProfileProvider profiles();
 
     /**
      * Offers functionality to retrieve {@link QuestPackage}s.
@@ -57,7 +57,7 @@ public interface BetonQuestApiInstance {
      * @return the package manager offering functionality to retrieve packages
      * @see QuestPackage
      */
-    QuestPackageManager getPackages();
+    QuestPackageManager packages();
 
     /**
      * Offers functionality to create loggers that are integrated with BetonQuest.
@@ -68,7 +68,7 @@ public interface BetonQuestApiInstance {
      * @return the logger factory offering functionality to create loggers
      * @see BetonQuestLogger
      */
-    BetonQuestLoggerFactory getLoggers();
+    BetonQuestLoggerFactory loggerFactory();
 
     /**
      * Offers functionality to create instructions to parse values containing placeholders.
@@ -82,7 +82,7 @@ public interface BetonQuestApiInstance {
      * @see Instruction
      * @see SectionInstruction
      */
-    BetonQuestInstructions getInstructions();
+    Instructions instructions();
 
     /**
      * Offers functionality to access conversation in BetonQuest.
@@ -91,27 +91,27 @@ public interface BetonQuestApiInstance {
      *
      * @return the conversation api offering functionality to access conversations
      */
-    BetonQuestConversations getConversations();
+    Conversations conversations();
 
     /**
      * Offers functionality to register custom features.
      * <br> <br>
      * A registry allows registering new implementations of factories for quest type objects in BetonQuest.
      * For example, to have a new type of objective, create an {@link ObjectiveFactory} and register it
-     * using the {@link ObjectiveRegistry} accessible through {@link BetonQuestRegistries#getObjectives()}.
+     * using the {@link ObjectiveRegistry} accessible through {@link BetonQuestRegistries#objectives()}.
      *
      * @return the betonquest registries offering functionality to register custom features
      */
-    BetonQuestRegistries getRegistries();
+    BetonQuestRegistries registries();
 
     /**
      * Offers functionality to access existing and loaded types.
      * <br> <br>
      * A manager allows accessing all instances created for a specific type.
      * For example, to start an objective with an {@link ObjectiveIdentifier} for a specific {@link OnlineProfile}, call
-     * {@link BetonQuestManagers#getObjectives()} and use {@link ObjectiveManager#start(Profile, ObjectiveIdentifier)}.
+     * {@link BetonQuestManagers#objectives()} and use {@link ObjectiveManager#start(Profile, ObjectiveIdentifier)}.
      *
      * @return the betonquest managers offering functionality to access existing and loaded types
      */
-    BetonQuestManagers getManagers();
+    BetonQuestManagers managers();
 }

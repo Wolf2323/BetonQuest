@@ -5,12 +5,12 @@ import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.instruction.argument.parser.NumberParser;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.NullableActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
+import org.betonquest.betonquest.api.service.ActionManager;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -27,17 +27,17 @@ public class PickRandomActionFactory implements PlayerActionFactory, PlayerlessA
     private static final Pattern ACTION_WEIGHT = Pattern.compile("(?<weight>\\d+\\.?\\d?)~(?<action>.+)");
 
     /**
-     * Quest Type API.
+     * The action manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
 
     /**
      * Creates the PickRandomActionFactory.
      *
-     * @param questTypeApi the Quest Type API
+     * @param actionManager the action manager
      */
-    public PickRandomActionFactory(final QuestTypeApi questTypeApi) {
-        this.questTypeApi = questTypeApi;
+    public PickRandomActionFactory(final ActionManager actionManager) {
+        this.actionManager = actionManager;
     }
 
     @Override
@@ -64,6 +64,6 @@ public class PickRandomActionFactory implements PlayerActionFactory, PlayerlessA
             return new RandomAction(actionID, weight);
         }).list().get();
         final Argument<Number> amount = instruction.number().get("amount").orElse(null);
-        return new NullableActionAdapter(new PickRandomAction(actions, amount, questTypeApi));
+        return new NullableActionAdapter(new PickRandomAction(actionManager, actions, amount));
     }
 }

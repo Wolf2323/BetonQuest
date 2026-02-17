@@ -1,16 +1,15 @@
 package org.betonquest.betonquest.quest.action.eval;
 
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.quest.action.NullableActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.registry.quest.ActionTypeRegistry;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 /**
@@ -19,14 +18,9 @@ import org.bukkit.scheduler.BukkitScheduler;
 public class EvalActionFactory implements PlayerActionFactory, PlayerlessActionFactory {
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
+     * The BetonQuest instructions to use to parse instructions.
      */
-    private final Placeholders placeholders;
-
-    /**
-     * The quest package manager to get quest packages from.
-     */
-    private final QuestPackageManager packManager;
+    private final Instructions instructions;
 
     /**
      * The action type registry providing factories to parse the evaluated instruction.
@@ -41,21 +35,18 @@ public class EvalActionFactory implements PlayerActionFactory, PlayerlessActionF
     /**
      * The plugin instance.
      */
-    private final BetonQuest plugin;
+    private final Plugin plugin;
 
     /**
      * Create a new Eval action factory.
      *
-     * @param placeholders       the {@link Placeholders} to create and resolve placeholders
-     * @param packManager        the quest package manager to get quest packages from
+     * @param instructions       the BetonQuest instructions to use to parse instructions
      * @param actionTypeRegistry the action type registry providing factories to parse the evaluated instruction
      * @param scheduler          the scheduler to use for synchronous execution
      * @param plugin             the plugin instance
      */
-    public EvalActionFactory(final Placeholders placeholders, final QuestPackageManager packManager,
-                             final ActionTypeRegistry actionTypeRegistry, final BukkitScheduler scheduler, final BetonQuest plugin) {
-        this.placeholders = placeholders;
-        this.packManager = packManager;
+    public EvalActionFactory(final Instructions instructions, final ActionTypeRegistry actionTypeRegistry, final BukkitScheduler scheduler, final Plugin plugin) {
+        this.instructions = instructions;
         this.actionTypeRegistry = actionTypeRegistry;
         this.scheduler = scheduler;
         this.plugin = plugin;
@@ -73,7 +64,7 @@ public class EvalActionFactory implements PlayerActionFactory, PlayerlessActionF
 
     private NullableActionAdapter parseEvalAction(final Instruction instruction) throws QuestException {
         final String rawInstruction = String.join(" ", instruction.getValueParts());
-        return new NullableActionAdapter(new EvalAction(plugin, placeholders, packManager, actionTypeRegistry, instruction.getPackage(),
+        return new NullableActionAdapter(new EvalAction(instructions, actionTypeRegistry, instruction.getPackage(),
                 instruction.chainForArgument(rawInstruction).string().get(), scheduler, plugin));
     }
 }

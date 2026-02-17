@@ -25,7 +25,7 @@ import org.bukkit.configuration.ConfigurationSection;
  * will throw an exception if the validation fails.
  * In the process of creating an instruction it may also throw a {@link QuestException} if the tokenizing fails.
  */
-public interface BetonQuestInstructions {
+public interface Instructions {
 
     /**
      * Obtains a new {@link InstructionChainParser} for the given argument to be able to resolve its value.

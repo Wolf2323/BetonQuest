@@ -5,12 +5,12 @@ import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.condition.NullableConditionAdapter;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessConditionFactory;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.quest.condition.ThrowExceptionPlayerlessCondition;
 import org.bukkit.Location;
 
@@ -23,23 +23,23 @@ import java.util.List;
 public class PartyConditionFactory implements PlayerConditionFactory, PlayerlessConditionFactory {
 
     /**
-     * Quest Type API.
-     */
-    private final QuestTypeApi questTypeApi;
-
-    /**
      * The profile provider instance.
      */
     private final ProfileProvider profileProvider;
 
     /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
+
+    /**
      * Create the party condition factory.
      *
-     * @param questTypeApi    the Quest Type API
-     * @param profileProvider the profile provider instance
+     * @param conditionManager the condition manager
+     * @param profileProvider  the profile provider instance
      */
-    public PartyConditionFactory(final QuestTypeApi questTypeApi, final ProfileProvider profileProvider) {
-        this.questTypeApi = questTypeApi;
+    public PartyConditionFactory(final ConditionManager conditionManager, final ProfileProvider profileProvider) {
+        this.conditionManager = conditionManager;
         this.profileProvider = profileProvider;
     }
 
@@ -67,6 +67,6 @@ public class PartyConditionFactory implements PlayerConditionFactory, Playerless
         final Argument<List<ConditionIdentifier>> anyone = instruction.identifier(ConditionIdentifier.class)
                 .list().get("any", Collections.emptyList());
         final Argument<Number> count = instruction.number().get("count").orElse(null);
-        return new PartyCondition(location, range, conditions, everyone, anyone, count, questTypeApi, profileProvider);
+        return new PartyCondition(location, range, conditions, everyone, anyone, count, conditionManager, profileProvider);
     }
 }

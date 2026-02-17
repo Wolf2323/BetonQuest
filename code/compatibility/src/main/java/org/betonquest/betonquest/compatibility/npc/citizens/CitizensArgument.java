@@ -6,9 +6,9 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
 import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.Instructions;
 
 /**
  * Parses a string to a Citizens Npc ID.
@@ -23,7 +23,7 @@ public class CitizensArgument implements InstructionArgumentParser<NpcIdentifier
     /**
      * The instruction api to use.
      */
-    private final InstructionApi instructionApi;
+    private final Instructions instructionApi;
 
     /**
      * Creates a new parser for Citizens Npc Ids.
@@ -31,7 +31,7 @@ public class CitizensArgument implements InstructionArgumentParser<NpcIdentifier
      * @param instructionApi    the instruction api to use
      * @param identifierFactory the identifier factory to use
      */
-    public CitizensArgument(final InstructionApi instructionApi, final IdentifierFactory<NpcIdentifier> identifierFactory) {
+    public CitizensArgument(final Instructions instructionApi, final IdentifierFactory<NpcIdentifier> identifierFactory) {
         this.instructionApi = instructionApi;
         this.identifierFactory = identifierFactory;
     }
@@ -39,7 +39,7 @@ public class CitizensArgument implements InstructionArgumentParser<NpcIdentifier
     @Override
     public NpcIdentifier apply(final Placeholders placeholders, final QuestPackageManager packManager, final QuestPackage pack, final String string) throws QuestException {
         final NpcIdentifier npcId = identifierFactory.parseIdentifier(pack, string);
-        final Instruction npcInstruction = instructionApi.createInstruction(npcId, npcId.readRawInstruction());
+        final Instruction npcInstruction = instructionApi.create(npcId, npcId.readRawInstruction());
         if (!"citizens".equals(npcInstruction.getPart(0))) {
             throw new QuestException("Cannot use non-Citizens NPC ID!");
         }

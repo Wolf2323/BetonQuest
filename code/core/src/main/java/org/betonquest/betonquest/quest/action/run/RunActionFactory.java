@@ -1,15 +1,13 @@
 package org.betonquest.betonquest.quest.action.run;
 
-import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.quest.action.NullableActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.kernel.processor.adapter.ActionAdapter;
 import org.betonquest.betonquest.kernel.registry.quest.ActionTypeRegistry;
 import org.betonquest.betonquest.quest.action.eval.EvalAction;
@@ -23,38 +21,23 @@ import java.util.List;
 public class RunActionFactory implements PlayerActionFactory, PlayerlessActionFactory {
 
     /**
-     * The {@link Placeholders} to create and resolve placeholders.
-     */
-    private final Placeholders placeholders;
-
-    /**
-     * The quest package manager to get quest packages from.
-     */
-    private final QuestPackageManager packManager;
-
-    /**
      * The action type registry providing factories to parse the evaluated instruction.
      */
     private final ActionTypeRegistry actionTypeRegistry;
 
     /**
-     * The {@link BetonQuestApi} to use.
+     * The {@link Instructions} to use.
      */
-    private final BetonQuestApi betonQuestApi;
+    private final Instructions instructions;
 
     /**
      * Create a run action factory with the given BetonQuest instance.
      *
-     * @param betonQuestApi      the {@link BetonQuestApi} to use
-     * @param placeholders       the {@link Placeholders} to create and resolve placeholders
-     * @param packManager        the quest package manager to get quest packages from
+     * @param instructions       the {@link Instructions} to use
      * @param actionTypeRegistry the action type registry providing factories to parse the evaluated instruction
      */
-    public RunActionFactory(final BetonQuestApi betonQuestApi, final Placeholders placeholders,
-                            final QuestPackageManager packManager, final ActionTypeRegistry actionTypeRegistry) {
-        this.betonQuestApi = betonQuestApi;
-        this.placeholders = placeholders;
-        this.packManager = packManager;
+    public RunActionFactory(final Instructions instructions, final ActionTypeRegistry actionTypeRegistry) {
+        this.instructions = instructions;
         this.actionTypeRegistry = actionTypeRegistry;
     }
 
@@ -75,7 +58,7 @@ public class RunActionFactory implements PlayerActionFactory, PlayerlessActionFa
         for (final String part : parts) {
             if (part.startsWith("^")) {
                 if (!builder.isEmpty()) {
-                    actions.add(EvalAction.createAction(betonQuestApi.getArgumentParsers(), placeholders, packManager, actionTypeRegistry, instruction.getPackage(), builder.toString().trim()));
+                    actions.add(EvalAction.createAction(instructions, actionTypeRegistry, instruction.getPackage(), builder.toString().trim()));
                     builder = new StringBuilder();
                 }
                 builder.append(part.substring(1)).append(' ');
@@ -84,7 +67,7 @@ public class RunActionFactory implements PlayerActionFactory, PlayerlessActionFa
             }
         }
         if (!builder.isEmpty()) {
-            actions.add(EvalAction.createAction(betonQuestApi.getArgumentParsers(), placeholders, packManager, actionTypeRegistry, instruction.getPackage(), builder.toString().trim()));
+            actions.add(EvalAction.createAction(instructions, actionTypeRegistry, instruction.getPackage(), builder.toString().trim()));
         }
         return new NullableActionAdapter(new RunAction(actions));
     }

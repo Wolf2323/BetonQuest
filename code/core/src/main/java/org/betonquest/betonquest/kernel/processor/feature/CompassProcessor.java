@@ -6,9 +6,9 @@ import org.betonquest.betonquest.api.identifier.CompassIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.feature.QuestCompass;
 import org.betonquest.betonquest.kernel.processor.SectionProcessor;
@@ -36,7 +36,7 @@ public class CompassProcessor extends SectionProcessor<CompassIdentifier, QuestC
      * @param textCreator       the text creator to parse text
      * @param identifierFactory the identifier factory to create {@link CompassIdentifier}s for this type
      */
-    public CompassProcessor(final BetonQuestLogger log, final InstructionApi instructionApi,
+    public CompassProcessor(final BetonQuestLogger log, final Instructions instructionApi,
                             final ParsedSectionTextCreator textCreator, final IdentifierFactory<CompassIdentifier> identifierFactory) {
         super(log, instructionApi, identifierFactory, "Compass", "compass");
         this.textCreator = textCreator;

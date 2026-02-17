@@ -13,7 +13,7 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ActionManager;
 import org.betonquest.betonquest.compatibility.npc.citizens.CitizensWalkingListener;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -48,9 +48,9 @@ public class CitizensMoveController implements Listener, Predicate<NPC> {
     private final Plugin plugin;
 
     /**
-     * Quest Type API.
+     * The action manager to execute actions.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
 
     /**
      * Walking listener to check if movement is blocked by a conversation.
@@ -62,14 +62,14 @@ public class CitizensMoveController implements Listener, Predicate<NPC> {
      *
      * @param log                     logger instance for this class
      * @param plugin                  the plugin to start tasks
-     * @param questTypeApi            the Quest Type API
+     * @param actionManager           the action manager to execute actions
      * @param citizensWalkingListener the walking listener for conversations
      */
-    public CitizensMoveController(final BetonQuestLogger log, final Plugin plugin, final QuestTypeApi questTypeApi,
+    public CitizensMoveController(final BetonQuestLogger log, final Plugin plugin, final ActionManager actionManager,
                                   final CitizensWalkingListener citizensWalkingListener) {
         this.log = log;
         this.plugin = plugin;
-        this.questTypeApi = questTypeApi;
+        this.actionManager = actionManager;
         this.citizensWalkingListener = citizensWalkingListener;
     }
 
@@ -123,7 +123,7 @@ public class CitizensMoveController implements Listener, Predicate<NPC> {
         }
         final MoveInstance oldMoveInstance = movingNpcs.get(npc.getId());
         if (oldMoveInstance != null) {
-            questTypeApi.actions(profile, oldMoveInstance.moveData.failActions());
+            actionManager.run(profile, oldMoveInstance.moveData.failActions());
             return;
         }
         final MoveInstance moveInstance = new MoveInstance(plugin, moveData, profile, npc);
@@ -321,7 +321,7 @@ public class CitizensMoveController implements Listener, Predicate<NPC> {
                 public void run() {
                     npc.getNavigator().setPaused(false);
                     movingNpcs.remove(npcId);
-                    questTypeApi.actions(profile, moveData.doneActions());
+                    actionManager.run(profile, moveData.doneActions());
                 }
             }.runTaskLater(plugin, moveData.waitTicks());
         }

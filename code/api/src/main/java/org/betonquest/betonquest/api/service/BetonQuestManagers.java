@@ -1,5 +1,6 @@
 package org.betonquest.betonquest.api.service;
 
+import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.quest.objective.Objective;
 
 /**
@@ -14,7 +15,7 @@ public interface BetonQuestManagers {
      *
      * @return the action manager
      */
-    ActionManager getActions();
+    ActionManager actions();
 
     /**
      * Obtain the {@link ConditionManager} instance.
@@ -22,7 +23,7 @@ public interface BetonQuestManagers {
      *
      * @return the condition manager
      */
-    ConditionManager getConditions();
+    ConditionManager conditions();
 
     /**
      * Obtain the {@link ObjectiveManager} instance.
@@ -31,7 +32,7 @@ public interface BetonQuestManagers {
      *
      * @return the objective manager
      */
-    ObjectiveManager getObjectives();
+    ObjectiveManager objectives();
 
     /**
      * Obtain the {@link ItemManager} instance.
@@ -39,7 +40,7 @@ public interface BetonQuestManagers {
      *
      * @return the item manager
      */
-    ItemManager getItems();
+    ItemManager items();
 
     /**
      * Obtain the {@link NpcManager} instance.
@@ -47,5 +48,13 @@ public interface BetonQuestManagers {
      *
      * @return the npc manager
      */
-    NpcManager getNpcs();
+    NpcManager npcs();
+
+    /**
+     * Obtain the {@link Placeholders} instance.
+     * The placeholder manager offers functionality to resolve placeholders.
+     *
+     * @return the placeholder manager
+     */
+    Placeholders placeholders();
 }

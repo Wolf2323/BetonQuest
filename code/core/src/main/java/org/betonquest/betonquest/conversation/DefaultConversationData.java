@@ -7,7 +7,6 @@ import org.betonquest.betonquest.api.bukkit.config.custom.fallback.FallbackConfi
 import org.betonquest.betonquest.api.bukkit.config.custom.unmodifiable.UnmodifiableConfigurationSection;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
-import org.betonquest.betonquest.api.feature.ConversationApi;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
@@ -15,10 +14,11 @@ import org.betonquest.betonquest.api.identifier.ConversationOptionIdentifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.argument.DecoratedArgumentParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
+import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.Placeholders;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
@@ -63,14 +63,14 @@ public class DefaultConversationData implements ConversationData {
     private final Placeholders placeholders;
 
     /**
-     * Quest Type API.
+     * The condition manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ConditionManager conditionManager;
 
     /**
      * Conversation API.
      */
-    private final ConversationApi conversationApi;
+    private final LegacyConversations conversationApi;
 
     /**
      * The {@link SectionInstruction}.
@@ -105,29 +105,28 @@ public class DefaultConversationData implements ConversationData {
     private final Map<String, ConversationOption> playerOptions;
 
     /**
-     * Loads conversation from package.
+     * Loads a conversation from a package.
      *
-     * @param log             the custom logger for this class
-     * @param packManager     the quest package manager to get quest packages from
-     * @param placeholders    the {@link Placeholders} to create and resolve placeholders
-     * @param questTypeApi    the quest type api
-     * @param instruction     the instruction to parse the conversation from
-     * @param conversationApi the Conversation API
-     * @param textCreator     the text creator to parse text
-     * @param convSection     the configuration section of the conversation
-     * @param publicData      the external used data
+     * @param log              the custom logger for this class
+     * @param packManager      the quest package manager to get quest packages from
+     * @param placeholders     the {@link Placeholders} to create and resolve placeholders
+     * @param conditionManager the condition manager
+     * @param instruction      the instruction to parse the conversation from
+     * @param conversationApi  the Conversation API
+     * @param textCreator      the text creator to parse text
+     * @param convSection      the configuration section of the conversation
+     * @param publicData       the external used data
      * @throws QuestException when there is a syntax error in the defined conversation or
      *                        when conversation options cannot be resolved or {@code convSection} is null
      */
     public DefaultConversationData(final BetonQuestLogger log, final QuestPackageManager packManager,
-                                   final Placeholders placeholders, final QuestTypeApi questTypeApi,
-                                   final SectionInstruction instruction,
-                                   final ConversationApi conversationApi, final ParsedSectionTextCreator textCreator,
+                                   final Placeholders placeholders, final ConditionManager conditionManager, final SectionInstruction instruction,
+                                   final LegacyConversations conversationApi, final ParsedSectionTextCreator textCreator,
                                    final ConfigurationSection convSection, final ConversationPublicData publicData) throws QuestException {
         this.log = log;
         this.packManager = packManager;
         this.placeholders = placeholders;
-        this.questTypeApi = questTypeApi;
+        this.conditionManager = conditionManager;
         this.instruction = instruction;
         this.conversationApi = conversationApi;
         this.publicData = publicData;
@@ -418,7 +417,7 @@ public class DefaultConversationData implements ConversationData {
                 sourceData = this;
                 optionName = option;
             }
-            if (questTypeApi.conditions(profile, sourceData.getConditionIDs(optionName, NPC))) {
+            if (conditionManager.testAll(profile, sourceData.getConditionIDs(optionName, NPC))) {
                 return true;
             }
         }
@@ -560,7 +559,7 @@ public class DefaultConversationData implements ConversationData {
 
             if (profile != null) {
                 for (final String extend : extendLinks) {
-                    if (questTypeApi.conditions(profile, getOption(extend, type).getConditions())) {
+                    if (conditionManager.testAll(profile, getOption(extend, type).getConditions())) {
                         text = text.append(getOption(extend, type).getText(profile, optionPath));
                         break;
                     }
@@ -614,7 +613,7 @@ public class DefaultConversationData implements ConversationData {
             final List<ActionIdentifier> actions = new ArrayList<>(this.actions);
 
             for (final String extend : extendLinks) {
-                if (questTypeApi.conditions(profile, getOption(extend, type).getConditions())) {
+                if (conditionManager.testAll(profile, getOption(extend, type).getConditions())) {
                     actions.addAll(getOption(extend, type).getActions(profile, optionPath));
                     break;
                 }
@@ -656,7 +655,7 @@ public class DefaultConversationData implements ConversationData {
                     }
 
                     final DefaultConversationData targetConvData = resolvedExtend.conversationData();
-                    if (questTypeApi.conditions(profile, targetConvData.getOption(resolvedExtend.name(), type).getConditions())) {
+                    if (conditionManager.testAll(profile, targetConvData.getOption(resolvedExtend.name(), type).getConditions())) {
                         pointers.addAll(targetConvData.getOption(resolvedExtend.name(), type).getPointers(profile, optionPath));
                         break;
                     }
@@ -690,7 +689,7 @@ public class DefaultConversationData implements ConversationData {
             optionPath.add(getName());
 
             for (final String extend : extendLinks) {
-                if (questTypeApi.conditions(profile, getOption(extend, type).getConditions())) {
+                if (conditionManager.testAll(profile, getOption(extend, type).getConditions())) {
                     return new FallbackConfigurationSection(properties, getOption(extend, type).getProperties(profile, optionPath));
                 }
             }

@@ -6,9 +6,9 @@ import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.JournalMainPageIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.feature.journal.JournalMainPageEntry;
 import org.betonquest.betonquest.kernel.processor.SectionProcessor;
@@ -36,7 +36,7 @@ public class JournalMainPageProcessor extends SectionProcessor<JournalMainPageId
      * @param textCreator       the text creator to parse text
      * @param identifierFactory the identifier factory to create {@link JournalMainPageIdentifier}s for this type
      */
-    public JournalMainPageProcessor(final BetonQuestLogger log, final InstructionApi instructionApi,
+    public JournalMainPageProcessor(final BetonQuestLogger log, final Instructions instructionApi,
                                     final ParsedSectionTextCreator textCreator, final IdentifierFactory<JournalMainPageIdentifier> identifierFactory) {
         super(log, instructionApi, identifierFactory, "Journal Main Page", "journal_main_page");
         this.textCreator = textCreator;

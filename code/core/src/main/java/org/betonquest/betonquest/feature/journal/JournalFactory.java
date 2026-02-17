@@ -2,11 +2,11 @@ package org.betonquest.betonquest.feature.journal;
 
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.feature.FeatureApi;
+import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.config.PluginMessage;
 
@@ -28,14 +28,14 @@ public class JournalFactory {
     private final PluginMessage pluginMessage;
 
     /**
-     * Quest Type API.
-     */
-    private final QuestTypeApi questTypeApi;
-
-    /**
      * Feature API.
      */
-    private final FeatureApi featureApi;
+    private final LegacyFeatures featureApi;
+
+    /**
+     * The Condition Manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * A {@link ConfigAccessor} that contains the journal's configuration.
@@ -55,21 +55,21 @@ public class JournalFactory {
     /**
      * Create a new Factory for Journals.
      *
-     * @param loggerFactory the logger Factory to create new class specific logger
-     * @param pluginMessage the {@link PluginMessage} instance
-     * @param questTypeApi  the Quest Type API
-     * @param featureApi    the Feature API
-     * @param config        a {@link ConfigAccessor} that contains the journal's configuration
-     * @param textParser    the text parser to use for parsing text
-     * @param fontRegistry  the font registry to get the width of the characters
+     * @param loggerFactory    the logger Factory to create new class specific logger
+     * @param pluginMessage    the {@link PluginMessage} instance
+     * @param featureApi       the Feature API
+     * @param conditionManager the Condition Manager
+     * @param config           a {@link ConfigAccessor} that contains the journal's configuration
+     * @param textParser       the text parser to use for parsing text
+     * @param fontRegistry     the font registry to get the width of the characters
      */
     public JournalFactory(final BetonQuestLoggerFactory loggerFactory, final PluginMessage pluginMessage,
-                          final QuestTypeApi questTypeApi, final FeatureApi featureApi,
+                          final LegacyFeatures featureApi, final ConditionManager conditionManager,
                           final ConfigAccessor config, final TextParser textParser, final FontRegistry fontRegistry) {
         this.loggerFactory = loggerFactory;
         this.pluginMessage = pluginMessage;
-        this.questTypeApi = questTypeApi;
         this.featureApi = featureApi;
+        this.conditionManager = conditionManager;
         this.config = config;
         this.textParser = textParser;
         this.fontRegistry = fontRegistry;
@@ -84,6 +84,6 @@ public class JournalFactory {
      */
     public Journal createJournal(final Profile profile, final List<Pointer> pointers) {
         final BetonQuestLogger log = loggerFactory.create(Journal.class);
-        return new Journal(log, pluginMessage, questTypeApi, featureApi, textParser, fontRegistry, profile, pointers, config);
+        return new Journal(log, pluginMessage, conditionManager, featureApi, textParser, fontRegistry, profile, pointers, config);
     }
 }

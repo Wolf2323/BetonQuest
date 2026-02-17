@@ -2,9 +2,9 @@ package org.betonquest.betonquest.schedule.impl;
 
 import org.betonquest.betonquest.api.identifier.ScheduleIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.schedule.FictiveTime;
 import org.betonquest.betonquest.api.schedule.Schedule;
+import org.betonquest.betonquest.api.service.ActionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,7 +55,7 @@ class ExecutorServiceSchedulerTest {
 
     @BeforeEach
     void setUp() {
-        scheduler = spy(new ExecutorServiceScheduler<>(logger, mock(QuestTypeApi.class), this::newExecutor) {
+        scheduler = spy(new ExecutorServiceScheduler<>(logger, mock(ActionManager.class), this::newExecutor) {
 
             @Override
             protected FictiveTime getNow() {

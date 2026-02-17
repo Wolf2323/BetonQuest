@@ -207,7 +207,7 @@ public abstract class CountingObjective extends DefaultObjective {
                     directionFactor = targetAmount < 0 ? -1 : 1;
                     lastChange = new AtomicInteger();
                     if (dirty.get()) {
-                        final ObjectiveService service = BetonQuest.getInstance().getQuestTypeApi().getObjective(objID).getService();
+                        final ObjectiveService service = BetonQuest.getInstance().getBetonQuestManagers().objectives().getObjective(objID).getService();
                         update(service);
                     }
                     break;
@@ -386,7 +386,7 @@ public abstract class CountingObjective extends DefaultObjective {
         private CountingData change(final int amount) {
             final ObjectiveService service;
             try {
-                service = BetonQuest.getInstance().getQuestTypeApi().getObjective(objID).getService();
+                service = BetonQuest.getInstance().getBetonQuestManagers().objectives().getObjective(objID).getService();
             } catch (final QuestException e) {
                 throw new IllegalStateException("Could not get objective service for objective '" + objID + "'", e);
             }

@@ -5,8 +5,8 @@ import com.herocraftonline.heroes.characters.CharacterManager;
 import com.herocraftonline.heroes.characters.classes.HeroClassManager;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
 import org.betonquest.betonquest.api.quest.condition.ConditionRegistry;
+import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.heroes.action.HeroesExperienceActionFactory;
 import org.betonquest.betonquest.compatibility.heroes.condition.HeroesAttributeConditionFactory;
@@ -35,19 +35,19 @@ public class HeroesIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final BetonQuestLoggerFactory loggerFactory = api.getLoggerFactory();
+        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
         final CharacterManager characterManager = Heroes.getInstance().getCharacterManager();
         final HeroClassManager classManager = Heroes.getInstance().getClassManager();
 
-        final QuestTypeRegistries questRegistries = api.getQuestRegistries();
-        final ConditionRegistry conditionRegistry = questRegistries.condition();
+        final BetonQuestRegistries questRegistries = api.registries();
+        final ConditionRegistry conditionRegistry = questRegistries.conditions();
         conditionRegistry.register("heroesattribute", new HeroesAttributeConditionFactory(loggerFactory, characterManager));
         conditionRegistry.register("heroesclass", new HeroesClassConditionFactory(loggerFactory, characterManager, classManager));
         conditionRegistry.register("heroesskill", new HeroesSkillConditionFactory(loggerFactory, characterManager));
 
-        questRegistries.action().register("heroesexp", new HeroesExperienceActionFactory(loggerFactory, characterManager));
+        questRegistries.actions().register("heroesexp", new HeroesExperienceActionFactory(loggerFactory, characterManager));
 
-        plugin.getServer().getPluginManager().registerEvents(new HeroesMobKillListener(api.getProfileProvider()), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new HeroesMobKillListener(api.profiles()), plugin);
     }
 
     @Override

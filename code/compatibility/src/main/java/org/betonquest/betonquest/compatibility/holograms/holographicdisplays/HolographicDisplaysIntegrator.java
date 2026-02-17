@@ -10,10 +10,10 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.holograms.BetonHologram;
 import org.betonquest.betonquest.compatibility.holograms.HologramIntegrator;
@@ -47,7 +47,7 @@ public class HolographicDisplaysIntegrator extends HologramIntegrator {
     /**
      * The instruction api to use.
      */
-    private final InstructionApi instructionApi;
+    private final Instructions instructionApi;
 
     /**
      * The identifier factory for placeholders.
@@ -61,7 +61,7 @@ public class HolographicDisplaysIntegrator extends HologramIntegrator {
      * @param instructionApi    the instruction api to use
      * @param identifierFactory the identifier factory for placeholders
      */
-    public HolographicDisplaysIntegrator(final BetonQuestLogger log, final InstructionApi instructionApi,
+    public HolographicDisplaysIntegrator(final BetonQuestLogger log, final Instructions instructionApi,
                                          final IdentifierFactory<PlaceholderIdentifier> identifierFactory) {
         super("HolographicDisplays", "3.0.0", "SNAPSHOT-b");
         this.plugin = BetonQuest.getInstance();
@@ -82,9 +82,9 @@ public class HolographicDisplaysIntegrator extends HologramIntegrator {
     public void hook(final BetonQuestApi api) throws HookException {
         super.hook(api);
         final HolographicDisplaysAPI holoApi = HolographicDisplaysAPI.get(plugin);
-        final BetonQuestLoggerFactory loggerFactory = api.getLoggerFactory();
+        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
         holoApi.registerIndividualPlaceholder("bq", new HologramPlaceholder(
-                loggerFactory.create(HologramPlaceholder.class), placeholderProcessor, api.getProfileProvider()));
+                loggerFactory.create(HologramPlaceholder.class), placeholderProcessor, api.profiles()));
         holoApi.registerGlobalPlaceholder("bqg", new HologramGlobalPlaceholder(
                 loggerFactory.create(HologramGlobalPlaceholder.class), placeholderProcessor));
     }
@@ -104,7 +104,7 @@ public class HolographicDisplaysIntegrator extends HologramIntegrator {
             final String group = match.group();
             try {
                 final PlaceholderIdentifier placeholderIdentifier = identifierFactory.parseIdentifier(pack, group);
-                final Instruction instruction = instructionApi.createPlaceholderInstruction(placeholderIdentifier, placeholderIdentifier.readRawInstruction());
+                final Instruction instruction = instructionApi.createPlaceholder(placeholderIdentifier, placeholderIdentifier.readRawInstruction());
                 final String prefix = placeholderProcessor.get(placeholderIdentifier).allowsPlayerless() ? "{bqg:" : "{bq:";
                 return prefix + placeholderIdentifier.getPackage().getQuestPath() + ":" + instruction + "}";
             } catch (final QuestException exception) {

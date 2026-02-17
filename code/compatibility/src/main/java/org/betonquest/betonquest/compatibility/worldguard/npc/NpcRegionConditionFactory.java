@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.compatibility.worldguard.npc;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
@@ -10,6 +9,7 @@ import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessConditionFactory;
+import org.betonquest.betonquest.api.service.NpcManager;
 
 /**
  * Factory to create {@link NpcRegionCondition}s from {@link Instruction}s.
@@ -17,17 +17,17 @@ import org.betonquest.betonquest.api.quest.condition.PlayerlessConditionFactory;
 public class NpcRegionConditionFactory implements PlayerConditionFactory, PlayerlessConditionFactory {
 
     /**
-     * Feature API.
+     * The npc manager to get npcs.
      */
-    private final FeatureApi featureApi;
+    private final NpcManager npcManager;
 
     /**
      * Create a new factory for NPC Region Conditions.
      *
-     * @param featureApi the Feature API
+     * @param npcManager the npc manager to get npcs
      */
-    public NpcRegionConditionFactory(final FeatureApi featureApi) {
-        this.featureApi = featureApi;
+    public NpcRegionConditionFactory(final NpcManager npcManager) {
+        this.npcManager = npcManager;
     }
 
     @Override
@@ -43,6 +43,6 @@ public class NpcRegionConditionFactory implements PlayerConditionFactory, Player
     private NullableConditionAdapter parseInstruction(final Instruction instruction) throws QuestException {
         final Argument<NpcIdentifier> npcId = instruction.identifier(NpcIdentifier.class).get();
         final Argument<String> region = instruction.string().get();
-        return new NullableConditionAdapter(new NpcRegionCondition(featureApi, npcId, region));
+        return new NullableConditionAdapter(new NpcRegionCondition(npcManager, npcId, region));
     }
 }

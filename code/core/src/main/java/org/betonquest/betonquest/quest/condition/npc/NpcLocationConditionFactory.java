@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.quest.condition.npc;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
@@ -10,6 +9,7 @@ import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessConditionFactory;
+import org.betonquest.betonquest.api.service.NpcManager;
 import org.bukkit.Location;
 
 /**
@@ -18,17 +18,17 @@ import org.bukkit.Location;
 public class NpcLocationConditionFactory implements PlayerConditionFactory, PlayerlessConditionFactory {
 
     /**
-     * Quest Type API.
+     * The npc manager.
      */
-    private final FeatureApi featureApi;
+    private final NpcManager npcManager;
 
     /**
      * Create a new factory for NPC Location Conditions.
      *
-     * @param featureApi the Feature API
+     * @param npcManager the npc manager
      */
-    public NpcLocationConditionFactory(final FeatureApi featureApi) {
-        this.featureApi = featureApi;
+    public NpcLocationConditionFactory(final NpcManager npcManager) {
+        this.npcManager = npcManager;
     }
 
     @Override
@@ -45,6 +45,6 @@ public class NpcLocationConditionFactory implements PlayerConditionFactory, Play
         final Argument<NpcIdentifier> npcId = instruction.identifier(NpcIdentifier.class).get();
         final Argument<Location> location = instruction.location().get();
         final Argument<Number> radius = instruction.number().get();
-        return new NullableConditionAdapter(new NpcLocationCondition(featureApi, npcId, location, radius));
+        return new NullableConditionAdapter(new NpcLocationCondition(npcManager, npcId, location, radius));
     }
 }

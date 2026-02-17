@@ -1,12 +1,12 @@
 package org.betonquest.betonquest.quest.placeholder.npc;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.npc.Npc;
 import org.betonquest.betonquest.api.quest.placeholder.NullablePlaceholder;
+import org.betonquest.betonquest.api.service.NpcManager;
 import org.betonquest.betonquest.quest.placeholder.location.LocationFormationMode;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,9 +18,9 @@ import static org.betonquest.betonquest.quest.placeholder.npc.NPCArgument.LOCATI
 public class NpcPlaceholder implements NullablePlaceholder {
 
     /**
-     * Feature API.
+     * The npc manager.
      */
-    private final FeatureApi featureApi;
+    private final NpcManager npcManager;
 
     /**
      * Id of the npc.
@@ -46,16 +46,16 @@ public class NpcPlaceholder implements NullablePlaceholder {
     /**
      * Construct a new NPCPlaceholder that allows for resolution of information about a NPC.
      *
-     * @param featureApi    the Feature API
+     * @param npcManager    the npc manager
      * @param npcID         the npc id
      * @param key           the key to defining the value
      * @param formationMode the location formation mode to use for location resolution
      * @param decimalPlaces the number of decimal places to use for location resolution
      * @throws IllegalArgumentException when a location argument is given without a location placeholder
      */
-    public NpcPlaceholder(final FeatureApi featureApi, final Argument<NpcIdentifier> npcID, final NPCArgument key,
+    public NpcPlaceholder(final NpcManager npcManager, final Argument<NpcIdentifier> npcID, final NPCArgument key,
                           @Nullable final LocationFormationMode formationMode, final int decimalPlaces) {
-        this.featureApi = featureApi;
+        this.npcManager = npcManager;
         this.npcID = npcID;
         this.key = key;
         this.formationMode = formationMode;
@@ -67,7 +67,7 @@ public class NpcPlaceholder implements NullablePlaceholder {
 
     @Override
     public String getValue(@Nullable final Profile profile) throws QuestException {
-        final Npc<?> npc = featureApi.getNpc(npcID.getValue(profile), profile);
+        final Npc<?> npc = npcManager.get(profile, npcID.getValue(profile));
         return key.resolve(npc, formationMode, decimalPlaces);
     }
 }

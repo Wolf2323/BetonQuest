@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.quest.action.npc;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
@@ -11,6 +10,7 @@ import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
+import org.betonquest.betonquest.api.service.NpcManager;
 import org.bukkit.Location;
 
 /**
@@ -19,17 +19,17 @@ import org.bukkit.Location;
 public class NpcTeleportActionFactory implements PlayerActionFactory, PlayerlessActionFactory {
 
     /**
-     * Quest Type API.
+     * The npc manager.
      */
-    private final FeatureApi featureApi;
+    private final NpcManager npcManager;
 
     /**
      * Create a new factory for Npc Teleport Actions.
      *
-     * @param featureApi the Feature API
+     * @param npcManager the npc manager
      */
-    public NpcTeleportActionFactory(final FeatureApi featureApi) {
-        this.featureApi = featureApi;
+    public NpcTeleportActionFactory(final NpcManager npcManager) {
+        this.npcManager = npcManager;
     }
 
     @Override
@@ -46,6 +46,6 @@ public class NpcTeleportActionFactory implements PlayerActionFactory, Playerless
         final Argument<NpcIdentifier> npcId = instruction.identifier(NpcIdentifier.class).get();
         final Argument<Location> location = instruction.location().get();
         final FlagArgument<Boolean> spawn = instruction.bool().getFlag("spawn", true);
-        return new NullableActionAdapter(new NpcTeleportAction(featureApi, npcId, location, spawn));
+        return new NullableActionAdapter(new NpcTeleportAction(npcManager, npcId, location, spawn));
     }
 }

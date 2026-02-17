@@ -6,8 +6,9 @@ import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.util.Utils;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,14 +23,19 @@ import java.util.stream.Collectors;
 public class PartyAction implements OnlineAction {
 
     /**
-     * Quest Type API.
-     */
-    private final QuestTypeApi questTypeApi;
-
-    /**
      * The profile provider instance.
      */
     private final ProfileProvider profileProvider;
+
+    /**
+     * The action manager.
+     */
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * The range of the party.
@@ -55,19 +61,23 @@ public class PartyAction implements OnlineAction {
     /**
      * Creates a new PartyAction instance.
      *
-     * @param questTypeApi    the Quest Type API
-     * @param profileProvider the profile provider instance
-     * @param range           the range of the party
-     * @param amount          the optional maximum amount of players affected by this party,
-     *                        null or negative values sets no maximum amount
-     * @param conditions      the conditions that must be met by the party members
-     * @param actions         the actions to fire
+     * @param profileProvider  the profile provider instance
+     * @param actionManager    the action manager
+     * @param conditionManager the condition manager
+     * @param range            the range of the party
+     * @param amount           the optional maximum number of players affected by this party,
+     *                         null or negative values set no maximum amount
+     * @param conditions       the conditions that must be met by the party members
+     * @param actions          the actions to fire
      */
-    public PartyAction(final QuestTypeApi questTypeApi, final ProfileProvider profileProvider, final Argument<Number> range,
-                       @Nullable final Argument<Number> amount, final Argument<List<ConditionIdentifier>> conditions, final Argument<List<ActionIdentifier>> actions) {
-        this.questTypeApi = questTypeApi;
+    public PartyAction(final ProfileProvider profileProvider, final ActionManager actionManager,
+                       final ConditionManager conditionManager, final Argument<Number> range,
+                       @Nullable final Argument<Number> amount, final Argument<List<ConditionIdentifier>> conditions,
+                       final Argument<List<ActionIdentifier>> actions) {
         this.profileProvider = profileProvider;
         this.range = range;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
         this.amount = amount;
         this.conditions = conditions;
         this.actions = actions;
@@ -76,13 +86,13 @@ public class PartyAction implements OnlineAction {
     @Override
     public void execute(final OnlineProfile profile) throws QuestException {
         for (final OnlineProfile member : getMemberList(profile)) {
-            questTypeApi.actions(member, actions.getValue(profile));
+            actionManager.run(member, actions.getValue(profile));
         }
     }
 
     private Set<OnlineProfile> getMemberList(final OnlineProfile profile) throws QuestException {
         final int toExecute = amount != null ? amount.getValue(profile).intValue() : -1;
-        final Map<OnlineProfile, Double> members = Utils.getParty(questTypeApi, profileProvider.getOnlineProfiles(),
+        final Map<OnlineProfile, Double> members = Utils.getParty(conditionManager, profileProvider.getOnlineProfiles(),
                 profile.getPlayer().getLocation(), range.getValue(profile).doubleValue(), conditions.getValue(profile));
 
         if (toExecute < 0) {

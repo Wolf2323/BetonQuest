@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.compatibility.npc.citizens.action.move;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
@@ -9,6 +8,7 @@ import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
+import org.betonquest.betonquest.api.service.NpcManager;
 import org.betonquest.betonquest.compatibility.npc.citizens.CitizensArgument;
 import org.bukkit.Location;
 
@@ -21,9 +21,9 @@ import java.util.List;
 public class CitizensMoveActionFactory implements PlayerActionFactory {
 
     /**
-     * Feature API.
+     * The npc manager to use.
      */
-    private final FeatureApi featureApi;
+    private final NpcManager npcManager;
 
     /**
      * Move instance to handle movement of Citizens NPCs.
@@ -38,12 +38,12 @@ public class CitizensMoveActionFactory implements PlayerActionFactory {
     /**
      * Create a new NPCTeleportActionFactory.
      *
-     * @param featureApi             the BetonQuest API
+     * @param npcManager             the npc manager to use
      * @param citizensArgument       the Citizens argument parser to use
      * @param citizensMoveController the move instance to handle movement of Citizens NPCs
      */
-    public CitizensMoveActionFactory(final FeatureApi featureApi, final CitizensArgument citizensArgument, final CitizensMoveController citizensMoveController) {
-        this.featureApi = featureApi;
+    public CitizensMoveActionFactory(final NpcManager npcManager, final CitizensArgument citizensArgument, final CitizensMoveController citizensMoveController) {
+        this.npcManager = npcManager;
         this.citizensMoveController = citizensMoveController;
         this.citizensArgument = citizensArgument;
     }
@@ -58,6 +58,6 @@ public class CitizensMoveActionFactory implements PlayerActionFactory {
         final FlagArgument<Boolean> blockConversations = instruction.bool().getFlag("block", true);
         final CitizensMoveController.MoveData moveAction = new CitizensMoveController.MoveData(locations, waitTicks,
                 doneActions, failActions, blockConversations);
-        return new CitizensMoveAction(featureApi, npcId, citizensMoveController, moveAction);
+        return new CitizensMoveAction(npcManager, npcId, citizensMoveController, moveAction);
     }
 }

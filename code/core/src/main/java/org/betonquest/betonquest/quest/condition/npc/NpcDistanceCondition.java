@@ -1,12 +1,12 @@
 package org.betonquest.betonquest.quest.condition.npc;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.condition.OnlineCondition;
 import org.betonquest.betonquest.api.quest.npc.Npc;
+import org.betonquest.betonquest.api.service.NpcManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -18,9 +18,9 @@ import java.util.Optional;
 public class NpcDistanceCondition implements OnlineCondition {
 
     /**
-     * Feature API.
+     * The npc manager.
      */
-    private final FeatureApi featureApi;
+    private final NpcManager npcManager;
 
     /**
      * Id of the npc.
@@ -35,19 +35,19 @@ public class NpcDistanceCondition implements OnlineCondition {
     /**
      * Create a new Npc Distance Condition.
      *
-     * @param featureApi the Feature API
+     * @param npcManager the npc manager
      * @param npcID      the id of the npc
      * @param distance   the maximal distance between player and npc
      */
-    public NpcDistanceCondition(final FeatureApi featureApi, final Argument<NpcIdentifier> npcID, final Argument<Number> distance) {
-        this.featureApi = featureApi;
+    public NpcDistanceCondition(final NpcManager npcManager, final Argument<NpcIdentifier> npcID, final Argument<Number> distance) {
+        this.npcManager = npcManager;
         this.npcID = npcID;
         this.distance = distance;
     }
 
     @Override
     public boolean check(final OnlineProfile profile) throws QuestException {
-        final Npc<?> npc = featureApi.getNpc(npcID.getValue(profile), profile);
+        final Npc<?> npc = npcManager.get(profile, npcID.getValue(profile));
         if (!npc.isSpawned()) {
             return false;
         }

@@ -4,12 +4,12 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.NullableActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
+import org.betonquest.betonquest.api.service.ActionManager;
 
 import java.util.List;
 
@@ -19,17 +19,17 @@ import java.util.List;
 public class FirstActionFactory implements PlayerActionFactory, PlayerlessActionFactory {
 
     /**
-     * Quest Type API.
+     * The action manager to handle actions.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
 
     /**
-     * Empty constructor.
+     * Sole constructor.
      *
-     * @param questTypeApi the Quest Type API
+     * @param actionManager The action manager.
      */
-    public FirstActionFactory(final QuestTypeApi questTypeApi) {
-        this.questTypeApi = questTypeApi;
+    public FirstActionFactory(final ActionManager actionManager) {
+        this.actionManager = actionManager;
     }
 
     @Override
@@ -44,6 +44,6 @@ public class FirstActionFactory implements PlayerActionFactory, PlayerlessAction
 
     private NullableActionAdapter createFirstAction(final Instruction instruction) throws QuestException {
         final Argument<List<ActionIdentifier>> list = instruction.identifier(ActionIdentifier.class).list().get();
-        return new NullableActionAdapter(new FirstAction(list, questTypeApi));
+        return new NullableActionAdapter(new FirstAction(actionManager, list));
     }
 }

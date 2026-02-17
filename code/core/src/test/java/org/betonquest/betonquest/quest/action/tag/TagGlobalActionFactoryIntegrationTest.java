@@ -1,6 +1,5 @@
 package org.betonquest.betonquest.quest.action.tag;
 
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.instruction.Instruction;
@@ -9,6 +8,7 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.config.DefaultConfigAccessorFactory;
 import org.betonquest.betonquest.config.quest.QuestPackageImpl;
+import org.betonquest.betonquest.database.GlobalData;
 import org.betonquest.betonquest.logger.util.BetonQuestLoggerService;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ class TagGlobalActionFactoryIntegrationTest {
      * Mocked BetonQuest plugin.
      */
     @Mock
-    private BetonQuest betonQuest;
+    private GlobalData globalData;
 
     private QuestPackage setupQuestPackage(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, final Path questPackagesDirectory) throws IOException, InvalidConfigurationException {
         final Path packageDirectory = questPackagesDirectory.resolve("test");
@@ -51,7 +51,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateGlobalTagAddActionWithMultipleTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag add tag-1,tag-2,tag-3");
@@ -60,7 +60,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagAddActionWithOneTag(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag add tag-1");
@@ -69,7 +69,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagAddActionWithoutTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag add");
@@ -78,7 +78,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDeleteActionWithMultipleTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag delete tag-1,tag-2,tag-3");
@@ -87,7 +87,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDeleteActionWithOneTag(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag delete tag-1");
@@ -96,7 +96,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDeleteActionWithoutTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag delete");
@@ -105,7 +105,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDelActionWithMultipleTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag del tag-1,tag-2,tag-3");
@@ -114,7 +114,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDelActionWithOneTag(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag del tag-1");
@@ -123,7 +123,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDelActionWithoutTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag del");
@@ -132,7 +132,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateInvalidTagAction(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag invalid tag-1,tag-2");
@@ -141,7 +141,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagAddStaticActionWithMultipleTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag add tag-1,tag-2,tag-3");
@@ -150,7 +150,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagAddStaticActionWithOneTag(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag add tag-1");
@@ -159,7 +159,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagAddStaticActionWithoutTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag add");
@@ -168,7 +168,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDeleteStaticActionWithMultipleTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag delete tag-1,tag-2,tag-3");
@@ -177,7 +177,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDeleteStaticActionWithOneTag(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag delete tag-1");
@@ -186,7 +186,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDeleteStaticActionWithoutTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag delete");
@@ -195,7 +195,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDelStaticActionWithMultipleTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag del tag-1,tag-2,tag-3");
@@ -204,7 +204,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDelStaticActionWithOneTag(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag del tag-1");
@@ -213,7 +213,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateTagDelStaticActionWithoutTags(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag del");
@@ -222,7 +222,7 @@ class TagGlobalActionFactoryIntegrationTest {
 
     @Test
     void testCreateInvalidStaticTagAction(final BetonQuestLoggerFactory factory, final BetonQuestLogger logger, @TempDir final Path questPackagesDirectory) throws IOException, InvalidConfigurationException, QuestException {
-        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(betonQuest);
+        final TagGlobalActionFactory tagFactory = new TagGlobalActionFactory(globalData);
         final QuestPackage questPackage = setupQuestPackage(factory, logger, questPackagesDirectory);
 
         final Instruction instruction = new MockedInstruction(questPackage, "globaltag invalid tag-1,tag-2");

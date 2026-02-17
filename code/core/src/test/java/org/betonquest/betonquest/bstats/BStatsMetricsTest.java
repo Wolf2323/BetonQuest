@@ -6,11 +6,11 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.ReadableIdentifier;
 import org.betonquest.betonquest.api.instruction.DefaultInstruction;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.config.DefaultConfigAccessorFactory;
 import org.betonquest.betonquest.config.quest.QuestPackageImpl;
@@ -118,7 +118,7 @@ class BStatsMetricsTest {
         when(server.getBukkitVersion()).thenReturn("1.18.2-R0.1");
 
         final Metrics metrics = mock(Metrics.class);
-        new BStatsMetrics(plugin, metrics, Collections.emptyMap(), mock(Compatibility.class), mock(InstructionApi.class));
+        new BStatsMetrics(plugin, metrics, Collections.emptyMap(), mock(Compatibility.class), mock(Instructions.class));
     }
 
     @Test
@@ -151,20 +151,20 @@ class BStatsMetricsTest {
 
         final InstructionMetricsSupplier<ReadableIdentifier> metricsSupplier = new CompositeInstructionMetricsSupplier<>(ids::keySet, types::keySet);
 
-        final InstructionApi instructionApi = mock(InstructionApi.class);
-        when(instructionApi.createInstruction(firstId, TEST_INSTRUCTION)).thenReturn(firstInstruction);
+        final Instructions instructionApi = mock(Instructions.class);
+        when(instructionApi.create(firstId, TEST_INSTRUCTION)).thenReturn(firstInstruction);
 
         final ReadableIdentifier secondId = mock(ReadableIdentifier.class);
         when(secondId.readRawInstruction()).thenReturn(TEST_INSTRUCTION);
         final Instruction secondInstruction = new DefaultInstruction(mock(Placeholders.class), mock(QuestPackageManager.class),
                 questPackage, secondId, mock(ArgumentParsers.class), TEST_INSTRUCTION);
-        when(instructionApi.createInstruction(secondId, TEST_INSTRUCTION)).thenReturn(secondInstruction);
+        when(instructionApi.create(secondId, TEST_INSTRUCTION)).thenReturn(secondInstruction);
 
         final ReadableIdentifier thirdId = mock(ReadableIdentifier.class);
         when(thirdId.readRawInstruction()).thenReturn(OTHER_INSTRUCTION);
         final Instruction thirdInstruction = new DefaultInstruction(mock(Placeholders.class), mock(QuestPackageManager.class),
                 questPackage, thirdId, mock(ArgumentParsers.class), OTHER_INSTRUCTION);
-        when(instructionApi.createInstruction(thirdId, OTHER_INSTRUCTION)).thenReturn(thirdInstruction);
+        when(instructionApi.create(thirdId, OTHER_INSTRUCTION)).thenReturn(thirdInstruction);
 
         new BStatsMetrics(plugin, bstatsMetrics, Map.of("id", metricsSupplier), mock(Compatibility.class), instructionApi);
 

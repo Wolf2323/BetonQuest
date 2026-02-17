@@ -1,6 +1,5 @@
 package org.betonquest.betonquest.quest.action.objective;
 
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
@@ -8,14 +7,16 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.NullableAction;
 import org.betonquest.betonquest.api.quest.objective.Objective;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
+import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.PlayerData;
 import org.betonquest.betonquest.database.PlayerDataFactory;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.database.UpdateType;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -28,9 +29,34 @@ import java.util.Locale;
 public class ObjectiveAction implements NullableAction {
 
     /**
+     * The BetonQuest instance.
+     */
+    private final Plugin plugin;
+
+    /**
      * Custom {@link BetonQuestLogger} instance for this class.
      */
     private final BetonQuestLogger log;
+
+    /**
+     * The profile provider.
+     */
+    private final ProfileProvider profileProvider;
+
+    /**
+     * The database saver.
+     */
+    private final Saver saver;
+
+    /**
+     * The objective manager.
+     */
+    private final ObjectiveManager objectiveManager;
+
+    /**
+     * The player data storage.
+     */
+    private final PlayerDataStorage playerDataStorage;
 
     /**
      * The quest package.
@@ -38,19 +64,9 @@ public class ObjectiveAction implements NullableAction {
     private final QuestPackage questPackage;
 
     /**
-     * The BetonQuest instance.
-     */
-    private final BetonQuest betonQuest;
-
-    /**
      * All objectives affected by this action.
      */
     private final Argument<List<ObjectiveIdentifier>> objectives;
-
-    /**
-     * API for starting objectives.
-     */
-    private final QuestTypeApi questTypeApi;
 
     /**
      * Factory to create new Player Data.
@@ -65,22 +81,31 @@ public class ObjectiveAction implements NullableAction {
     /**
      * Creates a new ObjectiveAction.
      *
-     * @param betonQuest        the BetonQuest instance
-     * @param questTypeApi      the class for starting objectives
+     * @param plugin            the BetonQuest instance
      * @param log               the logger
+     * @param profileProvider   the profile provider
+     * @param saver             the database saver
+     * @param objectiveManager  the objective manager
+     * @param playerDataStorage the player data storage
      * @param questPackage      the quest package of the instruction
      * @param objectives        the objectives to affect
      * @param playerDataFactory the factory to create player data
      * @param action            the action to do with the objectives
      * @throws QuestException if the action is invalid
      */
-    public ObjectiveAction(final BetonQuest betonQuest, final BetonQuestLogger log, final QuestTypeApi questTypeApi,
-                           final QuestPackage questPackage, final Argument<List<ObjectiveIdentifier>> objectives, final PlayerDataFactory playerDataFactory, final String action) throws QuestException {
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    public ObjectiveAction(final Plugin plugin, final BetonQuestLogger log, final ProfileProvider profileProvider, final Saver saver,
+                           final ObjectiveManager objectiveManager, final PlayerDataStorage playerDataStorage,
+                           final QuestPackage questPackage, final Argument<List<ObjectiveIdentifier>> objectives,
+                           final PlayerDataFactory playerDataFactory, final String action) throws QuestException {
+        this.plugin = plugin;
+        this.profileProvider = profileProvider;
+        this.saver = saver;
         this.log = log;
+        this.objectiveManager = objectiveManager;
+        this.playerDataStorage = playerDataStorage;
         this.questPackage = questPackage;
-        this.betonQuest = betonQuest;
         this.objectives = objectives;
-        this.questTypeApi = questTypeApi;
         this.playerDataFactory = playerDataFactory;
         if (!Arrays.asList("start", "add", "delete", "remove", "complete", "finish").contains(action)) {
             throw new QuestException("Invalid action: " + action);
@@ -91,7 +116,7 @@ public class ObjectiveAction implements NullableAction {
     @Override
     public void execute(@Nullable final Profile profile) throws QuestException {
         for (final ObjectiveIdentifier objectiveID : objectives.getValue(profile)) {
-            final Objective objective = questTypeApi.getObjective(objectiveID);
+            final Objective objective = objectiveManager.getObjective(objectiveID);
             if (profile == null) {
                 handleStatic(objectiveID);
             } else if (profile.getOnlineProfile().isEmpty()) {
@@ -104,9 +129,9 @@ public class ObjectiveAction implements NullableAction {
 
     private void handleStatic(final ObjectiveIdentifier objectiveID) {
         if ("delete".equals(action) || "remove".equals(action)) {
-            final ProfileProvider profileProvider = betonQuest.getProfileProvider();
+            final ProfileProvider profileProvider = this.profileProvider;
             profileProvider.getOnlineProfiles().forEach(onlineProfile -> cancelObjectiveForOnlinePlayer(onlineProfile, objectiveID));
-            betonQuest.getSaver().add(new Saver.Record(UpdateType.REMOVE_ALL_OBJECTIVES, objectiveID.toString()));
+            this.saver.add(new Saver.Record(UpdateType.REMOVE_ALL_OBJECTIVES, objectiveID.toString()));
         } else {
             log.warn(questPackage, "You tried to call an objective add / finish action in a static context! Only objective delete works here.");
         }
@@ -114,14 +139,14 @@ public class ObjectiveAction implements NullableAction {
 
     private void handleForOnlinePlayer(final Profile profile, final ObjectiveIdentifier objectiveID, final Objective objective) {
         switch (action.toLowerCase(Locale.ROOT)) {
-            case "start", "add" -> questTypeApi.newObjective(profile, objectiveID);
+            case "start", "add" -> objectiveManager.start(profile, objectiveID);
             case "complete", "finish" -> objective.getService().complete(profile);
             default -> cancelObjectiveForOnlinePlayer(profile, objectiveID);
         }
     }
 
     private void handleForOfflinePlayer(final Profile profile, final ObjectiveIdentifier objectiveID) {
-        Bukkit.getScheduler().runTaskAsynchronously(betonQuest, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             final PlayerData playerData = playerDataFactory.createPlayerData(profile);
             switch (action.toLowerCase(Locale.ROOT)) {
                 case "start", "add" -> playerData.addNewRawObjective(objectiveID);
@@ -133,7 +158,7 @@ public class ObjectiveAction implements NullableAction {
     }
 
     private void cancelObjectiveForOnlinePlayer(final Profile profile, final ObjectiveIdentifier objectiveID) {
-        betonQuest.getQuestTypeApi().cancelObjective(profile, objectiveID);
-        betonQuest.getPlayerDataStorage().get(profile).removeRawObjective(objectiveID);
+        this.objectiveManager.cancel(profile, objectiveID);
+        this.playerDataStorage.get(profile).removeRawObjective(objectiveID);
     }
 }

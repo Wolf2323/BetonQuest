@@ -14,6 +14,8 @@ import org.betonquest.betonquest.api.identifier.ConversationOptionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.interceptor.Interceptor;
 import org.betonquest.betonquest.database.Saver.Record;
@@ -127,6 +129,16 @@ public class Conversation {
     private final Interceptor interceptor;
 
     /**
+     * The action manager that manages the actions of this conversation.
+     */
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager that manages the conditions of this conversation.
+     */
+    private final ConditionManager conditionManager;
+
+    /**
      * The current conversation state.
      */
     @SuppressWarnings("PMD.AvoidUsingVolatile")
@@ -144,30 +156,34 @@ public class Conversation {
     private ConversationData data;
 
     /**
-     * Starts a new conversation between player and npc at given location.
+     * Starts a new conversation between player and npc at the specified location.
      *
-     * @param log            the logger that will be used for logging
-     * @param pluginMessage  the {@link PluginMessage} instance
-     * @param onlineProfile  the {@link OnlineProfile} of the player
-     * @param conversationID ID of the conversation
-     * @param center         location where the conversation has been started
-     * @param endCallable    the callable that removes the conversation from the active ones
+     * @param log              the logger that will be used for logging
+     * @param pluginMessage    the {@link PluginMessage} instance
+     * @param onlineProfile    the {@link OnlineProfile} of the player
+     * @param conversationID   ID of the conversation
+     * @param actionManager    the {@link ActionManager} instance
+     * @param conditionManager the {@link ConditionManager} instance
+     * @param center           location where the conversation has been started
+     * @param endCallable      the callable that removes the conversation from the active ones
      * @throws QuestException when required conversation objects could not be created
      */
     public Conversation(final BetonQuestLogger log, final PluginMessage pluginMessage, final OnlineProfile onlineProfile, final ConversationIdentifier conversationID,
-                        final Location center, final Runnable endCallable) throws QuestException {
+                        final ActionManager actionManager, final ConditionManager conditionManager, final Location center, final Runnable endCallable) throws QuestException {
         this.log = log;
         this.endCallable = endCallable;
         this.plugin = BetonQuest.getInstance();
         this.onlineProfile = onlineProfile;
         this.player = onlineProfile.getPlayer();
         this.identifier = conversationID;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
         this.pack = conversationID.getPackage();
         this.center = center;
         this.startSender = new IngameNotificationSender(log, pluginMessage, pack, conversationID.getFull(), NotificationLevel.INFO, "conversation_start");
         this.endSender = new IngameNotificationSender(log, pluginMessage, pack, conversationID.getFull(), NotificationLevel.INFO, "conversation_end");
 
-        this.data = plugin.getFeatureApi().conversationApi().getData(conversationID);
+        this.data = plugin.getLegacyConversations().getData(conversationID);
         this.inOut = data.getPublicData().convIO().getValue(onlineProfile).parse(this, onlineProfile);
         this.interceptor = data.getPublicData().interceptor().getValue(onlineProfile).create(onlineProfile);
     }
@@ -189,14 +205,14 @@ public class Conversation {
             // If we refer to another conversation starting options the name is null
             if (option.name() == null) {
                 for (final String startingOptionName : option.conversationData().getStartingOptions()) {
-                    if (force || plugin.getQuestTypeApi().conditions(onlineProfile, option.conversationData().getConditionIDs(startingOptionName, NPC))) {
+                    if (force || conditionManager.testAll(onlineProfile, option.conversationData().getConditionIDs(startingOptionName, NPC))) {
                         this.data = option.conversationData();
                         this.nextNPCOption = new ResolvedOption(option.conversationData(), NPC, startingOptionName);
                         break;
                     }
                 }
             } else {
-                if (force || plugin.getQuestTypeApi().conditions(onlineProfile, option.conversationData().getConditionIDs(option.name(), NPC))) {
+                if (force || conditionManager.testAll(onlineProfile, option.conversationData().getConditionIDs(option.name(), NPC))) {
                     this.data = option.conversationData();
                     this.nextNPCOption = option;
                     break;
@@ -247,7 +263,7 @@ public class Conversation {
         for (final ResolvedOption option : options) {
             final List<ConditionIdentifier> conditionIDs = option.conversationData().getConditionIDs(option.name(), option.type());
             final CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(
-                    () -> plugin.getQuestTypeApi().conditions(onlineProfile, conditionIDs));
+                    () -> conditionManager.testAll(onlineProfile, conditionIDs));
             futuresOptions.add(Pair.of(option, future));
         }
 
@@ -309,7 +325,7 @@ public class Conversation {
             log.debug(pack, "Ending conversation '" + identifier + FOR + onlineProfile + "'.");
             inOut.end(() -> {
                 try {
-                    plugin.getQuestTypeApi().actions(onlineProfile, data.getPublicData().finalActions().getValue(onlineProfile));
+                    actionManager.run(onlineProfile, data.getPublicData().finalActions().getValue(onlineProfile));
                 } catch (final QuestException e) {
                     log.warn(pack, "Error while firing final actions: " + e.getMessage(), e);
                 }
@@ -469,7 +485,7 @@ public class Conversation {
         final List<String> rawPointers = nextConvData.getPointers(onlineProfile, option);
         final List<ResolvedOption> pointers = new ArrayList<>();
         final IdentifierFactory<ConversationOptionIdentifier> conversationOptionIdentifierFactory =
-                plugin.getQuestRegistries().identifier().getFactory(ConversationOptionIdentifier.class);
+                plugin.getBetonQuestRegistries().identifiers().getFactory(ConversationOptionIdentifier.class);
         for (final String pointer : rawPointers) {
             final ConversationOptionType nextType = option.type() == PLAYER ? NPC : PLAYER;
             pointers.add(nextConvData.resolveOption(conversationOptionIdentifierFactory.parseIdentifier(nextConvData.getPack(), pointer), nextType));
@@ -568,7 +584,7 @@ public class Conversation {
             final List<ResolvedOption> resolvedOptions = new ArrayList<>();
             for (final String startingOption : startingOptions) {
                 final ResolvedOption resolvedOption;
-                final ConversationOptionIdentifier optionIdentifier = conversation.plugin.getQuestRegistries().identifier()
+                final ConversationOptionIdentifier optionIdentifier = conversation.plugin.getBetonQuestRegistries().identifiers()
                         .getFactory(ConversationOptionIdentifier.class).parseIdentifier(conversation.pack, startingOption);
                 resolvedOption = conversation.data.resolveOption(optionIdentifier, NPC);
                 resolvedOptions.add(resolvedOption);
@@ -594,7 +610,7 @@ public class Conversation {
 
         @Override
         public void run() {
-            plugin.getQuestTypeApi().actions(onlineProfile, data.getActionIDs(onlineProfile, npcOption, NPC));
+            actionManager.run(onlineProfile, data.getActionIDs(onlineProfile, npcOption, NPC));
             new OptionPrinter(npcOption).runTaskAsynchronously(plugin);
         }
     }
@@ -616,7 +632,7 @@ public class Conversation {
 
         @Override
         public void run() {
-            plugin.getQuestTypeApi().actions(onlineProfile, data.getActionIDs(onlineProfile, playerOption, PLAYER));
+            actionManager.run(onlineProfile, data.getActionIDs(onlineProfile, playerOption, PLAYER));
             new ResponsePrinter(playerOption).runTaskAsynchronously(plugin);
         }
     }

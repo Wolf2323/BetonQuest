@@ -1,9 +1,9 @@
 package org.betonquest.betonquest.database;
 
-import org.betonquest.betonquest.api.identifier.factory.IdentifierRegistry;
+import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ObjectiveManager;
 import org.betonquest.betonquest.feature.journal.JournalFactory;
 import org.bukkit.Server;
 
@@ -30,14 +30,14 @@ public class PlayerDataFactory {
     private final Server server;
 
     /**
-     * Quest Type API.
-     */
-    private final QuestTypeApi questTypeApi;
-
-    /**
      * Identifier registry to resolve identifiers.
      */
     private final IdentifierRegistry identifierRegistry;
+
+    /**
+     * The objective manager.
+     */
+    private final ObjectiveManager objectiveManager;
 
     /**
      * Factory to create a new Journal.
@@ -47,21 +47,21 @@ public class PlayerDataFactory {
     /**
      * Create a new Player Data Factory.
      *
-     * @param loggerFactory      the logger factory to create class specific logger
+     * @param loggerFactory      the logger factory to create class-specific logger
      * @param saver              the saver to persist data changes
      * @param server             the server to determine if an event should be stated as async
      * @param identifierRegistry the identifier registry to resolve identifiers
-     * @param questTypeApi       the Quest Type API
+     * @param objectiveManager   the objective manager
      * @param journalFactory     the supplier for the journal factory to use
      */
     public PlayerDataFactory(final BetonQuestLoggerFactory loggerFactory, final Saver saver, final Server server,
-                             final IdentifierRegistry identifierRegistry, final QuestTypeApi questTypeApi,
+                             final IdentifierRegistry identifierRegistry, final ObjectiveManager objectiveManager,
                              final Supplier<JournalFactory> journalFactory) {
         this.identifierRegistry = identifierRegistry;
         this.loggerFactory = loggerFactory;
         this.saver = saver;
         this.server = server;
-        this.questTypeApi = questTypeApi;
+        this.objectiveManager = objectiveManager;
         this.journalFactory = journalFactory;
     }
 
@@ -72,7 +72,6 @@ public class PlayerDataFactory {
      * @return the newly created player data
      */
     public PlayerData createPlayerData(final Profile profile) {
-        return new PlayerData(loggerFactory.create(PlayerData.class), saver, server, identifierRegistry,
-                questTypeApi, journalFactory.get(), profile);
+        return new PlayerData(loggerFactory.create(PlayerData.class), saver, server, identifierRegistry, objectiveManager, journalFactory.get(), profile);
     }
 }

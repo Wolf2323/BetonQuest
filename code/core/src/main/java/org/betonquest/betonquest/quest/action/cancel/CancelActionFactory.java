@@ -1,11 +1,11 @@
 package org.betonquest.betonquest.quest.action.cancel;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.QuestCancelerIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.instruction.Instruction;
+import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
@@ -24,7 +24,7 @@ public class CancelActionFactory implements PlayerActionFactory {
     /**
      * Feature API.
      */
-    private final FeatureApi featureApi;
+    private final LegacyFeatures featureApi;
 
     /**
      * Creates a new cancel action factory.
@@ -32,7 +32,7 @@ public class CancelActionFactory implements PlayerActionFactory {
      * @param loggerFactory the logger factory to create a logger for the actions
      * @param featureApi    the feature API
      */
-    public CancelActionFactory(final BetonQuestLoggerFactory loggerFactory, final FeatureApi featureApi) {
+    public CancelActionFactory(final BetonQuestLoggerFactory loggerFactory, final LegacyFeatures featureApi) {
         this.loggerFactory = loggerFactory;
         this.featureApi = featureApi;
     }

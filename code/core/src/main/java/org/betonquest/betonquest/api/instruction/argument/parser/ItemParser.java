@@ -23,7 +23,7 @@ public class ItemParser implements InstructionArgumentParser<ItemWrapper> {
     /**
      * The feature API to use for parsing.
      */
-    private final QuestBiFunction<ItemIdentifier, Profile, QuestItem> getItemFunction;
+    private final QuestBiFunction<Profile, ItemIdentifier, QuestItem> getItemFunction;
 
     /**
      * The identifier factory to parse {@link ItemIdentifier}s.
@@ -36,7 +36,7 @@ public class ItemParser implements InstructionArgumentParser<ItemWrapper> {
      * @param getItemFunction   the feature API function to retrieve items
      * @param identifierFactory the identifier factory to parse {@link ItemIdentifier}
      */
-    public ItemParser(final QuestBiFunction<ItemIdentifier, Profile, QuestItem> getItemFunction,
+    public ItemParser(final QuestBiFunction<Profile, ItemIdentifier, QuestItem> getItemFunction,
                       final IdentifierFactory<ItemIdentifier> identifierFactory) {
         this.getItemFunction = getItemFunction;
         this.identifierFactory = identifierFactory;

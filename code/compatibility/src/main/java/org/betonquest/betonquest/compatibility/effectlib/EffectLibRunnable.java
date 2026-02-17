@@ -3,13 +3,13 @@ package org.betonquest.betonquest.compatibility.effectlib;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.util.DynamicLocation;
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.feature.FeatureApi;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.npc.Npc;
+import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.NpcManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -32,16 +32,6 @@ public class EffectLibRunnable extends BukkitRunnable {
     private final BetonQuestLogger log;
 
     /**
-     * The Quest Type API.
-     */
-    private final QuestTypeApi questTypeApi;
-
-    /**
-     * The Feature API.
-     */
-    private final FeatureApi featureApi;
-
-    /**
      * The profile provider instance.
      */
     private final ProfileProvider profileProvider;
@@ -50,6 +40,16 @@ public class EffectLibRunnable extends BukkitRunnable {
      * Effect manager which will create and control the particles.
      */
     private final EffectManager manager;
+
+    /**
+     * The npc manager instance to retrieve NPCs.
+     */
+    private final NpcManager npcManager;
+
+    /**
+     * The condition manager instance handling conditions.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * The configuration of the effect to show.
@@ -75,22 +75,23 @@ public class EffectLibRunnable extends BukkitRunnable {
      * Constructs this runnable with the given effect.
      *
      * @param log                 the logger that will be used for logging
-     * @param questTypeApi        the Quest Type API
-     * @param featureApi          the Feature API
      * @param profileProvider     the profile provider instance
      * @param manager             the effect manager which will create and control the particles
      * @param effectConfiguration the effect to show
+     * @param npcManager          the npc manager instance
+     * @param conditionManager    the condition manager instance
      * @throws QuestException if the condition check interval could not be parsed
      */
-    public EffectLibRunnable(final BetonQuestLogger log, final QuestTypeApi questTypeApi, final FeatureApi featureApi, final ProfileProvider profileProvider,
-                             final EffectManager manager, final EffectConfiguration effectConfiguration) throws QuestException {
+    public EffectLibRunnable(final BetonQuestLogger log, final ProfileProvider profileProvider,
+                             final EffectManager manager, final EffectConfiguration effectConfiguration,
+                             final NpcManager npcManager, final ConditionManager conditionManager) throws QuestException {
         super();
         this.log = log;
-        this.questTypeApi = questTypeApi;
-        this.featureApi = featureApi;
         this.profileProvider = profileProvider;
         this.manager = manager;
         this.effectConfiguration = effectConfiguration;
+        this.npcManager = npcManager;
+        this.conditionManager = conditionManager;
         this.activeProfiles = new ArrayList<>();
         this.conditionCheckInterval = effectConfiguration.conditionCheckInterval().getValue(null).intValue();
     }
@@ -108,7 +109,7 @@ public class EffectLibRunnable extends BukkitRunnable {
         final List<OnlineProfile> activePlayerEffects = new ArrayList<>();
         for (final OnlineProfile onlineProfile : profileProvider.getOnlineProfiles()) {
             try {
-                if (questTypeApi.conditions(onlineProfile, effectConfiguration.conditions().getValue(onlineProfile))) {
+                if (conditionManager.testAll(onlineProfile, effectConfiguration.conditions().getValue(onlineProfile))) {
                     activePlayerEffects.add(onlineProfile);
                 }
             } catch (final QuestException e) {
@@ -131,7 +132,7 @@ public class EffectLibRunnable extends BukkitRunnable {
             for (final NpcIdentifier npcId : effect.npcs().getValue(profile)) {
                 final Npc<?> npc;
                 try {
-                    npc = featureApi.getNpc(npcId, profile);
+                    npc = npcManager.get(profile, npcId);
                 } catch (final QuestException exception) {
                     log.debug("Could not get Npc for id '" + npcId + "' in effects: " + exception.getMessage(), exception);
                     continue;
@@ -146,7 +147,7 @@ public class EffectLibRunnable extends BukkitRunnable {
                 }
                 final Player player = profile.getPlayer();
 
-                if (!location.get().getWorld().equals(player.getWorld()) || featureApi.getNpcHider().isHidden(npcId, profile)) {
+                if (!location.get().getWorld().equals(player.getWorld()) || npcManager.isHidden(npcId, profile)) {
                     continue;
                 }
 

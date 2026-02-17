@@ -81,7 +81,7 @@ public class CommandObjective extends DefaultObjective {
             getService().complete(onlineProfile);
             return;
         }
-        BetonQuest.getInstance().getQuestTypeApi().actions(onlineProfile, failActions.getValue(onlineProfile));
+        BetonQuest.getInstance().getBetonQuestManagers().actions().run(onlineProfile, failActions.getValue(onlineProfile));
     }
 
     private boolean foundMatch(final OnlineProfile onlineProfile, final String commandExecuted, final String commandRequired) throws QuestException {

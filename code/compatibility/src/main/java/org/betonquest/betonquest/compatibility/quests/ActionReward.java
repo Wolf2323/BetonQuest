@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
+import org.betonquest.betonquest.api.service.ActionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -25,9 +25,9 @@ public class ActionReward extends BukkitCustomReward {
     private final BetonQuestLogger log;
 
     /**
-     * Quest Type API.
+     * The BetonQuest ActionManager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
 
     /**
      * The profile provider instance.
@@ -43,15 +43,15 @@ public class ActionReward extends BukkitCustomReward {
      * Create a new 'Quests' Reward.
      *
      * @param log               the custom logger
-     * @param questTypeApi      the Quest Type API
+     * @param actionManager     the action manager
      * @param profileProvider   the profile provider instance
      * @param identifierFactory the identifier factory
      */
-    public ActionReward(final BetonQuestLogger log, final QuestTypeApi questTypeApi, final ProfileProvider profileProvider,
+    public ActionReward(final BetonQuestLogger log, final ActionManager actionManager, final ProfileProvider profileProvider,
                         final IdentifierFactory<ActionIdentifier> identifierFactory) {
         super();
         this.log = log;
-        this.questTypeApi = questTypeApi;
+        this.actionManager = actionManager;
         this.profileProvider = profileProvider;
         this.identifierFactory = identifierFactory;
         setName("BetonQuest action");
@@ -74,7 +74,7 @@ public class ActionReward extends BukkitCustomReward {
                 return;
             }
             final ActionIdentifier action = identifierFactory.parseIdentifier(null, string);
-            questTypeApi.action(profileProvider.getProfile(player), action);
+            actionManager.run(profileProvider.getProfile(player), action);
         } catch (final QuestException e) {
             log.warn("Error while running quest reward - BetonQuest action '" + string + "' not found: " + e.getMessage(), e);
         }

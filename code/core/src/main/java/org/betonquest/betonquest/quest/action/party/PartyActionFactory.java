@@ -7,10 +7,11 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.QuestTypeApi;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
+import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.ConditionManager;
 
 import java.util.List;
 
@@ -25,9 +26,14 @@ public class PartyActionFactory implements PlayerActionFactory {
     private final BetonQuestLoggerFactory loggerFactory;
 
     /**
-     * Quest Type API.
+     * The action manager.
      */
-    private final QuestTypeApi questTypeApi;
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * The profile provider instance.
@@ -37,14 +43,17 @@ public class PartyActionFactory implements PlayerActionFactory {
     /**
      * Creates a PartyActionFactory instance.
      *
-     * @param loggerFactory   the logger factory to create a logger for the actions
-     * @param questTypeApi    the Quest Type API
-     * @param profileProvider the profile provider instance
+     * @param loggerFactory    the logger factory to create a logger for the actions
+     * @param profileProvider  the profile provider instance
+     * @param actionManager    the action manager
+     * @param conditionManager the condition manager
      */
-    public PartyActionFactory(final BetonQuestLoggerFactory loggerFactory, final QuestTypeApi questTypeApi, final ProfileProvider profileProvider) {
+    public PartyActionFactory(final BetonQuestLoggerFactory loggerFactory, final ProfileProvider profileProvider,
+                              final ActionManager actionManager, final ConditionManager conditionManager) {
         this.loggerFactory = loggerFactory;
-        this.questTypeApi = questTypeApi;
         this.profileProvider = profileProvider;
+        this.actionManager = actionManager;
+        this.conditionManager = conditionManager;
     }
 
     @Override
@@ -54,7 +63,7 @@ public class PartyActionFactory implements PlayerActionFactory {
         final Argument<List<ConditionIdentifier>> conditions = instruction.identifier(ConditionIdentifier.class).list().get();
         final Argument<List<ActionIdentifier>> actions = instruction.identifier(ActionIdentifier.class).list().get();
         return new OnlineActionAdapter(
-                new PartyAction(questTypeApi, profileProvider, range, amount, conditions, actions),
+                new PartyAction(profileProvider, actionManager, conditionManager, range, amount, conditions, actions),
                 loggerFactory.create(PartyAction.class),
                 instruction.getPackage()
         );

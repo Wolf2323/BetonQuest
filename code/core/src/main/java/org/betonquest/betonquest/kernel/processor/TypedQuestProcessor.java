@@ -5,9 +5,9 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ReadableIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.instruction.InstructionApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.quest.TypeFactory;
+import org.betonquest.betonquest.api.service.Instructions;
 import org.betonquest.betonquest.bstats.CompositeInstructionMetricsSupplier;
 import org.betonquest.betonquest.kernel.registry.FactoryTypeRegistry;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,7 +31,7 @@ public abstract class TypedQuestProcessor<I extends ReadableIdentifier, T> exten
     /**
      * Instruction API.
      */
-    protected final InstructionApi instructionApi;
+    protected final Instructions instructionApi;
 
     /**
      * Create a new QuestProcessor to store and execute type logic.
@@ -45,7 +45,7 @@ public abstract class TypedQuestProcessor<I extends ReadableIdentifier, T> exten
      */
     public TypedQuestProcessor(final BetonQuestLogger log,
                                final FactoryTypeRegistry<T> types, final IdentifierFactory<I> identifierFactory,
-                               final InstructionApi instructionApi, final String readable, final String internal) {
+                               final Instructions instructionApi, final String readable, final String internal) {
         super(log, identifierFactory, readable, internal);
         this.types = types;
         this.instructionApi = instructionApi;
@@ -81,7 +81,7 @@ public abstract class TypedQuestProcessor<I extends ReadableIdentifier, T> exten
 
     private void loadKey(final String key, final QuestPackage pack) throws QuestException {
         final I identifier = getIdentifier(pack, key);
-        final Instruction instruction = instructionApi.createInstruction(identifier, identifier.readRawInstruction());
+        final Instruction instruction = instructionApi.create(identifier, identifier.readRawInstruction());
         final String type = instruction.getPart(0);
         try {
             final TypeFactory<T> factory = types.getFactory(type);

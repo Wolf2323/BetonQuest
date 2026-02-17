@@ -148,9 +148,9 @@ public class InventoryConvIO implements Listener, ConversationIO {
         playerOptionsCount++;
         final String rawItem = properties.getString("item");
         try {
-            final IdentifierFactory<ItemIdentifier> identifierFactory = betonQuest.getQuestRegistries().identifier().getFactory(ItemIdentifier.class);
+            final IdentifierFactory<ItemIdentifier> identifierFactory = betonQuest.getBetonQuestRegistries().identifiers().getFactory(ItemIdentifier.class);
             final Argument<ItemIdentifier> item = rawItem == null ? null
-                    : new DefaultArgument<>(betonQuest.getQuestTypeApi().placeholders(), conv.getPackage(), rawItem,
+                    : new DefaultArgument<>(betonQuest.getBetonQuestManagers().placeholders(), conv.getPackage(), rawItem,
                     (value) -> identifierFactory.parseIdentifier(conv.getPackage(), value));
             options.put(playerOptionsCount, Pair.of(colors.getOption().append(option), item));
         } catch (final QuestException e) {
@@ -221,7 +221,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
             ItemStack item;
             try {
                 item = itemID == null ? new ItemStack(Material.ENDER_PEARL)
-                        : betonQuest.getFeatureApi().getItem(itemID.getValue(profile), profile).generate(1);
+                        : betonQuest.getBetonQuestManagers().items().getItem(profile, itemID.getValue(profile)).generate(1);
             } catch (final QuestException e) {
                 log.warn("Failed to generate item: " + e.getMessage(), e);
                 item = new ItemStack(Material.ENDER_PEARL);
@@ -383,7 +383,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
     @EventHandler
     public void onConsume(final PlayerItemConsumeEvent event) {
         final Profile profile = betonQuest.getProfileProvider().getProfile(event.getPlayer());
-        if (betonQuest.getFeatureApi().conversationApi().hasActive(profile)) {
+        if (betonQuest.getLegacyConversations().hasActive(profile)) {
             event.setCancelled(true);
         }
     }
