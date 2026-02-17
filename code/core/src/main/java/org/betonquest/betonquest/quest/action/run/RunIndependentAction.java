@@ -4,7 +4,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
-import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.quest.action.CallPlayerlessActionAdapter;
 
 import java.util.List;

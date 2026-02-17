@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
-import org.betonquest.betonquest.api.service.ObjectiveManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.quest.condition.number.Operation;
 
 /**

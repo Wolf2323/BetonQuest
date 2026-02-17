@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholder;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholderFactory;
-import org.betonquest.betonquest.api.service.ObjectiveManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 
 /**
  * Factory to create {@link ObjectivePropertyPlaceholder}s from {@link Instruction}s.

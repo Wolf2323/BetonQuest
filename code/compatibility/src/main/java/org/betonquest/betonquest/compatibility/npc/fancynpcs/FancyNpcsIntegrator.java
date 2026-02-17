@@ -3,7 +3,7 @@ package org.betonquest.betonquest.compatibility.npc.fancynpcs;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
+import org.betonquest.betonquest.api.service.npc.NpcRegistry;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;

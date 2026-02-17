@@ -8,7 +8,7 @@ import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.condition.OnlineConditionAdapter;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
-import org.betonquest.betonquest.api.service.NpcManager;
+import org.betonquest.betonquest.api.service.npc.NpcManager;
 
 /**
  * Factory to create {@link NpcDistanceCondition}s from {@link Instruction}s.

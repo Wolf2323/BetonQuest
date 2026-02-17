@@ -1,7 +1,7 @@
 package org.betonquest.betonquest.compatibility.traincarts;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.quest.objective.ObjectiveRegistry;
+import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.traincarts.conditions.TrainCartsRideConditionFactory;
 import org.betonquest.betonquest.compatibility.traincarts.objectives.TrainCartsExitObjectiveFactory;

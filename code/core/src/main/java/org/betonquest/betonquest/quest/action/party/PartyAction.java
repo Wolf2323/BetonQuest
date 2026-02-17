@@ -7,8 +7,8 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
-import org.betonquest.betonquest.api.service.ActionManager;
-import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.betonquest.betonquest.util.Utils;
 import org.jetbrains.annotations.Nullable;
 

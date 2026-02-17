@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 

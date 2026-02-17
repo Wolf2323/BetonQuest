@@ -19,7 +19,7 @@ import org.betonquest.betonquest.api.instruction.tokenizer.Tokenizer;
 import org.betonquest.betonquest.api.instruction.tokenizer.TokenizerException;
 import org.betonquest.betonquest.api.instruction.type.BlockSelector;
 import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultChainableInstruction;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultInstructionChainParser;
 import org.betonquest.betonquest.lib.instruction.chain.DefaultDecoratableChainRetriever;

@@ -3,7 +3,7 @@ package org.betonquest.betonquest.api.instruction.argument;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.jetbrains.annotations.Contract;
 
 /**

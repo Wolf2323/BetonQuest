@@ -5,7 +5,7 @@ import lol.pyr.znpcsplus.api.interaction.InteractionType;
 import lol.pyr.znpcsplus.api.npc.NpcEntry;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.npc.NpcInteractCatcher;
-import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
+import org.betonquest.betonquest.api.service.npc.NpcRegistry;
 import org.betonquest.betonquest.quest.objective.interact.Interaction;
 import org.bukkit.event.EventHandler;
 

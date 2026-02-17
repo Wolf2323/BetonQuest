@@ -2,10 +2,10 @@ package org.betonquest.betonquest.compatibility.jobsreborn;
 
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.quest.action.ActionRegistry;
-import org.betonquest.betonquest.api.quest.condition.ConditionRegistry;
-import org.betonquest.betonquest.api.quest.objective.ObjectiveRegistry;
 import org.betonquest.betonquest.api.service.BetonQuestRegistries;
+import org.betonquest.betonquest.api.service.action.ActionRegistry;
+import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
+import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.jobsreborn.action.AddExpActionFactory;
 import org.betonquest.betonquest.compatibility.jobsreborn.action.AddLevelActionFactory;

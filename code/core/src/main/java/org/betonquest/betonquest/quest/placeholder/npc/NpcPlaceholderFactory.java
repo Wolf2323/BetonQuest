@@ -11,7 +11,7 @@ import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholder;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholderFactory;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerlessPlaceholder;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerlessPlaceholderFactory;
-import org.betonquest.betonquest.api.service.NpcManager;
+import org.betonquest.betonquest.api.service.npc.NpcManager;
 import org.betonquest.betonquest.quest.placeholder.location.LocationFormationMode;
 import org.betonquest.betonquest.quest.placeholder.location.LocationPlaceholder;
 import org.betonquest.betonquest.quest.placeholder.name.QuesterPlaceholder;

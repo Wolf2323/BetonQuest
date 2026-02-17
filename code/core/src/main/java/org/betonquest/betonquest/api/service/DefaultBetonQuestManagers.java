@@ -1,6 +1,11 @@
 package org.betonquest.betonquest.api.service;
 
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.item.ItemManager;
+import org.betonquest.betonquest.api.service.npc.NpcManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 
 import java.util.function.Supplier;
 

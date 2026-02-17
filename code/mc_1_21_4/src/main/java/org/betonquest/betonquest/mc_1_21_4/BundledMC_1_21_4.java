@@ -4,7 +4,7 @@ import org.apache.commons.lang3.function.TriFunction;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.common.component.BookPageWrapper;
-import org.betonquest.betonquest.api.item.ItemRegistry;
+import org.betonquest.betonquest.api.service.item.ItemRegistry;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.conversation.menu.MenuConvIOFactory;

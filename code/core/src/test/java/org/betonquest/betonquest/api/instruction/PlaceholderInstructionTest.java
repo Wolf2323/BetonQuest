@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.NoID;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.id.placeholder.PlaceholderIdentifierFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

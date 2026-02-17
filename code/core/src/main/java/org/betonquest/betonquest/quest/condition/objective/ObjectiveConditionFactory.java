@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
-import org.betonquest.betonquest.api.service.ObjectiveManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 
 /**
  * A factory for creating ObjectiveConditions.

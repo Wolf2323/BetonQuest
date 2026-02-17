@@ -7,8 +7,8 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 
 import java.util.Collections;
 import java.util.List;

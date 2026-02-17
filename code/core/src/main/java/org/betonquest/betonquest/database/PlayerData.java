@@ -12,7 +12,7 @@ import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.objective.Objective;
-import org.betonquest.betonquest.api.service.ObjectiveManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.conversation.PlayerConversationState;
 import org.betonquest.betonquest.database.Saver.Record;
 import org.betonquest.betonquest.feature.journal.Journal;

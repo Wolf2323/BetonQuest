@@ -13,11 +13,11 @@ import org.betonquest.betonquest.api.instruction.argument.parser.DefaultArgument
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.schedule.CatchupStrategy;
 import org.betonquest.betonquest.api.schedule.FictiveTime;
 import org.betonquest.betonquest.api.schedule.Schedule;
 import org.betonquest.betonquest.api.schedule.Scheduler;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.id.action.ActionIdentifierFactory;
 import org.betonquest.betonquest.id.item.ItemIdentifierFactory;

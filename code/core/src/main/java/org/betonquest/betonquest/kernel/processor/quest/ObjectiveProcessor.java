@@ -15,7 +15,7 @@ import org.betonquest.betonquest.api.quest.objective.ObjectiveState;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveService;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveServiceProvider;
 import org.betonquest.betonquest.api.service.Instructions;
-import org.betonquest.betonquest.api.service.ObjectiveManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.bstats.CompositeInstructionMetricsSupplier;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.PlayerData;

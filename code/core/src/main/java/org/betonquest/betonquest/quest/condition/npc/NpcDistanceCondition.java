@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.condition.OnlineCondition;
 import org.betonquest.betonquest.api.quest.npc.Npc;
-import org.betonquest.betonquest.api.service.NpcManager;
+import org.betonquest.betonquest.api.service.npc.NpcManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 

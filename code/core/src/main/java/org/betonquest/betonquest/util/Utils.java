@@ -10,7 +10,7 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
-import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;

@@ -2,7 +2,7 @@ package org.betonquest.betonquest.kernel.registry.quest;
 
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.QuestTypeRegistries;
-import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
 
 import java.util.function.Supplier;
 

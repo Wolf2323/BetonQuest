@@ -3,7 +3,7 @@ package org.betonquest.betonquest.util.math;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.instruction.argument.parser.NumberParser;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.betonquest.betonquest.quest.placeholder.math.MathPlaceholder;
 import org.betonquest.betonquest.util.math.tokens.AbsoluteValue;

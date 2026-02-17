@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.PrimaryThreadEnforceable;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
-import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;

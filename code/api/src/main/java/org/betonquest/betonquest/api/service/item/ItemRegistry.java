@@ -1,6 +1,8 @@
-package org.betonquest.betonquest.api.item;
+package org.betonquest.betonquest.api.service.item;
 
 import org.betonquest.betonquest.api.QuestException;
+import org.betonquest.betonquest.api.item.QuestItemSerializer;
+import org.betonquest.betonquest.api.item.QuestItemWrapper;
 import org.betonquest.betonquest.api.quest.FeatureTypeRegistry;
 
 import java.util.Set;

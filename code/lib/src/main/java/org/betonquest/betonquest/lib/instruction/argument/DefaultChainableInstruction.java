@@ -11,7 +11,7 @@ import org.betonquest.betonquest.api.instruction.FlagState;
 import org.betonquest.betonquest.api.instruction.ValueParser;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
 import org.betonquest.betonquest.api.instruction.chain.ChainableInstruction;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 
 import java.util.Map;
 import java.util.Optional;

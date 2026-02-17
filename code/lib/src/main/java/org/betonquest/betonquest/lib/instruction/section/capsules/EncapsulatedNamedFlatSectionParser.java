@@ -6,7 +6,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
 import org.betonquest.betonquest.api.instruction.section.NamedSubSectionArgumentParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;

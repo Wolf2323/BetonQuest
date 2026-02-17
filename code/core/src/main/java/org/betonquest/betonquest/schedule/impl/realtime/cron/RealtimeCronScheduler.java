@@ -3,7 +3,7 @@ package org.betonquest.betonquest.schedule.impl.realtime.cron;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.schedule.CatchupStrategy;
 import org.betonquest.betonquest.api.schedule.CronSchedule;
-import org.betonquest.betonquest.api.service.ActionManager;
+import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.schedule.LastExecutionCache;
 import org.betonquest.betonquest.schedule.impl.ExecutorServiceScheduler;
 

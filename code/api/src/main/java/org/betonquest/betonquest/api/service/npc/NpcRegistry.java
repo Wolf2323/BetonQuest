@@ -1,8 +1,11 @@
-package org.betonquest.betonquest.api.quest.npc;
+package org.betonquest.betonquest.api.service.npc;
 
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.FeatureTypeRegistry;
+import org.betonquest.betonquest.api.quest.npc.Npc;
+import org.betonquest.betonquest.api.quest.npc.NpcReverseIdentifier;
+import org.betonquest.betonquest.api.quest.npc.NpcWrapper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;

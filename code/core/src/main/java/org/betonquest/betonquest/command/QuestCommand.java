@@ -29,7 +29,7 @@ import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
 import org.betonquest.betonquest.api.quest.objective.Objective;
-import org.betonquest.betonquest.api.service.ObjectiveManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.compatibility.IntegrationData;
 import org.betonquest.betonquest.compatibility.IntegrationSource;

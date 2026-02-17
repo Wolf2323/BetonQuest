@@ -13,7 +13,7 @@ import org.betonquest.betonquest.api.instruction.section.SectionTraverser;
 import org.betonquest.betonquest.api.instruction.source.DefaultedValueSource;
 import org.betonquest.betonquest.api.instruction.source.ValueSource;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultChainableInstruction;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultInstructionChainParser;

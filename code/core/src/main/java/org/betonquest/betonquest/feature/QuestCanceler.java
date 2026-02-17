@@ -15,10 +15,10 @@ import org.betonquest.betonquest.api.instruction.argument.parser.PackageIdentifi
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.service.ActionManager;
-import org.betonquest.betonquest.api.service.ConditionManager;
-import org.betonquest.betonquest.api.service.ItemManager;
-import org.betonquest.betonquest.api.service.ObjectiveManager;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.item.ItemManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.data.PlayerDataStorage;

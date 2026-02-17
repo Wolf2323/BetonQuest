@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.argument.parser.DefaultArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.id.item.ItemIdentifierFactory;
 import org.betonquest.betonquest.id.journal.JournalEntryIdentifierFactory;

@@ -1,7 +1,7 @@
 package org.betonquest.betonquest.compatibility.craftengine;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.item.ItemRegistry;
+import org.betonquest.betonquest.api.service.item.ItemRegistry;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.craftengine.item.CraftEngineItemFactory;
 import org.betonquest.betonquest.compatibility.craftengine.item.CraftEngineQuestItemSerializer;

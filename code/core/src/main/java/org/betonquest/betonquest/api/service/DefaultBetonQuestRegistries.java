@@ -1,12 +1,12 @@
 package org.betonquest.betonquest.api.service;
 
 import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
-import org.betonquest.betonquest.api.item.ItemRegistry;
-import org.betonquest.betonquest.api.quest.action.ActionRegistry;
-import org.betonquest.betonquest.api.quest.condition.ConditionRegistry;
-import org.betonquest.betonquest.api.quest.npc.NpcRegistry;
-import org.betonquest.betonquest.api.quest.objective.ObjectiveRegistry;
-import org.betonquest.betonquest.api.quest.placeholder.PlaceholderRegistry;
+import org.betonquest.betonquest.api.service.action.ActionRegistry;
+import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
+import org.betonquest.betonquest.api.service.item.ItemRegistry;
+import org.betonquest.betonquest.api.service.npc.NpcRegistry;
+import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderRegistry;
 
 import java.util.function.Supplier;
 

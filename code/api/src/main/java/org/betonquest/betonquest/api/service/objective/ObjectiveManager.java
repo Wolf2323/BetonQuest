@@ -1,4 +1,4 @@
-package org.betonquest.betonquest.api.service;
+package org.betonquest.betonquest.api.service.objective;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;

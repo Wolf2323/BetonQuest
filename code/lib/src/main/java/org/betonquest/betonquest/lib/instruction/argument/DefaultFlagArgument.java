@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.instruction.FlagState;
 import org.betonquest.betonquest.api.instruction.ValueParser;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

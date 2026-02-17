@@ -7,7 +7,7 @@ import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.condition.NullableCondition;
-import org.betonquest.betonquest.api.service.ConditionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.betonquest.betonquest.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

@@ -15,7 +15,7 @@ import org.betonquest.betonquest.api.instruction.chain.ChainableInstruction;
 import org.betonquest.betonquest.api.instruction.chain.InstructionChainParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultChainableInstruction;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultInstructionChainParser;
 import org.betonquest.betonquest.lib.instruction.section.DefaultSectionInstruction;

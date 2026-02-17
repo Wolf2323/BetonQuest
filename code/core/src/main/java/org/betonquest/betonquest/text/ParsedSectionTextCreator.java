@@ -3,7 +3,7 @@ package org.betonquest.betonquest.text;
 import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.api.text.Text;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.data.PlayerDataStorage;

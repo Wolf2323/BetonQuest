@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerlessConditionFactory;
-import org.betonquest.betonquest.api.service.NpcManager;
+import org.betonquest.betonquest.api.service.npc.NpcManager;
 import org.bukkit.Location;
 
 /**

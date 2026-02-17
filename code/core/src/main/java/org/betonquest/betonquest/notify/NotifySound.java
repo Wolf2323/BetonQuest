@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.instruction.ValueParser;
 import org.betonquest.betonquest.api.instruction.argument.parser.LocationParser;
 import org.betonquest.betonquest.api.instruction.argument.parser.VectorParser;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
-import org.betonquest.betonquest.api.quest.Placeholders;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

@@ -1,4 +1,4 @@
-package org.betonquest.betonquest.api.service;
+package org.betonquest.betonquest.api.service.condition;
 
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;

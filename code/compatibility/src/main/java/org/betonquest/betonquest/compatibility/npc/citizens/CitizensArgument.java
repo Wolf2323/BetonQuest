@@ -7,8 +7,8 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
-import org.betonquest.betonquest.api.quest.Placeholders;
 import org.betonquest.betonquest.api.service.Instructions;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 
 /**
  * Parses a string to a Citizens Npc ID.
