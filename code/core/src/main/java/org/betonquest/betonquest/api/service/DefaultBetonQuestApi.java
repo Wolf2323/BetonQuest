@@ -5,8 +5,15 @@ import org.betonquest.betonquest.api.BetonQuestApiService;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
+import org.betonquest.betonquest.api.service.action.Actions;
+import org.betonquest.betonquest.api.service.condition.Conditions;
 import org.betonquest.betonquest.api.service.conversation.Conversations;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.item.Items;
+import org.betonquest.betonquest.api.service.npc.Npcs;
+import org.betonquest.betonquest.api.service.objective.Objectives;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 
 import java.util.function.Supplier;
 
@@ -82,5 +89,40 @@ public class DefaultBetonQuestApi implements BetonQuestApi {
     @Override
     public Conversations conversations() {
         return conversationsSupplier.get();
+    }
+
+    @Override
+    public Identifiers identifiers() {
+        return null;
+    }
+
+    @Override
+    public Actions actions() {
+        return null;
+    }
+
+    @Override
+    public Conditions conditions() {
+        return null;
+    }
+
+    @Override
+    public Objectives objectives() {
+        return null;
+    }
+
+    @Override
+    public Placeholders placeholders() {
+        return null;
+    }
+
+    @Override
+    public Items items() {
+        return null;
+    }
+
+    @Override
+    public Npcs npcs() {
+        return null;
     }
 }
