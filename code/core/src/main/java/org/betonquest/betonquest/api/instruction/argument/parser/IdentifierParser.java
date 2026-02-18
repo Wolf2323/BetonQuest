@@ -4,8 +4,8 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.Identifier;
-import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
+import org.betonquest.betonquest.api.service.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 
 /**

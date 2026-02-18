@@ -1,8 +1,8 @@
 package org.betonquest.betonquest.database;
 
-import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.Profile;
+import org.betonquest.betonquest.api.service.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.feature.journal.JournalFactory;
 import org.bukkit.Server;

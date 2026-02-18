@@ -1,6 +1,5 @@
 package org.betonquest.betonquest.api.service;
 
-import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.item.QuestItem;
 import org.betonquest.betonquest.api.item.QuestItemSerializer;
 import org.betonquest.betonquest.api.quest.CoreQuestRegistry;
@@ -9,6 +8,7 @@ import org.betonquest.betonquest.api.quest.FeatureTypeRegistry;
 import org.betonquest.betonquest.api.quest.objective.Objective;
 import org.betonquest.betonquest.api.service.action.ActionRegistry;
 import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
+import org.betonquest.betonquest.api.service.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.service.item.ItemRegistry;
 import org.betonquest.betonquest.api.service.npc.NpcRegistry;
 import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;

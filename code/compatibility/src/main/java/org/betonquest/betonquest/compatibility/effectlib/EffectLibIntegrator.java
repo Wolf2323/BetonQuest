@@ -41,7 +41,7 @@ public class EffectLibIntegrator implements Integrator {
         api.registries().identifiers().register(ParticleIdentifier.class, factory);
         api.registries().actions().register("particle", new ParticleActionFactory(loggerFactory, manager));
         plugin.addProcessor(new EffectLibParticleManager(loggerFactory.create(EffectLibParticleManager.class), loggerFactory,
-                api.profiles(), api.instructions(), factory, api.managers().npcs(), api.managers().conditions(), manager, plugin));
+                api.profiles(), api.instructions(), factory, api.npcs().manager(), api.conditions().manager(), manager, plugin));
     }
 
     @Override

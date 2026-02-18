@@ -34,8 +34,8 @@ public class QuestsIntegrator implements Integrator {
         Objects.requireNonNull(questsInstance);
 
         final BetonQuestRegistries questRegistries = api.registries();
-        questRegistries.conditions().register("quest", new QuestsConditionFactory(questsInstance));
-        questRegistries.actions().register("quest", new QuestsActionFactory(questsInstance));
+        api.conditions().registry().register("quest", new QuestsConditionFactory(questsInstance));
+        api.actions().registry().register("quest", new QuestsActionFactory(questsInstance));
 
         final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
         final ProfileProvider profileProvider = api.profiles();
@@ -44,7 +44,7 @@ public class QuestsIntegrator implements Integrator {
                     questRegistries.identifiers().getFactory(ActionIdentifier.class);
             questsInstance.getCustomRewards().add(new ActionReward(
                     loggerFactory.create(ActionReward.class),
-                    api.managers().actions(), profileProvider, actionIdentifierFactory));
+                    api.actions().manager(), profileProvider, actionIdentifierFactory));
         } catch (final QuestException e) {
             throw new HookException(plugin, "Could not add custom action reward while hooking into Quests.", e);
         }
@@ -53,7 +53,7 @@ public class QuestsIntegrator implements Integrator {
                     questRegistries.identifiers().getFactory(ConditionIdentifier.class);
             questsInstance.getCustomRequirements().add(new ConditionRequirement(
                     loggerFactory.create(ConditionRequirement.class),
-                    api.managers().conditions(), profileProvider, conditionIdentifierFactory));
+                    api.conditions().manager(), profileProvider, conditionIdentifierFactory));
         } catch (final QuestException e) {
             throw new HookException(plugin, "Could not add custom condition requirement while hooking into Quests.", e);
         }
