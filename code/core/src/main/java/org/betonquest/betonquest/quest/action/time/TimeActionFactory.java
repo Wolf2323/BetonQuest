@@ -9,6 +9,7 @@ import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
+import org.betonquest.betonquest.lib.instruction.argument.DefaultArguments;
 import org.betonquest.betonquest.quest.action.DoNothingPlayerlessAction;
 import org.bukkit.World;
 
@@ -39,8 +40,7 @@ public class TimeActionFactory implements PlayerActionFactory, PlayerlessActionF
 
     private NullableActionAdapter createTimeAction(final Instruction instruction) throws QuestException {
         final Argument<TimeChange> time = instruction.parse(TimeParser.TIME).get();
-        final String worldPart = instruction.string().get("world", "%location.world%").getValue(null);
-        final Argument<World> world = instruction.chainForArgument(worldPart).world().get();
+        final Argument<World> world = instruction.world().get("world").orElse(DefaultArguments.PLAYER_WORLD);
         final FlagArgument<Boolean> tickFormat = instruction.bool().getFlag("ticks", true);
         return new NullableActionAdapter(new TimeAction(time, world, tickFormat));
     }
