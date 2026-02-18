@@ -391,7 +391,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
         final PlayerDataFactory playerDataFactory = new PlayerDataFactory(loggerFactory, saver, getServer(),
                 questTypeRegistries.identifier(), coreQuestRegistry.objectives(), Suppliers.memoize(() -> new JournalFactory(loggerFactory, pluginMessage,
-                questRegistry, coreQuestRegistry.conditions(), config, textParser, fontRegistry)));
+                coreQuestRegistry.conditions(), config, textParser, fontRegistry)));
         playerDataStorage = new PlayerDataStorage(loggerFactory.create(PlayerDataStorage.class), config,
                 playerDataFactory, coreQuestRegistry.objectives(), profileProvider);
 

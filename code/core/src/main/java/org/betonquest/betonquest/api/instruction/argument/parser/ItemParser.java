@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.api.instruction.argument.parser;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.common.function.QuestBiFunction;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
@@ -10,8 +9,7 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Item;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
 import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
-import org.betonquest.betonquest.api.item.QuestItem;
-import org.betonquest.betonquest.api.profile.Profile;
+import org.betonquest.betonquest.api.service.item.ItemManager;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 
@@ -21,9 +19,9 @@ import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 public class ItemParser implements InstructionArgumentParser<ItemWrapper> {
 
     /**
-     * The feature API to use for parsing.
+     * The item manager to retrieve items.
      */
-    private final QuestBiFunction<Profile, ItemIdentifier, QuestItem> getItemFunction;
+    private final ItemManager itemManager;
 
     /**
      * The identifier factory to parse {@link ItemIdentifier}s.
@@ -33,12 +31,12 @@ public class ItemParser implements InstructionArgumentParser<ItemWrapper> {
     /**
      * Creates a new parser for items.
      *
-     * @param getItemFunction   the feature API function to retrieve items
+     * @param itemManager       the item manager to retrieve items
      * @param identifierFactory the identifier factory to parse {@link ItemIdentifier}
      */
-    public ItemParser(final QuestBiFunction<Profile, ItemIdentifier, QuestItem> getItemFunction,
+    public ItemParser(final ItemManager itemManager,
                       final IdentifierFactory<ItemIdentifier> identifierFactory) {
-        this.getItemFunction = getItemFunction;
+        this.itemManager = itemManager;
         this.identifierFactory = identifierFactory;
     }
 
@@ -54,6 +52,6 @@ public class ItemParser implements InstructionArgumentParser<ItemWrapper> {
             item = identifierFactory.parseIdentifier(pack, string);
             number = new DefaultArgument<>(1);
         }
-        return new Item(getItemFunction, item, number);
+        return new Item(itemManager, item, number);
     }
 }

@@ -69,20 +69,23 @@ public class RPGMenu {
     /**
      * Create a new RPG menu instance.
      *
-     * @param log             the custom logger for this class
-     * @param loggerFactory   the factory to create new custom logger instances
-     * @param instructionApi  the instruction api to use
-     * @param pluginConfig    the plugin config
-     * @param pluginMessage   the plugin message instance
-     * @param textCreator     the text creator to parse text
-     * @param profileProvider the profile provider instance
-     * @param parsers         the argument parsers to use
-     * @throws QuestException if there is an error while loading the menus
+     * @param log                       the custom logger for this class
+     * @param loggerFactory             the factory to create new custom logger instances
+     * @param instructionApi            the instruction api to use
+     * @param pluginConfig              the plugin config
+     * @param pluginMessage             the plugin message instance
+     * @param textCreator               the text creator to parse text
+     * @param profileProvider           the profile provider instance
+     * @param parsers                   the argument parsers to use
+     * @param menuIdentifierFactory     the factory to create menu identifiers
+     * @param menuItemIdentifierFactory the factory to create menu item identifiers
      */
     public RPGMenu(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
                    final Instructions instructionApi, final ConfigAccessor pluginConfig,
                    final PluginMessage pluginMessage, final ParsedSectionTextCreator textCreator,
-                   final ProfileProvider profileProvider, final ArgumentParsers parsers) throws QuestException {
+                   final ProfileProvider profileProvider, final ArgumentParsers parsers,
+                   final IdentifierFactory<MenuIdentifier> menuIdentifierFactory,
+                   final IdentifierFactory<MenuItemIdentifier> menuItemIdentifierFactory) {
         this.log = log;
         this.loggerFactory = loggerFactory;
         final BetonQuest betonQuest = BetonQuest.getInstance();
@@ -93,14 +96,12 @@ public class RPGMenu {
         questRegistries.objectives().register(menu, new MenuObjectiveFactory(loggerFactory, this));
         questRegistries.actions().register(menu, new MenuActionFactory(loggerFactory, this));
         questRegistries.placeholders().register(menu, new MenuPlaceholderFactory());
-        final IdentifierFactory<MenuIdentifier> menuIdentifierFactory = questRegistries.identifiers().getFactory(MenuIdentifier.class);
-        this.pluginCommand = new RPGMenuCommand(loggerFactory.create(RPGMenuCommand.class), this,
-                menuIdentifierFactory);
+        this.pluginCommand = new RPGMenuCommand(loggerFactory.create(RPGMenuCommand.class), this, menuIdentifierFactory);
         pluginCommand.register();
         pluginCommand.syncCraftBukkitCommands();
         this.menuItemProcessor = new MenuItemProcessor(loggerFactory.create(MenuItemProcessor.class), loggerFactory,
-                instructionApi, textCreator, questRegistries.identifiers().getFactory(MenuItemIdentifier.class),
-                pluginConfig, parsers, betonQuest.getBetonQuestManagers().actions(), betonQuest.getBetonQuestManagers().conditions());
+                instructionApi, textCreator, menuItemIdentifierFactory, pluginConfig, parsers,
+                betonQuest.getBetonQuestManagers().actions(), betonQuest.getBetonQuestManagers().conditions());
         betonQuest.addProcessor(menuItemProcessor);
         this.menuProcessor = new MenuProcessor(loggerFactory.create(MenuProcessor.class), loggerFactory,
                 instructionApi, textCreator, betonQuest.getBetonQuestManagers().actions(),

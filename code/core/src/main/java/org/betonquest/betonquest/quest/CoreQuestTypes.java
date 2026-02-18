@@ -3,21 +3,6 @@ package org.betonquest.betonquest.quest;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
-import org.betonquest.betonquest.api.identifier.ActionIdentifier;
-import org.betonquest.betonquest.api.identifier.CompassIdentifier;
-import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
-import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
-import org.betonquest.betonquest.api.identifier.ConversationOptionIdentifier;
-import org.betonquest.betonquest.api.identifier.ItemIdentifier;
-import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
-import org.betonquest.betonquest.api.identifier.JournalMainPageIdentifier;
-import org.betonquest.betonquest.api.identifier.MenuIdentifier;
-import org.betonquest.betonquest.api.identifier.MenuItemIdentifier;
-import org.betonquest.betonquest.api.identifier.NpcIdentifier;
-import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
-import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
-import org.betonquest.betonquest.api.identifier.QuestCancelerIdentifier;
-import org.betonquest.betonquest.api.identifier.ScheduleIdentifier;
 import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
@@ -26,6 +11,7 @@ import org.betonquest.betonquest.api.quest.FeatureRegistry;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
 import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.config.PluginMessage;
@@ -33,25 +19,9 @@ import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.GlobalData;
 import org.betonquest.betonquest.database.PlayerDataFactory;
 import org.betonquest.betonquest.database.Saver;
-import org.betonquest.betonquest.id.action.ActionIdentifierFactory;
-import org.betonquest.betonquest.id.cancel.QuestCancelerIdentifierFactory;
-import org.betonquest.betonquest.id.compass.CompassIdentifierFactory;
-import org.betonquest.betonquest.id.condition.ConditionIdentifierFactory;
-import org.betonquest.betonquest.id.conversation.ConversationIdentifierFactory;
-import org.betonquest.betonquest.id.conversation.ConversationOptionIdentifierFactory;
-import org.betonquest.betonquest.id.item.ItemIdentifierFactory;
-import org.betonquest.betonquest.id.journal.JournalEntryIdentifierFactory;
-import org.betonquest.betonquest.id.journal.JournalMainPageIdentifierFactory;
-import org.betonquest.betonquest.id.menu.MenuIdentifierFactory;
-import org.betonquest.betonquest.id.menu.MenuItemIdentifierFactory;
-import org.betonquest.betonquest.id.npc.NpcIdentifierFactory;
-import org.betonquest.betonquest.id.objective.ObjectiveIdentifierFactory;
-import org.betonquest.betonquest.id.placeholder.PlaceholderIdentifierFactory;
-import org.betonquest.betonquest.id.schedule.ScheduleIdentifierFactory;
 import org.betonquest.betonquest.kernel.registry.quest.ActionTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.BaseQuestTypeRegistries;
 import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;
-import org.betonquest.betonquest.kernel.registry.quest.IdentifierTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.PlaceholderTypeRegistry;
 import org.betonquest.betonquest.quest.action.burn.BurnActionFactory;
 import org.betonquest.betonquest.quest.action.cancel.CancelActionFactory;
@@ -360,23 +330,8 @@ public class CoreQuestTypes {
      * @param packageManager  the quest package manager
      * @param identifierTypes the identifier type registry to register the types in
      */
-    public static void registerIdentifierTypes(final QuestPackageManager packageManager, final IdentifierTypeRegistry identifierTypes) {
-        identifierTypes.register(ActionIdentifier.class, new ActionIdentifierFactory(packageManager));
-        identifierTypes.register(ConditionIdentifier.class, new ConditionIdentifierFactory(packageManager));
-        identifierTypes.register(ObjectiveIdentifier.class, new ObjectiveIdentifierFactory(packageManager));
-        identifierTypes.register(PlaceholderIdentifier.class, new PlaceholderIdentifierFactory(packageManager));
-        identifierTypes.register(NpcIdentifier.class, new NpcIdentifierFactory(packageManager));
+    public static void registerIdentifierTypes(final QuestPackageManager packageManager, final Identifiers identifierTypes) {
 
-        identifierTypes.register(ConversationIdentifier.class, new ConversationIdentifierFactory(packageManager));
-        identifierTypes.register(ConversationOptionIdentifier.class, new ConversationOptionIdentifierFactory(packageManager));
-        identifierTypes.register(ItemIdentifier.class, new ItemIdentifierFactory(packageManager));
-        identifierTypes.register(CompassIdentifier.class, new CompassIdentifierFactory(packageManager));
-        identifierTypes.register(QuestCancelerIdentifier.class, new QuestCancelerIdentifierFactory(packageManager));
-        identifierTypes.register(JournalEntryIdentifier.class, new JournalEntryIdentifierFactory(packageManager));
-        identifierTypes.register(JournalMainPageIdentifier.class, new JournalMainPageIdentifierFactory(packageManager));
-        identifierTypes.register(MenuIdentifier.class, new MenuIdentifierFactory(packageManager));
-        identifierTypes.register(MenuItemIdentifier.class, new MenuItemIdentifierFactory(packageManager));
-        identifierTypes.register(ScheduleIdentifier.class, new ScheduleIdentifierFactory(packageManager));
     }
 
     /**
