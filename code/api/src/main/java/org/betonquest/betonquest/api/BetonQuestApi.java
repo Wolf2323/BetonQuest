@@ -16,10 +16,26 @@ import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
 import org.betonquest.betonquest.api.service.BetonQuestManagers;
 import org.betonquest.betonquest.api.service.BetonQuestRegistries;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.action.ActionRegistry;
+import org.betonquest.betonquest.api.service.action.Actions;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
+import org.betonquest.betonquest.api.service.condition.Conditions;
 import org.betonquest.betonquest.api.service.conversation.Conversations;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.item.ItemManager;
+import org.betonquest.betonquest.api.service.item.ItemRegistry;
+import org.betonquest.betonquest.api.service.item.Items;
+import org.betonquest.betonquest.api.service.npc.NpcManager;
+import org.betonquest.betonquest.api.service.npc.NpcRegistry;
+import org.betonquest.betonquest.api.service.npc.Npcs;
 import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
+import org.betonquest.betonquest.api.service.objective.Objectives;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderRegistry;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -92,6 +108,66 @@ public interface BetonQuestApi {
      * @return the conversation api offering functionality to access conversations
      */
     Conversations conversations();
+
+    /**
+     * Offers functionality to access actions in BetonQuest.
+     * <br> <br>
+     * The {@link ActionRegistry} enables registering custom actions.
+     * The {@link ActionManager} enables executing actions defined in BetonQuest.
+     *
+     * @return the action api offering functionality to access actions
+     */
+    Actions actions();
+
+    /**
+     * Offers functionality to access conditions in BetonQuest.
+     * <br> <br>
+     * The {@link ConditionRegistry} enables registering custom conditions.
+     * The {@link ConditionManager} enables evaluating conditions defined in BetonQuest.
+     *
+     * @return the condition api offering functionality to access conditions
+     */
+    Conditions conditions();
+
+    /**
+     * Offers functionality to access objectives in BetonQuest.
+     * <br> <br>
+     * The {@link ObjectiveRegistry} enables registering custom objectives.
+     * The {@link ObjectiveManager} enables managing objectives defined in BetonQuest.
+     *
+     * @return the objective api offering functionality to access objectives
+     */
+    Objectives objectives();
+
+    /**
+     * Offers functionality to access placeholders in BetonQuest.
+     * <br> <br>
+     * The {@link PlaceholderRegistry} enables registering custom placeholders.
+     * The {@link PlaceholderManager} enables resolving placeholders defined in BetonQuest.
+     *
+     * @return the placeholder api offering functionality to access placeholders
+     */
+    Placeholders placeholders();
+
+    /**
+     * Offers functionality to access items in BetonQuest.
+     * <br> <br>
+     * The {@link ItemRegistry} enables registering custom items.
+     * The {@link ItemManager} enables managing items defined in BetonQuest.
+     *
+     * @return the item api offering functionality to access items
+     */
+    Items items();
+
+    /**
+     * Offers functionality to access NPCs in BetonQuest.
+     * <br> <br>
+     * The {@link NpcRegistry} enables registering custom NPCs.
+     * The {@link NpcManager} enables managing NPCs defined in BetonQuest.
+     *
+     * @return the npc api offering functionality to access NPCs
+     */
+    Npcs npcs();
 
     /**
      * Offers functionality to register custom features.
