@@ -123,7 +123,7 @@ public class NpcRangeObjective extends DefaultObjective {
         for (final OnlineProfile onlineProfile : profiles) {
             try {
                 for (final NpcIdentifier npcId : npcIds.getValue(onlineProfile)) {
-                    final Npc<?> npc = BetonQuest.getInstance().getBetonQuestManagers().npcs().get(onlineProfile, npcId);
+                    final Npc<?> npc = BetonQuest.getInstance().getCoreQuestTypeHandler().getNpcProcessor().get(onlineProfile, npcId);
                     if (!npc.isSpawned()) {
                         continue;
                     }

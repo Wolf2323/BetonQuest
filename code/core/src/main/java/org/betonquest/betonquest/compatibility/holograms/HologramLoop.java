@@ -1,8 +1,8 @@
 package org.betonquest.betonquest.compatibility.holograms;
 
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.common.component.VariableComponent;
+import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
@@ -14,6 +14,8 @@ import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.logger.QuestExceptionHandler;
+import org.betonquest.betonquest.api.profile.ProfileProvider;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.compatibility.holograms.lines.AbstractLine;
@@ -80,6 +82,21 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
     private final Instructions instructionApi;
 
     /**
+     * The BetonQuest config accessor.
+     */
+    private final ConfigAccessor configAccessor;
+
+    /**
+     * The profile provider.
+     */
+    private final ProfileProvider profileProvider;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
+
+    /**
      * Default refresh Interval for Holograms.
      */
     private int defaultInterval = 10 * 20;
@@ -96,23 +113,31 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
      * @param internal          the section name and/or bstats topic identifier
      * @param textParser        the text parser used to parse text and colors
      * @param identifierFactory the identifier factory to create {@link HologramIdentifier}s for this type
+     * @param configAccessor    the betonquest config accessor
+     * @param conditionManager  the condition manager
+     * @param profileProvider   the profile provider
      */
     public HologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
                         final Instructions instructionApi, final QuestPackageManager packManager,
                         final HologramProvider hologramProvider, final String readable, final String internal,
-                        final TextParser textParser, final IdentifierFactory<HologramIdentifier> identifierFactory) {
+                        final TextParser textParser, final IdentifierFactory<HologramIdentifier> identifierFactory,
+                        final ConfigAccessor configAccessor, final ConditionManager conditionManager,
+                        final ProfileProvider profileProvider) {
         super(log, instructionApi, identifierFactory, readable, internal);
         this.loggerFactory = loggerFactory;
         this.hologramProvider = hologramProvider;
         this.instructionApi = instructionApi;
         this.packManager = packManager;
         this.textParser = textParser;
+        this.configAccessor = configAccessor;
+        this.conditionManager = conditionManager;
+        this.profileProvider = profileProvider;
     }
 
     @Override
     public void clear() {
         super.clear();
-        defaultInterval = BetonQuest.getInstance().getPluginConfig().getInt("hologram.update_interval", 10 * 20);
+        defaultInterval = configAccessor.getInt("hologram.update_interval", 10 * 20);
     }
 
     @Override
@@ -139,8 +164,8 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
         final QuestExceptionHandler handler = new DefaultQuestExceptionHandler(pack, loggerFactory.create(HologramWrapper.class), identifier.getFull());
         final HologramWrapper hologramWrapper = new HologramWrapper(
                 handler,
-                BetonQuest.getInstance().getBetonQuestManagers().conditions(),
-                BetonQuest.getInstance().getProfileProvider(),
+                conditionManager,
+                profileProvider,
                 checkInterval.getValue(null).intValue(),
                 holograms,
                 isStaticHologram(cleanedLines),

@@ -4,11 +4,11 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.bukkit.event.QuestCompassTargetChangeEvent;
 import org.betonquest.betonquest.api.identifier.CompassIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.feature.QuestCompass;
+import org.betonquest.betonquest.kernel.processor.feature.CompassProcessor;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.betonquest.betonquest.quest.action.tag.AddTagChanger;
 import org.betonquest.betonquest.quest.action.tag.DeleteTagChanger;
@@ -24,9 +24,9 @@ import java.util.List;
 public class CompassAction implements PlayerAction {
 
     /**
-     * Feature API.
+     * The compass processor.
      */
-    private final LegacyFeatures featureApi;
+    private final CompassProcessor compassProcessor;
 
     /**
      * Storage to get the offline player data.
@@ -46,14 +46,14 @@ public class CompassAction implements PlayerAction {
     /**
      * Create the compass action.
      *
-     * @param featureApi the Feature API
-     * @param storage    the storage to get the offline player data
-     * @param action     the action to perform
-     * @param compassId  the compass point
+     * @param compassProcessor the Feature API
+     * @param storage          the storage to get the offline player data
+     * @param action           the action to perform
+     * @param compassId        the compass point
      */
-    public CompassAction(final LegacyFeatures featureApi, final PlayerDataStorage storage,
+    public CompassAction(final CompassProcessor compassProcessor, final PlayerDataStorage storage,
                          final Argument<CompassTargetOperation> action, final Argument<CompassIdentifier> compassId) {
-        this.featureApi = featureApi;
+        this.compassProcessor = compassProcessor;
         this.dataStorage = storage;
         this.action = action;
         this.compassId = compassId;
@@ -66,7 +66,7 @@ public class CompassAction implements PlayerAction {
             case ADD -> changeTag(new AddTagChanger(new DefaultArgument<>(List.of(compassId.getTag()))), profile);
             case DEL -> changeTag(new DeleteTagChanger(new DefaultArgument<>(List.of(compassId.getTag()))), profile);
             case SET -> {
-                final QuestCompass compass = featureApi.getCompasses().get(compassId);
+                final QuestCompass compass = compassProcessor.getValues().get(compassId);
                 if (compass == null) {
                     throw new QuestException("No compass found for id '" + compassId + "' found.");
                 }

@@ -70,8 +70,8 @@ public class SkriptConditionBQ extends Condition {
         try {
             final ProfileProvider profileProvider = plugin.getProfileProvider();
             final IdentifierFactory<ConditionIdentifier> conditionIdentifierFactory =
-                    plugin.getBetonQuestRegistries().identifiers().getFactory(ConditionIdentifier.class);
-            return plugin.getBetonQuestManagers().conditions().test(profileProvider.getProfile(player.getSingle(event)),
+                    plugin.getBetonQuestApi().identifiers().getFactory(ConditionIdentifier.class);
+            return plugin.getCoreQuestTypeHandler().getConditionProcessor().test(profileProvider.getProfile(player.getSingle(event)),
                     conditionIdentifierFactory.parseIdentifier(null, conditionID));
         } catch (final QuestException e) {
             log.warn("Error while checking Skript condition - could not load condition with ID '" + conditionID + "': " + e.getMessage(), e);

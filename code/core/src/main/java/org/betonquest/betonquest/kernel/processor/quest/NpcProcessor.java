@@ -24,7 +24,9 @@ import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.service.npc.NpcManager;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.CombatTagger;
+import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.kernel.processor.TypedQuestProcessor;
+import org.betonquest.betonquest.kernel.processor.feature.ConversationProcessor;
 import org.betonquest.betonquest.kernel.processor.feature.ConversationStarter;
 import org.betonquest.betonquest.kernel.registry.quest.NpcTypeRegistry;
 import org.betonquest.betonquest.quest.action.IngameNotificationSender;
@@ -125,6 +127,21 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
     private final ProfileProvider profileProvider;
 
     /**
+     * The saver to save data.
+     */
+    private final Saver saver;
+
+    /**
+     * The conversation processor.
+     */
+    private final ConversationProcessor conversationProcessor;
+
+    /**
+     * The identifiers registry.
+     */
+    private final Identifiers identifiers;
+
+    /**
      * The minimum time between two interactions with an NPC.
      */
     private int interactionLimit;
@@ -150,7 +167,9 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
      * @param convStarter                   the starter for Npc conversations
      * @param instructionApi                the instruction api
      * @param identifiers                   the identifiers registry
+     * @param saver                         the saver to save data
      * @param configAccessor                the config accessor
+     * @param conversationProcessor         the conversation processor
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public NpcProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
@@ -159,8 +178,8 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
                         final NpcTypeRegistry npcTypes, final PluginMessage pluginMessage,
                         final ProfileProvider profileProvider, final ActionManager actionManager,
                         final ConditionManager conditionManager, final ConversationStarter convStarter,
-                        final Instructions instructionApi, final Identifiers identifiers,
-                        final ConfigAccessor configAccessor) {
+                        final Instructions instructionApi, final Identifiers identifiers, final Saver saver,
+                        final ConfigAccessor configAccessor, final ConversationProcessor conversationProcessor) {
         super(log, npcTypes, npcIdentifierFactory, instructionApi, "Npc", "npcs");
         this.loggerFactory = loggerFactory;
         this.plugin = plugin;
@@ -171,6 +190,9 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
         this.conditionManager = conditionManager;
         this.configAccessor = configAccessor;
         this.profileProvider = profileProvider;
+        this.saver = saver;
+        this.conversationProcessor = conversationProcessor;
+        this.identifiers = identifiers;
         plugin.getServer().getPluginManager().registerEvents(new NpcListener(), plugin);
         this.npcHider = new DefaultNpcHider(loggerFactory.create(DefaultNpcHider.class), this,
                 conditionManager, profileProvider, npcTypes, identifiers, instructionApi);
@@ -284,7 +306,8 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
         convStarter.startConversation(onlineProfile, conversationID, center, null,
                 (onlineProfile1, id, center1, run)
                         -> new NpcConversation<>(loggerFactory.create(NpcConversation.class), pluginMessage,
-                        onlineProfile1, id, center1, actionManager, conditionManager, run, npc));
+                        onlineProfile1, id, center1, actionManager, conditionManager, conversationProcessor,
+                        identifiers, saver, run, npc));
         return true;
     }
 

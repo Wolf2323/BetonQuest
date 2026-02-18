@@ -2,7 +2,7 @@ package org.betonquest.betonquest.notify.io;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.notify.NotifyIO;
 import org.betonquest.betonquest.notify.NotifyIOFactory;
@@ -23,21 +23,21 @@ public class ChatNotifyIOFactory implements NotifyIOFactory {
     /**
      * Conversation API.
      */
-    private final LegacyConversations conversationApi;
+    private final Conversations conversations;
 
     /**
      * Create a new Chat Notify IO.
      *
-     * @param placeholders    the {@link PlaceholderManager} to create and resolve placeholders
-     * @param conversationApi the Conversation API
+     * @param placeholders  the {@link PlaceholderManager} to create and resolve placeholders
+     * @param conversations the Conversation API
      */
-    public ChatNotifyIOFactory(final PlaceholderManager placeholders, final LegacyConversations conversationApi) {
+    public ChatNotifyIOFactory(final PlaceholderManager placeholders, final Conversations conversations) {
         this.placeholders = placeholders;
-        this.conversationApi = conversationApi;
+        this.conversations = conversations;
     }
 
     @Override
     public NotifyIO create(@Nullable final QuestPackage pack, final Map<String, String> categoryData) throws QuestException {
-        return new ChatNotifyIO(placeholders, pack, categoryData, conversationApi);
+        return new ChatNotifyIO(placeholders, pack, categoryData, conversations);
     }
 }

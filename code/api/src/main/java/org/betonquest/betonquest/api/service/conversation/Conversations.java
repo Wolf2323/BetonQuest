@@ -78,6 +78,17 @@ public interface Conversations {
     Optional<Component> getActiveQuesterName(Profile profile);
 
     /**
+     * Sends a bypass message to the given profile that gets displayed to the player of the online profile
+     * even if the profile is currently engaged in a conversation.
+     * <br>
+     * If the profile is not engaged in a conversation, this method will simply send the message to the player.
+     *
+     * @param profile the profile to send the bypass message to
+     * @param message the message to send
+     */
+    void sendBypassMessage(OnlineProfile profile, Component message);
+
+    /**
      * If the given profile is currently in a conversation, this method will return the identifier of that conversation.
      *
      * @param profile the profile to check for

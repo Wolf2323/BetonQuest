@@ -1,11 +1,11 @@
 package org.betonquest.betonquest.data;
 
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
 import org.betonquest.betonquest.conversation.ConversationResumer;
 import org.betonquest.betonquest.database.PlayerData;
 import org.betonquest.betonquest.database.PlayerDataFactory;
@@ -68,16 +68,16 @@ public class PlayerDataStorage {
     /**
      * Creates PlayerData for the online profiles, stores them and starts their objectives.
      *
-     * @param onlineProfiles  the profiles to initialize
-     * @param conversationApi the Conversation API
+     * @param onlineProfiles the profiles to initialize
+     * @param conversations  the Conversation API
      */
-    public void initProfiles(final Collection<OnlineProfile> onlineProfiles, final LegacyConversations conversationApi) {
+    public void initProfiles(final Collection<OnlineProfile> onlineProfiles, final Conversations conversations) {
         for (final OnlineProfile onlineProfile : onlineProfiles) {
             final PlayerData playerData = init(onlineProfile);
             playerData.startObjectives();
             playerData.getJournal().update();
             if (playerData.getActiveConversation() != null) {
-                new ConversationResumer(config, conversationApi, onlineProfile, playerData.getActiveConversation());
+                new ConversationResumer(config, conversations, onlineProfile, playerData.getActiveConversation());
             }
         }
     }

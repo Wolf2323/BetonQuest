@@ -5,6 +5,7 @@ import net.luckperms.api.context.ContextCalculator;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.luckperms.permission.LuckPermsActionFactory;
+import org.betonquest.betonquest.database.GlobalData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -14,6 +15,11 @@ import org.bukkit.plugin.RegisteredServiceProvider;
  */
 @SuppressWarnings("NullAway.Init")
 public class LuckPermsIntegrator implements Integrator {
+
+    /**
+     * The global data.
+     */
+    private final GlobalData globalData;
 
     /**
      * The {@link LuckPerms} API.
@@ -27,8 +33,11 @@ public class LuckPermsIntegrator implements Integrator {
 
     /**
      * Creates the {@link LuckPermsIntegrator} instance.
+     *
+     * @param globalData the global data
      */
-    public LuckPermsIntegrator() {
+    public LuckPermsIntegrator(final GlobalData globalData) {
+        this.globalData = globalData;
     }
 
     @Override
@@ -36,7 +45,7 @@ public class LuckPermsIntegrator implements Integrator {
         final RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
         if (provider != null) {
             luckPermsAPI = provider.getProvider();
-            tagCalculator = TagCalculatorUtils.getTagContextCalculator();
+            tagCalculator = TagCalculatorUtils.getTagContextCalculator(globalData);
             luckPermsAPI.getContextManager().registerCalculator(tagCalculator);
             api.actions().registry().register("luckperms", new LuckPermsActionFactory(luckPermsAPI));
         }

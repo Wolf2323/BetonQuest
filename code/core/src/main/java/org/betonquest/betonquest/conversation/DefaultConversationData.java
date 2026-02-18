@@ -14,12 +14,12 @@ import org.betonquest.betonquest.api.identifier.ConversationOptionIdentifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.argument.DecoratedArgumentParser;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.Text;
+import org.betonquest.betonquest.kernel.processor.feature.ConversationProcessor;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
 import org.bukkit.configuration.ConfigurationSection;
@@ -68,9 +68,9 @@ public class DefaultConversationData implements ConversationData {
     private final ConditionManager conditionManager;
 
     /**
-     * Conversation API.
+     * The conversation processor.
      */
-    private final LegacyConversations conversationApi;
+    private final ConversationProcessor conversationProcessor;
 
     /**
      * The {@link SectionInstruction}.
@@ -107,28 +107,28 @@ public class DefaultConversationData implements ConversationData {
     /**
      * Loads a conversation from a package.
      *
-     * @param log              the custom logger for this class
-     * @param packManager      the quest package manager to get quest packages from
-     * @param placeholders     the {@link PlaceholderManager} to create and resolve placeholders
-     * @param conditionManager the condition manager
-     * @param instruction      the instruction to parse the conversation from
-     * @param conversationApi  the Conversation API
-     * @param textCreator      the text creator to parse text
-     * @param convSection      the configuration section of the conversation
-     * @param publicData       the external used data
+     * @param log                   the custom logger for this class
+     * @param packManager           the quest package manager to get quest packages from
+     * @param placeholders          the {@link PlaceholderManager} to create and resolve placeholders
+     * @param conditionManager      the condition manager
+     * @param instruction           the instruction to parse the conversation from
+     * @param conversationProcessor the Conversation API
+     * @param textCreator           the text creator to parse text
+     * @param convSection           the configuration section of the conversation
+     * @param publicData            the external used data
      * @throws QuestException when there is a syntax error in the defined conversation or
      *                        when conversation options cannot be resolved or {@code convSection} is null
      */
     public DefaultConversationData(final BetonQuestLogger log, final QuestPackageManager packManager,
                                    final PlaceholderManager placeholders, final ConditionManager conditionManager, final SectionInstruction instruction,
-                                   final LegacyConversations conversationApi, final ParsedSectionTextCreator textCreator,
+                                   final ConversationProcessor conversationProcessor, final ParsedSectionTextCreator textCreator,
                                    final ConfigurationSection convSection, final ConversationPublicData publicData) throws QuestException {
         this.log = log;
         this.packManager = packManager;
         this.placeholders = placeholders;
         this.conditionManager = conditionManager;
         this.instruction = instruction;
-        this.conversationApi = conversationApi;
+        this.conversationProcessor = conversationProcessor;
         this.publicData = publicData;
         this.textCreator = textCreator;
 
@@ -165,7 +165,7 @@ public class DefaultConversationData implements ConversationData {
 
             final DefaultConversationData conv;
             try {
-                conv = conversationApi.getData(targetConv);
+                conv = conversationProcessor.getData(targetConv);
             } catch (final QuestException e) {
                 log.warn(getPack(), "Cross-conversation pointer in '" + externalPointer.sourcePack() + "' package, '" + externalPointer.sourceConv() + "' conversation, "
                         + sourceOption + " points to the '" + targetConv.get()
@@ -203,7 +203,7 @@ public class DefaultConversationData implements ConversationData {
         final ConversationIdentifier targetConversationID = conversationName == null ? publicData.conversationID()
                 : instruction.chainForArgument(conversationName).identifier(ConversationIdentifier.class).get().getValue(null);
 
-        final DefaultConversationData newData = conversationApi.getData(targetConversationID);
+        final DefaultConversationData newData = conversationProcessor.getData(targetConversationID);
         return new ResolvedOption(newData, optionType, optionName);
     }
 

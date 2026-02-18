@@ -7,6 +7,7 @@ import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.quest.objective.Objective;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveService;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.Collections;
@@ -18,9 +19,17 @@ import java.util.List;
 public class KillPlayerObjectiveFactory implements ObjectiveFactory {
 
     /**
-     * Creates a new instance of the KillPlayerObjectiveFactory.
+     * The condition manager to test conditions.
      */
-    public KillPlayerObjectiveFactory() {
+    private final ConditionManager conditionManager;
+
+    /**
+     * Creates a new instance of the KillPlayerObjectiveFactory.
+     *
+     * @param conditionManager the condition manager to test conditions
+     */
+    public KillPlayerObjectiveFactory(final ConditionManager conditionManager) {
+        this.conditionManager = conditionManager;
     }
 
     @Override
@@ -29,7 +38,7 @@ public class KillPlayerObjectiveFactory implements ObjectiveFactory {
         final Argument<String> name = instruction.string().get("name").orElse(null);
         final Argument<List<ConditionIdentifier>> required = instruction.identifier(ConditionIdentifier.class)
                 .list().get("required", Collections.emptyList());
-        final KillPlayerObjective objective = new KillPlayerObjective(service, targetAmount, name, required);
+        final KillPlayerObjective objective = new KillPlayerObjective(service, conditionManager, targetAmount, name, required);
         service.request(PlayerDeathEvent.class).onlineHandler(objective::onKill)
                 .player(event -> event.getEntity().getKiller()).subscribe(true);
         return objective;

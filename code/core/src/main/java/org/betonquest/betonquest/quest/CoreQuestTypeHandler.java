@@ -49,6 +49,7 @@ import org.betonquest.betonquest.api.service.npc.Npcs;
 import org.betonquest.betonquest.api.service.objective.Objectives;
 import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.api.text.TextParser;
+import org.betonquest.betonquest.api.text.TextParserRegistry;
 import org.betonquest.betonquest.bstats.InstructionMetricsSupplier;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.data.PlayerDataStorage;
@@ -71,6 +72,7 @@ import org.betonquest.betonquest.id.objective.ObjectiveIdentifierFactory;
 import org.betonquest.betonquest.id.placeholder.PlaceholderIdentifierFactory;
 import org.betonquest.betonquest.id.schedule.ScheduleIdentifierFactory;
 import org.betonquest.betonquest.kernel.processor.QuestProcessor;
+import org.betonquest.betonquest.kernel.processor.StartTask;
 import org.betonquest.betonquest.kernel.processor.TypedQuestProcessor;
 import org.betonquest.betonquest.kernel.processor.feature.CancelerProcessor;
 import org.betonquest.betonquest.kernel.processor.feature.CompassProcessor;
@@ -125,7 +127,7 @@ public class CoreQuestTypeHandler {
     /**
      * The logger used for the {@link CoreQuestTypeHandler}.
      */
-    private final BetonQuestLogger logger;
+    private final BetonQuestLogger log;
 
     /**
      * The logger factory to create loggers for each individual type.
@@ -188,6 +190,11 @@ public class CoreQuestTypeHandler {
     private final Collection<QuestProcessor<?, ?>> allProcessors;
 
     /**
+     * Contains all processors that are not part of the main quest processing chain.
+     */
+    private final Collection<QuestProcessor<?, ?>> additionalProcessors;
+
+    /**
      * The identifier factory for conversations.
      */
     @Nullable
@@ -204,6 +211,12 @@ public class CoreQuestTypeHandler {
      */
     @Nullable
     private PlayerDataStorage playerDataStorage;
+
+    /**
+     * Used to create player data instances.
+     */
+    @Nullable
+    private PlayerDataFactory playerDataFactory;
 
     /**
      * Loads sections of text and identifies languages in them as well.
@@ -394,39 +407,25 @@ public class CoreQuestTypeHandler {
     /**
      * Sole constructor.
      *
-     * @param plugin                the plugin instance
-     * @param logger                the logger
-     * @param loggerFactory         the logger factory
-     * @param profileProvider       the profile provider
-     * @param packManager           the quest package manager
-     * @param bukkitScheduler       the scheduler
-     * @param server                the server instance
-     * @param pluginManager         the plugin manager
-     * @param configAccessorFactory the config accessor factory
-     * @param languageProvider      the language provider
-     * @param saver                 the database saver
-     * @param fontRegistry          the font registry
-     * @param config                the config accessor of the BetonQuest config
+     * @param log    the logger
+     * @param params the constructor parameters record
      */
-    public CoreQuestTypeHandler(final Plugin plugin, final BetonQuestLogger logger, final BetonQuestLoggerFactory loggerFactory,
-                                final ProfileProvider profileProvider, final QuestPackageManager packManager,
-                                final BukkitScheduler bukkitScheduler, final Server server, final PluginManager pluginManager,
-                                final ConfigAccessorFactory configAccessorFactory, final ConfigAccessor config,
-                                final LanguageProvider languageProvider, final Saver saver, final FontRegistry fontRegistry) {
-        this.plugin = plugin;
-        this.logger = logger;
-        this.loggerFactory = loggerFactory;
-        this.profileProvider = profileProvider;
-        this.packManager = packManager;
-        this.bukkitScheduler = bukkitScheduler;
-        this.server = server;
-        this.pluginManager = pluginManager;
-        this.configAccessorFactory = configAccessorFactory;
-        this.config = config;
-        this.languageProvider = languageProvider;
-        this.saver = saver;
-        this.fontRegistry = fontRegistry;
+    public CoreQuestTypeHandler(final BetonQuestLogger log, final ConstructorParams params) {
+        this.log = log;
+        this.plugin = params.plugin();
+        this.loggerFactory = params.loggerFactory();
+        this.profileProvider = params.profileProvider();
+        this.packManager = params.packageManager();
+        this.server = plugin.getServer();
+        this.bukkitScheduler = server.getScheduler();
+        this.pluginManager = server.getPluginManager();
+        this.configAccessorFactory = params.configAccessorFactory();
+        this.config = params.config();
+        this.languageProvider = params.languageProvider();
+        this.saver = params.saver();
+        this.fontRegistry = params.fontRegistry();
         this.allProcessors = new ArrayList<>();
+        this.additionalProcessors = new ArrayList<>();
     }
 
     private void initIdentifiers() {
@@ -499,7 +498,8 @@ public class CoreQuestTypeHandler {
         this.interceptorRegistry = new InterceptorRegistry(loggerFactory.create(InterceptorRegistry.class));
         this.conversationProcessor = new ConversationProcessor(loggerFactory.create(ConversationProcessor.class),
                 loggerFactory, plugin, parsedSectionTextCreator, packManager, placeholderProcessor, profileProvider, config, conversationIORegistry, interceptorRegistry,
-                instructions, pluginMessage, actionProcessor, conditionProcessor, conversationIdentifierFactory);
+                instructions, pluginMessage, actionProcessor, conditionProcessor, conversationIdentifierFactory, identifierTypeRegistry, saver);
+        this.allProcessors.add(conversationProcessor);
     }
 
     private void initNpcs() throws QuestException {
@@ -516,17 +516,19 @@ public class CoreQuestTypeHandler {
         this.npcProcessor = new NpcProcessor(loggerFactory.create(NpcProcessor.class), loggerFactory, plugin,
                 npcIdentifierFactory, conversationIdentifierFactory, npcRegistry, pluginMessage,
                 profileProvider, actionProcessor, conditionProcessor, conversationProcessor.getStarter(), instructions,
-                identifierTypeRegistry, config);
+                identifierTypeRegistry, saver, config, conversationProcessor);
+        this.allProcessors.add(npcProcessor);
     }
 
     private void initItems() {
         Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before items!");
         Objects.requireNonNull(this.instructions, "Instructions must be initialized before items!");
-        final ItemIdentifierFactory itemIdentifierFactory = new ItemIdentifierFactory(packManager);
+        this.itemIdentifierFactory = new ItemIdentifierFactory(packManager);
         this.identifierTypeRegistry.register(ItemIdentifier.class, itemIdentifierFactory);
         this.itemRegistry = new ItemTypeRegistry(loggerFactory.create(ItemTypeRegistry.class));
         this.itemProcessor = new ItemProcessor(loggerFactory.create(ItemProcessor.class),
                 itemIdentifierFactory, itemRegistry, instructions);
+        this.allProcessors.add(itemProcessor);
     }
 
     private void initCompasses() {
@@ -537,6 +539,7 @@ public class CoreQuestTypeHandler {
         this.identifierTypeRegistry.register(CompassIdentifier.class, compassIdentifierFactory);
         this.compassProcessor = new CompassProcessor(loggerFactory.create(CompassProcessor.class),
                 instructions, parsedSectionTextCreator, compassIdentifierFactory);
+        this.allProcessors.add(compassProcessor);
     }
 
     private void initJournalEntries() {
@@ -546,6 +549,7 @@ public class CoreQuestTypeHandler {
         this.identifierTypeRegistry.register(JournalEntryIdentifier.class, journalEntryIdentifierFactory);
         this.journalEntryProcessor = new JournalEntryProcessor(loggerFactory.create(JournalEntryProcessor.class),
                 journalEntryIdentifierFactory, parsedSectionTextCreator);
+        this.allProcessors.add(journalEntryProcessor);
     }
 
     private void initJournalMainPages() {
@@ -556,6 +560,7 @@ public class CoreQuestTypeHandler {
         this.identifierTypeRegistry.register(JournalMainPageIdentifier.class, journalMainPageIdentifierFactory);
         this.journalMainPageProcessor = new JournalMainPageProcessor(loggerFactory.create(JournalMainPageProcessor.class),
                 instructions, parsedSectionTextCreator, journalMainPageIdentifierFactory);
+        this.allProcessors.add(journalMainPageProcessor);
     }
 
     private void initSchedules() {
@@ -566,6 +571,25 @@ public class CoreQuestTypeHandler {
         this.scheduleRegistry = new ScheduleRegistry(loggerFactory.create(ScheduleRegistry.class));
         this.scheduleProcessor = new ActionScheduling(loggerFactory.create(ActionScheduling.class, "Schedules"),
                 instructions, scheduleRegistry, scheduleIdentifierFactory);
+        this.allProcessors.add(scheduleProcessor);
+    }
+
+    private void initCancelers() {
+        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before cancelers!");
+        Objects.requireNonNull(this.pluginMessage, "Plugin message must be initialized before cancelers!");
+        Objects.requireNonNull(this.instructions, "Instructions must be initialized before cancelers!");
+        Objects.requireNonNull(this.actionProcessor, "Action processor must be initialized before cancelers!");
+        Objects.requireNonNull(this.conditionProcessor, "Condition processor must be initialized before cancelers!");
+        Objects.requireNonNull(this.parsedSectionTextCreator, "Parsed section text creator must be initialized before cancelers!");
+        Objects.requireNonNull(this.objectiveProcessor, "Objective processor must be initialized before cancelers!");
+        Objects.requireNonNull(this.itemProcessor, "Item processor must be initialized before cancelers!");
+        Objects.requireNonNull(this.playerDataStorage, "Player data storage must be initialized before cancelers!");
+        final QuestCancelerIdentifierFactory questCancelerIdentifierFactory = new QuestCancelerIdentifierFactory(packManager);
+        this.identifierTypeRegistry.register(QuestCancelerIdentifier.class, questCancelerIdentifierFactory);
+        this.cancelerProcessor = new CancelerProcessor(loggerFactory.create(CancelerProcessor.class),
+                loggerFactory, pluginMessage, instructions, actionProcessor, conditionProcessor,
+                objectiveProcessor, itemProcessor, parsedSectionTextCreator, playerDataStorage, questCancelerIdentifierFactory);
+        allProcessors.add(cancelerProcessor);
     }
 
     private void initNotifyIOs() {
@@ -588,7 +612,7 @@ public class CoreQuestTypeHandler {
     private void initPlayerDataStorage() {
         Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before player data storage!");
         Objects.requireNonNull(this.objectiveProcessor, "Objective processor must be initialized before player data storage!");
-        final PlayerDataFactory playerDataFactory = new PlayerDataFactory(loggerFactory, saver, server,
+        this.playerDataFactory = new PlayerDataFactory(loggerFactory, saver, server,
                 identifierTypeRegistry, objectiveProcessor, Suppliers.memoize(() -> {
             Objects.requireNonNull(this.pluginMessage, "Plugin message must be initialized before player data storage!");
             Objects.requireNonNull(this.conditionProcessor, "Condition processor must be initialized before player data storage!");
@@ -609,36 +633,26 @@ public class CoreQuestTypeHandler {
                 playerDataStorage, textParser, configAccessorFactory, languageProvider);
     }
 
-    private void initCancelers() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before cancelers!");
-        Objects.requireNonNull(this.pluginMessage, "Plugin message must be initialized before cancelers!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before cancelers!");
-        Objects.requireNonNull(this.actionProcessor, "Action processor must be initialized before cancelers!");
-        Objects.requireNonNull(this.conditionProcessor, "Condition processor must be initialized before cancelers!");
-        Objects.requireNonNull(this.parsedSectionTextCreator, "Parsed section text creator must be initialized before cancelers!");
-        Objects.requireNonNull(this.objectiveProcessor, "Objective processor must be initialized before cancelers!");
-        Objects.requireNonNull(this.itemProcessor, "Item processor must be initialized before cancelers!");
-        Objects.requireNonNull(this.playerDataStorage, "Player data storage must be initialized before cancelers!");
-        final QuestCancelerIdentifierFactory questCancelerIdentifierFactory = new QuestCancelerIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(QuestCancelerIdentifier.class, questCancelerIdentifierFactory);
-        this.cancelerProcessor = new CancelerProcessor(loggerFactory.create(CancelerProcessor.class),
-                loggerFactory, pluginMessage, instructions, actionProcessor, conditionProcessor,
-                objectiveProcessor, itemProcessor, parsedSectionTextCreator, playerDataStorage, questCancelerIdentifierFactory);
-    }
-
     private void initRPGMenu() {
         Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before RPG menu!");
         Objects.requireNonNull(this.pluginMessage, "Plugin message must be initialized before RPG menu!");
         Objects.requireNonNull(this.parsedSectionTextCreator, "Parsed section text creator must be initialized before RPG menu!");
         Objects.requireNonNull(this.instructions, "Instructions must be initialized before RPG menu!");
         Objects.requireNonNull(this.argumentParsers, "Argument parsers must be initialized before RPG menu!");
+        Objects.requireNonNull(this.actionTypeRegistry, "Action type registry must be initialized before RPG menu!");
+        Objects.requireNonNull(this.conditionTypeRegistry, "Condition type registry must be initialized before RPG menu!");
+        Objects.requireNonNull(this.objectiveTypeRegistry, "Objective type registry must be initialized before RPG menu!");
+        Objects.requireNonNull(this.placeholderTypeRegistry, "Placeholder type registry must be initialized before RPG menu!");
+        Objects.requireNonNull(this.actionProcessor, "Action processor must be initialized before RPG menu!");
+        Objects.requireNonNull(this.conditionProcessor, "Condition processor must be initialized before RPG menu!");
         final MenuIdentifierFactory menuIdentifierFactory = new MenuIdentifierFactory(packManager);
         this.identifierTypeRegistry.register(MenuIdentifier.class, menuIdentifierFactory);
         final MenuItemIdentifierFactory menuItemIdentifierFactory = new MenuItemIdentifierFactory(packManager);
         this.identifierTypeRegistry.register(MenuItemIdentifier.class, menuItemIdentifierFactory);
         this.rpgMenu = new RPGMenu(loggerFactory.create(RPGMenu.class), loggerFactory, instructions, config,
                 pluginMessage, parsedSectionTextCreator, profileProvider, this.argumentParsers.get(),
-                menuIdentifierFactory, menuItemIdentifierFactory);
+                menuIdentifierFactory, menuItemIdentifierFactory, actionTypeRegistry, conditionTypeRegistry,
+                objectiveTypeRegistry, placeholderTypeRegistry, actionProcessor, conditionProcessor);
     }
 
     private void initInstructions() {
@@ -700,8 +714,9 @@ public class CoreQuestTypeHandler {
         try {
             initFeatures();
         } catch (final QuestException e) {
-            logger.error("Failed to initialize features!", e);
+            log.error("Failed to initialize features!", e);
         }
+        initBetonQuestApi();
     }
 
     /**
@@ -709,6 +724,7 @@ public class CoreQuestTypeHandler {
      */
     public void clear() {
         allProcessors.forEach(QuestProcessor::clear);
+        additionalProcessors.forEach(QuestProcessor::clear);
     }
 
     /**
@@ -716,8 +732,43 @@ public class CoreQuestTypeHandler {
      *
      * @param questPackage the quest package to load from
      */
-    public void load(final QuestPackage questPackage) {
+    public void loadPackage(final QuestPackage questPackage) {
         allProcessors.forEach(processor -> processor.load(questPackage));
+        additionalProcessors.forEach(processor -> processor.load(questPackage));
+    }
+
+    /**
+     * Loads the processors with the given quest packages.
+     * <br> <br>
+     * Remove previously loaded data entirely using {@link #clear()}.
+     *
+     * @param packages the quest packages to load
+     */
+    public void loadData(final Collection<QuestPackage> packages) {
+        Objects.requireNonNull(conversationProcessor, "Conversation processor must be initialized before loading data!");
+        Objects.requireNonNull(scheduleProcessor, "Schedule processor must be initialized before loading data!");
+
+        clear();
+
+        for (final QuestPackage pack : packages) {
+            final String packName = pack.getQuestPath();
+            log.debug(pack, "Loading stuff in package " + packName);
+            allProcessors.forEach(processor -> processor.load(pack));
+            log.debug(pack, "Everything in package " + packName + " loaded");
+        }
+
+        conversationProcessor.checkExternalPointers();
+
+        log.info("There are " + readableSize()
+                + " (Additional: " + additionalProcessors.stream().map(QuestProcessor::readableSize).collect(Collectors.joining(", ")) + ")"
+                + " loaded from " + packages.size() + " packages.");
+
+        scheduleProcessor.startAll();
+        additionalProcessors.forEach(questProcessor -> {
+            if (questProcessor instanceof final StartTask startTask) {
+                startTask.startAll();
+            }
+        });
     }
 
     /**
@@ -743,6 +794,16 @@ public class CoreQuestTypeHandler {
     }
 
     /**
+     * Gets a modifiable list of additional processors.
+     * May be used to add more processors or remove some.
+     *
+     * @return all additional processors
+     */
+    public Collection<QuestProcessor<?, ?>> getAdditionalProcessors() {
+        return additionalProcessors;
+    }
+
+    /**
      * Gets the BetonQuest API.
      *
      * @return the API
@@ -750,6 +811,226 @@ public class CoreQuestTypeHandler {
     public BetonQuestApi getBetonQuestApi() {
         Objects.requireNonNull(betonQuestApi, "BetonQuest API is not initialized yet!");
         return betonQuestApi;
+    }
+
+    /**
+     * Gets the action processor.
+     *
+     * @return the action processor
+     */
+    public ActionProcessor getActionProcessor() {
+        Objects.requireNonNull(actionProcessor, "Action processor is not initialized yet!");
+        return actionProcessor;
+    }
+
+    /**
+     * Gets the condition processor.
+     *
+     * @return the condition processor
+     */
+    public ConditionProcessor getConditionProcessor() {
+        Objects.requireNonNull(conditionProcessor, "Condition processor is not initialized yet!");
+        return conditionProcessor;
+    }
+
+    /**
+     * Gets the objective processor.
+     *
+     * @return the objective processor
+     */
+    public ObjectiveProcessor getObjectiveProcessor() {
+        Objects.requireNonNull(objectiveProcessor, "Objective processor is not initialized yet!");
+        return objectiveProcessor;
+    }
+
+    /**
+     * Gets the placeholder processor.
+     *
+     * @return the placeholder processor
+     */
+    public PlaceholderProcessor getPlaceholderProcessor() {
+        Objects.requireNonNull(placeholderProcessor, "Placeholder processor is not initialized yet!");
+        return placeholderProcessor;
+    }
+
+    /**
+     * Gets the canceler processor.
+     *
+     * @return the canceler processor
+     */
+    public CancelerProcessor getCancelerProcessor() {
+        Objects.requireNonNull(cancelerProcessor, "Canceler processor is not initialized yet!");
+        return cancelerProcessor;
+    }
+
+    /**
+     * Gets the compass processor.
+     *
+     * @return the compass processor
+     */
+    public CompassProcessor getCompassProcessor() {
+        Objects.requireNonNull(compassProcessor, "Compass processor is not initialized yet!");
+        return compassProcessor;
+    }
+
+    /**
+     * Gets the npc processor.
+     *
+     * @return the npc processor
+     */
+    public NpcProcessor getNpcProcessor() {
+        Objects.requireNonNull(npcProcessor, "NPC processor is not initialized yet!");
+        return npcProcessor;
+    }
+
+    /**
+     * Gets the schedule processor.
+     *
+     * @return the schedule processor
+     */
+    public ActionScheduling getScheduleProcessor() {
+        Objects.requireNonNull(scheduleProcessor, "Schedule processor is not initialized yet!");
+        return scheduleProcessor;
+    }
+
+    /**
+     * Gets the conversation processor.
+     *
+     * @return the conversation processor
+     */
+    public ConversationProcessor getConversationProcessor() {
+        Objects.requireNonNull(conversationProcessor, "Conversation processor is not initialized yet!");
+        return conversationProcessor;
+    }
+
+    /**
+     * Gets the journal entry processor.
+     *
+     * @return the journal entry processor
+     */
+    public JournalEntryProcessor getJournalEntryProcessor() {
+        Objects.requireNonNull(journalEntryProcessor, "Journal entry processor is not initialized yet!");
+        return journalEntryProcessor;
+    }
+
+    /**
+     * Gets the plugin message instance.
+     *
+     * @return the plugin message instance
+     */
+    public PluginMessage getPluginMessage() {
+        Objects.requireNonNull(pluginMessage, "Plugin message is not initialized yet!");
+        return pluginMessage;
+    }
+
+    /**
+     * Gets the text parser.
+     *
+     * @return the text parser
+     */
+    public TextParser getTextParser() {
+        Objects.requireNonNull(textParser, "Text parser is not initialized yet!");
+        return textParser;
+    }
+
+    /**
+     * Gets the text creator.
+     *
+     * @return the text creator
+     */
+    public ParsedSectionTextCreator getTextCreator() {
+        Objects.requireNonNull(parsedSectionTextCreator, "Parsed section text creator is not initialized yet!");
+        return parsedSectionTextCreator;
+    }
+
+    /**
+     * Gets the player data factory.
+     *
+     * @return the player data factory
+     */
+    public PlayerDataFactory getPlayerDataFactory() {
+        Objects.requireNonNull(playerDataFactory, "Player data factory is not initialized yet!");
+        return playerDataFactory;
+    }
+
+    /**
+     * Gets the player data storage.
+     *
+     * @return the player data storage
+     */
+    public PlayerDataStorage getPlayerDataStorage() {
+        Objects.requireNonNull(playerDataStorage, "Player data storage is not initialized yet!");
+        return playerDataStorage;
+    }
+
+    /**
+     * Gets the conversation io registry.
+     *
+     * @return the conversation io registry
+     */
+    public ConversationIORegistry getConversationIORegistry() {
+        Objects.requireNonNull(conversationIORegistry, "Conversation IO registry is not initialized yet!");
+        return conversationIORegistry;
+    }
+
+    /**
+     * Gets the interceptor registry.
+     *
+     * @return the interceptor registry
+     */
+    public InterceptorRegistry getInterceptorRegistry() {
+        Objects.requireNonNull(interceptorRegistry, "Interceptor registry is not initialized yet!");
+        return interceptorRegistry;
+    }
+
+    /**
+     * Gets the notify io registry.
+     *
+     * @return the notify io registry
+     */
+    public NotifyIORegistry getNotifyIORegistry() {
+        Objects.requireNonNull(notifyIORegistry, "Notify IO registry is not initialized yet!");
+        return notifyIORegistry;
+    }
+
+    /**
+     * Gets the schedule registry.
+     *
+     * @return the schedule registry
+     */
+    public ScheduleRegistry getScheduleRegistry() {
+        Objects.requireNonNull(scheduleRegistry, "Schedule registry is not initialized yet!");
+        return scheduleRegistry;
+    }
+
+    /**
+     * Gets the item registry.
+     *
+     * @return the item registry
+     */
+    public ItemTypeRegistry getItemRegistry() {
+        Objects.requireNonNull(itemRegistry, "Item registry is not initialized yet!");
+        return itemRegistry;
+    }
+
+    /**
+     * Gets the text parser registry.
+     *
+     * @return the text parser registry
+     */
+    public TextParserRegistry getTextParserRegistry() {
+        Objects.requireNonNull(textParserRegistry, "Text parser registry is not initialized yet!");
+        return textParserRegistry;
+    }
+
+    /**
+     * Gets the rpg menu.
+     *
+     * @return the rpg menu
+     */
+    public RPGMenu getRpgMenu() {
+        Objects.requireNonNull(rpgMenu, "RPG menu is not initialized yet!");
+        return rpgMenu;
     }
 
     /**
@@ -828,5 +1109,25 @@ public class CoreQuestTypeHandler {
         Objects.requireNonNull(this.npcProcessor, "Npc processor is not initialized yet!");
         Objects.requireNonNull(this.npcRegistry, "Npc registry is not initialized yet!");
         return new DefaultNpcs(npcProcessor, npcRegistry);
+    }
+
+    /**
+     * The default {@link CoreQuestTypeHandler} constructor parameters record.
+     *
+     * @param plugin                the plugin instance
+     * @param loggerFactory         the logger factory to create loggers for each individual type
+     * @param profileProvider       the profile provider offering access to player profiles
+     * @param configAccessorFactory the config accessor factory handles configuration
+     * @param packageManager        the quest package manager to access quest packages from
+     * @param config                the config accessor of the BetonQuest config
+     * @param languageProvider      the language provider
+     * @param saver                 the database saver
+     * @param fontRegistry          the font registry
+     */
+    public record ConstructorParams(Plugin plugin, BetonQuestLoggerFactory loggerFactory,
+                                    ProfileProvider profileProvider, ConfigAccessorFactory configAccessorFactory,
+                                    QuestPackageManager packageManager, ConfigAccessor config,
+                                    LanguageProvider languageProvider, Saver saver, FontRegistry fontRegistry) {
+
     }
 }

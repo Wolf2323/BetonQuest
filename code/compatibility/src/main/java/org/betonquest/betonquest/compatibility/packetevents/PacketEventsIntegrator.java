@@ -13,7 +13,6 @@ import org.apache.commons.lang3.function.TriFunction;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.legacy.LegacyFeatureRegistries;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.UnsupportedVersionException;
@@ -76,13 +75,12 @@ public class PacketEventsIntegrator implements Integrator {
 
         final TriFunction<Player, ConversationAction, Boolean, ConversationSession> inputFunction = (player, control, setSpeed) ->
                 new FakeArmorStandPassengerController(plugin, packetEventsAPI, player, control, setSpeed);
-        final LegacyFeatureRegistries legacyFeatureRegistries = BetonQuest.getInstance().getLegacyFeatureRegistries();
-        legacyFeatureRegistries.conversationIO().register("packetevents", new MenuConvIOFactory(inputFunction, plugin, plugin.getTextParser(),
+        BetonQuest.getInstance().getCoreQuestTypeHandler().getConversationIORegistry().register("packetevents", new MenuConvIOFactory(inputFunction, plugin, plugin.getCoreQuestTypeHandler().getTextParser(),
                 plugin.getFontRegistry(), pluginConfig, plugin.getConversationColors()));
 
         final boolean displayHistory = pluginConfig.getBoolean("conversation.interceptor.display_history");
         final ChatHistory chatHistory = displayHistory ? getPacketChatHistory(packetEventsAPI, pluginManager, plugin) : new NoneChatHistory();
-        legacyFeatureRegistries.interceptor().register("packetevents", new PacketEventsInterceptorFactory(packetEventsAPI, chatHistory));
+        BetonQuest.getInstance().getCoreQuestTypeHandler().getInterceptorRegistry().register("packetevents", new PacketEventsInterceptorFactory(packetEventsAPI, chatHistory));
 
         api.actions().registry().register("freeze", new FreezeActionFactory(plugin, packetEventsAPI, api.loggerFactory()));
     }

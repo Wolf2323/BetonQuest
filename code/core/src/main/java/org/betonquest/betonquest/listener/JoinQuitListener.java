@@ -1,11 +1,11 @@
 package org.betonquest.betonquest.listener;
 
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.objective.Objective;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
 import org.betonquest.betonquest.conversation.ConversationResumer;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.PlayerData;
@@ -47,7 +47,7 @@ public class JoinQuitListener implements Listener {
     /**
      * Conversation API.
      */
-    private final LegacyConversations conversationApi;
+    private final Conversations conversations;
 
     /**
      * The profile provider instance.
@@ -65,17 +65,17 @@ public class JoinQuitListener implements Listener {
      * @param config            the plugin configuration file
      * @param questTypeApi      the object to get player Objectives
      * @param playerDataStorage the storage for un-/loading player data
-     * @param conversationApi   the Conversation API
+     * @param conversations     the Conversation API
      * @param profileProvider   the profile provider instance
      * @param updater           the updater to notify players
      */
     public JoinQuitListener(final ConfigAccessor config,
                             final ObjectiveProcessor questTypeApi, final PlayerDataStorage playerDataStorage,
-                            final LegacyConversations conversationApi, final ProfileProvider profileProvider, final Updater updater) {
+                            final Conversations conversations, final ProfileProvider profileProvider, final Updater updater) {
         this.config = config;
         this.questTypeApi = questTypeApi;
         this.playerDataStorage = playerDataStorage;
-        this.conversationApi = conversationApi;
+        this.conversations = conversations;
         this.profileProvider = profileProvider;
         this.updater = updater;
     }
@@ -115,7 +115,7 @@ public class JoinQuitListener implements Listener {
             updater.sendUpdateNotification(player);
         }
         if (playerData.getActiveConversation() != null) {
-            new ConversationResumer(config, conversationApi, onlineProfile, playerData.getActiveConversation());
+            new ConversationResumer(config, conversations, onlineProfile, playerData.getActiveConversation());
         }
     }
 

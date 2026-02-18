@@ -8,6 +8,7 @@ import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.quest.objective.Objective;
 import org.betonquest.betonquest.api.quest.objective.ObjectiveFactory;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveService;
+import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -22,9 +23,17 @@ import java.util.regex.Pattern;
 public class PasswordObjectiveFactory implements ObjectiveFactory {
 
     /**
-     * Creates a new instance of the PasswordObjectiveFactory.
+     * The action manager to run actions.
      */
-    public PasswordObjectiveFactory() {
+    private final ActionManager actionManager;
+
+    /**
+     * Creates a new instance of the PasswordObjectiveFactory.
+     *
+     * @param actionManager the action manager to run actions
+     */
+    public PasswordObjectiveFactory(final ActionManager actionManager) {
+        this.actionManager = actionManager;
     }
 
     @Override
@@ -38,7 +47,7 @@ public class PasswordObjectiveFactory implements ObjectiveFactory {
         final String resolvedPrefix = prefix == null ? null : prefix.getValue(null);
         final String passwordPrefix = resolvedPrefix == null || resolvedPrefix.isEmpty() ? resolvedPrefix : resolvedPrefix + ": ";
         final Argument<List<ActionIdentifier>> failEvents = instruction.identifier(ActionIdentifier.class).list().get("fail", Collections.emptyList());
-        final PasswordObjective objective = new PasswordObjective(service, pattern, passwordPrefix, failEvents);
+        final PasswordObjective objective = new PasswordObjective(service, actionManager, pattern, passwordPrefix, failEvents);
         service.request(AsyncPlayerChatEvent.class).priority(EventPriority.LOW).onlineHandler(objective::onChat)
                 .player(AsyncPlayerChatEvent::getPlayer).subscribe(true);
         service.request(PlayerCommandPreprocessEvent.class).priority(EventPriority.LOW).onlineHandler(objective::onCommand)

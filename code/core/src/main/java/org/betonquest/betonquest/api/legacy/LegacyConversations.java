@@ -48,5 +48,5 @@ public interface LegacyConversations {
      * @return player's active conversation or null if there is no conversation
      */
     @Nullable
-    Conversation getActive(Profile profile);
+    Conversation getActiveConversation(Profile profile);
 }

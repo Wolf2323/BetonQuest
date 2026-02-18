@@ -4,13 +4,13 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.quest.placeholder.NullablePlaceholder;
 import org.betonquest.betonquest.api.quest.placeholder.NullablePlaceholderAdapter;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholder;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerPlaceholderFactory;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerlessPlaceholder;
 import org.betonquest.betonquest.api.quest.placeholder.PlayerlessPlaceholderFactory;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
 import org.betonquest.betonquest.api.service.npc.NpcManager;
 import org.betonquest.betonquest.quest.placeholder.location.LocationFormationMode;
 import org.betonquest.betonquest.quest.placeholder.location.LocationPlaceholder;
@@ -35,7 +35,7 @@ public class NpcPlaceholderFactory implements PlayerPlaceholderFactory, Playerle
     /**
      * The legacy conversation api.
      */
-    private final LegacyConversations conversationApi;
+    private final Conversations conversations;
 
     /**
      * The NPC Manager.
@@ -45,11 +45,11 @@ public class NpcPlaceholderFactory implements PlayerPlaceholderFactory, Playerle
     /**
      * Create a new factory to create NPC Placeholders.
      *
-     * @param conversationApi the conversation API
-     * @param npcManager      the NPC Manager
+     * @param conversations the conversation API
+     * @param npcManager    the NPC Manager
      */
-    public NpcPlaceholderFactory(final LegacyConversations conversationApi, final NpcManager npcManager) {
-        this.conversationApi = conversationApi;
+    public NpcPlaceholderFactory(final Conversations conversations, final NpcManager npcManager) {
+        this.conversations = conversations;
         this.npcManager = npcManager;
     }
 
@@ -65,7 +65,7 @@ public class NpcPlaceholderFactory implements PlayerPlaceholderFactory, Playerle
 
     private NullablePlaceholder parseInstruction(final Instruction instruction) throws QuestException {
         if (!instruction.hasNext() || instruction.size() == 2 && "conversation".equals(instruction.getPart(1))) {
-            final QuesterPlaceholder questerPlaceholder = new QuesterPlaceholder(conversationApi);
+            final QuesterPlaceholder questerPlaceholder = new QuesterPlaceholder(conversations);
             return profile -> {
                 if (profile == null) {
                     throw new QuestException("Profile can't be null for conversation!");
