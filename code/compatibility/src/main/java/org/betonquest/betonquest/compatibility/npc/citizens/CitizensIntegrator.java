@@ -12,7 +12,6 @@ import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.legacy.LegacyFeatureRegistries;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.FeatureRegistry;
-import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.api.service.action.ActionRegistry;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.service.npc.NpcRegistry;
@@ -62,10 +61,9 @@ public class CitizensIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) throws HookException {
-        final BetonQuestRegistries questRegistries = api.registries();
         final IdentifierFactory<NpcIdentifier> npcIdentifierFactory;
         try {
-            npcIdentifierFactory = questRegistries.identifiers().getFactory(NpcIdentifier.class);
+            npcIdentifierFactory = api.identifiers().getFactory(NpcIdentifier.class);
         } catch (final QuestException e) {
             throw new HookException(plugin, "Could not load npc identifier factory while hooking into citizens.", e);
         }
@@ -80,10 +78,10 @@ public class CitizensIntegrator implements Integrator {
                 plugin, api.actions().manager(), citizensWalkingListener);
 
         final Instructions instructionApi = api.instructions();
-        final ActionRegistry actionRegistry = questRegistries.actions();
+        final ActionRegistry actionRegistry = api.actions().registry();
         manager.registerEvents(citizensMoveController, plugin);
         final CitizensArgument citizensArgument = new CitizensArgument(instructionApi, npcIdentifierFactory);
-        questRegistries.objectives().register("npckill", new NPCKillObjectiveFactory(citizensArgument, instructionApi, citizensNpcRegistry));
+        api.objectives().registry().register("npckill", new NPCKillObjectiveFactory(citizensArgument, instructionApi, citizensNpcRegistry));
         actionRegistry.register("npcmove", new CitizensMoveActionFactory(api.npcs().manager(), citizensArgument, citizensMoveController));
         actionRegistry.registerCombined("npcstop", new CitizensStopActionFactory(api.npcs().manager(), citizensArgument, citizensMoveController));
 
@@ -97,7 +95,7 @@ public class CitizensIntegrator implements Integrator {
         conversationIORegistry.register("combined", new CitizensInventoryConvIOFactory(loggerFactory,
                 fontRegistry, colors, pluginConfig, true));
 
-        final NpcRegistry npcRegistry = questRegistries.npcs();
+        final NpcRegistry npcRegistry = api.npcs().registry();
         manager.registerEvents(new CitizensInteractCatcher(plugin.getProfileProvider(), npcRegistry, citizensNpcRegistry,
                 citizensMoveController), plugin);
         npcRegistry.register("citizens", new CitizensNpcFactory(citizensNpcRegistry));

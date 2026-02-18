@@ -34,7 +34,7 @@ public class FancyNpcsIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final NpcRegistry npcRegistry = api.registries().npcs();
+        final NpcRegistry npcRegistry = api.npcs().registry();
         final ProfileProvider profileProvider = api.profiles();
         final PluginManager manager = plugin.getServer().getPluginManager();
         manager.registerEvents(new FancyCatcher(profileProvider, npcRegistry), plugin);

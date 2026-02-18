@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.compatibility.mmogroup.mmolib;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.compatibility.Integrator;
 
 /**
@@ -18,9 +17,8 @@ public class MythicLibIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final BetonQuestRegistries questRegistries = api.registries();
-        questRegistries.conditions().register("mmostat", new MythicLibStatConditionFactory());
-        questRegistries.objectives().register("mmoskill", new MythicLibSkillObjectiveFactory());
+        api.conditions().registry().register("mmostat", new MythicLibStatConditionFactory());
+        api.objectives().registry().register("mmoskill", new MythicLibSkillObjectiveFactory());
     }
 
     @Override

@@ -2,7 +2,7 @@ package org.betonquest.betonquest.api.service;
 
 import org.betonquest.betonquest.api.service.action.ActionRegistry;
 import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
-import org.betonquest.betonquest.api.service.identifier.IdentifierRegistry;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.item.ItemRegistry;
 import org.betonquest.betonquest.api.service.npc.NpcRegistry;
 import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
@@ -46,9 +46,9 @@ public class DefaultBetonQuestRegistries implements BetonQuestRegistries {
     private final Supplier<PlaceholderRegistry> placeholderRegistry;
 
     /**
-     * The {@link IdentifierRegistry} supplier.
+     * The {@link Identifiers} supplier.
      */
-    private final Supplier<IdentifierRegistry> identifierRegistry;
+    private final Supplier<Identifiers> identifierRegistry;
 
     /**
      * Creates a new instance of the {@link DefaultBetonQuestRegistries}.
@@ -59,12 +59,12 @@ public class DefaultBetonQuestRegistries implements BetonQuestRegistries {
      * @param itemRegistry        the {@link ItemRegistry} supplier
      * @param npcRegistry         the {@link NpcRegistry} supplier
      * @param placeholderRegistry the {@link PlaceholderRegistry} supplier
-     * @param identifierRegistry  the {@link IdentifierRegistry} supplier
+     * @param identifierRegistry  the {@link Identifiers} supplier
      */
     public DefaultBetonQuestRegistries(final Supplier<ActionRegistry> actionRegistry, final Supplier<ConditionRegistry> conditionRegistry,
                                        final Supplier<ObjectiveRegistry> objectiveRegistry, final Supplier<ItemRegistry> itemRegistry,
                                        final Supplier<NpcRegistry> npcRegistry, final Supplier<PlaceholderRegistry> placeholderRegistry,
-                                       final Supplier<IdentifierRegistry> identifierRegistry) {
+                                       final Supplier<Identifiers> identifierRegistry) {
         this.actionRegistry = actionRegistry;
         this.conditionRegistry = conditionRegistry;
         this.objectiveRegistry = objectiveRegistry;
@@ -105,7 +105,7 @@ public class DefaultBetonQuestRegistries implements BetonQuestRegistries {
     }
 
     @Override
-    public IdentifierRegistry identifiers() {
+    public Identifiers identifiers() {
         return identifierRegistry.get();
     }
 }

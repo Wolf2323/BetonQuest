@@ -21,12 +21,12 @@ public class TrainCartsIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final ObjectiveRegistry objectiveRegistry = api.registries().objectives();
+        final ObjectiveRegistry objectiveRegistry = api.objectives().registry();
         objectiveRegistry.register("traincartslocation", new TrainCartsLocationObjectiveFactory());
         objectiveRegistry.register("traincartsride", new TrainCartsRideObjectiveFactory());
         objectiveRegistry.register("traincartsexit", new TrainCartsExitObjectiveFactory());
 
-        api.registries().conditions().register("traincartsride", new TrainCartsRideConditionFactory(api.loggerFactory()));
+        api.conditions().registry().register("traincartsride", new TrainCartsRideConditionFactory(api.loggerFactory()));
     }
 
     @Override

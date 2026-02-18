@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.compatibility.mmogroup.mmocore;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.api.service.action.ActionRegistry;
 import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
 import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
@@ -32,18 +31,17 @@ public class MMOCoreIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final BetonQuestRegistries questRegistries = api.registries();
-        final ConditionRegistry conditionRegistry = questRegistries.conditions();
+        final ConditionRegistry conditionRegistry = api.conditions().registry();
         conditionRegistry.register("mmoclass", new MMOCoreClassConditionFactory());
         conditionRegistry.register("mmoattribute", new MMOCoreAttributeConditionFactory());
         conditionRegistry.register("mmoprofession", new MMOCoreProfessionLevelConditionFactory());
 
-        final ObjectiveRegistry objectiveRegistry = questRegistries.objectives();
+        final ObjectiveRegistry objectiveRegistry = api.objectives().registry();
         objectiveRegistry.register("mmoprofessionlevelup", new MMOCoreProfessionObjectiveFactory());
         objectiveRegistry.register("mmochangeclass", new MMOCoreChangeClassObjectiveFactory());
         objectiveRegistry.register("mmocorebreakblock", new MMOCoreBreakCustomBlockObjectiveFactory());
 
-        final ActionRegistry actionRegistry = questRegistries.actions();
+        final ActionRegistry actionRegistry = api.actions().registry();
         actionRegistry.register("mmoclassexperience", new MMOCoreClassExperienceActionFactory());
         actionRegistry.register("mmoprofessionexperience", new MMOCoreProfessionExperienceActionFactory());
         actionRegistry.register("mmocoreclasspoints", new MMOCoreClassPointsActionFactory());

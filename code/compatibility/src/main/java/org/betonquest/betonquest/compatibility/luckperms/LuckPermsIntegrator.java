@@ -38,7 +38,7 @@ public class LuckPermsIntegrator implements Integrator {
             luckPermsAPI = provider.getProvider();
             tagCalculator = TagCalculatorUtils.getTagContextCalculator();
             luckPermsAPI.getContextManager().registerCalculator(tagCalculator);
-            api.registries().actions().register("luckperms", new LuckPermsActionFactory(luckPermsAPI));
+            api.actions().registry().register("luckperms", new LuckPermsActionFactory(luckPermsAPI));
         }
     }
 

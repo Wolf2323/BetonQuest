@@ -31,11 +31,11 @@ public class MMOItemsIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final ObjectiveRegistry objectiveRegistry = api.registries().objectives();
+        final ObjectiveRegistry objectiveRegistry = api.objectives().registry();
         objectiveRegistry.register("mmoitemupgrade", new MMOItemsUpgradeObjectiveFactory());
         objectiveRegistry.register("mmoitemapplygem", new MMOItemsApplyGemObjectiveFactory());
 
-        final ItemRegistry itemRegistry = api.registries().items();
+        final ItemRegistry itemRegistry = api.items().registry();
         itemRegistry.register("mmoitem", new MMOQuestItemFactory(MMOItems.plugin));
         itemRegistry.registerSerializer("mmoitem", new MMOQuestItemSerializer());
         plugin.getServer().getPluginManager().registerEvents(new MMOItemsCraftObjectiveAdder(api.profiles()), plugin);

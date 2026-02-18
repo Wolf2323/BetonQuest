@@ -5,7 +5,6 @@ import net.milkbowl.vault.permission.Permission;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.vault.action.MoneyActionFactory;
 import org.betonquest.betonquest.compatibility.vault.action.PermissionActionFactory;
@@ -42,12 +41,11 @@ public class VaultIntegrator implements Integrator {
             log.warn("There is no economy plugin on the server!");
         } else {
             final Economy economy = economyProvider.getProvider();
-            final BetonQuestRegistries registries = api.registries();
 
-            registries.actions().register("money", new MoneyActionFactory(economy, api.loggerFactory(),
+            api.actions().registry().register("money", new MoneyActionFactory(economy, api.loggerFactory(),
                     plugin.getPluginMessage()));
-            registries.conditions().register("money", new MoneyConditionFactory(economy));
-            registries.placeholders().register("money", new MoneyPlaceholderFactory(economy));
+            api.conditions().registry().register("money", new MoneyConditionFactory(economy));
+            api.placeholders().registry().register("money", new MoneyPlaceholderFactory(economy));
         }
 
         final RegisteredServiceProvider<Permission> permissionProvider = servicesManager.getRegistration(Permission.class);
@@ -55,7 +53,7 @@ public class VaultIntegrator implements Integrator {
             log.warn("Could not get permission provider!");
         } else {
             final Permission permission = permissionProvider.getProvider();
-            api.registries().actions().register("permission", new PermissionActionFactory(permission));
+            api.actions().registry().register("permission", new PermissionActionFactory(permission));
         }
     }
 

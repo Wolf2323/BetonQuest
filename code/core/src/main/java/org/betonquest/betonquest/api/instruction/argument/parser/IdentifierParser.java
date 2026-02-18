@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.Identifier;
 import org.betonquest.betonquest.api.instruction.argument.InstructionArgumentParser;
-import org.betonquest.betonquest.api.service.identifier.IdentifierRegistry;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 
 /**
@@ -18,7 +18,7 @@ public class IdentifierParser<I extends Identifier> implements InstructionArgume
     /**
      * The identifier registry to use.
      */
-    private final IdentifierRegistry registry;
+    private final Identifiers registry;
 
     /**
      * The identifier class to parse.
@@ -31,7 +31,7 @@ public class IdentifierParser<I extends Identifier> implements InstructionArgume
      * @param registry        the identifier registry to use
      * @param identifierClass the identifier class to parse
      */
-    public IdentifierParser(final IdentifierRegistry registry, final Class<I> identifierClass) {
+    public IdentifierParser(final Identifiers registry, final Class<I> identifierClass) {
         this.identifierClass = identifierClass;
         this.registry = registry;
     }

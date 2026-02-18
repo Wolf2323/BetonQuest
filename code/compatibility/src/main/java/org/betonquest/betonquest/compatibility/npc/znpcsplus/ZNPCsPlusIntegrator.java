@@ -43,7 +43,7 @@ public class ZNPCsPlusIntegrator implements Integrator {
     @Override
     public void hook(final BetonQuestApi api) throws HookException {
         validateVersion();
-        final NpcRegistry npcRegistry = api.registries().npcs();
+        final NpcRegistry npcRegistry = api.npcs().registry();
         final ProfileProvider profileProvider = api.profiles();
         final PluginManager manager = plugin.getServer().getPluginManager();
         manager.registerEvents(new ZNPCsPlusCatcher(profileProvider, npcRegistry), plugin);

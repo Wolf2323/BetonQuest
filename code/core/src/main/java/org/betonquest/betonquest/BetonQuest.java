@@ -488,7 +488,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
     private void setupApi() {
         this.betonQuestApi = new DefaultBetonQuestApi(this::getProfileProvider, this::getQuestPackageManager, this::getLoggerFactory,
-                () -> betonQuestInstructions, questRegistry::conversations, () -> betonQuestRegistries, () -> betonQuestManagers);
+                () -> betonQuestInstructions, questRegistry::conversations);
         Bukkit.getServicesManager().register(BetonQuestApiService.class, new DefaultBetonQuestApiService(plugin -> {
             log.debug("Loading API for plugin " + plugin.getName());
             return betonQuestApi;

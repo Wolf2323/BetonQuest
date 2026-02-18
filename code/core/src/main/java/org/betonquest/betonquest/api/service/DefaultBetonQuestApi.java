@@ -41,16 +41,6 @@ public class DefaultBetonQuestApi implements BetonQuestApi {
     private final Supplier<Conversations> conversationsSupplier;
 
     /**
-     * The {@link BetonQuestRegistries} supplier.
-     */
-    private final Supplier<BetonQuestRegistries> registriesSupplier;
-
-    /**
-     * The {@link BetonQuestManagers} supplier.
-     */
-    private final Supplier<BetonQuestManagers> managersSupplier;
-
-    /**
      * Creates a new instance of the {@link DefaultBetonQuestApi}.
      *
      * @param profileProviderSupplier the {@link ProfileProvider} supplier
@@ -58,20 +48,15 @@ public class DefaultBetonQuestApi implements BetonQuestApi {
      * @param loggerFactorySupplier   the {@link BetonQuestLoggerFactory} supplier
      * @param instructionsSupplier    the {@link Instructions} supplier
      * @param conversationsSupplier   the {@link Conversations} supplier
-     * @param registriesSupplier      the {@link BetonQuestRegistries} supplier
-     * @param managersSupplier        the {@link BetonQuestManagers} supplier
      */
     public DefaultBetonQuestApi(final Supplier<ProfileProvider> profileProviderSupplier, final Supplier<QuestPackageManager> packageManagerSupplier,
                                 final Supplier<BetonQuestLoggerFactory> loggerFactorySupplier, final Supplier<Instructions> instructionsSupplier,
-                                final Supplier<Conversations> conversationsSupplier, final Supplier<BetonQuestRegistries> registriesSupplier,
-                                final Supplier<BetonQuestManagers> managersSupplier) {
+                                final Supplier<Conversations> conversationsSupplier) {
         this.profileProviderSupplier = profileProviderSupplier;
         this.questPackageManagerSupplier = packageManagerSupplier;
         this.loggerFactorySupplier = loggerFactorySupplier;
         this.instructionsSupplier = instructionsSupplier;
         this.conversationsSupplier = conversationsSupplier;
-        this.registriesSupplier = registriesSupplier;
-        this.managersSupplier = managersSupplier;
     }
 
     @Override
@@ -97,15 +82,5 @@ public class DefaultBetonQuestApi implements BetonQuestApi {
     @Override
     public Conversations conversations() {
         return conversationsSupplier.get();
-    }
-
-    @Override
-    public BetonQuestRegistries registries() {
-        return registriesSupplier.get();
-    }
-
-    @Override
-    public BetonQuestManagers managers() {
-        return managersSupplier.get();
     }
 }

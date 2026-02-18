@@ -8,7 +8,7 @@ import org.betonquest.betonquest.api.quest.FeatureTypeRegistry;
 import org.betonquest.betonquest.api.quest.objective.Objective;
 import org.betonquest.betonquest.api.service.action.ActionRegistry;
 import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
-import org.betonquest.betonquest.api.service.identifier.IdentifierRegistry;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.item.ItemRegistry;
 import org.betonquest.betonquest.api.service.npc.NpcRegistry;
 import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
@@ -65,9 +65,9 @@ public interface BetonQuestRegistries {
     PlaceholderRegistry placeholders();
 
     /**
-     * Obtains the {@link IdentifierRegistry} for registering custom identifiers.
+     * Obtains the {@link Identifiers} for registering custom identifiers.
      *
      * @return the identifier registry
      */
-    IdentifierRegistry identifiers();
+    Identifiers identifiers();
 }

@@ -16,7 +16,7 @@ import org.betonquest.betonquest.api.schedule.CatchupStrategy;
 import org.betonquest.betonquest.api.schedule.FictiveTime;
 import org.betonquest.betonquest.api.schedule.Schedule;
 import org.betonquest.betonquest.api.schedule.Scheduler;
-import org.betonquest.betonquest.api.service.identifier.IdentifierRegistry;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.id.action.ActionIdentifierFactory;
@@ -95,7 +95,7 @@ class ScheduleTypeTest {
 
         lenient().when(scheduleID.getPackage()).thenReturn(questPackage);
 
-        final IdentifierRegistry identifierRegistry = new IdentifierTypeRegistry(logger);
+        final Identifiers identifierRegistry = new IdentifierTypeRegistry(logger);
         identifierRegistry.register(ActionIdentifier.class, new ActionIdentifierFactory(packManager));
         identifierRegistry.register(ItemIdentifier.class, new ItemIdentifierFactory(packManager));
         argumentParsers = new DefaultArgumentParsers((i, p) -> null, mock(TextParser.class), mock(Server.class), identifierRegistry);

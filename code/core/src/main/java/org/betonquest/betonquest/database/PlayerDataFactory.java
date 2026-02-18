@@ -2,7 +2,7 @@ package org.betonquest.betonquest.database;
 
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.service.identifier.IdentifierRegistry;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.feature.journal.JournalFactory;
 import org.bukkit.Server;
@@ -32,7 +32,7 @@ public class PlayerDataFactory {
     /**
      * Identifier registry to resolve identifiers.
      */
-    private final IdentifierRegistry identifierRegistry;
+    private final Identifiers identifierRegistry;
 
     /**
      * The objective manager.
@@ -55,7 +55,7 @@ public class PlayerDataFactory {
      * @param journalFactory     the supplier for the journal factory to use
      */
     public PlayerDataFactory(final BetonQuestLoggerFactory loggerFactory, final Saver saver, final Server server,
-                             final IdentifierRegistry identifierRegistry, final ObjectiveManager objectiveManager,
+                             final Identifiers identifierRegistry, final ObjectiveManager objectiveManager,
                              final Supplier<JournalFactory> journalFactory) {
         this.identifierRegistry = identifierRegistry;
         this.loggerFactory = loggerFactory;

@@ -9,7 +9,7 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
  *
  * @see IdentifierFactory
  */
-public interface IdentifierRegistry {
+public interface Identifiers {
 
     /**
      * Registers a new identifier factory.

@@ -12,7 +12,7 @@ import org.betonquest.betonquest.api.instruction.type.BlockSelector;
 import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.item.QuestItem;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.api.service.identifier.IdentifierRegistry;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.lib.instruction.argument.DecoratableArgumentParser;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultNumberArgumentParser;
@@ -93,7 +93,7 @@ public class DefaultArgumentParsers implements ArgumentParsers {
     /**
      * The identifier registry to get identifier factories from.
      */
-    private final IdentifierRegistry registry;
+    private final Identifiers registry;
 
     /**
      * Creates a new instance of {@link DefaultArgumentParsers}
@@ -106,7 +106,7 @@ public class DefaultArgumentParsers implements ArgumentParsers {
      * @throws QuestException if an error occurs during initialization
      */
     public DefaultArgumentParsers(final QuestBiFunction<Profile, ItemIdentifier, QuestItem> getItemFunction,
-                                  final TextParser textParser, final Server server, final IdentifierRegistry registry) throws QuestException {
+                                  final TextParser textParser, final Server server, final Identifiers registry) throws QuestException {
         this.registry = registry;
         defaultBlockSelectorParser = new DecoratableArgumentParser<>(new BlockSelectorParser());
         defaultComponentParser = new DecoratableArgumentParser<>(new TextParserToComponentParser(textParser));

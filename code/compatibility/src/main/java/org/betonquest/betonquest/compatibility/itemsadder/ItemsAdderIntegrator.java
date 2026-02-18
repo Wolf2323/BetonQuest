@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.compatibility.itemsadder;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.api.service.action.ActionRegistry;
 import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
 import org.betonquest.betonquest.api.service.item.ItemRegistry;
@@ -43,19 +42,18 @@ public class ItemsAdderIntegrator implements Integrator {
     public void hook(final BetonQuestApi api) throws HookException {
         validateVersion();
 
-        final ItemRegistry itemRegistry = api.registries().items();
+        final ItemRegistry itemRegistry = api.items().registry();
         itemRegistry.register(ITEMS_ADDER, new ItemsAdderItemFactory());
         itemRegistry.registerSerializer(ITEMS_ADDER, new ItemsAdderQuestItemSerializer());
 
-        final BetonQuestRegistries questRegistries = api.registries();
-        final ConditionRegistry condition = questRegistries.conditions();
+        final ConditionRegistry condition = api.conditions().registry();
         condition.registerCombined(ITEMS_ADDER + "Block", new IABlockConditionFactory());
 
-        final ActionRegistry action = questRegistries.actions();
+        final ActionRegistry action = api.actions().registry();
         action.register(ITEMS_ADDER + "Block", new IASetBlockAtActionFactory());
         action.register(ITEMS_ADDER + "Animation", new IAPlayAnimationActionFactory(api.loggerFactory()));
 
-        final ObjectiveRegistry objective = questRegistries.objectives();
+        final ObjectiveRegistry objective = api.objectives().registry();
         objective.register(ITEMS_ADDER + "BlockBreak", new IABlockBreakObjectiveFactory());
         objective.register(ITEMS_ADDER + "BlockPlace", new IABlockPlaceObjectiveFactory());
     }

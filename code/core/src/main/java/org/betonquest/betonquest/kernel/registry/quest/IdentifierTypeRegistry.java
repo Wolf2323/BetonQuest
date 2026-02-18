@@ -4,15 +4,15 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.Identifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.service.identifier.IdentifierRegistry;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A default implementation of the {@link IdentifierRegistry} interface.
+ * A default implementation of the {@link Identifiers} interface.
  */
-public class IdentifierTypeRegistry implements IdentifierRegistry {
+public class IdentifierTypeRegistry implements Identifiers {
 
     /**
      * Custom {@link BetonQuestLogger} instance for this class.

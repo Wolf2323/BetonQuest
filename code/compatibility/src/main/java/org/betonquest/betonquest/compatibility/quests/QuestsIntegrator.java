@@ -8,7 +8,6 @@ import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.bukkit.Bukkit;
@@ -33,7 +32,6 @@ public class QuestsIntegrator implements Integrator {
         final Quests questsInstance = (Quests) plugin;
         Objects.requireNonNull(questsInstance);
 
-        final BetonQuestRegistries questRegistries = api.registries();
         api.conditions().registry().register("quest", new QuestsConditionFactory(questsInstance));
         api.actions().registry().register("quest", new QuestsActionFactory(questsInstance));
 
@@ -41,7 +39,7 @@ public class QuestsIntegrator implements Integrator {
         final ProfileProvider profileProvider = api.profiles();
         try {
             final IdentifierFactory<ActionIdentifier> actionIdentifierFactory =
-                    questRegistries.identifiers().getFactory(ActionIdentifier.class);
+                    api.identifiers().getFactory(ActionIdentifier.class);
             questsInstance.getCustomRewards().add(new ActionReward(
                     loggerFactory.create(ActionReward.class),
                     api.actions().manager(), profileProvider, actionIdentifierFactory));
@@ -50,7 +48,7 @@ public class QuestsIntegrator implements Integrator {
         }
         try {
             final IdentifierFactory<ConditionIdentifier> conditionIdentifierFactory =
-                    questRegistries.identifiers().getFactory(ConditionIdentifier.class);
+                    api.identifiers().getFactory(ConditionIdentifier.class);
             questsInstance.getCustomRequirements().add(new ConditionRequirement(
                     loggerFactory.create(ConditionRequirement.class),
                     api.conditions().manager(), profileProvider, conditionIdentifierFactory));

@@ -8,7 +8,7 @@ import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.argument.parser.DefaultArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.service.identifier.IdentifierRegistry;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.id.item.ItemIdentifierFactory;
@@ -35,7 +35,7 @@ public class MockedInstruction extends DefaultInstruction {
     }
 
     private static ArgumentParsers parsers() throws QuestException {
-        final IdentifierRegistry identifierRegistry = new IdentifierTypeRegistry(mock(BetonQuestLogger.class));
+        final Identifiers identifierRegistry = new IdentifierTypeRegistry(mock(BetonQuestLogger.class));
         identifierRegistry.register(ItemIdentifier.class, new ItemIdentifierFactory(mock(QuestPackageManager.class)));
         identifierRegistry.register(JournalEntryIdentifier.class, new JournalEntryIdentifierFactory(mock(QuestPackageManager.class)));
         return new DefaultArgumentParsers((i, p) -> null, mock(TextParser.class), mock(Server.class), identifierRegistry);
