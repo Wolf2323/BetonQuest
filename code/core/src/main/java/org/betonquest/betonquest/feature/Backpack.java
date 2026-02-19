@@ -120,6 +120,7 @@ public class Backpack implements Listener {
      * @param identifiers       the identifier factory
      * @param type              type of the display
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public Backpack(final Plugin plugin, final BetonQuestLogger betonQuestLogger, final PlayerData playerData,
                     final CancelerProcessor cancelerProcessor, final CompassProcessor compassProcessor,
                     final ConfigAccessor config, final PluginMessage pluginMessage, final OnlineProfile onlineProfile,
@@ -155,6 +156,7 @@ public class Backpack implements Listener {
      * @param identifiers       the identifier factory
      * @param onlineProfile     the {@link OnlineProfile} of the player
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public Backpack(final Plugin plugin, final BetonQuestLogger betonQuestLogger, final PlayerData playerData,
                     final CancelerProcessor cancelerProcessor, final CompassProcessor compassProcessor,
                     final ItemManager itemManager, final ConfigAccessor config, final PluginMessage pluginMessage,

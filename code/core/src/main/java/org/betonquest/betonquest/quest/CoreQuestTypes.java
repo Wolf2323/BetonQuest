@@ -552,6 +552,13 @@ public class CoreQuestTypes {
 
     }
 
+    /**
+     * The legacy feature params.
+     *
+     * @param cancelerProcessor the canceler processor
+     * @param compassProcessor  the compass processor
+     * @param defaultNpcHider   the default npc hider
+     */
     public record LegacyFeatureParams(CancelerProcessor cancelerProcessor, CompassProcessor compassProcessor,
                                       DefaultNpcHider defaultNpcHider) {
 

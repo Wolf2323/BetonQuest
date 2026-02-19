@@ -3,12 +3,14 @@ package org.betonquest.betonquest.api.instruction;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
+import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.argument.parser.DefaultArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
+import org.betonquest.betonquest.api.service.item.ItemManager;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.id.item.ItemIdentifierFactory;
@@ -38,6 +40,6 @@ public class MockedInstruction extends DefaultInstruction {
         final Identifiers identifierRegistry = new IdentifierTypeRegistry(mock(BetonQuestLogger.class));
         identifierRegistry.register(ItemIdentifier.class, new ItemIdentifierFactory(mock(QuestPackageManager.class)));
         identifierRegistry.register(JournalEntryIdentifier.class, new JournalEntryIdentifierFactory(mock(QuestPackageManager.class)));
-        return new DefaultArgumentParsers((i, p) -> null, mock(TextParser.class), mock(Server.class), identifierRegistry);
+        return new DefaultArgumentParsers(mock(ItemManager.class), mock(IdentifierFactory.class), mock(TextParser.class), mock(Server.class), identifierRegistry);
     }
 }

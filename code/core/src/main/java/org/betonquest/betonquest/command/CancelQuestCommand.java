@@ -88,6 +88,7 @@ public class CancelQuestCommand implements CommandExecutor {
      * @param identifiers       the identifier registry
      * @param itemManager       the item manager
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public CancelQuestCommand(final Plugin plugin, final ConfigAccessor config, final PluginMessage pluginMessage,
                               final ProfileProvider profileProvider, final BetonQuestLoggerFactory loggerFactory,
                               final PlayerDataStorage playerDataStorage, final CancelerProcessor cancelerProcessor,

@@ -82,7 +82,9 @@ public class ConversationListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onCommand(final PlayerCommandPreprocessEvent event) {
         final OnlineProfile profile = profileProvider.getProfile(event.getPlayer());
-        if (!conversationProcessor.hasActive(profile)) return;
+        if (!conversationProcessor.hasActive(profile)) {
+            return;
+        }
         final String cmdName = event.getMessage().split(" ")[0].substring(1);
         if (blacklist.contains(cmdName)) {
             event.setCancelled(true);

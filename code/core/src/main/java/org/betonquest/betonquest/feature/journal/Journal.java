@@ -142,6 +142,7 @@ public class Journal {
      * @param list              list of pointers to journal entries
      * @param config            a {@link ConfigAccessor} that contains the plugin's configuration
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public Journal(final BetonQuestLogger log, final PluginMessage pluginMessage, final ConditionManager conditionManager,
                    final JournalMainPageProcessor mainPageProcessor, final JournalEntryProcessor entryProcessor,
                    final TextParser textParser, final FontRegistry fontRegistry, final Profile profile,

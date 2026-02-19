@@ -117,6 +117,7 @@ import java.util.stream.Collectors;
 /**
  * Responsible for loading the quest factory types in the correct order.
  */
+@SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.TooManyMethods", "PMD.TooManyFields"})
 public class CoreQuestTypeHandler {
 
     /**

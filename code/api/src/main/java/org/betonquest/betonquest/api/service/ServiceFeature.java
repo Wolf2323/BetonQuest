@@ -14,22 +14,22 @@ import org.betonquest.betonquest.api.quest.FeatureTypeRegistry;
  * The manager is responsible for granting access to existing and loaded types
  * previously registered with the registry.
  *
- * @param <Manager>  the manager type
- * @param <Registry> the registry type
+ * @param <M> the manager type
+ * @param <R> the registry type
  */
-public interface ServiceFeature<Manager, Registry> {
+public interface ServiceFeature<M, R> {
 
     /**
      * Get the manager for this feature.
      *
      * @return the manager instance
      */
-    Manager manager();
+    M manager();
 
     /**
      * Get the registry for this feature.
      *
      * @return the registry instance
      */
-    Registry registry();
+    R registry();
 }

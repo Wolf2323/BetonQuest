@@ -132,6 +132,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
      * @param printMessages        whether to print messages
      * @param componentLineWrapper the component line wrapper
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public InventoryConvIO(final Conversation conv, final OnlineProfile onlineProfile, final BetonQuestLogger log,
                            final Plugin plugin, final PluginManager pluginManager, final Instructions instructions,
                            final PluginMessage pluginMessage, final ItemManager itemManager,

@@ -42,6 +42,7 @@ public class NpcConversation<T> extends Conversation {
      * @param npc                   the Npc used for this conversation
      * @throws QuestException when required conversation objects could not be created
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public NpcConversation(final BetonQuestLogger log, final PluginMessage pluginMessage, final OnlineProfile onlineProfile,
                            final ConversationIdentifier conversationID, final Location center,
                            final ActionManager actionManager, final ConditionManager conditionManager,

@@ -59,6 +59,7 @@ public class ConversationStarter {
      * @param identifiers           the identifier factory
      * @param saver                 the database saver
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public ConversationStarter(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
                                final Map<Profile, Conversation> activeConversations, final Plugin plugin,
                                final PluginMessage pluginMessage, final ActionManager actionManager,

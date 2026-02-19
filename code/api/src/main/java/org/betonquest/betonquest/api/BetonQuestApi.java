@@ -46,6 +46,7 @@ import java.util.UUID;
  * The API is available and ready to use after BetonQuest itself has finished enabling and may therefore be called
  * the earliest while enabling a plugin explicitly depending on BetonQuest (enabling after BetonQuest).
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public interface BetonQuestApi {
 
     /**

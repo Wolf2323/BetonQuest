@@ -111,7 +111,7 @@ import java.util.logging.Handler;
  * Represents BetonQuest plugin.
  */
 @SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass", "PMD.TooManyMethods",
-        "PMD.TooManyFields", "PMD.CyclomaticComplexity", "NullAway.Init"})
+        "PMD.TooManyFields", "NullAway.Init"})
 public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
     /**
@@ -488,7 +488,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         getCommand("cancelquest").setExecutor(new CancelQuestCommand(this, config, pluginMessage, profileProvider,
                 loggerFactory, playerDataStorage, coreQuestTypeHandler.getCancelerProcessor(), coreQuestTypeHandler.getCompassProcessor(),
                 betonQuestApi.identifiers(), betonQuestApi.items().manager()));
-        getCommand("compass").setExecutor(new CompassCommand(this, loggerFactory, loggerFactory.create(BackpackCommand.class),
+        getCommand("compass").setExecutor(new CompassCommand(this, loggerFactory,
                 config, pluginMessage, profileProvider, playerDataStorage, coreQuestTypeHandler.getCancelerProcessor(),
                 coreQuestTypeHandler.getCompassProcessor(), betonQuestApi.items().manager(), betonQuestApi.identifiers()));
         final LangCommand langCommand = new LangCommand(loggerFactory.create(LangCommand.class), playerDataStorage, pluginMessage, profileProvider, this);
@@ -591,13 +591,14 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     }
 
     @Override
-    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity", "PMD.CognitiveComplexity"})
+    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity", "PMD.CognitiveComplexity", "PMD.AvoidCatchingGenericException"})
     public void onDisable() {
         try {
             if (coreQuestTypeHandler != null) {
                 coreQuestTypeHandler.getScheduleProcessor().clear();
             }
         } catch (final Exception ignored) {
+            // Empty
         }
 
         if (profileProvider != null) {
@@ -627,7 +628,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
             try {
                 coreQuestTypeHandler.getRpgMenu().onDisable();
             } catch (final Exception ignored) {
-
+                // Empty
             }
         }
         log.info("BetonQuest successfully disabled!");

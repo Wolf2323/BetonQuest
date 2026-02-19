@@ -94,6 +94,7 @@ public class BackpackCommand implements CommandExecutor {
      * @param itemManager       the item manager
      * @param identifiers       the identifier factory
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public BackpackCommand(final Plugin plugin, final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
                            final ConfigAccessor config, final PluginMessage pluginMessage, final ProfileProvider profileProvider,
                            final PlayerDataStorage playerDataStorage, final CancelerProcessor cancelerProcessor, final CompassProcessor compassProcessor,

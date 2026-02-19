@@ -91,6 +91,7 @@ public class RPGMenu {
      * @param actionManager             the action manager
      * @param conditionManager          the condition manager
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public RPGMenu(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
                    final Instructions instructions, final ConfigAccessor pluginConfig,
                    final PluginMessage pluginMessage, final ParsedSectionTextCreator textCreator,

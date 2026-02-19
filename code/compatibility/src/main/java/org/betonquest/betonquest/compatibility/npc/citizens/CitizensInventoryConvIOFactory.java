@@ -99,6 +99,7 @@ public class CitizensInventoryConvIOFactory implements ConversationIOFactory {
      * @param conversations   the conversations instance
      * @param printMessages   if the IO should also print the messages in the chat
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public CitizensInventoryConvIOFactory(final BetonQuestLoggerFactory loggerFactory, final FontRegistry fontRegistry,
                                           final ConversationColors colors, final ConfigAccessor config, final Plugin plugin,
                                           final PluginManager pluginManager, final Instructions instructions,

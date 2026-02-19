@@ -117,6 +117,7 @@ public abstract class HologramLoop extends SectionProcessor<HologramIdentifier, 
      * @param conditionManager  the condition manager
      * @param profileProvider   the profile provider
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public HologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
                         final Instructions instructionApi, final QuestPackageManager packManager,
                         final HologramProvider hologramProvider, final String readable, final String internal,

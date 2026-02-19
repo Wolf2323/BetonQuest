@@ -43,6 +43,7 @@ public class LocationHologramLoop extends HologramLoop implements StartTask {
      * @param conditionManager  the condition manager
      * @param profileProvider   the profile provider
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public LocationHologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
                                 final Instructions instructionApi, final QuestPackageManager packManager,
                                 final IdentifierFactory<HologramIdentifier> identifierFactory, final ConfigAccessor configAccessor,

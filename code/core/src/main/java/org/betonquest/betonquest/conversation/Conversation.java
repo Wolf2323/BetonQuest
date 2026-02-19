@@ -185,6 +185,7 @@ public class Conversation {
      * @param endCallable           the callable that removes the conversation from the active ones
      * @throws QuestException when required conversation objects could not be created
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public Conversation(final BetonQuestLogger log, final PluginMessage pluginMessage, final OnlineProfile onlineProfile,
                         final ConversationIdentifier conversationID, final ActionManager actionManager,
                         final ConditionManager conditionManager, final ConversationProcessor conversationProcessor,

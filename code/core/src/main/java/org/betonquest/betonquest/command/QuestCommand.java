@@ -2020,6 +2020,33 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         JOURNAL
     }
 
+    /**
+     * The quest command constructor parameters.
+     *
+     * @param loggerFactory           the logger factory
+     * @param configAccessorFactory   the config accessor factory
+     * @param playerDataFactory       the player data factory
+     * @param playerDataStorage       the player data storage
+     * @param profileProvider         the profile provider
+     * @param pluginMessage           the plugin message
+     * @param updater                 the updater
+     * @param compatibility           the compatibility
+     * @param connector               the connector
+     * @param saver                   the saver
+     * @param questPackageManager     the quest package manager
+     * @param configAccessor          the config accessor
+     * @param logPublishingController the log publishing controller
+     * @param playerLogWatcher        the player log watcher
+     * @param identifiers             the identifiers
+     * @param globalData              the global data
+     * @param journalEntryProcessor   the journal entry processor
+     * @param itemTypeRegistry        the item type registry
+     * @param actionManager           the action manager
+     * @param conditionManager        the condition manager
+     * @param objectiveManager        the objective manager
+     * @param itemManager             the item manager
+     * @param reloader                the plugin reloading runnable
+     */
     public record ConstructorParams(BetonQuestLoggerFactory loggerFactory, ConfigAccessorFactory configAccessorFactory,
                                     PlayerDataFactory playerDataFactory, PlayerDataStorage playerDataStorage,
                                     ProfileProvider profileProvider, PluginMessage pluginMessage, Updater updater,

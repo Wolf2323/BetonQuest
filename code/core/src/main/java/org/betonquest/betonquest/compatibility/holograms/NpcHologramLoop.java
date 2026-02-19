@@ -74,10 +74,13 @@ public class NpcHologramLoop extends HologramLoop implements Listener, StartTask
      * @param packManager       the quest package manager to get quest packages from
      * @param plugin            the plugin to schedule tasks
      * @param hologramProvider  the hologram provider to create new holograms
+     * @param configAccessor    the config accessor to read config values from
      * @param identifierFactory the identifier factory to create {@link HologramIdentifier}s for this type
+     * @param conditionManager  the condition manager
      * @param npcManager        the npc manager to get npcs from
      * @param npcRegistry       the registry to create identifier strings from Npcs
      * @param textParser        the text parser used to parse text and colors
+     * @param profileProvider   the profile provider instance
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public NpcHologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,

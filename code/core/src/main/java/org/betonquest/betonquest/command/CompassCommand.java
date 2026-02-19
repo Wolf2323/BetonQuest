@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.command;
 
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
@@ -34,11 +33,6 @@ public class CompassCommand implements CommandExecutor {
      * The plugin instance.
      */
     private final Plugin plugin;
-
-    /**
-     * Custom {@link BetonQuestLogger} instance for this class.
-     */
-    private final BetonQuestLogger log;
 
     /**
      * The plugin configuration file.
@@ -85,7 +79,6 @@ public class CompassCommand implements CommandExecutor {
      *
      * @param plugin            the plugin instance
      * @param loggerFactory     the logger factory
-     * @param log               the logger that will be used for logging
      * @param config            the plugin configuration accessor
      * @param pluginMessage     the {@link PluginMessage} instance
      * @param profileProvider   the profile provider instance
@@ -95,13 +88,13 @@ public class CompassCommand implements CommandExecutor {
      * @param itemManager       the item manager
      * @param identifiers       the identifier registry
      */
-    public CompassCommand(final Plugin plugin, final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    public CompassCommand(final Plugin plugin, final BetonQuestLoggerFactory loggerFactory,
                           final ConfigAccessor config, final PluginMessage pluginMessage, final ProfileProvider profileProvider,
                           final PlayerDataStorage playerDataStorage, final CancelerProcessor cancelerProcessor, final CompassProcessor compassProcessor,
                           final ItemManager itemManager, final Identifiers identifiers) {
         this.plugin = plugin;
         this.loggerFactory = loggerFactory;
-        this.log = log;
         this.config = config;
         this.pluginMessage = pluginMessage;
         this.profileProvider = profileProvider;
