@@ -71,7 +71,7 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
     private final PluginMessage pluginMessage;
 
     /**
-     * Plugin to load config.
+     * The plugin instance.
      */
     private final Plugin plugin;
 
@@ -156,7 +156,7 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
      *
      * @param log                           the custom logger for this class
      * @param loggerFactory                 the logger factory used to create logger for the started conversations
-     * @param plugin                        the plugin to load config
+     * @param plugin                        the plugin instance
      * @param npcIdentifierFactory          the identifier factory to create {@link NpcIdentifier}s for this type
      * @param conversationIdentifierFactory the identifier factory to create {@link ConversationIdentifier}s for this type
      * @param npcTypes                      the available npc types

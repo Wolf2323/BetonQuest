@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.api.service;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.BetonQuestApiService;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
@@ -16,7 +15,7 @@ import org.betonquest.betonquest.api.service.objective.Objectives;
 import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 
 /**
- * The default implementation of the {@link BetonQuestApiService}.
+ * The default implementation of the {@link BetonQuestApi}.
  *
  * @param profiles      the profile provider handling profiles for players
  * @param packages      the package manager for quest packages

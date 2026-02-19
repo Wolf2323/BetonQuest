@@ -126,8 +126,8 @@ public class CitizensInventoryConvIOFactory implements ConversationIOFactory {
         final boolean showNPCText = config.getBoolean("conversation.io.chest.show_npc_text", true);
         final FixedComponentLineWrapper componentLineWrapper = new FixedComponentLineWrapper(fontRegistry, 270);
         final BetonQuestLogger log = loggerFactory.create(CitizensInventoryConvIO.class);
-        return new CitizensInventoryConvIO(conversation, onlineProfile, log, colors, plugin, pluginManager, instructions, pluginMessage, itemManager, profileProvider,
-                conversations, showNumber, showNPCText,
+        return new CitizensInventoryConvIO(conversation, onlineProfile, log, colors, plugin, pluginManager,
+                instructions, pluginMessage, itemManager, profileProvider, conversations, showNumber, showNPCText,
                 printMessages, componentLineWrapper);
     }
 }

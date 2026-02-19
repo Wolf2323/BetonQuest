@@ -329,16 +329,16 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         registerListener();
 
         registerCoreQuestTypes();
+        conversationColors = new ConversationColors(coreQuestTypeHandler.getTextParser(), config);
         registerFeatureQuestTypes();
 
-        setupApi();
-
         try {
-            conversationColors = new ConversationColors(coreQuestTypeHandler.getTextParser(), config);
             conversationColors.load();
         } catch (final QuestException e) {
             throw new IllegalStateException("Could not load conversation colors! " + e.getMessage(), e);
         }
+
+        setupApi();
 
         compatibility = new Compatibility(loggerFactory.create(Compatibility.class), betonQuestApi, config, version);
 
@@ -593,12 +593,12 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     @Override
     @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity", "PMD.CognitiveComplexity", "PMD.AvoidCatchingGenericException"})
     public void onDisable() {
-        try {
-            if (coreQuestTypeHandler != null) {
+        if (coreQuestTypeHandler != null) {
+            try {
                 coreQuestTypeHandler.getScheduleProcessor().clear();
+            } catch (final Exception ignored) {
+                // Empty
             }
-        } catch (final Exception ignored) {
-            // Empty
         }
 
         if (profileProvider != null) {

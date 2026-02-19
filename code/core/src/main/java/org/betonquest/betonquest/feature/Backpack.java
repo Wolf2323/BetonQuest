@@ -109,7 +109,7 @@ public class Backpack implements Listener {
      * Creates new backpack GUI opened at given page type.
      *
      * @param plugin            the plugin instance
-     * @param betonQuestLogger  the BetonQuest logger
+     * @param log               the BetonQuest logger
      * @param playerData        the storage handler for the player data
      * @param cancelerProcessor the {@link CancelerProcessor} to access the cancelers
      * @param compassProcessor  the {@link CompassProcessor} to access the compass targets
@@ -121,7 +121,7 @@ public class Backpack implements Listener {
      * @param type              type of the display
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
-    public Backpack(final Plugin plugin, final BetonQuestLogger betonQuestLogger, final PlayerData playerData,
+    public Backpack(final Plugin plugin, final BetonQuestLogger log, final PlayerData playerData,
                     final CancelerProcessor cancelerProcessor, final CompassProcessor compassProcessor,
                     final ConfigAccessor config, final PluginMessage pluginMessage, final OnlineProfile onlineProfile,
                     final ItemManager itemManager, final Identifiers identifiers, final DisplayType type) {
@@ -132,7 +132,7 @@ public class Backpack implements Listener {
         this.identifiers = identifiers;
         this.config = config;
         this.pluginMessage = pluginMessage;
-        this.log = betonQuestLogger;
+        this.log = log;
         this.onlineProfile = onlineProfile;
         this.playerData = playerData;
         this.display = switch (type) {

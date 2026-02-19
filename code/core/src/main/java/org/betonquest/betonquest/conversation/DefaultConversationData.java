@@ -112,7 +112,7 @@ public class DefaultConversationData implements ConversationData {
      * @param placeholders          the {@link PlaceholderManager} to create and resolve placeholders
      * @param conditionManager      the condition manager
      * @param instruction           the instruction to parse the conversation from
-     * @param conversationProcessor the Conversation API
+     * @param conversationProcessor the conversation processor
      * @param textCreator           the text creator to parse text
      * @param convSection           the configuration section of the conversation
      * @param publicData            the external used data

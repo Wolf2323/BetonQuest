@@ -288,6 +288,7 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
         try {
             return Optional.of(quester.asComponent(profile));
         } catch (final QuestException e) {
+            log.debug("Could not resolve quester name for profile '%s' in conversation '%s': %s".formatted(profile, activeConversation.getID(), e.getMessage()), e);
             return Optional.empty();
         }
     }

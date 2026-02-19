@@ -73,7 +73,7 @@ public interface Conversations {
      * Gets the display name of the quester for the given profile in the active conversation.
      *
      * @param profile the profile to get the quester name for
-     * @return the display name of the quester or an empty optional if no conversation is active
+     * @return the display name of the quester or an empty optional if no conversation is active or an error occurs
      */
     Optional<Component> getActiveQuesterName(Profile profile);
 
@@ -91,7 +91,7 @@ public interface Conversations {
     /**
      * If the given profile is currently in a conversation, this method will return the identifier of that conversation.
      *
-     * @param profile the profile to check for
+     * @param profile the profile to get the conversation identifier for
      * @return the identifier of the conversation the profile is currently in, or an empty optional
      */
     Optional<ConversationIdentifier> getActive(Profile profile);

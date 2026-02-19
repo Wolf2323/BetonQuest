@@ -75,8 +75,9 @@ public class PacketEventsIntegrator implements Integrator {
 
         final TriFunction<Player, ConversationAction, Boolean, ConversationSession> inputFunction = (player, control, setSpeed) ->
                 new FakeArmorStandPassengerController(plugin, packetEventsAPI, player, control, setSpeed);
-        BetonQuest.getInstance().getCoreQuestTypeHandler().getConversationIORegistry().register("packetevents", new MenuConvIOFactory(inputFunction, plugin, plugin.getCoreQuestTypeHandler().getTextParser(),
-                plugin.getFontRegistry(), pluginConfig, plugin.getConversationColors()));
+        BetonQuest.getInstance().getCoreQuestTypeHandler().getConversationIORegistry().register("packetevents",
+                new MenuConvIOFactory(inputFunction, plugin, plugin.getCoreQuestTypeHandler().getTextParser(),
+                        plugin.getFontRegistry(), pluginConfig, plugin.getConversationColors()));
 
         final boolean displayHistory = pluginConfig.getBoolean("conversation.interceptor.display_history");
         final ChatHistory chatHistory = displayHistory ? getPacketChatHistory(packetEventsAPI, pluginManager, plugin) : new NoneChatHistory();
