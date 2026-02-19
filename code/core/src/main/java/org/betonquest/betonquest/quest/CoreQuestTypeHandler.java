@@ -503,7 +503,7 @@ public class CoreQuestTypeHandler {
         this.allProcessors.add(conversationProcessor);
     }
 
-    private void initNpcs() throws QuestException {
+    private void initNpcs() {
         Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before npcs!");
         Objects.requireNonNull(this.instructions, "Instructions must be initialized before npcs!");
         Objects.requireNonNull(this.actionProcessor, "Action processor must be initialized before npcs!");
@@ -689,14 +689,14 @@ public class CoreQuestTypeHandler {
     }
 
     private void initFeatures() throws QuestException {
+        initTextParser();
+        initPlayerDataStorage();
+        initTextSectionParser();
         initSchedules();
         initNotifyIOs();
         initJournalEntries();
         initJournalMainPages();
         initPluginMessage();
-        initTextParser();
-        initPlayerDataStorage();
-        initTextSectionParser();
         initItems();
         initCompasses();
         initConversations();
