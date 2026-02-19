@@ -754,7 +754,7 @@ public class CoreQuestTypeHandler {
         for (final QuestPackage pack : packages) {
             final String packName = pack.getQuestPath();
             log.debug(pack, "Loading stuff in package " + packName);
-            allProcessors.forEach(processor -> processor.load(pack));
+            loadPackage(pack);
             log.debug(pack, "Everything in package " + packName + " loaded");
         }
 
