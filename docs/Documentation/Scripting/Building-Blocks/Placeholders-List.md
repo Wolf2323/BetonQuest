@@ -7,27 +7,9 @@ search:
 ---
 # Placeholders List
 
-This page lists all the placeholders that are available in BetonQuest.
-Some of them are only useful when exported for use in other plugins through the [support for PlaceHolderAPI](./Integrations-List/Administration/PlaceholderAPI.md).
+See also: [PlaceHolderAPI](./Integrations-List/Administration/PlaceholderAPI.md).
 
-## Quest types
-
-### `Objective`
-
-__Context__: @snippet:placeholder-meta:online-offline@  
-__Syntax__: `objective.<id>.<property>`  
-__Description__: Represents the specified property of the specified objective.
-
-The first argument is an ID of the objective as defined in the _objectives_ section (not the type).
-Make sure that the player has this objective active or it will be replaced with nothing ("").
-Second argument is the name of a property you want to display.
-All properties are described in "Objectives List" chapter.
-
-```scss title="Example"
-%objective.kill_zombies.left%
-```
-
-### `Condition`
+## `Condition`
 
 __Context__: @snippet:placeholder-meta:online-offline@  
 __Syntax__: `condition.<id>.[papiMode]`  
@@ -44,7 +26,7 @@ the *messages.yml* config.
 %condition.myCondition.papiMode%
 ``` 
 
-### `Constant`
+## `Constant`
 
 __Context__: @snippet:placeholder-meta:independent@  
 __Syntax__: `constant.<name>`  
@@ -70,69 +52,7 @@ If you want to parse a placeholder from a different package,
 follow the same syntax as you would [working across packages](https://betonquest.org/3.0-DEV/Documentation/Scripting/Packages-%26-Templates/#defining-features).
 The proper syntax is `%questPackage>constant.constantName%`.
 
-## Data types
-
-### `Point`
-
-__Context__: @snippet:placeholder-meta:online-offline@  
-__Syntax__: `point.<category>.<amount|left>`  
-__Description__: Represents the number of points in the specified category.
- 
-It is also possible to display the remaining number of points to reach a certain number of points.
-The first argument is the name of a category and the second argument is either `amount` or `left:x`, where `x` is a number.
-
-```scss title="Example"
-%point.reputation.amount%
-%point.reputation.left:15%
-```
-
-### `GlobalPoint`
-
-__Context__: @snippet:placeholder-meta:independent@  
-__Syntax__: `globalpoint.<category>.<amount|left>`  
-__Description__: Represents the number of global points in the specified category.
- 
-It is also possible to display the remaining number of points to reach a certain number of points.
-The first argument is the name of a category and the second argument is either `amount` or `left:x`, where `x` is a number.
-
-```scss title="Example"
-%globalpoint.global_knownusers.amount%
-%globalpoint.global_knownusers.left:100%
-```
-
-### `Tag`
-
-__Context__: @snippet:placeholder-meta:online-offline@  
-__Syntax__: `tag.<name>.[papiMode]`  
-__Description__: Represents whether a tag is set or not as a boolean value.
-
-The placeholder will return true or false by default. If you add papiMode to the instruction it will return yes or no.
-You can translate the papiMode's result by changing the values of `condition_placeholder_met` and `condition_placeholder_not_met`
-in the messages.yml config.
-
-```scss title="Example"
-%tag.test%
-%tag.test.papiMode%
-```
-
-### `GlobalTag`
-
-__Context__: @snippet:placeholder-meta:independent@  
-__Syntax__: `globaltag.<name>.[papiMode]`  
-__Description__: Represents whether a global tag is set or not as a boolean value.
-
-The placeholder will return true or false by default. If you add papiMode to the instruction it will return yes or no.
-You can translate the papiMode's result by changing the values of `condition_placeholder_met` and `condition_placeholder_not_met`
-in the messages.yml config.
-
-```scss title="Example"
-%globaltag.test%
-%globaltag.test.papiMode%
-```
-
-## Others
-
-### `Eval`
+## `Eval`
 
 __Context__: @snippet:placeholder-meta:independent@  
 __Syntax__: `eval.<expression>`  
@@ -148,7 +68,36 @@ this means normally you write `\%` and in the next level you need to write `\\\%
 %eval.player.\%eval.objective.\\\%objective.otherStore.targetStore\\\%.displayType\%%
 ```
 
-### `Item`
+## `GlobalPoint`
+
+__Context__: @snippet:placeholder-meta:independent@  
+__Syntax__: `globalpoint.<category>.<amount|left>`  
+__Description__: Represents the number of global points in the specified category.
+ 
+It is also possible to display the remaining number of points to reach a certain number of points.
+The first argument is the name of a category and the second argument is either `amount` or `left:x`, where `x` is a number.
+
+```scss title="Example"
+%globalpoint.global_knownusers.amount%
+%globalpoint.global_knownusers.left:100%
+```
+
+## `GlobalTag`
+
+__Context__: @snippet:placeholder-meta:independent@  
+__Syntax__: `globaltag.<name>.[papiMode]`  
+__Description__: Represents whether a global tag is set or not as a boolean value.
+
+The placeholder will return true or false by default. If you add papiMode to the instruction it will return yes or no.
+You can translate the papiMode's result by changing the values of `condition_placeholder_met` and `condition_placeholder_not_met`
+in the messages.yml config.
+
+```scss title="Example"
+%globaltag.test%
+%globaltag.test.papiMode%
+```
+
+## `Item`
 
 __Context__: @snippet:placeholder-meta:independent@  
 __Syntax__: `item.<id>.<property>`  
@@ -168,7 +117,7 @@ Both `name` and `lore` supports the `raw` subargument to get the text without fo
 %item.epic_sword.lore:0.raw%
 ```
 
-### `ItemDurability`
+## `ItemDurability`
 
 __Context__: @snippet:placeholder-meta:online@  
 __Syntax__: `itemdurability.<slot>.[relative].[digits|percent]`  
@@ -187,7 +136,7 @@ Additionally, you get the output in `percent` (inclusive the '%' symbol).
 %itemdurability.HEAD.relative.digits:5%
 ```
 
-### `Location`
+## `Location`
 
 __Context__: @snippet:placeholder-meta:online@  
 __Syntax__: `location.<format>.[precision]`  
@@ -216,7 +165,7 @@ the placeholder will resolve.
 %location.ulfLong.5% # -> 325.54268;121.32186;814.45824;myWorldName;12.0;6.0
 ```
 
-### `Math`
+## `Math`
 
 __Context__: @snippet:placeholder-meta:independent@  
 __Syntax__: `math.calc:<calculation>`  
@@ -249,7 +198,7 @@ When the calculation fails `0` will be returned and the reason logged.
 %math.calc:64\%32%
 ```
 
-### `Npc`
+## `Npc`
 
 __Context__: @snippet:placeholder-meta:independent@  
 __Syntax__: `npc.<id>.<property>`  
@@ -273,7 +222,22 @@ Arguments:
 %npc.mayor.location.ulfLong.5% # -> 325.54268;121.32186;814.45824;npcWorldName;12.0;6.0
 ```
 
-### `Player`
+## `Objective`
+
+__Context__: @snippet:placeholder-meta:online-offline@  
+__Syntax__: `objective.<id>.<property>`  
+__Description__: Represents the specified property of the specified objective.
+
+The first argument is an ID of the objective as defined in the _objectives_ section (not the type).
+Make sure that the player has this objective active or it will be replaced with nothing ("").
+Second argument is the name of a property you want to display.
+All properties are described in "Objectives List" chapter.
+
+```scss title="Example"
+%objective.kill_zombies.left%
+```
+
+## `Player`
 
 __Context__: @snippet:placeholder-meta:online-offline@  
 __Syntax__: `player.<format>`  
@@ -289,7 +253,21 @@ The placeholder `%player%` is the same as `%player.name%` and will display the n
 %player.uuid%
 ```
 
-### `Quester`
+## `Point`
+
+__Context__: @snippet:placeholder-meta:online-offline@  
+__Syntax__: `point.<category>.<amount|left>`  
+__Description__: Represents the number of points in the specified category.
+ 
+It is also possible to display the remaining number of points to reach a certain number of points.
+The first argument is the name of a category and the second argument is either `amount` or `left:x`, where `x` is a number.
+
+```scss title="Example"
+%point.reputation.amount%
+%point.reputation.left:15%
+```
+
+## `Quester`
 
 __Context__: @snippet:placeholder-meta:online-offline@  
 __Syntax__: `quester`  
@@ -301,7 +279,7 @@ If the player is not in a conversation, the placeholder is empty.
 %quester%
 ```
 
-### `RandomNumber`
+## `RandomNumber`
 
 __Context__: @snippet:placeholder-meta:independent@  
 __Syntax__: `randomnumber.<whole|decimal>.<min>~<max>`  
@@ -321,7 +299,7 @@ Note that the first value is returned when it is higher than the second.
 %randomnumber.decimal~1.0~{location.y}%
 ```
 
-### `Sync`
+## `Sync`
 
 __Context__: @snippet:placeholder-meta:online-offline-independent@  
 __Syntax__: `sync.<expression>`  
@@ -336,7 +314,22 @@ and should be done with `eval` instead.
 %sync.player.\%eval.objective.\\\%objective.otherStore.targetStore\\\%.displayType\%%
 ```
 
-### `Version`
+## `Tag`
+
+__Context__: @snippet:placeholder-meta:online-offline@  
+__Syntax__: `tag.<name>.[papiMode]`  
+__Description__: Represents whether a tag is set or not as a boolean value.
+
+The placeholder will return true or false by default. If you add papiMode to the instruction it will return yes or no.
+You can translate the papiMode's result by changing the values of `condition_placeholder_met` and `condition_placeholder_not_met`
+in the messages.yml config.
+
+```scss title="Example"
+%tag.test%
+%tag.test.papiMode%
+```
+
+## `Version`
 
 __Context__: @snippet:placeholder-meta:independent@  
 __Syntax__: `version.[plugin]`  
