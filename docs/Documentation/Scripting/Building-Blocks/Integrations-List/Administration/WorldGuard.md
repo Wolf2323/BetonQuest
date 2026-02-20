@@ -1,12 +1,31 @@
 # WorldGuard[](http://dev.bukkit.org/bukkit-plugins/worldguard/)
 
-### Conditions
+## Objectives
 
-#### NPC region: `npcregion`
+### `Region`
 
-**persistent**, **static**
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `region <region> [entry|exit]`  
+__Description__: The player has to interact with the specified region.
 
-This condition is met a NPC is inside a region.
+| Parameter | Syntax      | Default Value          | Explanation                           |
+|-----------|-------------|------------------------|---------------------------------------|
+| _Region_  | Region name | :octicons-x-circle-16: | The region where the player has to be |
+| _Entry_   | `entry`     | Disabled               | The player needs to enter the region  |
+| _Exit_    | `exit`      | Disabled               | The player needs to leave the region  |
+
+```YAML title="Example"
+objectives:
+  deathZone: "region deathZone entry actions:kill"
+```
+
+## Conditions
+
+### `NpcRegion`
+
+__Context__: @snippet:condition-meta:independent@  
+__Syntax__: `npcregion <npc> <region>`  
+__Description__: This condition is met if the specified npc is inside the specified region.
 
 | Parameter | Syntax      | Default Value          | Explanation                          |
 |-----------|-------------|------------------------|--------------------------------------|
@@ -18,9 +37,11 @@ conditions:
   mayorAtSpawn: "npcregion mayor spawn"
 ```
 
-#### Inside Region: `region`
+### `Region`
 
-This condition is met when the player is inside the specified region.
+__Context__: @snippet:condition-meta:online@  
+__Syntax__: `region <region>`  
+__Description__: This condition is met if the player is inside the specified region.
 
 | Parameter | Syntax      | Default Value          | Explanation                           |
 |-----------|-------------|------------------------|---------------------------------------|
@@ -29,21 +50,4 @@ This condition is met when the player is inside the specified region.
 ```YAML title="Example"
 conditions:
   inCastle: "region castle"
-```
-
-### Objectives
-
-#### Enter Region: `region`
-
-To complete this objective you need to be in a WorldGuard region with specified name.
-
-| Parameter | Syntax      | Default Value          | Explanation                           |
-|-----------|-------------|------------------------|---------------------------------------|
-| _Region_  | Region name | :octicons-x-circle-16: | The region where the player has to be |
-| _Entry_   | `entry`     | Disabled               | The player needs to enter the region  |
-| _Exit_    | `exit`      | Disabled               | The player needs to leave the region  |
-
-```YAML title="Example"
-objectives:
-  deathZone: "region deathZone entry actions:kill"
 ```
