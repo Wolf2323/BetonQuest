@@ -572,20 +572,6 @@ conditions:
   has20BetonPoints: "point beton 20"
 ```
 
-## `Ride`
-
-__Context__: @snippet:condition-meta:online@  
-__Syntax__: `ride <entity>`  
-__Description__: Whether the player is mounted on the specified [entity](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html).
-
-`any` is also a valid input and matches any entity.
-
-```YAML title="Example"
-conditions:
-  horse: "ride horse"
-  anything: "ride any"
-```
-
 ## `Random`
 
 __Context__: @snippet:condition-meta:independent@  
@@ -628,6 +614,20 @@ conditions:
   allDayReal: "realtime 6-19"
   midnightReal: "realtime 23:30-0:30"
   knoppersTimeReal: "realtime 9:30-10"
+```
+
+## `Ride`
+
+__Context__: @snippet:condition-meta:online@  
+__Syntax__: `ride <entity>`  
+__Description__: Whether the player is mounted on the specified [entity](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html).
+
+`any` is also a valid input and matches any entity.
+
+```YAML title="Example"
+conditions:
+  horse: "ride horse"
+  anything: "ride any"
 ```
 
 ## `Score`

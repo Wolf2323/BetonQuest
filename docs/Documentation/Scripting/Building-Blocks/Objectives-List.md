@@ -113,6 +113,27 @@ objectives:
   10Cows: "breed cow 10 notify:2 actions:reward"
 ```
 
+## `Brew`
+
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `brew <item> [amount]`  
+__Description__: The player has to brew the specified items.
+
+The first argument is a potion ID from the _items_ section. Second argument is amount of potions.
+You can optionally add `notify` argument to make the objective display progress to players,
+optionally with the notification interval after a colon.
+
+Progress will be counted for the player who last added or changed an item before the brew process completed. Only newly
+created potions are counted.
+
+This objective has three properties: `amount`, `left` and `total`. `amount` is the amount of potions already brewed,
+`left` is the amount of potions still needed to brew and `total` is the amount of potions initially required.
+
+```YAML title="Example"
+objectives:
+  weird: "brew weird_concoction 4 actions:add_tag"
+```
+
 ## `ChestPut`
 
 __Context__: @snippet:objective-meta:online@  
@@ -130,6 +151,39 @@ By default, only one player can look into the chest at the same time. You can ch
 objectives:
   emeraldsAndSword: "chestput 100;200;300;world emerald:5,sword actions:tag,message"
   apples: "chestput 0;50;100;world apple:42 actions:message multipleaccess:true"
+```
+
+## `Command`
+
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `command <command> [ignoreCase] [exact] [cancel] [failActions]`  
+__Description__: The player has to execute the specified command.
+
+It can be both an existing or a new, custom command. The first argument is the command text.
+To allow spaces use [quoting](../Quoting-&-YAML.md#quoting) syntax.
+The command argument is case-sensitive and also supports using placeholders.
+The second required argument is a list of actions to execute when the objective ismet.
+
+```YAML title="Example"
+objectives:
+  warp: 'command "/warp %player% farms" actions:action1,action2'
+  replace: 'command "//replace oak_wood" actions:action1,action2'
+```
+
+With this configuration, the command objective requires the player to execute `/warp MyName farms` to be completed. The
+command objective matches from the start of the command that was executed, therefore if the player executed
+`/warp MyName farms other arguments` it would still be completed.
+
+Optional arguments:
+
+* `ignoreCase`: If provided, instructs the objective to ignore case for the command to match.
+* `exact`: If provided, requires an exact command match, not just the command start.
+* `cancel`: If provided, the objective will cancel the execution of the command on a match. This needs to be enabled to suppress the `Unknown Command` message when using custom commands.
+* `failActions`: If provided, specifies a list of actions to execute if a non-matching command is run and conditions are met.
+
+```YAML title="Example"
+objectives:
+  warp: 'command "/warp %player% farms" ignoreCase exact cancel failActions:failAction1,failAction2 actions:action1,action2'
 ```
 
 ## `Consume`
@@ -175,57 +229,6 @@ This objective has three properties: `amount`, `left` and `total`. `amount` is t
 ```YAML title="Example"
 objectives:
   craftSaddle: "craft saddle 5 actions:reward"
-```
-
-## `Enchant`
-
-__Context__: @snippet:objective-meta:online@  
-__Syntax__: `enchant <item> <enchants> [requirementMode] [amount]`  
-__Description__: The player has to enchant the specified item with the specified enchantment. 
-
-| Parameter         | Syntax                                | Default Value          | Explanation                                                                                                                                                                                                                                                                                                                                        |
-|-------------------|---------------------------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| _item_            | [Quest Item](../../Features/Items.md) | :octicons-x-circle-16: | The quest item that must be enchanted.                                                                                                                                                                                                                                                                                                             |
-| _enchants_        | enchantment:level                     | :octicons-x-circle-16: | The enchants that must be added to the item. [Enchantment names](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/enchantments/Enchantment.html) are different from the vanilla ones. If a level is present, the enchanted level must be equal or bigger then the specified one. Multiple enchants are supported: `ARROW_DAMAGE:1,ARROW_FIRE:1` |
-| _requirementMode_ | requirementMode:mode                  | `all`                  | Use `one` if any enchantment from `enchants` should complete the objective. Use `all` if all are required at the same time.                                                                                                                                                                                                                        |
-| _amount_          | amount:number                         | 1                      | The amount of items to enchant.                                                                                                                                                                                                                                                                                                                    |
-
-```YAML title="Example"
-objectives:
-  lordSword: "enchant lordsSword damage_all,knockback actions:rewardLord"
-  kingSword: "enchant kingsSword damage_all:2,knockback:1 actions:rewardKing"
-  massProduction: "enchant ironSword sharpness amount:10 actions:blacksmithLevel2Reward"
-```
-
-<h5> Placeholder Properties </h5> 
-
-| Name     | Example Output | Explanation                                                                                  |
-|----------|----------------|----------------------------------------------------------------------------------------------|
-| _amount_ | 6              | Shows the amount of items already enchanted.                                                 |
-| _left_   | 4              | Shows the amount of items that still need to be enchanted for the objective to be completed. |
-| _total_  | 10             | Shows the initial amount of items that needed to be enchanted.                               |
-
-## `Experience`
-
-__Context__: @snippet:objective-meta:online@  
-__Syntax__: `experience <amount>`  
-__Description__: The player has to reach at least the specified amount of experience levels.
-
-You can also define decimal numbers, for example `experience 1.5` will complete when the player reaches 1.5 experience levels or more.
-If you want to check for an absolute amount of experience points you can convert it to decimal levels.
-The objective is checked every time the player gets experience naturally, such as killing mobs or mining blocks.
-Additionally, it is checked if the player reaches a new level in any way (vanilla level up, commands or other plugins).
-The objective will also imminently complete if the player already has the experience level or more.
-And it will also be completed if the player joins the game with the specified amount of experience levels or more.
-You can use the `notify` keyword to display a message each time the player advances the objective,
-optionally with the notification interval after a colon.
-
-This objective has three properties: `amount`, `left` and `total`. `amount` is the current amount of experience levels,
-`left` is the amount of experience levels still needed and `total` is the amount of experience required.
-
-```YAML title="Example"
-objectives:
-  25Level: "experience 25 actions:reward"
 ```
 
 ## `Delay`
@@ -278,6 +281,72 @@ You can also specify the `respawn` location to which the player will be teleport
 objectives:
   respawn: "die respawn:100;200;300;world;90;0 actions:respawned"
   preventDying: "die cancel respawn:100;200;300;world;90;0 actions:respawned"
+```
+
+## `Enchant`
+
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `enchant <item> <enchants> [requirementMode] [amount]`  
+__Description__: The player has to enchant the specified item with the specified enchantment. 
+
+| Parameter         | Syntax                                | Default Value          | Explanation                                                                                                                                                                                                                                                                                                                                        |
+|-------------------|---------------------------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _item_            | [Quest Item](../../Features/Items.md) | :octicons-x-circle-16: | The quest item that must be enchanted.                                                                                                                                                                                                                                                                                                             |
+| _enchants_        | enchantment:level                     | :octicons-x-circle-16: | The enchants that must be added to the item. [Enchantment names](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/enchantments/Enchantment.html) are different from the vanilla ones. If a level is present, the enchanted level must be equal or bigger then the specified one. Multiple enchants are supported: `ARROW_DAMAGE:1,ARROW_FIRE:1` |
+| _requirementMode_ | requirementMode:mode                  | `all`                  | Use `one` if any enchantment from `enchants` should complete the objective. Use `all` if all are required at the same time.                                                                                                                                                                                                                        |
+| _amount_          | amount:number                         | 1                      | The amount of items to enchant.                                                                                                                                                                                                                                                                                                                    |
+
+```YAML title="Example"
+objectives:
+  lordSword: "enchant lordsSword damage_all,knockback actions:rewardLord"
+  kingSword: "enchant kingsSword damage_all:2,knockback:1 actions:rewardKing"
+  massProduction: "enchant ironSword sharpness amount:10 actions:blacksmithLevel2Reward"
+```
+
+<h5> Placeholder Properties </h5> 
+
+| Name     | Example Output | Explanation                                                                                  |
+|----------|----------------|----------------------------------------------------------------------------------------------|
+| _amount_ | 6              | Shows the amount of items already enchanted.                                                 |
+| _left_   | 4              | Shows the amount of items that still need to be enchanted for the objective to be completed. |
+| _total_  | 10             | Shows the initial amount of items that needed to be enchanted.                               |
+
+## `Equip`
+
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `equip <slot> <item>`  
+__Description__: The player has to equip the specified item to the specified slot.
+
+The item must be any quest item as defined in the _items_ section.
+Available slot types: `HEAD`, `CHEST`, `LEGS`, `FEET`.
+
+```YAML title="Example"
+objectives:
+  eqHelm: "equip HEAD amazing_helmet actions:action1,action2"
+  equipBody: "equip CHEST amazing_armor actions:action1,action2"
+```
+
+## `Experience`
+
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `experience <amount>`  
+__Description__: The player has to reach at least the specified amount of experience levels.
+
+You can also define decimal numbers, for example `experience 1.5` will complete when the player reaches 1.5 experience levels or more.
+If you want to check for an absolute amount of experience points you can convert it to decimal levels.
+The objective is checked every time the player gets experience naturally, such as killing mobs or mining blocks.
+Additionally, it is checked if the player reaches a new level in any way (vanilla level up, commands or other plugins).
+The objective will also imminently complete if the player already has the experience level or more.
+And it will also be completed if the player joins the game with the specified amount of experience levels or more.
+You can use the `notify` keyword to display a message each time the player advances the objective,
+optionally with the notification interval after a colon.
+
+This objective has three properties: `amount`, `left` and `total`. `amount` is the current amount of experience levels,
+`left` is the amount of experience levels still needed and `total` is the amount of experience required.
+
+```YAML title="Example"
+objectives:
+  25Level: "experience 25 actions:reward"
 ```
 
 ## `Fish`
@@ -348,19 +417,21 @@ objectives:
 | left   | 13             | The amount of entities still needed to be interacted with. |
 | total  | 20             | The initially required amount of entities to interact.     |
 
-## `ResourcePack`
+## `Jump`
 
 __Context__: @snippet:objective-meta:online@  
-__Syntax__: `resourcepack <state>`  
-__Description__: The player has to have the specified resource pack state.
+__Syntax__: `jump <amount>`  
+__Description__: The player has to jump.
 
-The first argument is the state of the resource pack.
-It can be `successfully_loaded`, `declined`, `failed_download` and `accepted`.
+The only argument is amount. You can use the `notify` keyword to display a
+message each time the player advances the objective, optionally with the notification interval after a colon.
+
+This objective has three properties: `amount`, `left` and `total`. `amount` is the amount of jumps already done,
+`left` is the amount of jumps still needed and `total` is the amount of jumps initially required.
 
 ```YAML title="Example"
 objectives:
-  successful: "resourcepack successfully_loaded actions:reward"
-  declined: "resourcepack declined actions:declined"
+  jump: "jump 15 actions:legExerciseDone"
 ```
 
 ## `Kill`
@@ -435,6 +506,43 @@ __Description__: The player has to log out.
 objectives:
   clean: "logout actions:delete_objective"
 ```
+
+## `MobKill`
+
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `mobkill <type> <amount> [name] [marked]`  
+__Description__: The player has to kill the specified living entities.
+
+All entities work, make sure to use their [correct types](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html).
+
+| Parameter | Syntax                  | Default Value          | Explanation                                                                                                       |
+|-----------|-------------------------|------------------------|-------------------------------------------------------------------------------------------------------------------|
+| _type_    | ENTITY_TYPE,ENTITY_TYPE | :octicons-x-circle-16: | A list of entities, e.g. `ZOMBIE,SKELETON`.                                                                       |
+| _amount_  | Positive Number         | :octicons-x-circle-16: | Amount of mobs to kill in total.                                                                                  |
+| _name_    | name:text               | Disabled               | Only count named mobs.                                                                                            |
+| _marked_  | marked:keyword          | Disabled               | Only count marked mobs. See the [spawn action](Actions-List.md#spawn) for more information.                       |
+| _notify_  | notify:interval         | Disabled               | Display a message to the player each time they kill a mob. Optionally with the notification interval after colon. |
+
+```YAML title="Example"
+objectives:
+  monsterHunter: "mobkill ZOMBIE,SKELETON,SPIDER 10 notify" #(1)!
+  specialMob: "mobkill PIG 1 marked:special" #(2)!
+  bossZombie: "mobkill ZOMBIE 1 name:Uber_Zombie" #(3)!
+```
+   
+1. The player must kill a zombie, skeleton or a spider to progress this objective. In total, they must kill 10 entities. Additionally, there will be a notification after each kill.
+2. The player must kill a pig that was spawned with the [spawn action](Actions-List.md#spawn) and has a marker. 
+3. The player must kill a zombie named "Uber Zombie".
+
+
+<h5> Placeholder Properties </h5> 
+
+| Name     | Example Output | Explanation                                            |
+|----------|----------------|--------------------------------------------------------|
+| _amount_ | 2              | Shows the amount of mobs already killed.               |
+| _left_   | 8              | Shows the amount of mobs that still need to be killed. |
+| _total_  | 10             | Shows the amount of mobs initially required to kill.   |
+
 
 ## `NpcInteract`
 
@@ -568,63 +676,33 @@ objectives:
 | _amount_ | 100            | Shows the amount of points to reach.                     |
 | _left_   | 8              | Shows the amount of points that still need to be gained. |
 
-## `MobKill`
+## `ResourcePack`
 
 __Context__: @snippet:objective-meta:online@  
-__Syntax__: `mobkill <type> <amount> [name] [marked]`  
-__Description__: The player has to kill the specified living entities.
+__Syntax__: `resourcepack <state>`  
+__Description__: The player has to have the specified resource pack state.
 
-All entities work, make sure to use their [correct types](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html).
-
-| Parameter | Syntax                  | Default Value          | Explanation                                                                                                       |
-|-----------|-------------------------|------------------------|-------------------------------------------------------------------------------------------------------------------|
-| _type_    | ENTITY_TYPE,ENTITY_TYPE | :octicons-x-circle-16: | A list of entities, e.g. `ZOMBIE,SKELETON`.                                                                       |
-| _amount_  | Positive Number         | :octicons-x-circle-16: | Amount of mobs to kill in total.                                                                                  |
-| _name_    | name:text               | Disabled               | Only count named mobs.                                                                                            |
-| _marked_  | marked:keyword          | Disabled               | Only count marked mobs. See the [spawn action](Actions-List.md#spawn) for more information.                       |
-| _notify_  | notify:interval         | Disabled               | Display a message to the player each time they kill a mob. Optionally with the notification interval after colon. |
+The first argument is the state of the resource pack.
+It can be `successfully_loaded`, `declined`, `failed_download` and `accepted`.
 
 ```YAML title="Example"
 objectives:
-  monsterHunter: "mobkill ZOMBIE,SKELETON,SPIDER 10 notify" #(1)!
-  specialMob: "mobkill PIG 1 marked:special" #(2)!
-  bossZombie: "mobkill ZOMBIE 1 name:Uber_Zombie" #(3)!
+  successful: "resourcepack successfully_loaded actions:reward"
+  declined: "resourcepack declined actions:declined"
 ```
-   
-1. The player must kill a zombie, skeleton or a spider to progress this objective. In total, they must kill 10 entities. Additionally, there will be a notification after each kill.
-2. The player must kill a pig that was spawned with the [spawn action](Actions-List.md#spawn) and has a marker. 
-3. The player must kill a zombie named "Uber Zombie".
 
-
-<h5> Placeholder Properties </h5> 
-
-| Name     | Example Output | Explanation                                            |
-|----------|----------------|--------------------------------------------------------|
-| _amount_ | 2              | Shows the amount of mobs already killed.               |
-| _left_   | 8              | Shows the amount of mobs that still need to be killed. |
-| _total_  | 10             | Shows the amount of mobs initially required to kill.   |
-
-
-
-## `Brew`
+## `Ride`
 
 __Context__: @snippet:objective-meta:online@  
-__Syntax__: `brew <item> [amount]`  
-__Description__: The player has to brew the specified items.
+__Syntax__: `ride <entity>`  
+__Description__: The player has to ride the specified [entity](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html).
 
-The first argument is a potion ID from the _items_ section. Second argument is amount of potions.
-You can optionally add `notify` argument to make the objective display progress to players,
-optionally with the notification interval after a colon.
-
-Progress will be counted for the player who last added or changed an item before the brew process completed. Only newly
-created potions are counted.
-
-This objective has three properties: `amount`, `left` and `total`. `amount` is the amount of potions already brewed,
-`left` is the amount of potions still needed to brew and `total` is the amount of potions initially required.
+`any` is also a valid input and matches any entity.
 
 ```YAML title="Example"
 objectives:
-  weird: "brew weird_concoction 4 actions:add_tag"
+  horse: "ride horse"
+  any: "ride any"
 ```
 
 ## `Shear`
@@ -784,85 +862,6 @@ normal `actions` as they are executed after the objective is already removed.
 ```YAML title="Example"
 objectives:
 	track: 'timer "name:This is the Display Name" interval:10 done:done_in actions:done conditions:in_region'
-```
-
-## `Jump`
-
-__Context__: @snippet:objective-meta:online@  
-__Syntax__: `jump <amount>`  
-__Description__: The player has to jump.
-
-The only argument is amount. You can use the `notify` keyword to display a
-message each time the player advances the objective, optionally with the notification interval after a colon.
-
-This objective has three properties: `amount`, `left` and `total`. `amount` is the amount of jumps already done,
-`left` is the amount of jumps still needed and `total` is the amount of jumps initially required.
-
-```YAML title="Example"
-objectives:
-  jump: "jump 15 actions:legExerciseDone"
-```
-
-## `Ride`
-
-__Context__: @snippet:objective-meta:online@  
-__Syntax__: `ride <entity>`  
-__Description__: The player has to ride the specified [entity](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html).
-
-`any` is also a valid input and matches any entity.
-
-```YAML title="Example"
-objectives:
-  horse: "ride horse"
-  any: "ride any"
-```
-
-## `Command`
-
-__Context__: @snippet:objective-meta:online@  
-__Syntax__: `command <command> [ignoreCase] [exact] [cancel] [failActions]`  
-__Description__: The player has to execute the specified command.
-
-It can be both an existing or a new, custom command. The first argument is the command text.
-To allow spaces use [quoting](../Quoting-&-YAML.md#quoting) syntax.
-The command argument is case-sensitive and also supports using placeholders.
-The second required argument is a list of actions to execute when the objective ismet.
-
-```YAML title="Example"
-objectives:
-  warp: 'command "/warp %player% farms" actions:action1,action2'
-  replace: 'command "//replace oak_wood" actions:action1,action2'
-```
-
-With this configuration, the command objective requires the player to execute `/warp MyName farms` to be completed. The
-command objective matches from the start of the command that was executed, therefore if the player executed
-`/warp MyName farms other arguments` it would still be completed.
-
-Optional arguments:
-
-* `ignoreCase`: If provided, instructs the objective to ignore case for the command to match.
-* `exact`: If provided, requires an exact command match, not just the command start.
-* `cancel`: If provided, the objective will cancel the execution of the command on a match. This needs to be enabled to suppress the `Unknown Command` message when using custom commands.
-* `failActions`: If provided, specifies a list of actions to execute if a non-matching command is run and conditions are met.
-
-```YAML title="Example"
-objectives:
-  warp: 'command "/warp %player% farms" ignoreCase exact cancel failActions:failAction1,failAction2 actions:action1,action2'
-```
-
-## `Equip`
-
-__Context__: @snippet:objective-meta:online@  
-__Syntax__: `equip <slot> <item>`  
-__Description__: The player has to equip the specified item to the specified slot.
-
-The item must be any quest item as defined in the _items_ section.
-Available slot types: `HEAD`, `CHEST`, `LEGS`, `FEET`.
-
-```YAML title="Example"
-objectives:
-  eqHelm: "equip HEAD amazing_helmet actions:action1,action2"
-  equipBody: "equip CHEST amazing_armor actions:action1,action2"
 ```
 
 ## `Variable`

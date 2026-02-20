@@ -96,6 +96,26 @@ actions:
   chesttake: "chesttake 100;200;300;world emerald:5,sword"
 ```
 
+## `Command`
+
+__Context__: @snippet:action-meta:independent@  
+__Syntax__: `command <commands>`  
+__Description__: Run the specified commands from the console.
+
+The instruction string is the command, without leading slash.
+You can use placeholders here, but placeholders other than `%player%` won't resolve if the action is fired from
+delayed `folder` and the player is offline now.
+You can define additional commands by separating them with `|` character.
+If you want to use a `|` character in the command use `\|`.
+
+Looking for [execute as player commands](#command)?
+Looking for [execute as operator commands](#opsudo)?
+
+```YAML title="Example"
+actions:
+  killAndBan: "command kill %player%|ban %player%"
+```
+
 ## `Compass`
 
 __Context__: @snippet:action-meta:online-offline@  
@@ -124,26 +144,6 @@ compass:
 ```YAML title="Example"
 actions:
   compassBeton: "compass add beton"
-```
-
-## `Command`
-
-__Context__: @snippet:action-meta:independent@  
-__Syntax__: `command <commands>`  
-__Description__: Run the specified commands from the console.
-
-The instruction string is the command, without leading slash.
-You can use placeholders here, but placeholders other than `%player%` won't resolve if the action is fired from
-delayed `folder` and the player is offline now.
-You can define additional commands by separating them with `|` character.
-If you want to use a `|` character in the command use `\|`.
-
-Looking for [execute as player commands](#command)?
-Looking for [execute as operator commands](#opsudo)?
-
-```YAML title="Example"
-actions:
-  killAndBan: "command kill %player%|ban %player%"
 ```
 
 ## `Conversation`
@@ -176,17 +176,20 @@ actions:
   dealDamage: "damage 20"
 ```
 
-## `DeletePoint`
+## `DelEffect`
 
-__Context__: @snippet:action-meta:online-offline-independent@    
-__Syntax__: `deletepoint <category>`  
-__Description__: Delete the point category for the player.
+__Context__: @snippet:action-meta:online@  
+__Syntax__: `deleffect <effects>`  
+__Description__: Remove the specified potion effects from the player.
 
-The independent context will delete the points for all players in the database (even if offline).
+Use `any` instead of a list of types to remove all potion effects from the player.
+Alternatively to `any`, you just can leave it blank.
 
 ```YAML title="Example"
 actions:
-  deletePoints: "deletepoint npc_attitude"
+  deleteEffects: "deleffect ABSORPTION,BLINDNESS"
+  deleteAny: "deleffect any"
+  deleteAll: "deleffect"
 ```
 
 ## `DeleteGlobalPoint`
@@ -198,6 +201,19 @@ __Description__: Delete the global point category.
 ```YAML title="Example"
 actions:
   deleteBonus: "deleteglobalpoint bonus"
+```
+
+## `DeletePoint`
+
+__Context__: @snippet:action-meta:online-offline-independent@    
+__Syntax__: `deletepoint <category>`  
+__Description__: Delete the point category for the player.
+
+The independent context will delete the points for all players in the database (even if offline).
+
+```YAML title="Example"
+actions:
+  deletePoints: "deletepoint npc_attitude"
 ```
 
 ## `Door`
@@ -233,22 +249,6 @@ actions:
   dropSword: "drop items:magical_sword location:200;17;300;world"
   dropRare: "drop items:loot_rare,loot_common:3"
   dropMyItem: "drop items:myItem location:%objective.MyQuestPlaceholder.DropLocation%"
-```
-
-## `DelEffect`
-
-__Context__: @snippet:action-meta:online@  
-__Syntax__: `deleffect <effects>`  
-__Description__: Remove the specified potion effects from the player.
-
-Use `any` instead of a list of types to remove all potion effects from the player.
-Alternatively to `any`, you just can leave it blank.
-
-```YAML title="Example"
-actions:
-  deleteEffects: "deleffect ABSORPTION,BLINDNESS"
-  deleteAny: "deleffect any"
-  deleteAll: "deleffect"
 ```
 
 ## `Effect`
@@ -333,6 +333,41 @@ actions:
   explosion: "explosion 0 1 4 100;64;-100;survival"
 ```
 
+## `First`
+
+__Context__: @snippet:action-meta:independent@  
+__Syntax__: `first <actions>`  
+__Description__: Execute the first possible action.
+
+This action wraps multiple actions inside itself, similar `folder`. Unlike `folder`, it attempts to execute each action,
+starting from the first onward. Once it successfully executes one action, it stops executing the rest. This is useful for
+collapsing long if-else chains into single actions.
+
+This action is especially powerful when it is used in conjunction with the `conditions:` keyword,
+which can be used with any action.
+
+```YAML title="Example"
+actions:
+  firstExample: "first action1,action2,action3" # (1)!
+  action1: "point carry boxes 10 action:add conditions:firstCondition"
+  action2: "point carry boxes 20 action:add conditions:secondCondition"
+  action3: "point carry boxes 40 action:add conditions:thirdCondition"
+```
+
+1. If firstCondition is false, secondCondition is true, and thirdCondition is true, action2 is the only action that will
+   be run.
+
+??? info "More intricate variant using another action"
+    ```YAML title="Equivalent using if-else"
+    actions:
+      firstExample: "if firstCondition action1 else firstExample2"
+      firstExample2: "if secondCondition action2 else firstExample3"
+      firstExample3: "if thirdCondition action3"
+      action1: "point carry boxes 10 action:add"
+      action2: "point carry boxes 20 action:add"
+      action3: "point carry boxes 40 action:add"
+    ```
+
 ## `Folder`
 
 __Context__: @snippet:action-meta:independent@  
@@ -372,41 +407,6 @@ actions:
 3. Randomly executes one of the three actions after 5 seconds.
 4. Executes the actions after one minute.
 
-## `First`
-
-__Context__: @snippet:action-meta:independent@  
-__Syntax__: `first <actions>`  
-__Description__: Execute the first possible action.
-
-This action wraps multiple actions inside itself, similar `folder`. Unlike `folder`, it attempts to execute each action,
-starting from the first onward. Once it successfully executes one action, it stops executing the rest. This is useful for
-collapsing long if-else chains into single actions.
-
-This action is especially powerful when it is used in conjunction with the `conditions:` keyword,
-which can be used with any action.
-
-```YAML title="Example"
-actions:
-  firstExample: "first action1,action2,action3" # (1)!
-  action1: "point carry boxes 10 action:add conditions:firstCondition"
-  action2: "point carry boxes 20 action:add conditions:secondCondition"
-  action3: "point carry boxes 40 action:add conditions:thirdCondition"
-```
-
-1. If firstCondition is false, secondCondition is true, and thirdCondition is true, action2 is the only action that will
-   be run.
-
-??? info "More intricate variant using another action"
-    ```YAML title="Equivalent using if-else"
-    actions:
-      firstExample: "if firstCondition action1 else firstExample2"
-      firstExample2: "if secondCondition action2 else firstExample3"
-      firstExample3: "if thirdCondition action3"
-      action1: "point carry boxes 10 action:add"
-      action2: "point carry boxes 20 action:add"
-      action3: "point carry boxes 40 action:add"
-    ```
-
 ## `Give`
 
 __Context__: @snippet:action-meta:online@  
@@ -426,7 +426,7 @@ actions:
   giveSign: "give important_sign notify backpack"
 ```
 
-## `Givejournal`
+## `GiveJournal`
 
 __Context__: @snippet:action-meta:online@  
 __Syntax__: `givejournal`  
@@ -601,10 +601,6 @@ actions:
   showEntrance: "lightning 200;65;100;survival noDamage"
 ```
 
-@snippet:actions:notify@
-
-@snippet:actions:notify-all@
-
 ## `Log`
 
 __Context__: @snippet:action-meta:independent@  
@@ -620,6 +616,10 @@ actions:
     logPlayer: "log %player% completed first quest."
     debug: "log daily quests have been reset level:DEBUG "
 ```
+
+@snippet:actions:notify@
+
+@snippet:actions:notify-all@
 
 ## `NpcTeleport`
 
@@ -887,6 +887,28 @@ actions:
   flyingSand: "setblock SAND 100;200;300;world ignorePhysics"
 ```
 
+## `Spawn`
+
+__Context__: @snippet:action-meta:independent@  
+__Syntax__: `spawn <location> <type> <amount> [name] [marked] [drops] [h] [c] [l] [b] [m] [o]`  
+__Description__: Spawn the specified number of mobs with the specified type at the specified location.
+
+The first argument is a location. Next is [type of the mob](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html).
+The last, third argument is integer for amount of mobs to be spawned. You can also specify `name:` argument, followed
+by the name of the mob. You can also mark the spawned mob with a keyword using `marked:` argument.
+It won't show anywhere, and you can check for only marked mobs in `mobkill` objective.
+
+You can specify armor which the mob will wear and items it will hold with
+`h:` (helmet), `c:` (chestplate), `l:` (leggings), `b:` (boots), `m:` (main hand) and `o:` (off hand) optional arguments.
+These take a single item without amount, as defined in the _items_ section. You can also add a list of drops with
+`drops:` argument, followed by a list of items with amounts after colons, separated by commas.
+
+```YAML title="Example"
+actions:
+  spawnSkeleton: "spawn 100;200;300;world SKELETON 5 marked:targets"
+  spawnZombie: "spawn 100;200;300;world ZOMBIE name:Bolec 1 h:blue_hat c:red_vest drops:emerald:10,bread:2"
+```
+
 ## `Stage`
 
 __Context__: @snippet:action-meta:online-offline@  
@@ -912,28 +934,6 @@ actions:
   setCookCookies: "stage bakeCookies set cookCookies"
   increase: "stage bakeCookies increase"
   decrease2: "stage bakeCookies decrease 2"
-```
-
-## `Spawn`
-
-__Context__: @snippet:action-meta:independent@  
-__Syntax__: `spawn <location> <type> <amount> [name] [marked] [drops] [h] [c] [l] [b] [m] [o]`  
-__Description__: Spawn the specified number of mobs with the specified type at the specified location.
-
-The first argument is a location. Next is [type of the mob](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html).
-The last, third argument is integer for amount of mobs to be spawned. You can also specify `name:` argument, followed
-by the name of the mob. You can also mark the spawned mob with a keyword using `marked:` argument.
-It won't show anywhere, and you can check for only marked mobs in `mobkill` objective.
-
-You can specify armor which the mob will wear and items it will hold with
-`h:` (helmet), `c:` (chestplate), `l:` (leggings), `b:` (boots), `m:` (main hand) and `o:` (off hand) optional arguments.
-These take a single item without amount, as defined in the _items_ section. You can also add a list of drops with
-`drops:` argument, followed by a list of items with amounts after colons, separated by commas.
-
-```YAML title="Example"
-actions:
-  spawnSkeleton: "spawn 100;200;300;world SKELETON 5 marked:targets"
-  spawnZombie: "spawn 100;200;300;world ZOMBIE name:Bolec 1 h:blue_hat c:red_vest drops:emerald:10,bread:2"
 ```
 
 ## `Sudo`
@@ -996,27 +996,6 @@ actions:
   armor: "take armor invOrder:Armor,Offhand,Inventory,Backpack"
 ```
 
-## `Time`
-
-__Context__: @snippet:action-meta:independent@  
-__Syntax__: `time <time> [world] [ticks]`  
-__Description__: Manage the time of the specified world.
-
-The time is represented in 24 hours format as a float number, so 0 is midnight, 12 is
-noon, and 23 is 11 PM. For minutes, you can use floating point numbers, so 0.5 is half past midnight, 0.25 is quarter
-past midnight, and so on. (0.1 hours is 6 minutes). It's possible to add or subtract time by using `+` or `-` prefix or
-to set the time by setting no prefix.
-Additionally, you can specify the world in which the time will be changed, by adding `world:`.
-Using the `ticks` argument changes the time like the vanilla command.
-
-```YAML title="Example"
-actions:
-  set6: "time 6"
-  increase: "time +0.1"
-  decreaseRpgWorld: "time -12 world:rpgworld"
-  increaseRandom: "time +%randomnumber.whole.100~2000% world:pvpworld ticks"
-```
-
 ## `Teleport`
 
 __Context__: @snippet:action-meta:online@  
@@ -1039,6 +1018,27 @@ actions:
 
 1. Teleport the player to X: 432, Y: 121, Z: 532 in the world named 'world'.
 2. Teleport the player to X: 123, Y: 32, Z: -789 in the world named 'world_the_nether'. Also set the head rotation to yaw 180 and pitch 45.
+
+## `Time`
+
+__Context__: @snippet:action-meta:independent@  
+__Syntax__: `time <time> [world] [ticks]`  
+__Description__: Manage the time of the specified world.
+
+The time is represented in 24 hours format as a float number, so 0 is midnight, 12 is
+noon, and 23 is 11 PM. For minutes, you can use floating point numbers, so 0.5 is half past midnight, 0.25 is quarter
+past midnight, and so on. (0.1 hours is 6 minutes). It's possible to add or subtract time by using `+` or `-` prefix or
+to set the time by setting no prefix.
+Additionally, you can specify the world in which the time will be changed, by adding `world:`.
+Using the `ticks` argument changes the time like the vanilla command.
+
+```YAML title="Example"
+actions:
+  set6: "time 6"
+  increase: "time +0.1"
+  decreaseRpgWorld: "time -12 world:rpgworld"
+  increaseRandom: "time +%randomnumber.whole.100~2000% world:pvpworld ticks"
+```
 
 ## `Variable`
 
