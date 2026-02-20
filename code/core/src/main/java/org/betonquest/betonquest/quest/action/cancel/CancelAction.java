@@ -4,9 +4,9 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.QuestCancelerIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
-import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
+import org.betonquest.betonquest.kernel.processor.feature.CancelerProcessor;
 
 /**
  * The cancel action.
@@ -14,9 +14,9 @@ import org.betonquest.betonquest.api.quest.action.OnlineAction;
 public class CancelAction implements OnlineAction {
 
     /**
-     * Feature API.
+     * The canceler processor.
      */
-    private final LegacyFeatures featureApi;
+    private final CancelerProcessor cancelerProcessor;
 
     /**
      * The canceler to use.
@@ -31,18 +31,18 @@ public class CancelAction implements OnlineAction {
     /**
      * Creates a new cancel action.
      *
-     * @param featureApi the feature API
-     * @param cancelerID the canceler to use
-     * @param bypass     whether the canceler conditions should be ignored for canceling
+     * @param cancelerProcessor the canceler processor
+     * @param cancelerID        the canceler to use
+     * @param bypass            whether the canceler conditions should be ignored for canceling
      */
-    public CancelAction(final LegacyFeatures featureApi, final Argument<QuestCancelerIdentifier> cancelerID, final FlagArgument<Boolean> bypass) {
-        this.featureApi = featureApi;
+    public CancelAction(final CancelerProcessor cancelerProcessor, final Argument<QuestCancelerIdentifier> cancelerID, final FlagArgument<Boolean> bypass) {
+        this.cancelerProcessor = cancelerProcessor;
         this.cancelerID = cancelerID;
         this.bypass = bypass;
     }
 
     @Override
     public void execute(final OnlineProfile profile) throws QuestException {
-        featureApi.getCanceler(cancelerID.getValue(profile)).cancel(profile, bypass.getValue(profile).orElse(false));
+        cancelerProcessor.get(cancelerID.getValue(profile)).cancel(profile, bypass.getValue(profile).orElse(false));
     }
 }

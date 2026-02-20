@@ -1,12 +1,12 @@
 package org.betonquest.betonquest.quest.objective.kill;
 
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.CountingObjective;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveService;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,6 +16,11 @@ import java.util.List;
  * Requires the player to kill a target player.
  */
 public class KillPlayerObjective extends CountingObjective {
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
 
     /**
      * The name of the victim to kill.
@@ -31,15 +36,17 @@ public class KillPlayerObjective extends CountingObjective {
     /**
      * Constructor for the KillPlayerObjective.
      *
-     * @param service      the objective service
-     * @param targetAmount the amount of players to kill
-     * @param name         the name of the player to kill, or null for any player
-     * @param required     the conditions of the victim that must be met for the objective to count
+     * @param service          the objective service
+     * @param conditionManager the condition manager
+     * @param targetAmount     the amount of players to kill
+     * @param name             the name of the player to kill, or null for any player
+     * @param required         the conditions of the victim that must be met for the objective to count
      * @throws QuestException if there is an error in the instruction
      */
-    public KillPlayerObjective(final ObjectiveService service, final Argument<Number> targetAmount,
+    public KillPlayerObjective(final ObjectiveService service, final ConditionManager conditionManager, final Argument<Number> targetAmount,
                                @Nullable final Argument<String> name, final Argument<List<ConditionIdentifier>> required) throws QuestException {
         super(service, targetAmount, "players_to_kill");
+        this.conditionManager = conditionManager;
         this.name = name;
         this.required = required;
     }
@@ -54,7 +61,7 @@ public class KillPlayerObjective extends CountingObjective {
     public void onKill(final PlayerDeathEvent event, final OnlineProfile killer) throws QuestException {
         final OnlineProfile victim = getService().getProfileProvider().getProfile(event.getEntity());
         if ((name == null || event.getEntity().getName().equalsIgnoreCase(name.getValue(killer)))
-                && BetonQuest.getInstance().getBetonQuestManagers().conditions().testAll(victim, required.getValue(victim))) {
+                && conditionManager.testAll(victim, required.getValue(victim))) {
             getCountingData(killer).progress();
             completeIfDoneOrNotify(killer);
         }

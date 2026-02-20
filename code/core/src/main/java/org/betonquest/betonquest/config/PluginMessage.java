@@ -2,7 +2,6 @@ package org.betonquest.betonquest.config;
 
 import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.tuple.Triple;
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.common.component.VariableComponent;
@@ -103,7 +102,7 @@ public class PluginMessage {
      * Creates a new instance of the PluginMessage handler.
      *
      * @param log                   the logger for invalid file names
-     * @param instance              the BetonQuest instance
+     * @param instance              the plugin instance
      * @param placeholders          the {@link PlaceholderManager} to create and resolve placeholders
      * @param playerDataStorage     the {@link PlayerDataStorage} instance
      * @param textParser            the {@link TextParser} instance
@@ -111,7 +110,7 @@ public class PluginMessage {
      * @param languageProvider      the {@link LanguageProvider} instance
      * @throws QuestException if the messages could not be loaded
      */
-    public PluginMessage(final BetonQuestLogger log, final BetonQuest instance, final PlaceholderManager placeholders,
+    public PluginMessage(final BetonQuestLogger log, final Plugin instance, final PlaceholderManager placeholders,
                          final PlayerDataStorage playerDataStorage, final TextParser textParser,
                          final ConfigAccessorFactory configAccessorFactory, final LanguageProvider languageProvider)
             throws QuestException {

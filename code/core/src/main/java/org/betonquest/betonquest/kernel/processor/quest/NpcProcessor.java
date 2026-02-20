@@ -1,9 +1,9 @@
 package org.betonquest.betonquest.kernel.processor.quest;
 
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.bukkit.event.npc.NpcInteractEvent;
 import org.betonquest.betonquest.api.bukkit.event.npc.NpcVisibilityUpdateEvent;
+import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
@@ -19,11 +19,14 @@ import org.betonquest.betonquest.api.quest.npc.NpcConversation;
 import org.betonquest.betonquest.api.quest.npc.NpcWrapper;
 import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.service.npc.NpcManager;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.CombatTagger;
+import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.kernel.processor.TypedQuestProcessor;
+import org.betonquest.betonquest.kernel.processor.feature.ConversationProcessor;
 import org.betonquest.betonquest.kernel.processor.feature.ConversationStarter;
 import org.betonquest.betonquest.kernel.registry.quest.NpcTypeRegistry;
 import org.betonquest.betonquest.quest.action.IngameNotificationSender;
@@ -37,6 +40,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -67,9 +71,9 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
     private final PluginMessage pluginMessage;
 
     /**
-     * Plugin to load config.
+     * The plugin instance.
      */
-    private final BetonQuest plugin;
+    private final Plugin plugin;
 
     /**
      * The {@link IdentifierFactory} to create {@link ConversationIdentifier}s.
@@ -113,6 +117,31 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
     private final ConversationStarter convStarter;
 
     /**
+     * The config accessor.
+     */
+    private final ConfigAccessor configAccessor;
+
+    /**
+     * The profile provider.
+     */
+    private final ProfileProvider profileProvider;
+
+    /**
+     * The saver to save data.
+     */
+    private final Saver saver;
+
+    /**
+     * The conversation processor.
+     */
+    private final ConversationProcessor conversationProcessor;
+
+    /**
+     * The identifiers registry.
+     */
+    private final Identifiers identifiers;
+
+    /**
      * The minimum time between two interactions with an NPC.
      */
     private int interactionLimit;
@@ -127,36 +156,46 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
      *
      * @param log                           the custom logger for this class
      * @param loggerFactory                 the logger factory used to create logger for the started conversations
+     * @param plugin                        the plugin instance
      * @param npcIdentifierFactory          the identifier factory to create {@link NpcIdentifier}s for this type
      * @param conversationIdentifierFactory the identifier factory to create {@link ConversationIdentifier}s for this type
      * @param npcTypes                      the available npc types
      * @param pluginMessage                 the {@link PluginMessage} instance
-     * @param plugin                        the plugin to load config
      * @param profileProvider               the profile provider instance
      * @param actionManager                 the action manager
      * @param conditionManager              the condition manager
      * @param convStarter                   the starter for Npc conversations
      * @param instructionApi                the instruction api
+     * @param identifiers                   the identifiers registry
+     * @param saver                         the saver to save data
+     * @param configAccessor                the config accessor
+     * @param conversationProcessor         the conversation processor
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public NpcProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                        final IdentifierFactory<NpcIdentifier> npcIdentifierFactory,
+                        final Plugin plugin, final IdentifierFactory<NpcIdentifier> npcIdentifierFactory,
                         final IdentifierFactory<ConversationIdentifier> conversationIdentifierFactory,
-                        final NpcTypeRegistry npcTypes, final PluginMessage pluginMessage, final BetonQuest plugin,
+                        final NpcTypeRegistry npcTypes, final PluginMessage pluginMessage,
                         final ProfileProvider profileProvider, final ActionManager actionManager,
                         final ConditionManager conditionManager, final ConversationStarter convStarter,
-                        final Instructions instructionApi) {
+                        final Instructions instructionApi, final Identifiers identifiers, final Saver saver,
+                        final ConfigAccessor configAccessor, final ConversationProcessor conversationProcessor) {
         super(log, npcTypes, npcIdentifierFactory, instructionApi, "Npc", "npcs");
         this.loggerFactory = loggerFactory;
+        this.plugin = plugin;
         this.pluginMessage = pluginMessage;
         this.convStarter = convStarter;
-        this.plugin = plugin;
         this.conversationIdentifierFactory = conversationIdentifierFactory;
         this.actionManager = actionManager;
         this.conditionManager = conditionManager;
+        this.configAccessor = configAccessor;
+        this.profileProvider = profileProvider;
+        this.saver = saver;
+        this.conversationProcessor = conversationProcessor;
+        this.identifiers = identifiers;
         plugin.getServer().getPluginManager().registerEvents(new NpcListener(), plugin);
         this.npcHider = new DefaultNpcHider(loggerFactory.create(DefaultNpcHider.class), this,
-                conditionManager, profileProvider, npcTypes, plugin.getBetonQuestRegistries().identifiers(), instructionApi);
+                conditionManager, profileProvider, npcTypes, identifiers, instructionApi);
         this.busySender = new IngameNotificationSender(log, pluginMessage, null, "NpcProcessor", NotificationLevel.ERROR, "busy");
     }
 
@@ -199,9 +238,9 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
     public void clear() {
         super.clear();
         ((NpcTypeRegistry) types).resetIdentifier();
-        interactionLimit = plugin.getPluginConfig().getInt("npc.interaction_limit", 500);
-        acceptNpcLeftClick = plugin.getPluginConfig().getBoolean("npc.accept_left_click");
-        final int updateInterval = plugin.getPluginConfig().getInt("hider.npc_update_interval", 5 * 20);
+        interactionLimit = configAccessor.getInt("npc.interaction_limit", 500);
+        acceptNpcLeftClick = configAccessor.getBoolean("npc.accept_left_click");
+        final int updateInterval = configAccessor.getInt("hider.npc_update_interval", 5 * 20);
         npcHider.reload(updateInterval, plugin);
     }
 
@@ -267,7 +306,8 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
         convStarter.startConversation(onlineProfile, conversationID, center, null,
                 (onlineProfile1, id, center1, run)
                         -> new NpcConversation<>(loggerFactory.create(NpcConversation.class), pluginMessage,
-                        onlineProfile1, id, center1, actionManager, conditionManager, run, npc));
+                        onlineProfile1, id, center1, actionManager, conditionManager, conversationProcessor,
+                        identifiers, saver, run, npc));
         return true;
     }
 
@@ -330,7 +370,7 @@ public class NpcProcessor extends TypedQuestProcessor<NpcIdentifier, NpcWrapper<
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPlayerJoin(final PlayerJoinEvent event) {
             Bukkit.getScheduler().runTask(plugin, () ->
-                    npcHider.applyVisibility(plugin.getProfileProvider().getProfile(event.getPlayer())));
+                    npcHider.applyVisibility(profileProvider.getProfile(event.getPlayer())));
         }
 
         /**

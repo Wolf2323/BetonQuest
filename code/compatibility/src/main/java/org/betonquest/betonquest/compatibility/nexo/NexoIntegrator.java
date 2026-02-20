@@ -20,7 +20,7 @@ public class NexoIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final ItemRegistry itemRegistry = api.registries().items();
+        final ItemRegistry itemRegistry = api.items().registry();
         itemRegistry.register("nexo", new NexoItemFactory());
         itemRegistry.registerSerializer("nexo", new NexoQuestItemSerializer());
     }

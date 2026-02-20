@@ -16,7 +16,6 @@ import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalMainPageIdentifier;
-import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
@@ -26,6 +25,8 @@ import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.database.Saver.Record;
 import org.betonquest.betonquest.database.UpdateType;
+import org.betonquest.betonquest.kernel.processor.feature.JournalEntryProcessor;
+import org.betonquest.betonquest.kernel.processor.feature.JournalMainPageProcessor;
 import org.betonquest.betonquest.quest.action.IngameNotificationSender;
 import org.betonquest.betonquest.quest.action.NotificationLevel;
 import org.bukkit.Material;
@@ -77,9 +78,14 @@ public class Journal {
     private final ConditionManager conditionManager;
 
     /**
-     * The Feature API.
+     * The main page processor.
      */
-    private final LegacyFeatures featureApi;
+    private final JournalMainPageProcessor mainPageProcessor;
+
+    /**
+     * The entry processor.
+     */
+    private final JournalEntryProcessor entryProcessor;
 
     /**
      * The text parser used to parse text in the journal.
@@ -125,23 +131,27 @@ public class Journal {
     /**
      * Creates a new Journal instance from List of Pointers.
      *
-     * @param log              the custom {@link BetonQuestLogger} instance for this class
-     * @param pluginMessage    the {@link PluginMessage} instance
-     * @param conditionManager the Condition Manager
-     * @param featureApi       the Feature API
-     * @param textParser       the {@link TextParser} instance used to parse messages
-     * @param fontRegistry     the {@link FontRegistry} used for font handling
-     * @param profile          the {@link OnlineProfile} of the player whose journal is created
-     * @param list             list of pointers to journal entries
-     * @param config           a {@link ConfigAccessor} that contains the plugin's configuration
+     * @param log               the custom {@link BetonQuestLogger} instance for this class
+     * @param pluginMessage     the {@link PluginMessage} instance
+     * @param conditionManager  the Condition Manager
+     * @param mainPageProcessor the main page processor
+     * @param entryProcessor    the entry processor
+     * @param textParser        the {@link TextParser} instance used to parse messages
+     * @param fontRegistry      the {@link FontRegistry} used for font handling
+     * @param profile           the {@link OnlineProfile} of the player whose journal is created
+     * @param list              list of pointers to journal entries
+     * @param config            a {@link ConfigAccessor} that contains the plugin's configuration
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public Journal(final BetonQuestLogger log, final PluginMessage pluginMessage, final ConditionManager conditionManager,
-                   final LegacyFeatures featureApi, final TextParser textParser, final FontRegistry fontRegistry,
-                   final Profile profile, final List<Pointer> list, final ConfigAccessor config) {
+                   final JournalMainPageProcessor mainPageProcessor, final JournalEntryProcessor entryProcessor,
+                   final TextParser textParser, final FontRegistry fontRegistry, final Profile profile,
+                   final List<Pointer> list, final ConfigAccessor config) {
         this.log = log;
         this.pluginMessage = pluginMessage;
         this.conditionManager = conditionManager;
-        this.featureApi = featureApi;
+        this.mainPageProcessor = mainPageProcessor;
+        this.entryProcessor = entryProcessor;
         this.textParser = textParser;
         this.bookWrapper = new BookPageWrapper(fontRegistry, config.getInt("journal.format.line_length"),
                 config.getInt("journal.format.line_count"));
@@ -263,7 +273,7 @@ public class Journal {
             final JournalEntryIdentifier entryID = pointer.pointer();
             final Text journalEntry;
             try {
-                journalEntry = featureApi.getJournalEntry(entryID);
+                journalEntry = entryProcessor.get(entryID);
             } catch (final QuestException e) {
                 log.warn(entryID.getPackage(), "Cannot add journal entry to " + profile + ": " + e.getMessage(), e);
                 continue;
@@ -291,7 +301,7 @@ public class Journal {
     private Component generateMainPage() {
         final Map<Integer, List<Component>> lines = new HashMap<>();
         final Set<Integer> numbers = new HashSet<>();
-        for (final Map.Entry<JournalMainPageIdentifier, JournalMainPageEntry> entry : featureApi.getJournalMainPages().entrySet()) {
+        for (final Map.Entry<JournalMainPageIdentifier, JournalMainPageEntry> entry : mainPageProcessor.getValues().entrySet()) {
             final JournalMainPageEntry mainPageEntry = entry.getValue();
             Component text;
             try {

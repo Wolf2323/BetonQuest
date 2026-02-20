@@ -2,8 +2,8 @@ package org.betonquest.betonquest.conversation;
 
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
 import org.betonquest.betonquest.database.Saver.Record;
 import org.betonquest.betonquest.database.UpdateType;
 import org.bukkit.Bukkit;
@@ -32,7 +32,7 @@ public class ConversationResumer implements Listener {
     /**
      * Conversation API.
      */
-    private final LegacyConversations conversationApi;
+    private final Conversations conversations;
 
     /**
      * The profile to resume the conversation for.
@@ -47,14 +47,14 @@ public class ConversationResumer implements Listener {
     /**
      * Creates a new ConversationResumer for a profile and a conversation state.
      *
-     * @param config          the plugin configuration file
-     * @param conversationApi the Conversation API
-     * @param onlineProfile   the profile to resume the conversation for
-     * @param state           the state of a suspended conversation
+     * @param config        the plugin configuration file
+     * @param conversations the Conversation API
+     * @param onlineProfile the profile to resume the conversation for
+     * @param state         the state of a suspended conversation
      */
-    public ConversationResumer(final ConfigAccessor config, final LegacyConversations conversationApi,
+    public ConversationResumer(final ConfigAccessor config, final Conversations conversations,
                                final OnlineProfile onlineProfile, final PlayerConversationState state) {
-        this.conversationApi = conversationApi;
+        this.conversations = conversations;
         this.onlineProfile = onlineProfile;
         this.player = onlineProfile.getPlayer();
         this.state = state;
@@ -75,7 +75,7 @@ public class ConversationResumer implements Listener {
         if (event.getTo().getWorld().equals(state.center().getWorld()) && event.getTo().distanceSquared(state.center()) < distance * distance) {
             HandlerList.unregisterAll(this);
             BetonQuest.getInstance().getSaver().add(new Record(UpdateType.UPDATE_CONVERSATION, "null", onlineProfile.getProfileUUID().toString()));
-            conversationApi.start(onlineProfile, state.currentConversation(), state.center(), state.currentOption());
+            conversations.start(onlineProfile, state.currentConversation(), state.center(), state.currentOption());
         }
     }
 

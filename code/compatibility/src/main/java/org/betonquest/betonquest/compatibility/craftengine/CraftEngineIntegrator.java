@@ -20,7 +20,7 @@ public class CraftEngineIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final ItemRegistry itemRegistry = api.registries().items();
+        final ItemRegistry itemRegistry = api.items().registry();
         itemRegistry.register("craftEngine", new CraftEngineItemFactory());
         itemRegistry.registerSerializer("craftEngine", new CraftEngineQuestItemSerializer());
     }

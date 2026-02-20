@@ -1,8 +1,8 @@
 package org.betonquest.betonquest.api.quest;
 
-import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.service.action.ActionRegistry;
 import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderRegistry;
 
@@ -46,5 +46,5 @@ public interface QuestTypeRegistries {
      *
      * @return the identifier registry
      */
-    IdentifierRegistry identifier();
+    Identifiers identifier();
 }

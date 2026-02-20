@@ -5,11 +5,11 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
 
 /**
  * Factory for {@link ConversationAction}.
@@ -24,24 +24,24 @@ public class ConversationActionFactory implements PlayerActionFactory {
     /**
      * Conversation API.
      */
-    private final LegacyConversations conversationApi;
+    private final Conversations conversations;
 
     /**
      * Create the conversation action factory.
      *
-     * @param loggerFactory   the logger factory to create a logger for the actions
-     * @param conversationApi the Conversation API
+     * @param loggerFactory the logger factory to create a logger for the actions
+     * @param conversations the Conversation API
      */
     public ConversationActionFactory(final BetonQuestLoggerFactory loggerFactory,
-                                     final LegacyConversations conversationApi) {
+                                     final Conversations conversations) {
         this.loggerFactory = loggerFactory;
-        this.conversationApi = conversationApi;
+        this.conversations = conversations;
     }
 
     @Override
     public PlayerAction parsePlayer(final Instruction instruction) throws QuestException {
         final Argument<Pair<ConversationIdentifier, String>> conversation = getConversation(instruction);
-        return new OnlineActionAdapter(new ConversationAction(conversationApi, conversation),
+        return new OnlineActionAdapter(new ConversationAction(conversations, conversation),
                 loggerFactory.create(ConversationAction.class), instruction.getPackage());
     }
 

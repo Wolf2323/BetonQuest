@@ -4,16 +4,18 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.commons.lang3.tuple.Pair;
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.common.component.FixedComponentLineWrapper;
-import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
-import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
+import org.betonquest.betonquest.api.profile.ProfileProvider;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.item.ItemManager;
+import org.betonquest.betonquest.config.PluginMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -30,6 +32,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -60,7 +64,19 @@ public class InventoryConvIO implements Listener, ConversationIO {
      */
     protected final boolean printMessages;
 
-    private final BetonQuest betonQuest;
+    private final Plugin plugin;
+
+    private final PluginManager pluginManager;
+
+    private final Instructions instructions;
+
+    private final PluginMessage pluginMessage;
+
+    private final ItemManager itemManager;
+
+    private final ProfileProvider profileProvider;
+
+    private final Conversations conversations;
 
     private final FixedComponentLineWrapper componentLineWrapper;
 
@@ -103,17 +119,35 @@ public class InventoryConvIO implements Listener, ConversationIO {
      * @param conv                 the conversation this IO is part of
      * @param onlineProfile        the online profile of the player participating in the conversation
      * @param log                  the custom logger for the conversation
+     * @param plugin               the plugin instance
+     * @param pluginManager        the plugin manager instance
+     * @param instructions         the instructions instance
+     * @param pluginMessage        the plugin message instance
+     * @param itemManager          the item manager instance
+     * @param profileProvider      the profile provider instance
+     * @param conversations        the conversations instance
      * @param colors               the colors used in the conversation
      * @param showNumber           whether to show the number of the conversation
      * @param showNPCText          whether to show the NPC text
      * @param printMessages        whether to print messages
      * @param componentLineWrapper the component line wrapper
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public InventoryConvIO(final Conversation conv, final OnlineProfile onlineProfile, final BetonQuestLogger log,
+                           final Plugin plugin, final PluginManager pluginManager, final Instructions instructions,
+                           final PluginMessage pluginMessage, final ItemManager itemManager,
+                           final ProfileProvider profileProvider, final Conversations conversations,
                            final ConversationColors colors, final boolean showNumber, final boolean showNPCText,
                            final boolean printMessages, final FixedComponentLineWrapper componentLineWrapper) {
         this.log = log;
         this.conv = conv;
+        this.plugin = plugin;
+        this.pluginManager = pluginManager;
+        this.instructions = instructions;
+        this.pluginMessage = pluginMessage;
+        this.itemManager = itemManager;
+        this.profileProvider = profileProvider;
+        this.conversations = conversations;
         this.profile = onlineProfile;
         this.colors = colors;
         this.componentLineWrapper = componentLineWrapper;
@@ -128,13 +162,11 @@ public class InventoryConvIO implements Listener, ConversationIO {
         this.showNPCText = showNPCText;
         this.printMessages = printMessages;
         this.endCallback = null;
-
-        this.betonQuest = BetonQuest.getInstance();
     }
 
     @Override
     public void begin() {
-        Bukkit.getPluginManager().registerEvents(this, betonQuest);
+        pluginManager.registerEvents(this, plugin);
     }
 
     @Override
@@ -148,10 +180,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
         playerOptionsCount++;
         final String rawItem = properties.getString("item");
         try {
-            final IdentifierFactory<ItemIdentifier> identifierFactory = betonQuest.getBetonQuestRegistries().identifiers().getFactory(ItemIdentifier.class);
-            final Argument<ItemIdentifier> item = rawItem == null ? null
-                    : new DefaultArgument<>(betonQuest.getBetonQuestManagers().placeholders(), conv.getPackage(), rawItem,
-                    (value) -> identifierFactory.parseIdentifier(conv.getPackage(), value));
+            final Argument<ItemIdentifier> item = rawItem == null ? null : instructions.createForArgument(conv.getPackage(), rawItem).identifier(ItemIdentifier.class).get();
             options.put(playerOptionsCount, Pair.of(colors.getOption().append(option), item));
         } catch (final QuestException e) {
             options.put(playerOptionsCount, Pair.of(colors.getOption().append(option), null));
@@ -167,9 +196,9 @@ public class InventoryConvIO implements Listener, ConversationIO {
         }
         if (profile.getPlayer().getGameMode() == GameMode.SPECTATOR) {
             conv.endConversation();
-            Bukkit.getScheduler().runTask(betonQuest, () -> profile.getPlayer().closeInventory());
+            Bukkit.getScheduler().runTask(plugin, () -> profile.getPlayer().closeInventory());
             try {
-                conv.sendMessage(betonQuest.getPluginMessage().getMessage(profile, "conversation_spectator"));
+                conv.sendMessage(pluginMessage.getMessage(profile, "conversation_spectator"));
             } catch (final QuestException e) {
                 log.warn("Failed to get conversation_spectator message: " + e.getMessage(), e);
             }
@@ -190,7 +219,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
             conv.sendMessage(colors.getText().append(colors.getNpc().append(npcName)).append(Component.text(": ")).append(response));
         }
 
-        Bukkit.getScheduler().runTask(betonQuest, () -> {
+        Bukkit.getScheduler().runTask(plugin, () -> {
             inv.setContents(buttons);
             switching = true;
             profile.getPlayer().openInventory(inv);
@@ -221,7 +250,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
             ItemStack item;
             try {
                 item = itemID == null ? new ItemStack(Material.ENDER_PEARL)
-                        : betonQuest.getBetonQuestManagers().items().getItem(profile, itemID.getValue(profile)).generate(1);
+                        : itemManager.getItem(profile, itemID.getValue(profile)).generate(1);
             } catch (final QuestException e) {
                 log.warn("Failed to generate item: " + e.getMessage(), e);
                 item = new ItemStack(Material.ENDER_PEARL);
@@ -262,10 +291,10 @@ public class InventoryConvIO implements Listener, ConversationIO {
             final SkullMeta npcMeta = (SkullMeta) npcHead.getItemMeta();
             npcMeta.displayName(colors.getNpc().append(npcName));
             npcHead.setItemMeta(npcMeta);
-            Bukkit.getScheduler().runTaskAsynchronously(betonQuest, () -> {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 try {
                     npcHead.setItemMeta(updateSkullMeta((SkullMeta) npcHead.getItemMeta(), plainTextNpcName));
-                    Bukkit.getScheduler().runTask(betonQuest, () -> {
+                    Bukkit.getScheduler().runTask(plugin, () -> {
                         SKULL_CACHE.put(plainTextNpcName, npcHead);
                         inv.setItem(0, npcHead);
                     });
@@ -361,7 +390,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
             return;
         }
         if (conv.isMovementBlock()) {
-            Bukkit.getScheduler().runTask(betonQuest, () -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
                 profile.getPlayer().teleport(loc);
                 profile.getPlayer().openInventory(inv);
             });
@@ -382,8 +411,8 @@ public class InventoryConvIO implements Listener, ConversationIO {
      */
     @EventHandler
     public void onConsume(final PlayerItemConsumeEvent event) {
-        final Profile profile = betonQuest.getProfileProvider().getProfile(event.getPlayer());
-        if (betonQuest.getLegacyConversations().hasActive(profile)) {
+        final Profile profile = profileProvider.getProfile(event.getPlayer());
+        if (conversations.hasActive(profile)) {
             event.setCancelled(true);
         }
     }
@@ -401,7 +430,7 @@ public class InventoryConvIO implements Listener, ConversationIO {
         if (conv.hasNextNPCOption()) {
             endCallback = callback;
         } else {
-            Bukkit.getScheduler().runTask(betonQuest, () -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
                 profile.getPlayer().closeInventory();
                 callback.run();
             });

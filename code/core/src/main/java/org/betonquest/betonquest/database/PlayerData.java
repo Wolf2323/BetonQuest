@@ -6,12 +6,12 @@ import org.betonquest.betonquest.api.bukkit.event.PlayerTagAddEvent;
 import org.betonquest.betonquest.api.bukkit.event.PlayerTagRemoveEvent;
 import org.betonquest.betonquest.api.bukkit.event.PlayerUpdatePointEvent;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
-import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.objective.Objective;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.conversation.PlayerConversationState;
 import org.betonquest.betonquest.database.Saver.Record;
@@ -70,7 +70,7 @@ public class PlayerData implements TagData, PointData {
     /**
      * Identifier registry to resolve identifiers.
      */
-    private final IdentifierRegistry identifierRegistry;
+    private final Identifiers identifierRegistry;
 
     /**
      * The profile this data belongs to.
@@ -137,7 +137,7 @@ public class PlayerData implements TagData, PointData {
      * @param profile            the profile to load the data for
      */
     public PlayerData(final BetonQuestLogger log, final Saver saver, final Server server,
-                      final IdentifierRegistry identifierRegistry, final ObjectiveManager objectiveManager,
+                      final Identifiers identifierRegistry, final ObjectiveManager objectiveManager,
                       final JournalFactory journalFactory, final Profile profile) {
         this.log = log;
         this.identifierRegistry = identifierRegistry;

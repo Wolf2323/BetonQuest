@@ -8,9 +8,13 @@ import org.betonquest.betonquest.api.common.component.BookPageWrapper;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
+import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.item.ItemManager;
+import org.betonquest.betonquest.api.service.item.ItemRegistry;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.api.text.TextParserRegistry;
@@ -24,10 +28,8 @@ import org.betonquest.betonquest.conversation.io.SlowTellrawConvIOFactory;
 import org.betonquest.betonquest.conversation.io.TellrawConvIOFactory;
 import org.betonquest.betonquest.item.SimpleQuestItemFactory;
 import org.betonquest.betonquest.item.SimpleQuestItemSerializer;
-import org.betonquest.betonquest.kernel.registry.feature.BaseFeatureRegistries;
 import org.betonquest.betonquest.kernel.registry.feature.ConversationIORegistry;
 import org.betonquest.betonquest.kernel.registry.feature.InterceptorRegistry;
-import org.betonquest.betonquest.kernel.registry.feature.ItemTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.feature.NotifyIORegistry;
 import org.betonquest.betonquest.kernel.registry.feature.ScheduleRegistry;
 import org.betonquest.betonquest.notify.SuppressNotifyIOFactory;
@@ -49,6 +51,7 @@ import org.betonquest.betonquest.text.parser.MineDownParser;
 import org.betonquest.betonquest.text.parser.MiniMessageParser;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 
 /**
  * Registers the stuff that is not built from Instructions.
@@ -77,9 +80,29 @@ public class CoreFeatureFactories {
     private final PlaceholderManager placeholders;
 
     /**
+     * The plugin instance.
+     */
+    private final Plugin plugin;
+
+    /**
+     * The plugin manager instance.
+     */
+    private final PluginManager pluginManager;
+
+    /**
+     * The item manager instance.
+     */
+    private final ItemManager itemManager;
+
+    /**
+     * The profile provider to use.
+     */
+    private final ProfileProvider profileProvider;
+
+    /**
      * The conversation api.
      */
-    private final LegacyConversations conversationApi;
+    private final Conversations conversations;
 
     /**
      * The Config.
@@ -90,6 +113,11 @@ public class CoreFeatureFactories {
      * The colors to use for the conversation.
      */
     private final ConversationColors colors;
+
+    /**
+     * The instructions instance to use.
+     */
+    private final Instructions instructions;
 
     /**
      * The action manager handling actions.
@@ -117,80 +145,93 @@ public class CoreFeatureFactories {
      * @param loggerFactory      the factory to create new class specific loggers
      * @param packManager        the quest package manager to get quest packages from
      * @param lastExecutionCache the cache to catch up missed schedulers
+     * @param plugin             the plugin instance
+     * @param profileProvider    the profile provider to use
      * @param placeholders       the {@link PlaceholderManager} to create and resolve placeholders
-     * @param conversationApi    the conversation api
+     * @param conversations      the conversation api
      * @param config             the config
      * @param colors             the colors to use for the conversation
+     * @param instructions       the instructions instance to use
      * @param actionManager      the action manager handling actions
+     * @param pluginManager      the plugin manager instance
+     * @param itemManager        the item manager instance
      * @param textParser         the text parser to use for parsing text
      * @param fontRegistry       the font registry to use for the conversation
      * @param pluginMessage      the {@link PluginMessage} instance
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public CoreFeatureFactories(final BetonQuestLoggerFactory loggerFactory, final QuestPackageManager packManager,
-                                final LastExecutionCache lastExecutionCache,
-                                final PlaceholderManager placeholders, final LegacyConversations conversationApi,
-                                final ConfigAccessor config, final ConversationColors colors,
-                                final ActionManager actionManager,
+                                final LastExecutionCache lastExecutionCache, final Plugin plugin, final ProfileProvider profileProvider,
+                                final PlaceholderManager placeholders, final Conversations conversations,
+                                final ConfigAccessor config, final ConversationColors colors, final Instructions instructions,
+                                final ActionManager actionManager, final PluginManager pluginManager, final ItemManager itemManager,
                                 final TextParser textParser, final FontRegistry fontRegistry, final PluginMessage pluginMessage) {
         this.loggerFactory = loggerFactory;
         this.packManager = packManager;
         this.lastExecutionCache = lastExecutionCache;
+        this.plugin = plugin;
+        this.profileProvider = profileProvider;
         this.placeholders = placeholders;
-        this.conversationApi = conversationApi;
+        this.conversations = conversations;
         this.config = config;
         this.colors = colors;
+        this.instructions = instructions;
         this.actionManager = actionManager;
+        this.pluginManager = pluginManager;
+        this.itemManager = itemManager;
         this.textParser = textParser;
         this.fontRegistry = fontRegistry;
         this.pluginMessage = pluginMessage;
     }
 
     /**
-     * Registers the Factories.
+     * Register all the factories.
      *
-     * @param registries containing the registry to register in
+     * @param conversationIORegistry the conversation io registry
+     * @param interceptorRegistry    the interceptor registry
+     * @param itemRegistry           the item registry
+     * @param notifyIORegistry       the notify io registry
+     * @param scheduleRegistry       the schedule registry
+     * @param textParserRegistry     the text parser registry
      */
     @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-    public void register(final BaseFeatureRegistries registries) {
-        final ConversationIORegistry conversationIOTypes = registries.conversationIO();
-        conversationIOTypes.register("simple", new SimpleConvIOFactory(colors));
-        conversationIOTypes.register("tellraw", new TellrawConvIOFactory(colors));
-        conversationIOTypes.register("chest", new InventoryConvIOFactory(loggerFactory, config, fontRegistry, colors, false));
-        conversationIOTypes.register("combined", new InventoryConvIOFactory(loggerFactory, config, fontRegistry, colors, true));
-        conversationIOTypes.register("slowtellraw", new SlowTellrawConvIOFactory(fontRegistry, colors));
+    public void register(final ConversationIORegistry conversationIORegistry, final InterceptorRegistry interceptorRegistry,
+                         final ItemRegistry itemRegistry, final NotifyIORegistry notifyIORegistry, final ScheduleRegistry scheduleRegistry,
+                         final TextParserRegistry textParserRegistry) {
+        conversationIORegistry.register("simple", new SimpleConvIOFactory(colors));
+        conversationIORegistry.register("tellraw", new TellrawConvIOFactory(colors));
+        final InventoryConvIOFactory.ConstructorParameters inventoryConvParams = new InventoryConvIOFactory.ConstructorParameters(
+                loggerFactory, config, fontRegistry, colors, plugin, pluginManager, pluginMessage, instructions, conversations, itemManager, profileProvider);
+        conversationIORegistry.register("chest", new InventoryConvIOFactory(inventoryConvParams, false));
+        conversationIORegistry.register("combined", new InventoryConvIOFactory(inventoryConvParams, true));
+        conversationIORegistry.register("slowtellraw", new SlowTellrawConvIOFactory(fontRegistry, colors));
 
-        final InterceptorRegistry interceptorTypes = registries.interceptor();
-        interceptorTypes.register("simple", new SimpleInterceptorFactory());
-        interceptorTypes.register("none", new NonInterceptingInterceptorFactory());
+        interceptorRegistry.register("simple", new SimpleInterceptorFactory());
+        interceptorRegistry.register("none", new NonInterceptingInterceptorFactory());
 
-        final ItemTypeRegistry itemTypes = registries.item();
         final BookPageWrapper bookPageWrapper = new BookPageWrapper(fontRegistry, 114, 14);
-        itemTypes.register("simple", new SimpleQuestItemFactory(placeholders, packManager, textParser, bookPageWrapper,
+        itemRegistry.register("simple", new SimpleQuestItemFactory(placeholders, packManager, textParser, bookPageWrapper,
                 () -> config.getBoolean("item.quest.lore") ? pluginMessage : null));
-        itemTypes.registerSerializer("simple", new SimpleQuestItemSerializer(textParser, bookPageWrapper));
+        itemRegistry.registerSerializer("simple", new SimpleQuestItemSerializer(textParser, bookPageWrapper));
 
         final Plugin plugin = BetonQuest.getInstance();
-        final NotifyIORegistry notifyIOTypes = registries.notifyIO();
-        notifyIOTypes.register("suppress", new SuppressNotifyIOFactory());
-        notifyIOTypes.register("chat", new ChatNotifyIOFactory(placeholders, conversationApi));
-        notifyIOTypes.register("advancement", new AdvancementNotifyIOFactory(placeholders, plugin));
-        notifyIOTypes.register("actionbar", new ActionBarNotifyIOFactory(placeholders));
-        notifyIOTypes.register("bossbar", new BossBarNotifyIOFactory(placeholders, plugin));
-        notifyIOTypes.register("title", new TitleNotifyIOFactory(placeholders));
-        notifyIOTypes.register("totem", new TotemNotifyIOFactory(placeholders));
-        notifyIOTypes.register("subtitle", new SubTitleNotifyIOFactory(placeholders));
-        notifyIOTypes.register("sound", new SoundIOFactory(placeholders));
+        notifyIORegistry.register("suppress", new SuppressNotifyIOFactory());
+        notifyIORegistry.register("chat", new ChatNotifyIOFactory(placeholders, conversations));
+        notifyIORegistry.register("advancement", new AdvancementNotifyIOFactory(placeholders, plugin));
+        notifyIORegistry.register("actionbar", new ActionBarNotifyIOFactory(placeholders));
+        notifyIORegistry.register("bossbar", new BossBarNotifyIOFactory(placeholders, plugin));
+        notifyIORegistry.register("title", new TitleNotifyIOFactory(placeholders));
+        notifyIORegistry.register("totem", new TotemNotifyIOFactory(placeholders));
+        notifyIORegistry.register("subtitle", new SubTitleNotifyIOFactory(placeholders));
+        notifyIORegistry.register("sound", new SoundIOFactory(placeholders));
 
-        final ScheduleRegistry schedulingTypes = registries.actionScheduling();
-        schedulingTypes.register("realtime-daily", new RealtimeDailyScheduleFactory(),
+        scheduleRegistry.register("realtime-daily", new RealtimeDailyScheduleFactory(),
                 new RealtimeDailyScheduler(loggerFactory.create(RealtimeDailyScheduler.class, "Schedules"), actionManager, lastExecutionCache)
         );
-        schedulingTypes.register("realtime-cron", new RealtimeCronScheduleFactory(),
+        scheduleRegistry.register("realtime-cron", new RealtimeCronScheduleFactory(),
                 new RealtimeCronScheduler(loggerFactory.create(RealtimeCronScheduler.class, "Schedules"), actionManager, lastExecutionCache)
         );
 
-        final TextParserRegistry textParserRegistry = registries.textParser();
         registerTextParsers(textParserRegistry);
     }
 

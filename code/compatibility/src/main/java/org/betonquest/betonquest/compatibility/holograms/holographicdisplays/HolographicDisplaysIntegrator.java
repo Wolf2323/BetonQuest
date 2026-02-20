@@ -13,7 +13,6 @@ import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
-import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.holograms.BetonHologram;
 import org.betonquest.betonquest.compatibility.holograms.HologramIntegrator;
@@ -40,7 +39,7 @@ public class HolographicDisplaysIntegrator extends HologramIntegrator {
     private final Plugin plugin;
 
     /**
-     * {@link PlaceholderManager} to create and resolve placeholders.
+     * The placeholder manager to use.
      */
     private final PlaceholderProcessor placeholderProcessor;
 
@@ -57,18 +56,20 @@ public class HolographicDisplaysIntegrator extends HologramIntegrator {
     /**
      * Creates a new HolographicDisplaysIntegrator for HolographicDisplays.
      *
-     * @param log               the custom logger for this class
-     * @param instructionApi    the instruction api to use
-     * @param identifierFactory the identifier factory for placeholders
+     * @param log                  the custom logger for this class
+     * @param instructionApi       the instruction api to use
+     * @param identifierFactory    the identifier factory for placeholders
+     * @param placeholderProcessor the placeholder manager to use
      */
     public HolographicDisplaysIntegrator(final BetonQuestLogger log, final Instructions instructionApi,
-                                         final IdentifierFactory<PlaceholderIdentifier> identifierFactory) {
+                                         final IdentifierFactory<PlaceholderIdentifier> identifierFactory,
+                                         final PlaceholderProcessor placeholderProcessor) {
         super("HolographicDisplays", "3.0.0", "SNAPSHOT-b");
         this.plugin = BetonQuest.getInstance();
         this.instructionApi = instructionApi;
         this.identifierFactory = identifierFactory;
         this.log = log;
-        this.placeholderProcessor = BetonQuest.getInstance().getPlaceholderProcessor();
+        this.placeholderProcessor = placeholderProcessor;
     }
 
     @Override

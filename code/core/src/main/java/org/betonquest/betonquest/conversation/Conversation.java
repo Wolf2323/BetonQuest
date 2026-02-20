@@ -16,14 +16,18 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.interceptor.Interceptor;
+import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.database.Saver.Record;
 import org.betonquest.betonquest.database.UpdateType;
+import org.betonquest.betonquest.kernel.processor.feature.ConversationProcessor;
 import org.betonquest.betonquest.quest.action.IngameNotificationSender;
 import org.betonquest.betonquest.quest.action.NotificationLevel;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,9 +59,9 @@ public class Conversation {
     private static final String FOR = "' for '";
 
     /**
-     * The {@link BetonQuest} instance.
+     * The plugin instance.
      */
-    private final BetonQuest plugin;
+    private final Plugin plugin;
 
     /**
      * Custom {@link BetonQuestLogger} instance for this class.
@@ -139,6 +143,16 @@ public class Conversation {
     private final ConditionManager conditionManager;
 
     /**
+     * The {@link Saver} instance used to save conversations to the database.
+     */
+    private final Saver saver;
+
+    /**
+     * The {@link Identifiers} instance used to parse identifiers.
+     */
+    private final Identifiers identifiers;
+
+    /**
      * The current conversation state.
      */
     @SuppressWarnings("PMD.AvoidUsingVolatile")
@@ -158,18 +172,25 @@ public class Conversation {
     /**
      * Starts a new conversation between player and npc at the specified location.
      *
-     * @param log              the logger that will be used for logging
-     * @param pluginMessage    the {@link PluginMessage} instance
-     * @param onlineProfile    the {@link OnlineProfile} of the player
-     * @param conversationID   ID of the conversation
-     * @param actionManager    the {@link ActionManager} instance
-     * @param conditionManager the {@link ConditionManager} instance
-     * @param center           location where the conversation has been started
-     * @param endCallable      the callable that removes the conversation from the active ones
+     * @param log                   the logger that will be used for logging
+     * @param pluginMessage         the {@link PluginMessage} instance
+     * @param onlineProfile         the {@link OnlineProfile} of the player
+     * @param conversationID        ID of the conversation
+     * @param actionManager         the {@link ActionManager} instance
+     * @param conditionManager      the {@link ConditionManager} instance
+     * @param conversationProcessor the {@link ConversationProcessor} instance
+     * @param identifiers           the {@link Identifiers} instance
+     * @param saver                 the {@link Saver} instance
+     * @param center                location where the conversation has been started
+     * @param endCallable           the callable that removes the conversation from the active ones
      * @throws QuestException when required conversation objects could not be created
      */
-    public Conversation(final BetonQuestLogger log, final PluginMessage pluginMessage, final OnlineProfile onlineProfile, final ConversationIdentifier conversationID,
-                        final ActionManager actionManager, final ConditionManager conditionManager, final Location center, final Runnable endCallable) throws QuestException {
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    public Conversation(final BetonQuestLogger log, final PluginMessage pluginMessage, final OnlineProfile onlineProfile,
+                        final ConversationIdentifier conversationID, final ActionManager actionManager,
+                        final ConditionManager conditionManager, final ConversationProcessor conversationProcessor,
+                        final Identifiers identifiers, final Saver saver,
+                        final Location center, final Runnable endCallable) throws QuestException {
         this.log = log;
         this.endCallable = endCallable;
         this.plugin = BetonQuest.getInstance();
@@ -178,12 +199,14 @@ public class Conversation {
         this.identifier = conversationID;
         this.actionManager = actionManager;
         this.conditionManager = conditionManager;
+        this.identifiers = identifiers;
+        this.saver = saver;
         this.pack = conversationID.getPackage();
         this.center = center;
         this.startSender = new IngameNotificationSender(log, pluginMessage, pack, conversationID.getFull(), NotificationLevel.INFO, "conversation_start");
         this.endSender = new IngameNotificationSender(log, pluginMessage, pack, conversationID.getFull(), NotificationLevel.INFO, "conversation_end");
 
-        this.data = plugin.getLegacyConversations().getData(conversationID);
+        this.data = conversationProcessor.getData(conversationID);
         this.inOut = data.getPublicData().convIO().getValue(onlineProfile).parse(this, onlineProfile);
         this.interceptor = data.getPublicData().interceptor().getValue(onlineProfile).create(onlineProfile);
     }
@@ -424,7 +447,7 @@ public class Conversation {
             });
 
             final PlayerConversationState state = new PlayerConversationState(identifier, nextNPCOption.name(), center);
-            plugin.getSaver().add(new Record(UpdateType.UPDATE_CONVERSATION, state.toString(), onlineProfile.getProfileUUID().toString()));
+            saver.add(new Record(UpdateType.UPDATE_CONVERSATION, state.toString(), onlineProfile.getProfileUUID().toString()));
 
             interceptor.end();
 
@@ -485,7 +508,7 @@ public class Conversation {
         final List<String> rawPointers = nextConvData.getPointers(onlineProfile, option);
         final List<ResolvedOption> pointers = new ArrayList<>();
         final IdentifierFactory<ConversationOptionIdentifier> conversationOptionIdentifierFactory =
-                plugin.getBetonQuestRegistries().identifiers().getFactory(ConversationOptionIdentifier.class);
+                identifiers.getFactory(ConversationOptionIdentifier.class);
         for (final String pointer : rawPointers) {
             final ConversationOptionType nextType = option.type() == PLAYER ? NPC : PLAYER;
             pointers.add(nextConvData.resolveOption(conversationOptionIdentifierFactory.parseIdentifier(nextConvData.getPack(), pointer), nextType));
@@ -584,7 +607,7 @@ public class Conversation {
             final List<ResolvedOption> resolvedOptions = new ArrayList<>();
             for (final String startingOption : startingOptions) {
                 final ResolvedOption resolvedOption;
-                final ConversationOptionIdentifier optionIdentifier = conversation.plugin.getBetonQuestRegistries().identifiers()
+                final ConversationOptionIdentifier optionIdentifier = conversation.identifiers
                         .getFactory(ConversationOptionIdentifier.class).parseIdentifier(conversation.pack, startingOption);
                 resolvedOption = conversation.data.resolveOption(optionIdentifier, NPC);
                 resolvedOptions.add(resolvedOption);

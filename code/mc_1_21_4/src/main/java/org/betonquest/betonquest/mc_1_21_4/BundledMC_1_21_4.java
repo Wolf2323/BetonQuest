@@ -39,23 +39,23 @@ public class BundledMC_1_21_4 implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final ItemRegistry item = betonQuest.getBetonQuestRegistries().items();
-        final TextParser textParser = betonQuest.getTextParser();
+        final ItemRegistry item = api.items().registry();
+        final TextParser textParser = betonQuest.getCoreQuestTypeHandler().getTextParser();
         final BookPageWrapper bookPageWrapper = new BookPageWrapper(betonQuest.getFontRegistry(), 114, 14);
-        item.register("simple", new UpdatedSimpleItemFactory(betonQuest.getPlaceholderProcessor(),
-                betonQuest.getQuestPackageManager(), textParser, bookPageWrapper,
+        item.register("simple", new UpdatedSimpleItemFactory(api.placeholders().manager(),
+                api.packages(), textParser, bookPageWrapper,
                 () -> betonQuest.getPluginConfig().getBoolean("item.quest.lore") ? betonQuest.getPluginMessage() : null));
         item.registerSerializer("simple", new UpdatedSimpleQuestItemSerializer(textParser, bookPageWrapper));
 
         final TriFunction<Player, ConversationAction, Boolean, ConversationSession> inputFunction = (player, control, setSpeed)
                 -> new InputEventSession(betonQuest, player, control, setSpeed);
-        betonQuest.getLegacyFeatureRegistries().conversationIO()
-                .register("menu", new MenuConvIOFactory(inputFunction, betonQuest, betonQuest.getTextParser(), betonQuest.getFontRegistry(),
-                        betonQuest.getPluginConfig(), betonQuest.getConversationColors()));
+        betonQuest.getCoreQuestTypeHandler().getConversationIORegistry().register("menu", new MenuConvIOFactory(inputFunction,
+                betonQuest, betonQuest.getCoreQuestTypeHandler().getTextParser(), betonQuest.getFontRegistry(),
+                betonQuest.getPluginConfig(), betonQuest.getConversationColors()));
 
-        betonQuest.getBetonQuestRegistries().conditions().register("biome", new UpdatedBiomeConditionFactory(betonQuest.getLoggerFactory()));
+        api.conditions().registry().register("biome", new UpdatedBiomeConditionFactory(betonQuest.getLoggerFactory()));
 
-        betonQuest.getLegacyFeatureRegistries().notifyIO().register("totem", new UpdatedTotemNotifyIOFactory(betonQuest.getPlaceholderProcessor()));
+        betonQuest.getCoreQuestTypeHandler().getNotifyIORegistry().register("totem", new UpdatedTotemNotifyIOFactory(api.placeholders().manager()));
     }
 
     @Override

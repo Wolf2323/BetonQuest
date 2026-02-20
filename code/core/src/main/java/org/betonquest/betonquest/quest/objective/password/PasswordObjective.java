@@ -8,6 +8,7 @@ import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveService;
+import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -21,6 +22,11 @@ import java.util.regex.Pattern;
  * Requires the player to type a password in chat.
  */
 public class PasswordObjective extends DefaultObjective {
+
+    /**
+     * The action manager.
+     */
+    private final ActionManager actionManager;
 
     /**
      * Regex pattern to match the password.
@@ -42,14 +48,15 @@ public class PasswordObjective extends DefaultObjective {
      * Constructor for the PasswordObjective.
      *
      * @param service        the objective service
+     * @param actionManager  the action manager
      * @param regex          the regex pattern to match the password
      * @param passwordPrefix the prefix to be shown to the player
      * @param failActions    the actions to be triggered on failure
-     * @throws QuestException if there is an error in the instruction
      */
-    public PasswordObjective(final ObjectiveService service, final Argument<Pattern> regex,
-                             @Nullable final String passwordPrefix, final Argument<List<ActionIdentifier>> failActions) throws QuestException {
+    public PasswordObjective(final ObjectiveService service, final ActionManager actionManager, final Argument<Pattern> regex,
+                             @Nullable final String passwordPrefix, final Argument<List<ActionIdentifier>> failActions) {
         super(service);
+        this.actionManager = actionManager;
         this.regex = regex;
         this.passwordPrefix = passwordPrefix;
         this.failActions = failActions;
@@ -100,7 +107,7 @@ public class PasswordObjective extends DefaultObjective {
             return !fromCommand || !prefix.isEmpty();
         }
         try {
-            BetonQuest.getInstance().getBetonQuestManagers().actions().run(onlineProfile, failActions.getValue(onlineProfile));
+            actionManager.run(onlineProfile, failActions.getValue(onlineProfile));
         } catch (final QuestException e) {
             throw new QuestException("Failed to resolve fail actions: " + e.getMessage(), e);
         }

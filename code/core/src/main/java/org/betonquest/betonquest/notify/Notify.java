@@ -84,7 +84,7 @@ public final class Notify {
         }
         ios.add("chat");
 
-        return BetonQuest.getInstance().getLegacyFeatureRegistries().notifyIO().getFactory(ios).create(pack, categoryData);
+        return BetonQuest.getInstance().getCoreQuestTypeHandler().getNotifyIORegistry().getFactory(ios).create(pack, categoryData);
     }
 
     private static SortedSet<String> getCategories(@Nullable final String category) {

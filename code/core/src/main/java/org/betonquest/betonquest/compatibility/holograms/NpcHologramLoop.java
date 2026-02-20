@@ -2,13 +2,16 @@ package org.betonquest.betonquest.compatibility.holograms;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.bukkit.event.npc.NpcVisibilityUpdateEvent;
+import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
+import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.npc.Npc;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.service.npc.NpcManager;
 import org.betonquest.betonquest.api.service.npc.NpcRegistry;
@@ -67,23 +70,27 @@ public class NpcHologramLoop extends HologramLoop implements Listener, StartTask
      *
      * @param loggerFactory     logger factory to use
      * @param log               the logger that will be used for logging
-     * @param instructionApi    the instruction api to use
+     * @param instructions      the instruction api to use
      * @param packManager       the quest package manager to get quest packages from
      * @param plugin            the plugin to schedule tasks
      * @param hologramProvider  the hologram provider to create new holograms
+     * @param configAccessor    the config accessor to read config values from
      * @param identifierFactory the identifier factory to create {@link HologramIdentifier}s for this type
+     * @param conditionManager  the condition manager
      * @param npcManager        the npc manager to get npcs from
      * @param npcRegistry       the registry to create identifier strings from Npcs
      * @param textParser        the text parser used to parse text and colors
+     * @param profileProvider   the profile provider instance
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public NpcHologramLoop(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
-                           final Instructions instructionApi, final QuestPackageManager packManager, final Plugin plugin,
-                           final HologramProvider hologramProvider,
-                           final IdentifierFactory<HologramIdentifier> identifierFactory,
-                           final NpcManager npcManager, final NpcRegistry npcRegistry, final TextParser textParser) {
-        super(loggerFactory, log, instructionApi, packManager, hologramProvider,
-                "Npc Hologram", "npc_holograms", textParser, identifierFactory);
+                           final Instructions instructions, final QuestPackageManager packManager, final Plugin plugin,
+                           final HologramProvider hologramProvider, final ConfigAccessor configAccessor,
+                           final IdentifierFactory<HologramIdentifier> identifierFactory, final ConditionManager conditionManager,
+                           final NpcManager npcManager, final NpcRegistry npcRegistry, final TextParser textParser,
+                           final ProfileProvider profileProvider) {
+        super(loggerFactory, log, instructions, packManager, hologramProvider, "Npc Hologram",
+                "npc_holograms", textParser, identifierFactory, configAccessor, conditionManager, profileProvider);
         this.plugin = plugin;
         this.npcManager = npcManager;
         this.npcRegistry = npcRegistry;

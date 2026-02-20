@@ -1,13 +1,15 @@
-package org.betonquest.betonquest.api.identifier;
+package org.betonquest.betonquest.api.service.identifier;
 
 import org.betonquest.betonquest.api.QuestException;
+import org.betonquest.betonquest.api.identifier.Identifier;
+import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 
 /**
  * The registry for identifier factories.
  *
  * @see IdentifierFactory
  */
-public interface IdentifierRegistry {
+public interface Identifiers {
 
     /**
      * Registers a new identifier factory.

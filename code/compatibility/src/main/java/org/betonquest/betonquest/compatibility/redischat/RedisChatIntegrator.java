@@ -23,7 +23,7 @@ public class RedisChatIntegrator implements Integrator, Listener {
     public void hook(final BetonQuestApi api) {
         final RedisChatAPI redisChatAPI = RedisChatAPI.getAPI();
         Objects.requireNonNull(redisChatAPI, "RedisChatAPI is null");
-        BetonQuest.getInstance().getLegacyFeatureRegistries().interceptor().register("redischat", new RedisChatInterceptorFactory(redisChatAPI));
+        BetonQuest.getInstance().getCoreQuestTypeHandler().getInterceptorRegistry().register("redischat", new RedisChatInterceptorFactory(redisChatAPI));
     }
 
     @Override

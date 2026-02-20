@@ -4,9 +4,9 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
 
 import java.util.Optional;
 
@@ -18,20 +18,20 @@ public class InConversationConditionFactory implements PlayerConditionFactory {
     /**
      * Conversation API.
      */
-    private final LegacyConversations conversationApi;
+    private final Conversations conversations;
 
     /**
      * Create the in conversation factory.
      *
-     * @param conversationApi the Conversation API
+     * @param conversations the Conversation API
      */
-    public InConversationConditionFactory(final LegacyConversations conversationApi) {
-        this.conversationApi = conversationApi;
+    public InConversationConditionFactory(final Conversations conversations) {
+        this.conversations = conversations;
     }
 
     @Override
     public PlayerCondition parsePlayer(final Instruction instruction) throws QuestException {
         final Optional<Argument<ConversationIdentifier>> conversationID = instruction.identifier(ConversationIdentifier.class).get("conversation");
-        return new InConversationCondition(conversationApi, conversationID.orElse(null));
+        return new InConversationCondition(conversations, conversationID.orElse(null));
     }
 }

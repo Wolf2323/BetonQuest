@@ -4,9 +4,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
 
 /**
  * Starts a conversation.
@@ -16,7 +16,7 @@ public class ConversationAction implements OnlineAction {
     /**
      * Conversation API.
      */
-    private final LegacyConversations conversationApi;
+    private final Conversations conversations;
 
     /**
      * The conversation to start.
@@ -26,18 +26,18 @@ public class ConversationAction implements OnlineAction {
     /**
      * Creates a new ConversationAction.
      *
-     * @param conversationApi the Conversation API
-     * @param conversation    the conversation and option to start as a pair
+     * @param conversations the Conversation API
+     * @param conversation  the conversation and option to start as a pair
      */
-    public ConversationAction(final LegacyConversations conversationApi, final Argument<Pair<ConversationIdentifier, String>> conversation) {
-        this.conversationApi = conversationApi;
+    public ConversationAction(final Conversations conversations, final Argument<Pair<ConversationIdentifier, String>> conversation) {
+        this.conversations = conversations;
         this.conversation = conversation;
     }
 
     @Override
     public void execute(final OnlineProfile profile) throws QuestException {
         final Pair<ConversationIdentifier, String> conversation = this.conversation.getValue(profile);
-        conversationApi.start(profile, conversation.getKey(), profile.getPlayer().getLocation(), conversation.getValue());
+        conversations.start(profile, conversation.getKey(), profile.getPlayer().getLocation(), conversation.getValue());
     }
 
     @Override

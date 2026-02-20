@@ -10,8 +10,10 @@ import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.Conversation;
+import org.betonquest.betonquest.database.Saver;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
@@ -46,23 +48,29 @@ public class ConversationStarter {
     /**
      * Creates a new Starter for Conversations.
      *
-     * @param loggerFactory       the logger factory to create new class specific loggers
-     * @param log                 the logger for this class
-     * @param activeConversations the list of conversations to add started
-     * @param plugin              the plugin to start tasks
-     * @param pluginMessage       the {@link PluginMessage} instance
-     * @param actionManager       the action manager
-     * @param conditionManager    the condition manager
+     * @param loggerFactory         the logger factory to create new class specific loggers
+     * @param log                   the logger for this class
+     * @param activeConversations   the list of conversations to add started
+     * @param plugin                the plugin to start tasks
+     * @param pluginMessage         the {@link PluginMessage} instance
+     * @param actionManager         the action manager
+     * @param conditionManager      the condition manager
+     * @param conversationProcessor the conversation processor
+     * @param identifiers           the identifier factory
+     * @param saver                 the database saver
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public ConversationStarter(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
                                final Map<Profile, Conversation> activeConversations, final Plugin plugin,
-                               final PluginMessage pluginMessage, final ActionManager actionManager, final ConditionManager conditionManager) {
+                               final PluginMessage pluginMessage, final ActionManager actionManager,
+                               final ConditionManager conditionManager, final ConversationProcessor conversationProcessor,
+                               final Identifiers identifiers, final Saver saver) {
         this.log = log;
         this.activeConversations = activeConversations;
         this.plugin = plugin;
         this.standardFactory = (onlineProfile, conversationID, center, endCallable)
                 -> new Conversation(loggerFactory.create(Conversation.class), pluginMessage, onlineProfile, conversationID,
-                actionManager, conditionManager, center, endCallable);
+                actionManager, conditionManager, conversationProcessor, identifiers, saver, center, endCallable);
     }
 
     /**

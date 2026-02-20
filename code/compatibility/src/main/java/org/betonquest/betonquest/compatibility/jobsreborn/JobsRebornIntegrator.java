@@ -2,7 +2,6 @@ package org.betonquest.betonquest.compatibility.jobsreborn;
 
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.api.service.action.ActionRegistry;
 import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
 import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
@@ -41,14 +40,13 @@ public class JobsRebornIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final BetonQuestRegistries questRegistries = api.registries();
-        final ConditionRegistry conditionRegistry = questRegistries.conditions();
+        final ConditionRegistry conditionRegistry = api.conditions().registry();
         conditionRegistry.register("nujobs_canlevel", new CanLevelConditionFactory());
         conditionRegistry.register("nujobs_hasjob", new HasJobConditionFactory());
         conditionRegistry.register("nujobs_jobfull", new JobFullConditionFactory());
         conditionRegistry.register("nujobs_joblevel", new JobLevelConditionFactory());
 
-        final ActionRegistry actionRegistry = questRegistries.actions();
+        final ActionRegistry actionRegistry = api.actions().registry();
         actionRegistry.register("nujobs_addexp", new AddExpActionFactory());
         actionRegistry.register("nujobs_addlevel", new AddLevelActionFactory());
         actionRegistry.register("nujobs_dellevel", new DelLevelActionFactory());
@@ -56,7 +54,7 @@ public class JobsRebornIntegrator implements Integrator {
         actionRegistry.register("nujobs_leavejob", new LeaveJobActionFactory());
         actionRegistry.register("nujobs_setlevel", new SetLevelActionFactory());
 
-        final ObjectiveRegistry objectiveRegistry = questRegistries.objectives();
+        final ObjectiveRegistry objectiveRegistry = api.objectives().registry();
         objectiveRegistry.register("nujobs_joinjob", new JoinJobObjectiveFactory());
         objectiveRegistry.register("nujobs_leavejob", new LeaveJobObjectiveFactory());
         objectiveRegistry.register("nujobs_levelup", new LevelUpObjectiveFactory());

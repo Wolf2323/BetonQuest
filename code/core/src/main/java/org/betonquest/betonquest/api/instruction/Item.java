@@ -1,11 +1,11 @@
 package org.betonquest.betonquest.api.instruction;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.common.function.QuestBiFunction;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
 import org.betonquest.betonquest.api.item.QuestItem;
 import org.betonquest.betonquest.api.profile.Profile;
+import org.betonquest.betonquest.api.service.item.ItemManager;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,9 +16,9 @@ import org.jetbrains.annotations.Nullable;
 public class Item implements ItemWrapper {
 
     /**
-     * Feature API function to retrieve items.
+     * The item manager to retrieve items from.
      */
-    private final QuestBiFunction<Profile, ItemIdentifier, QuestItem> getItemFunction;
+    private final ItemManager itemManager;
 
     /**
      * Item id to generate the QuestItem with.
@@ -33,12 +33,12 @@ public class Item implements ItemWrapper {
     /**
      * Create a wrapper for Quest Item and target stack size.
      *
-     * @param getItemFunction the Feature API function to retrieve items
-     * @param itemID          the QuestItemID to create
-     * @param amount          the size to set the created ItemStack to
+     * @param itemManager the item manager to retrieve items from
+     * @param itemID      the QuestItemID to create
+     * @param amount      the size to set the created ItemStack to
      */
-    public Item(final QuestBiFunction<Profile, ItemIdentifier, QuestItem> getItemFunction, final ItemIdentifier itemID, final Argument<Number> amount) {
-        this.getItemFunction = getItemFunction;
+    public Item(final ItemManager itemManager, final ItemIdentifier itemID, final Argument<Number> amount) {
+        this.itemManager = itemManager;
         this.itemID = itemID;
         this.amount = amount;
     }
@@ -60,7 +60,7 @@ public class Item implements ItemWrapper {
 
     @Override
     public QuestItem getItem(@Nullable final Profile profile) throws QuestException {
-        return getItemFunction.apply(profile, itemID);
+        return itemManager.getItem(profile, itemID);
     }
 
     @Override

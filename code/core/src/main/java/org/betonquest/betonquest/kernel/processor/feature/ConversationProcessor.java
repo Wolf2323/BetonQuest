@@ -1,21 +1,24 @@
 package org.betonquest.betonquest.kernel.processor.feature;
 
-import org.betonquest.betonquest.BetonQuest;
+import net.kyori.adventure.text.Component;
 import org.betonquest.betonquest.api.QuestException;
+import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
+import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.betonquest.betonquest.api.service.conversation.Conversations;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.Text;
@@ -26,26 +29,30 @@ import org.betonquest.betonquest.conversation.ConversationIOFactory;
 import org.betonquest.betonquest.conversation.ConversationPublicData;
 import org.betonquest.betonquest.conversation.DefaultConversationData;
 import org.betonquest.betonquest.conversation.interceptor.InterceptorFactory;
+import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.kernel.processor.SectionProcessor;
+import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
 import org.betonquest.betonquest.kernel.registry.feature.ConversationIORegistry;
 import org.betonquest.betonquest.kernel.registry.feature.InterceptorRegistry;
 import org.betonquest.betonquest.lib.profile.ProfileKeyMap;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Stores Conversation Data and validates it.
  */
 @SuppressWarnings("PMD.CouplingBetweenObjects")
-public class ConversationProcessor extends SectionProcessor<ConversationIdentifier, DefaultConversationData> implements LegacyConversations, Conversations {
+public class ConversationProcessor extends SectionProcessor<ConversationIdentifier, DefaultConversationData> implements Conversations {
 
     /**
      * Factory to create class-specific logger.
@@ -56,11 +63,6 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
      * The map of all active conversations.
      */
     private final Map<Profile, Conversation> activeConversations;
-
-    /**
-     * Plugin instance used for new Conversation Data.
-     */
-    private final BetonQuest plugin;
 
     /**
      * Registry for available ConversationIOs.
@@ -88,39 +90,70 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
     private final ConversationListener listener;
 
     /**
+     * The config accessor.
+     */
+    private final ConfigAccessor configAccessor;
+
+    /**
+     * The quest package manager.
+     */
+    private final QuestPackageManager questPackageManager;
+
+    /**
+     * The placeholder processor.
+     */
+    private final PlaceholderProcessor placeholderProcessor;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
+
+    /**
      * Create a new Conversation Data Processor to load and process conversation data.
      *
-     * @param log                 the custom logger for this class
-     * @param loggerFactory       the logger factory to create new class specific logger
-     * @param plugin              the plugin instance used for new conversation data
-     * @param textCreator         the text creator to parse text
-     * @param convIORegistry      the registry for available ConversationIOs
-     * @param interceptorRegistry the registry for available Interceptors
-     * @param placeholders        the {@link PlaceholderManager} to create and resolve placeholders
-     * @param pluginMessage       the plugin message instance to use for ingame notifications
-     * @param actionManager       the action manager
-     * @param conditionManager    the condition manager
-     * @param identifierFactory   the identifier factory to create {@link ConversationIdentifier}s for this type
+     * @param log                  the custom logger for this class
+     * @param loggerFactory        the logger factory to create new class specific logger
+     * @param plugin               the plugin instance used for new conversation data
+     * @param textCreator          the text creator to parse text
+     * @param placeholderProcessor the placeholder processor to resolve placeholders
+     * @param questPackageManager  the quest package manager to load quest packages
+     * @param profileProvider      the profile provider to access profiles
+     * @param configAccessor       the config accessor
+     * @param convIORegistry       the registry for available ConversationIOs
+     * @param interceptorRegistry  the registry for available Interceptors
+     * @param placeholders         the {@link PlaceholderManager} to create and resolve placeholders
+     * @param pluginMessage        the plugin message instance to use for ingame notifications
+     * @param actionManager        the action manager
+     * @param conditionManager     the condition manager
+     * @param identifierFactory    the identifier factory to create {@link ConversationIdentifier}s for this type
+     * @param identifiers          the identifiers registry
+     * @param saver                the saver to save data
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     public ConversationProcessor(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory,
-                                 final BetonQuest plugin, final ParsedSectionTextCreator textCreator,
+                                 final Plugin plugin, final ParsedSectionTextCreator textCreator,
+                                 final QuestPackageManager questPackageManager, final PlaceholderProcessor placeholderProcessor,
+                                 final ProfileProvider profileProvider, final ConfigAccessor configAccessor,
                                  final ConversationIORegistry convIORegistry, final InterceptorRegistry interceptorRegistry,
                                  final Instructions placeholders, final PluginMessage pluginMessage,
                                  final ActionManager actionManager, final ConditionManager conditionManager,
-                                 final IdentifierFactory<ConversationIdentifier> identifierFactory) {
+                                 final IdentifierFactory<ConversationIdentifier> identifierFactory,
+                                 final Identifiers identifiers, final Saver saver) {
         super(log, placeholders, identifierFactory, "Conversation", "conversations");
-
         this.loggerFactory = loggerFactory;
-        this.activeConversations = new ProfileKeyMap<>(plugin.getProfileProvider(), new ConcurrentHashMap<>());
+        this.activeConversations = new ProfileKeyMap<>(profileProvider, new ConcurrentHashMap<>());
         this.starter = new ConversationStarter(loggerFactory, loggerFactory.create(ConversationStarter.class),
-                activeConversations, plugin, pluginMessage, actionManager, conditionManager);
-        this.plugin = plugin;
+                activeConversations, plugin, pluginMessage, actionManager, conditionManager, this, identifiers, saver);
         this.textCreator = textCreator;
+        this.questPackageManager = questPackageManager;
+        this.placeholderProcessor = placeholderProcessor;
         this.convIORegistry = convIORegistry;
         this.interceptorRegistry = interceptorRegistry;
-        this.listener = new ConversationListener(loggerFactory.create(ConversationListener.class), this, plugin.getProfileProvider(),
-                pluginMessage, plugin.getPluginConfig());
+        this.configAccessor = configAccessor;
+        this.conditionManager = conditionManager;
+        this.listener = new ConversationListener(loggerFactory.create(ConversationListener.class), this, profileProvider,
+                pluginMessage, configAccessor);
         plugin.getServer().getPluginManager().registerEvents(listener, plugin);
     }
 
@@ -137,7 +170,7 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
         final ConversationIdentifier identifier = getIdentifier(pack, sectionName);
         log.debug(pack, String.format("Loading conversation '%s'.", identifier));
 
-        final boolean invincible = plugin.getConfig().getBoolean("conversation.damage.invincible");
+        final boolean invincible = configAccessor.getBoolean("conversation.damage.invincible");
         final Text quester = textCreator.parseFromSection(pack, section, "quester");
 
         final String rawConvIO = defaultingValue(section, "conversationIO", "conversation.default_io", "menu,tellraw");
@@ -152,8 +185,8 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
                 .validate(delay -> delay.doubleValue() > 0, "Expected a non-negative number for 'interceptor_delay', got '%s' instead.").get();
 
         final ConversationPublicData publicData = new ConversationPublicData(identifier, quester, stop, finalActions, conversationIO, interceptor, interceptorDelay, invincible);
-        final DefaultConversationData conversationData = new DefaultConversationData(loggerFactory.create(DefaultConversationData.class), plugin.getQuestPackageManager(),
-                plugin.getPlaceholderProcessor(), plugin.getBetonQuestManagers().conditions(), instruction, plugin.getLegacyConversations(), textCreator, section, publicData);
+        final DefaultConversationData conversationData = new DefaultConversationData(loggerFactory.create(DefaultConversationData.class), questPackageManager,
+                placeholderProcessor, conditionManager, instruction, this, textCreator, section, publicData);
         return Map.entry(identifier, conversationData);
     }
 
@@ -161,7 +194,7 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
         if (section.isSet(path)) {
             return Objects.requireNonNull(section.getString(path));
         }
-        return plugin.getPluginConfig().getString(configPath, defaultConfig);
+        return configAccessor.getString(configPath, defaultConfig);
     }
 
     /**
@@ -185,7 +218,13 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
         });
     }
 
-    @Override
+    /**
+     * Gets the conversation data for the given identifier.
+     *
+     * @param conversationID the identifier of the conversation to get the data for
+     * @return the conversation data
+     * @throws QuestException if the conversation is not loaded.
+     */
     public DefaultConversationData getData(final ConversationIdentifier conversationID) throws QuestException {
         return get(conversationID);
     }
@@ -205,10 +244,53 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
         return activeConversations.containsKey(profile);
     }
 
-    @Override
+    /**
+     * Gets the active conversation for the given profile.
+     *
+     * @param profile the profile to get the active conversation for.
+     * @return the active conversation or null if there is no active conversation.
+     */
     @Nullable
-    public Conversation getActive(final Profile profile) {
+    public Conversation getActiveConversation(final Profile profile) {
         return activeConversations.get(profile);
+    }
+
+    @Override
+    public void cancel(final OnlineProfile profile) {
+        final Conversation conversation = getActiveConversation(profile);
+        if (conversation != null) {
+            conversation.endConversation();
+        }
+    }
+
+    @Override
+    public Optional<ConversationIdentifier> getActive(final Profile profile) {
+        return Optional.ofNullable(getActiveConversation(profile)).map(Conversation::getID);
+    }
+
+    @Override
+    public void sendBypassMessage(final OnlineProfile profile, final Component message) {
+        final Conversation activeConversation = getActiveConversation(profile);
+        if (activeConversation == null) {
+            profile.getPlayer().sendMessage(message);
+        } else {
+            activeConversation.sendMessage(message);
+        }
+    }
+
+    @Override
+    public Optional<Component> getActiveQuesterName(final Profile profile) {
+        final Conversation activeConversation = getActiveConversation(profile);
+        if (activeConversation == null) {
+            return Optional.empty();
+        }
+        final Text quester = activeConversation.getData().getPublicData().quester();
+        try {
+            return Optional.of(quester.asComponent(profile));
+        } catch (final QuestException e) {
+            log.debug("Could not resolve quester name for profile '%s' in conversation '%s': %s".formatted(profile, activeConversation.getID(), e.getMessage()), e);
+            return Optional.empty();
+        }
     }
 
     /**

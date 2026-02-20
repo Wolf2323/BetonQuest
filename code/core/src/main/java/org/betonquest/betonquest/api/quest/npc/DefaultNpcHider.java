@@ -4,13 +4,13 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
-import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.instruction.section.SectionInstruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.service.npc.NpcManager;
 import org.betonquest.betonquest.api.service.npc.NpcRegistry;
@@ -61,7 +61,7 @@ public class DefaultNpcHider {
     /**
      * Identifier registry to get identifiers from.
      */
-    private final IdentifierRegistry identifierRegistry;
+    private final Identifiers identifierRegistry;
 
     /**
      * Npc ids mapped to their hide conditions.
@@ -92,7 +92,7 @@ public class DefaultNpcHider {
      */
     public DefaultNpcHider(final BetonQuestLogger log, final NpcManager npcManager,
                            final ConditionManager conditionManager, final ProfileProvider profileProvider,
-                           final NpcRegistry npcTypes, final IdentifierRegistry identifierRegistry,
+                           final NpcRegistry npcTypes, final Identifiers identifierRegistry,
                            final Instructions instructionApi) {
         this.log = log;
         this.identifierRegistry = identifierRegistry;

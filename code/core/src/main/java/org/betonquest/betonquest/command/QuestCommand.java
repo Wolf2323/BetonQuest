@@ -6,7 +6,6 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.bukkit.config.custom.multi.MultiConfiguration;
 import org.betonquest.betonquest.api.common.component.VariableComponent;
@@ -14,6 +13,7 @@ import org.betonquest.betonquest.api.common.component.VariableReplacement;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
+import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.Identifier;
@@ -29,6 +29,10 @@ import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
 import org.betonquest.betonquest.api.quest.objective.Objective;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
+import org.betonquest.betonquest.api.service.item.ItemManager;
 import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.compatibility.IntegrationData;
@@ -36,15 +40,19 @@ import org.betonquest.betonquest.compatibility.IntegrationSource;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.Backup;
+import org.betonquest.betonquest.database.Connector;
 import org.betonquest.betonquest.database.GlobalData;
 import org.betonquest.betonquest.database.PlayerData;
 import org.betonquest.betonquest.database.PlayerDataFactory;
 import org.betonquest.betonquest.database.Point;
+import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.database.Saver.Record;
 import org.betonquest.betonquest.database.UpdateType;
 import org.betonquest.betonquest.feature.journal.Journal;
 import org.betonquest.betonquest.feature.journal.Pointer;
+import org.betonquest.betonquest.kernel.processor.feature.JournalEntryProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ObjectiveProcessor;
+import org.betonquest.betonquest.kernel.registry.feature.ItemTypeRegistry;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArgument;
 import org.betonquest.betonquest.logger.BetonQuestLogRecord;
 import org.betonquest.betonquest.logger.PlayerLogWatcher;
@@ -67,6 +75,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.FileNotFoundException;
@@ -109,14 +118,14 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
     private final BetonQuestLogger log;
 
     /**
-     * The BetonQuest plugin instance.
+     * The plugin instance.
      */
-    private final BetonQuest instance;
+    private final Plugin plugin;
 
     /**
      * Storage for player data.
      */
-    private final PlayerDataStorage dataStorage;
+    private final PlayerDataStorage playerDataStorage;
 
     /**
      * Provider for Player Profiles.
@@ -144,6 +153,71 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
     private final Compatibility compatibility;
 
     /**
+     * The betonquest updater.
+     */
+    private final Updater updater;
+
+    /**
+     * The database connector.
+     */
+    private final Connector connector;
+
+    /**
+     * The global data.
+     */
+    private final GlobalData globalData;
+
+    /**
+     * The identifier registry.
+     */
+    private final Identifiers identifiers;
+
+    /**
+     * The action manager.
+     */
+    private final ActionManager actionManager;
+
+    /**
+     * The condition manager.
+     */
+    private final ConditionManager conditionManager;
+
+    /**
+     * The objective manager.
+     */
+    private final ObjectiveManager objectiveManager;
+
+    /**
+     * The item manager.
+     */
+    private final ItemManager itemManager;
+
+    /**
+     * The item type registry.
+     */
+    private final ItemTypeRegistry itemTypeRegistry;
+
+    /**
+     * The journal entry processor.
+     */
+    private final JournalEntryProcessor journalEntryProcessor;
+
+    /**
+     * The reloader runnable.
+     */
+    private final Runnable reloader;
+
+    /**
+     * The database saver.
+     */
+    private final Saver saver;
+
+    /**
+     * The quest package manager.
+     */
+    private final QuestPackageManager questPackageManager;
+
+    /**
      * Accessor to create config to back up.
      */
     private final ConfigAccessorFactory configAccessorFactory;
@@ -161,38 +235,36 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
     /**
      * Registers a new executor and a new tab completer of the /betonquest command.
      *
-     * @param loggerFactory         logger factory to use
-     * @param log                   the logger that will be used for logging
-     * @param configAccessorFactory the config accessor factory to use
-     * @param logWatcher            the player log watcher to use
-     * @param debuggingController   the log publishing controller to use
-     * @param plugin                the BetonQuest plugin instance
-     * @param dataStorage           the storage providing player data
-     * @param profileProvider       the profile provider
-     * @param playerDataFactory     the factory to create player data
-     * @param pluginMessage         the {@link PluginMessage} instance
-     * @param config                the plugin configuration accessor
-     * @param compatibility         the compatibility instance to use for compatibility checks
+     * @param plugin            the plugin instance
+     * @param log               the logger to use
+     * @param constructorParams the constructor parameters
      */
-    @SuppressWarnings("PMD.ExcessiveParameterList")
-    public QuestCommand(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger log,
-                        final ConfigAccessorFactory configAccessorFactory, final PlayerLogWatcher logWatcher,
-                        final LogPublishingController debuggingController, final BetonQuest plugin,
-                        final PlayerDataStorage dataStorage, final ProfileProvider profileProvider,
-                        final PlayerDataFactory playerDataFactory, final PluginMessage pluginMessage,
-                        final ConfigAccessor config, final Compatibility compatibility) {
-        this.loggerFactory = loggerFactory;
+    public QuestCommand(final Plugin plugin, final BetonQuestLogger log, final ConstructorParams constructorParams) {
+        this.plugin = plugin;
         this.log = log;
-        this.configAccessorFactory = configAccessorFactory;
-        this.logWatcher = logWatcher;
-        this.debuggingController = debuggingController;
-        this.instance = plugin;
-        this.dataStorage = dataStorage;
-        this.profileProvider = profileProvider;
-        this.playerDataFactory = playerDataFactory;
-        this.pluginMessage = pluginMessage;
-        this.config = config;
-        this.compatibility = compatibility;
+        this.loggerFactory = constructorParams.loggerFactory();
+        this.configAccessorFactory = constructorParams.configAccessorFactory();
+        this.logWatcher = constructorParams.playerLogWatcher();
+        this.debuggingController = constructorParams.logPublishingController();
+        this.playerDataFactory = constructorParams.playerDataFactory();
+        this.playerDataStorage = constructorParams.playerDataStorage();
+        this.profileProvider = constructorParams.profileProvider();
+        this.pluginMessage = constructorParams.pluginMessage();
+        this.config = constructorParams.configAccessor();
+        this.compatibility = constructorParams.compatibility();
+        this.updater = constructorParams.updater();
+        this.reloader = constructorParams.reloader();
+        this.saver = constructorParams.saver();
+        this.connector = constructorParams.connector();
+        this.globalData = constructorParams.globalData();
+        this.questPackageManager = constructorParams.questPackageManager();
+        this.itemTypeRegistry = constructorParams.itemTypeRegistry();
+        this.journalEntryProcessor = constructorParams.journalEntryProcessor();
+        this.actionManager = constructorParams.actionManager();
+        this.conditionManager = constructorParams.conditionManager();
+        this.objectiveManager = constructorParams.objectiveManager();
+        this.itemManager = constructorParams.itemManager();
+        this.identifiers = constructorParams.identifiers();
     }
 
     @SuppressWarnings("PMD.NcssCount")
@@ -287,7 +359,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                         purgePlayer(sender, args);
                         break;
                     case "update":
-                        instance.getUpdater().update(sender);
+                        updater.update(sender);
                         break;
                     case "reload":
                         handleReload(sender);
@@ -298,8 +370,8 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                             sendMessage(sender, "offline");
                             break;
                         }
-                        new Backup(loggerFactory.create(Backup.class), configAccessorFactory, instance.getDataFolder(),
-                                instance.getDBConnector()).backup(instance.getDescription().getVersion());
+                        new Backup(loggerFactory.create(Backup.class), configAccessorFactory, plugin.getDataFolder(),
+                                connector).backup(plugin.getDescription().getVersion());
                         break;
                     case "debug":
                         handleDebug(sender, args);
@@ -387,7 +459,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
      * Returns a list of all packages for the tab completer.
      */
     private Optional<List<String>> completePackage() {
-        return Optional.of(new ArrayList<>(instance.getQuestPackageManager().getPackages().keySet()));
+        return Optional.of(new ArrayList<>(questPackageManager.getPackages().keySet()));
     }
 
     /**
@@ -401,7 +473,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             return completePackage();
         }
         final String pack = last.substring(0, last.indexOf(Identifier.SEPARATOR));
-        final QuestPackage configPack = instance.getQuestPackageManager().getPackages().get(pack);
+        final QuestPackage configPack = questPackageManager.getPackages().get(pack);
         if (configPack == null) {
             return Optional.of(new ArrayList<>());
         }
@@ -447,13 +519,13 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                 return;
             }
             final OnlineAction give = new GiveAction(
-                    new DefaultArgument<>(List.of(new Item(instance.getBetonQuestManagers().items()::getItem, itemID, new DefaultArgument<>(1)))),
+                    new DefaultArgument<>(List.of(new Item(itemManager, itemID, new DefaultArgument<>(1)))),
                     new NoNotificationSender(),
                     new IngameNotificationSender(log, pluginMessage, itemID.getPackage(), itemID.getFull(), NotificationLevel.ERROR,
                             "inventory_full_backpack", "inventory_full"),
                     new IngameNotificationSender(log, pluginMessage, itemID.getPackage(), itemID.getFull(), NotificationLevel.ERROR,
                             "inventory_full_drop", "inventory_full"),
-                    profile -> Optional.empty(), dataStorage);
+                    profile -> Optional.empty(), playerDataStorage);
             give.execute(profileProvider.getProfile((Player) sender));
         } catch (final QuestException e) {
             sendMessage(sender, "error",
@@ -489,7 +561,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         if (noFilters) {
             logWatcher.addFilter(uuid, "*", Level.WARNING);
         }
-        instance.reload();
+        reloader.run();
         sendMessage(sender, "reloaded");
         if (noFilters) {
             logWatcher.removeFilter(uuid, "*");
@@ -513,7 +585,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             return null;
         }
         if (profile.getOnlineProfile().isPresent()) {
-            return dataStorage.get(profile);
+            return playerDataStorage.get(profile);
         }
         log.debug("Profile is offline, loading his data");
         return playerDataFactory.createPlayerData(profile);
@@ -681,13 +753,12 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
      * Lists, adds, removes or purges all global points.
      */
     private void handleGlobalPoints(final CommandSender sender, final String... args) {
-        final GlobalData data = instance.getGlobalData();
         // if there are no arguments then list all global points
         if (args.length < 2 || "list".equalsIgnoreCase(args[1]) || "l".equalsIgnoreCase(args[1])) {
             log.debug("Listing global points");
             final Predicate<Point> shouldDisplay = createListFilter(args, 2, Point::getCategory);
             sendMessage(sender, "global_points");
-            data.getPoints().stream()
+            globalData.getPoints().stream()
                     .filter(shouldDisplay)
                     .forEach(point -> sender.sendMessage("§b- " + point.getCategory() + "§e: §a" + point.getCount()));
             return;
@@ -695,7 +766,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         // handle purge
         if ("purge".equalsIgnoreCase(args[1])) {
             log.debug("Purging all global points");
-            data.purgePoints();
+            globalData.purgePoints();
             sendMessage(sender, "global_points_purged");
             return;
         }
@@ -715,12 +786,12 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                     return;
                 }
                 log.debug("Adding global points");
-                data.modifyPoints(category, Integer.parseInt(args[3]));
+                globalData.modifyPoints(category, Integer.parseInt(args[3]));
                 sendMessage(sender, "points_added");
             }
             case "remove", "delete", "del", "r", "d" -> {
                 log.debug("Removing global points");
-                data.removePointsCategory(category);
+                globalData.removePointsCategory(category);
                 sendMessage(sender, "points_removed");
             }
             default -> {
@@ -797,7 +868,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             name = itemID;
         }
         // define parts of the final string
-        final QuestPackage configPack = instance.getQuestPackageManager().getPackages().get(pack);
+        final QuestPackage configPack = questPackageManager.getPackages().get(pack);
         if (configPack == null) {
             log.debug("Cannot continue, package does not exist");
             sendMessage(sender, "specify_package");
@@ -806,7 +877,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         final ItemStack item = player.getInventory().getItemInMainHand();
         final String instructions;
         try {
-            instructions = instance.getBetonQuestRegistries().items().getSerializer(args[2]).serialize(item);
+            instructions = itemTypeRegistry.getSerializer(args[2]).serialize(item);
         } catch (final QuestException e) {
             sendMessage(sender, "error",
                     new VariableReplacement("error", Component.text(e.getMessage())));
@@ -842,7 +913,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             return completeId(args, AccessorType.ITEMS);
         }
         if (args.length == 3) {
-            return Optional.of(List.copyOf(instance.getBetonQuestRegistries().items().serializerKeySet()));
+            return Optional.of(List.copyOf(itemTypeRegistry.serializerKeySet()));
         }
         return Optional.of(new ArrayList<>());
     }
@@ -871,7 +942,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             return;
         }
         final Profile profile = "-".equals(args[1]) ? null : profileProvider.getProfile(Bukkit.getOfflinePlayer(args[1]));
-        instance.getBetonQuestManagers().actions().run(profile, actionID);
+        actionManager.run(profile, actionID);
         sendMessage(sender, "player_action",
                 new VariableReplacement("action", Component.text(actionID.readRawInstruction())));
     }
@@ -919,7 +990,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         final Profile profile = "-".equals(args[1]) ? null : profileProvider.getProfile(Bukkit.getOfflinePlayer(args[1]));
         sendMessage(sender, "player_condition",
                 new VariableReplacement("condition", Component.text((conditionID.isInverted() ? "! " : "") + conditionID.readRawInstruction())),
-                new VariableReplacement("result", Component.text(instance.getBetonQuestManagers().conditions().test(profile, conditionID))));
+                new VariableReplacement("result", Component.text(conditionManager.test(profile, conditionID))));
     }
 
     /**
@@ -985,13 +1056,12 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
      * Lists, adds or removes global tags.
      */
     private void handleGlobalTags(final CommandSender sender, final String... args) {
-        final GlobalData data = instance.getGlobalData();
         // if there are no arguments then list all global tags
         if (args.length < 2 || "list".equalsIgnoreCase(args[1]) || "l".equalsIgnoreCase(args[1])) {
             log.debug("Listing global tags");
             final Predicate<String> shouldDisplay = createListFilter(args, 2, Function.identity());
             sendMessage(sender, "global_tags");
-            data.getTags().stream()
+            globalData.getTags().stream()
                     .filter(shouldDisplay)
                     .sorted()
                     .forEach(tag -> sender.sendMessage("§b- " + tag));
@@ -1000,7 +1070,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         // handle purge
         if ("purge".equalsIgnoreCase(args[1])) {
             log.debug("Purging all global tags");
-            data.purgeTags();
+            globalData.purgeTags();
             sendMessage(sender, "global_tags_purged");
             return;
         }
@@ -1015,12 +1085,12 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         switch (args[1].toLowerCase(Locale.ROOT)) {
             case "add", "a" -> {
                 log.debug("Adding global tag " + tag);
-                data.addTag(tag);
+                globalData.addTag(tag);
                 sendMessage(sender, "tag_added");
             }
             case "remove", "delete", "del", "r", "d" -> {
                 log.debug("Removing global tag " + tag);
-                data.removeTag(tag);
+                globalData.removeTag(tag);
                 sendMessage(sender, "tag_removed");
             }
             default -> {
@@ -1073,7 +1143,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         final boolean isOnline = profile.getOnlineProfile().isPresent();
         final PlayerData playerData;
         if (isOnline) {
-            playerData = dataStorage.get(profile);
+            playerData = playerDataStorage.get(profile);
         } else {
             log.debug("Profile is offline, loading his data");
             playerData = playerDataFactory.createPlayerData(profile);
@@ -1086,7 +1156,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             final Stream<String> objectives;
             if (isOnline) {
                 // if the player is online then just retrieve tags from his active objectives
-                objectives = instance.getBetonQuestManagers().objectives().getForProfile(profile).stream()
+                objectives = objectiveManager.getForProfile(profile).stream()
                         .map(defaultObjective -> defaultObjective.getObjectiveID().getFull());
             } else {
                 // if player is offline then convert his raw objective strings to tags
@@ -1107,7 +1177,6 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         // get the objective
         final ObjectiveIdentifier objectiveID;
         final Objective objective;
-        final ObjectiveManager objectiveManager = instance.getBetonQuestManagers().objectives();
         try {
             objectiveID = getIdentifier(ObjectiveIdentifier.class, args[3]);
             objective = objectiveManager.getObjective(objectiveID);
@@ -1183,7 +1252,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             case "tags", "tag", "t" -> {
                 updateType = UpdateType.RENAME_ALL_TAGS;
                 for (final OnlineProfile onlineProfile : onlineProfiles) {
-                    final PlayerData playerData = dataStorage.get(onlineProfile);
+                    final PlayerData playerData = playerDataStorage.get(onlineProfile);
                     playerData.removeTag(name);
                     playerData.addTag(rename);
                 }
@@ -1191,7 +1260,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             case "points", "point", "p" -> {
                 updateType = UpdateType.RENAME_ALL_POINTS;
                 for (final OnlineProfile onlineProfile : onlineProfiles) {
-                    final PlayerData playerData = dataStorage.get(onlineProfile);
+                    final PlayerData playerData = playerDataStorage.get(onlineProfile);
                     int points = 0;
                     for (final Point point : playerData.getPoints()) {
                         if (point.getCategory().equals(name)) {
@@ -1206,14 +1275,14 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             case "globalpoints", "globalpoint", "gpoints", "gpoint", "gp" -> {
                 updateType = UpdateType.RENAME_ALL_GLOBAL_POINTS;
                 int globalpoints = 0;
-                for (final Point globalpoint : instance.getGlobalData().getPoints()) {
+                for (final Point globalpoint : globalData.getPoints()) {
                     if (globalpoint.getCategory().equals(name)) {
                         globalpoints = globalpoint.getCount();
                         break;
                     }
                 }
-                instance.getGlobalData().removePointsCategory(name);
-                instance.getGlobalData().modifyPoints(rename, globalpoints);
+                globalData.removePointsCategory(name);
+                globalData.modifyPoints(rename, globalpoints);
             }
             case "objectives", "objective", "o" -> {
                 updateType = UpdateType.RENAME_ALL_OBJECTIVES;
@@ -1254,7 +1323,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                     log.reportException(e);
                     return;
                 }
-                final ObjectiveProcessor objectiveProcessor = (ObjectiveProcessor) instance.getBetonQuestManagers().objectives();
+                final ObjectiveProcessor objectiveProcessor = (ObjectiveProcessor) objectiveManager;
                 objectiveProcessor.renameObjective(nameID, renameID);
                 nameID.getPackage().getConfig().set(nameID.get(), null);
                 try {
@@ -1266,7 +1335,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             }
             case "journals", "journal", "j", "entries", "entry", "e" -> {
                 updateType = UpdateType.RENAME_ALL_ENTRIES;
-                final QuestPackage newPackage = instance.getQuestPackageManager().getPackages().get(rename.split(Identifier.SEPARATOR)[0]);
+                final QuestPackage newPackage = questPackageManager.getPackages().get(rename.split(Identifier.SEPARATOR)[0]);
                 if (newPackage == null) {
                     final String message = "You can't rename into non-existent package!";
                     sendMessage(sender, "error", new VariableReplacement("error", Component.text(message)));
@@ -1295,9 +1364,9 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                     break;
                 }
 
-                instance.getLegacyFeatures().renameJournalEntry(oldEntryID, newEntryID);
+                journalEntryProcessor.renameJournalEntry(oldEntryID, newEntryID);
                 for (final OnlineProfile onlineProfile : onlineProfiles) {
-                    final Journal journal = dataStorage.get(onlineProfile).getJournal();
+                    final Journal journal = playerDataStorage.get(onlineProfile).getJournal();
                     final List<Pointer> journalPointers = new ArrayList<>();
                     for (final Pointer pointer : journal.getPointers()) {
                         if (pointer.pointer().equals(oldEntryID)) {
@@ -1319,7 +1388,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                 return;
             }
         }
-        instance.getSaver().add(new Record(updateType, rename, name));
+        saver.add(new Record(updateType, rename, name));
         sendMessage(sender, "everything_renamed");
     }
 
@@ -1352,14 +1421,14 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
             case "tags", "tag", "t" -> {
                 updateType = UpdateType.REMOVE_ALL_TAGS;
                 for (final OnlineProfile onlineProfile : onlineProfiles) {
-                    final PlayerData playerData = dataStorage.get(onlineProfile);
+                    final PlayerData playerData = playerDataStorage.get(onlineProfile);
                     playerData.removeTag(name);
                 }
             }
             case "points", "point", "p" -> {
                 updateType = UpdateType.REMOVE_ALL_POINTS;
                 for (final OnlineProfile onlineProfile : onlineProfiles) {
-                    final PlayerData playerData = dataStorage.get(onlineProfile);
+                    final PlayerData playerData = playerDataStorage.get(onlineProfile);
                     playerData.removePointsCategory(name);
                 }
             }
@@ -1377,8 +1446,8 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                     break;
                 }
                 for (final OnlineProfile onlineProfile : onlineProfiles) {
-                    instance.getBetonQuestManagers().objectives().cancel(onlineProfile, objectiveID);
-                    dataStorage.get(onlineProfile).removeRawObjective(objectiveID);
+                    objectiveManager.cancel(onlineProfile, objectiveID);
+                    playerDataStorage.get(onlineProfile).removeRawObjective(objectiveID);
                 }
             }
             case "journals", "journal", "j", "entries", "entry", "e" -> {
@@ -1394,7 +1463,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                     break;
                 }
                 for (final OnlineProfile onlineProfile : onlineProfiles) {
-                    final Journal journal = dataStorage.get(onlineProfile).getJournal();
+                    final Journal journal = playerDataStorage.get(onlineProfile).getJournal();
                     int count = 0;
                     for (final Pointer pointer : journal.getPointers()) {
                         if (pointer.pointer().equals(entryID)) {
@@ -1415,7 +1484,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                 return;
             }
         }
-        instance.getSaver().add(new Record(updateType, name));
+        saver.add(new Record(updateType, name));
         sendMessage(sender, "everything_removed");
     }
 
@@ -1507,11 +1576,11 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         final String updateCommand = "/" + commandAlias + " update";
 
         final Component hooked = displayVersionInfoHooked(compatibility.getBetonQuestSource());
-        final Component update = displayVersionInfoUpdate(instance.getUpdater());
+        final Component update = displayVersionInfoUpdate(updater);
         final Component copy = displayVersionInfoCopy(sender);
 
         final VariableComponent baseContent = new VariableComponent(pluginMessage.getMessage(null, "command_version_output.info",
-                new VariableReplacement("version", Component.text(instance.getDescription().getVersion())),
+                new VariableReplacement("version", Component.text(plugin.getDescription().getVersion())),
                 new VariableReplacement("server", Component.text(Bukkit.getServer().getVersion())),
                 new VariableReplacement("hooked", hooked)));
         final Component copyContent = baseContent.resolve(
@@ -1665,7 +1734,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         }
 
         //check if repo is allowed
-        final List<String> whitelist = instance.getPluginConfig().getStringList("downloader.repo_whitelist");
+        final List<String> whitelist = config.getStringList("downloader.repo_whitelist");
         if (whitelist.stream().map(String::trim).noneMatch(githubNamespace::equals)) {
             sendMessage(sender, "download_failed_whitelist");
             log.debug(errSummary, new IllegalArgumentException(githubNamespace));
@@ -1673,7 +1742,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         }
 
         //check if ref is valid
-        if (ref.toLowerCase(Locale.ROOT).startsWith("refs/pull/") && !instance.getPluginConfig().getBoolean("downloader.pull_request", false)) {
+        if (ref.toLowerCase(Locale.ROOT).startsWith("refs/pull/") && !config.getBoolean("downloader.pull_request", false)) {
             sendMessage(sender, "download_failed_pr");
             log.debug(errSummary, new IllegalArgumentException(ref));
             return;
@@ -1681,9 +1750,9 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
 
         //run download
         final Downloader downloader = new Downloader(loggerFactory.create(Downloader.class, "Downloader"),
-                instance.getDataFolder(), githubNamespace, ref, offsetPath, sourcePath, targetPath, recursive, overwrite);
+                plugin.getDataFolder(), githubNamespace, ref, offsetPath, sourcePath, targetPath, recursive, overwrite);
         sendMessage(sender, "download_scheduled");
-        Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 downloader.call();
                 sendMessageSync(sender, "download_success");
@@ -1696,7 +1765,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                 sendMessageSync(sender, "download_failed",
                         new VariableReplacement("error", Component.text(e.getClass().getSimpleName() + ": " + e.getMessage())));
                 if (sender instanceof final Player player) {
-                    final BetonQuestLogRecord record = new BetonQuestLogRecord(Level.FINE, null, instance);
+                    final BetonQuestLogRecord record = new BetonQuestLogRecord(Level.FINE, null, plugin);
                     record.setThrown(e);
                     player.sendMessage(new ChatFormatter().formatTextComponent(record));
                     log.debug(errSummary, e);
@@ -1709,7 +1778,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
 
     private Optional<List<String>> completeDownload(final String... args) {
         return switch (args.length) {
-            case 2 -> Optional.of(instance.getPluginConfig().getStringList("downloader.repo_whitelist"));
+            case 2 -> Optional.of(config.getStringList("downloader.repo_whitelist"));
             case 3 -> Optional.of(List.of("refs/heads/", "refs/tags/"));
             case 4 -> Optional.of(Downloader.ALLOWED_OFFSET_PATHS);
             case 5 -> Optional.of(List.of("/"));
@@ -1741,7 +1810,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         final Objective tmp;
         try {
             objectiveID = getIdentifier(ObjectiveIdentifier.class, args[2]);
-            tmp = instance.getBetonQuestManagers().objectives().getObjective(objectiveID);
+            tmp = objectiveManager.getObjective(objectiveID);
         } catch (final QuestException e) {
             sendMessage(sender, "error",
                     new VariableReplacement("error", Component.text(e.getMessage())));
@@ -1760,7 +1829,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
         if (isOnline) {
             data = null;
         } else {
-            final PlayerData offline = instance.getPlayerDataStorage().getOffline(profile);
+            final PlayerData offline = playerDataStorage.getOffline(profile);
             final String instruction = offline.getRawObjectives().get(variableObjective.getObjectiveID().getFull());
             if (instruction == null) {
                 log.debug("There is no data for that objective for that player!");
@@ -1849,7 +1918,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
                 return completePackage();
             }
             final String pack = last.substring(0, last.indexOf(Identifier.SEPARATOR));
-            final QuestPackage configPack = instance.getQuestPackageManager().getPackages().get(pack);
+            final QuestPackage configPack = questPackageManager.getPackages().get(pack);
             if (configPack == null) {
                 return Optional.of(Collections.emptyList());
             }
@@ -1895,7 +1964,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
     }
 
     private void sendMessageSync(final CommandSender sender, final String messageName, final VariableReplacement... replacements) {
-        Bukkit.getScheduler().runTask(instance, () -> sendMessage(sender, messageName, replacements));
+        Bukkit.getScheduler().runTask(plugin, () -> sendMessage(sender, messageName, replacements));
     }
 
     private void sendMessage(final CommandSender sender, final String messageName, final VariableReplacement... replacements) {
@@ -1920,7 +1989,7 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
     }
 
     private <I extends Identifier> I getIdentifier(final Class<I> identifierClass, final String identifier) throws QuestException {
-        final IdentifierFactory<I> identifierFactory = instance.getBetonQuestRegistries().identifiers().getFactory(identifierClass);
+        final IdentifierFactory<I> identifierFactory = identifiers.getFactory(identifierClass);
         return identifierFactory.parseIdentifier(null, identifier);
     }
 
@@ -1949,5 +2018,46 @@ public class QuestCommand implements CommandExecutor, SimpleTabCompleter {
          * JournalID.
          */
         JOURNAL
+    }
+
+    /**
+     * The quest command constructor parameters.
+     *
+     * @param loggerFactory           the logger factory
+     * @param configAccessorFactory   the config accessor factory
+     * @param playerDataFactory       the player data factory
+     * @param playerDataStorage       the player data storage
+     * @param profileProvider         the profile provider
+     * @param pluginMessage           the plugin message
+     * @param updater                 the updater
+     * @param compatibility           the compatibility
+     * @param connector               the connector
+     * @param saver                   the saver
+     * @param questPackageManager     the quest package manager
+     * @param configAccessor          the config accessor
+     * @param logPublishingController the log publishing controller
+     * @param playerLogWatcher        the player log watcher
+     * @param identifiers             the identifiers
+     * @param globalData              the global data
+     * @param journalEntryProcessor   the journal entry processor
+     * @param itemTypeRegistry        the item type registry
+     * @param actionManager           the action manager
+     * @param conditionManager        the condition manager
+     * @param objectiveManager        the objective manager
+     * @param itemManager             the item manager
+     * @param reloader                the plugin reloading runnable
+     */
+    public record ConstructorParams(BetonQuestLoggerFactory loggerFactory, ConfigAccessorFactory configAccessorFactory,
+                                    PlayerDataFactory playerDataFactory, PlayerDataStorage playerDataStorage,
+                                    ProfileProvider profileProvider, PluginMessage pluginMessage, Updater updater,
+                                    Compatibility compatibility, Connector connector, Saver saver,
+                                    QuestPackageManager questPackageManager, ConfigAccessor configAccessor,
+                                    LogPublishingController logPublishingController, PlayerLogWatcher playerLogWatcher,
+                                    Identifiers identifiers, GlobalData globalData,
+                                    JournalEntryProcessor journalEntryProcessor,
+                                    ItemTypeRegistry itemTypeRegistry, ActionManager actionManager,
+                                    ConditionManager conditionManager,
+                                    ObjectiveManager objectiveManager, ItemManager itemManager, Runnable reloader) {
+
     }
 }

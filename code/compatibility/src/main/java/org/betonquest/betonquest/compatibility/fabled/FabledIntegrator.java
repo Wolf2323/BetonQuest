@@ -28,7 +28,7 @@ public class FabledIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final ConditionRegistry conditionRegistry = api.registries().conditions();
+        final ConditionRegistry conditionRegistry = api.conditions().registry();
         conditionRegistry.register("fabledclass", new FabledClassConditionFactory());
         conditionRegistry.register("fabledlevel", new FabledLevelConditionFactory());
         plugin.getServer().getPluginManager().registerEvents(new FabledKillListener(api.profiles()), plugin);

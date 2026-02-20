@@ -3,11 +3,12 @@ package org.betonquest.betonquest.quest.condition.conversation;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
-import org.betonquest.betonquest.conversation.Conversation;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 /**
  * Condition to check if a player is in a conversation or, if specified, in the specified conversation.
@@ -17,7 +18,7 @@ public class InConversationCondition implements PlayerCondition {
     /**
      * Conversation API.
      */
-    private final LegacyConversations conversationApi;
+    private final Conversations conversations;
 
     /**
      * Identifier of the conversation.
@@ -28,17 +29,17 @@ public class InConversationCondition implements PlayerCondition {
     /**
      * Constructor of the InConversationCondition.
      *
-     * @param conversationApi the Conversation API
-     * @param conversationID  the conversation identifier
+     * @param conversations  the Conversation API
+     * @param conversationID the conversation identifier
      */
-    public InConversationCondition(final LegacyConversations conversationApi, @Nullable final Argument<ConversationIdentifier> conversationID) {
-        this.conversationApi = conversationApi;
+    public InConversationCondition(final Conversations conversations, @Nullable final Argument<ConversationIdentifier> conversationID) {
+        this.conversations = conversations;
         this.conversationID = conversationID;
     }
 
     @Override
     public boolean check(final Profile profile) throws QuestException {
-        final Conversation conversation = conversationApi.getActive(profile);
-        return conversation != null && (conversationID == null || conversation.getID().equals(conversationID.getValue(profile)));
+        final Optional<ConversationIdentifier> conversation = conversations.getActive(profile);
+        return conversation.isPresent() && (conversationID == null || conversation.get().equals(conversationID.getValue(profile)));
     }
 }

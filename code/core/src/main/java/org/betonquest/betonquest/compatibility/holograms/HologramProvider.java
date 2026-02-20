@@ -96,15 +96,16 @@ public class HologramProvider implements Integrator {
     public void hook(final BetonQuestApi api) {
         final BetonQuest plugin = BetonQuest.getInstance();
         final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
-        final TextParser textParser = plugin.getTextParser();
+        final TextParser textParser = plugin.getCoreQuestTypeHandler().getTextParser();
         final IdentifierFactory<HologramIdentifier> hologramIdentifierFactory = new HologramIdentifierFactory(api.packages());
-        api.registries().identifiers().register(HologramIdentifier.class, hologramIdentifierFactory);
+        api.identifiers().register(HologramIdentifier.class, hologramIdentifierFactory);
         this.locationHologramLoop = new LocationHologramLoop(loggerFactory, loggerFactory.create(LocationHologramLoop.class),
-                api.instructions(), api.packages(), hologramIdentifierFactory, this, plugin, textParser);
+                api.instructions(), api.packages(), hologramIdentifierFactory, BetonQuest.getInstance().getPluginConfig(),
+                this, plugin, textParser, api.conditions().manager(), api.profiles());
         plugin.addProcessor(locationHologramLoop);
         this.npcHologramLoop = new NpcHologramLoop(loggerFactory, loggerFactory.create(NpcHologramLoop.class),
-                api.instructions(), api.packages(), plugin, this,
-                hologramIdentifierFactory, api.managers().npcs(), api.registries().npcs(), textParser);
+                api.instructions(), api.packages(), plugin, this, BetonQuest.getInstance().getPluginConfig(),
+                hologramIdentifierFactory, api.conditions().manager(), api.npcs().manager(), api.npcs().registry(), textParser, api.profiles());
         plugin.addProcessor(npcHologramLoop);
         plugin.getServer().getPluginManager().registerEvents(new HologramListener(api.profiles()), plugin);
     }

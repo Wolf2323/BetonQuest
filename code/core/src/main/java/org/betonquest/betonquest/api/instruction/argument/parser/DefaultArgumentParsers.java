@@ -1,18 +1,16 @@
 package org.betonquest.betonquest.api.instruction.argument.parser;
 
 import net.kyori.adventure.text.Component;
-import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.common.function.QuestBiFunction;
 import org.betonquest.betonquest.api.identifier.Identifier;
-import org.betonquest.betonquest.api.identifier.IdentifierRegistry;
+import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.instruction.argument.DecoratedArgumentParser;
 import org.betonquest.betonquest.api.instruction.argument.NumberArgumentParser;
 import org.betonquest.betonquest.api.instruction.type.BlockSelector;
 import org.betonquest.betonquest.api.instruction.type.ItemWrapper;
-import org.betonquest.betonquest.api.item.QuestItem;
-import org.betonquest.betonquest.api.profile.Profile;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
+import org.betonquest.betonquest.api.service.item.ItemManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.lib.instruction.argument.DecoratableArgumentParser;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultNumberArgumentParser;
@@ -93,26 +91,26 @@ public class DefaultArgumentParsers implements ArgumentParsers {
     /**
      * The identifier registry to get identifier factories from.
      */
-    private final IdentifierRegistry registry;
+    private final Identifiers registry;
 
     /**
      * Creates a new instance of {@link DefaultArgumentParsers}
      * and all default instances of {@link DecoratedArgumentParser}s.
      *
-     * @param getItemFunction the feature API function to retrieve items
-     * @param textParser      the text parser to use for component parsing
-     * @param server          the server to use for world and location parsing
-     * @param registry        the identifier registry to get identifier factories from
-     * @throws QuestException if an error occurs during initialization
+     * @param itemManager           the item manager to use for item parsing
+     * @param itemIdentifierFactory the identifier factory to use for item parsing
+     * @param textParser            the text parser to use for component parsing
+     * @param server                the server to use for world and location parsing
+     * @param registry              the identifier registry to get identifier factories from
      */
-    public DefaultArgumentParsers(final QuestBiFunction<Profile, ItemIdentifier, QuestItem> getItemFunction,
-                                  final TextParser textParser, final Server server, final IdentifierRegistry registry) throws QuestException {
+    public DefaultArgumentParsers(final ItemManager itemManager, final IdentifierFactory<ItemIdentifier> itemIdentifierFactory,
+                                  final TextParser textParser, final Server server, final Identifiers registry) {
         this.registry = registry;
         defaultBlockSelectorParser = new DecoratableArgumentParser<>(new BlockSelectorParser());
         defaultComponentParser = new DecoratableArgumentParser<>(new TextParserToComponentParser(textParser));
         defaultNumberParser = new DefaultNumberArgumentParser(new NumberParser());
         defaultLocationParser = new DecoratableArgumentParser<>(new LocationParser(server));
-        defaultItemParser = new DecoratableArgumentParser<>(new ItemParser(getItemFunction, registry.getFactory(ItemIdentifier.class)));
+        defaultItemParser = new DecoratableArgumentParser<>(new ItemParser(itemManager, itemIdentifierFactory));
         defaultPackageIdentifier = new DecoratableArgumentParser<>(new PackageIdentifierParser());
         defaultNamespacedKeyParser = new DecoratableArgumentParser<>(new NamespacedKeyParser());
         defaultBooleanParser = new DecoratableArgumentParser<>(new BooleanParser());

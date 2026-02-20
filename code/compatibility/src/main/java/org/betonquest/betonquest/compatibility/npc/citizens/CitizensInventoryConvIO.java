@@ -6,12 +6,19 @@ import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.common.component.FixedComponentLineWrapper;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
+import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.npc.NpcConversation;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.item.ItemManager;
+import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.Conversation;
 import org.betonquest.betonquest.conversation.ConversationColors;
 import org.betonquest.betonquest.conversation.InventoryConvIO;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 
@@ -42,16 +49,27 @@ public class CitizensInventoryConvIO extends InventoryConvIO {
      * @param onlineProfile        the online profile of the player participating in the conversation
      * @param log                  the custom logger for the conversation
      * @param colors               the colors used in the conversation
+     * @param instructions         the instruction api instance
+     * @param itemManager          the item manager instance
+     * @param profileProvider      the profile provider instance
+     * @param pluginManager        the plugin manager instance
+     * @param plugin               the plugin instance
+     * @param pluginMessage        the {@link PluginMessage} instance
+     * @param conversations        the conversations instance
      * @param showNumber           whether to show the number of the conversation
      * @param showNPCText          whether to show the NPC text
      * @param printMessages        whether to print messages
      * @param componentLineWrapper the component line wrapper
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public CitizensInventoryConvIO(final Conversation conv, final OnlineProfile onlineProfile, final BetonQuestLogger log,
-                                   final ConversationColors colors,
+                                   final ConversationColors colors, final Plugin plugin, final PluginManager pluginManager,
+                                   final Instructions instructions, final PluginMessage pluginMessage, final ItemManager itemManager,
+                                   final ProfileProvider profileProvider, final Conversations conversations,
                                    final boolean showNumber, final boolean showNPCText, final boolean printMessages,
                                    final FixedComponentLineWrapper componentLineWrapper) {
-        super(conv, onlineProfile, log, colors, showNumber, showNPCText, printMessages, componentLineWrapper);
+        super(conv, onlineProfile, log, plugin, pluginManager, instructions, pluginMessage, itemManager, profileProvider,
+                conversations, colors, showNumber, showNPCText, printMessages, componentLineWrapper);
     }
 
     @Override

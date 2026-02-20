@@ -2,10 +2,9 @@ package org.betonquest.betonquest.quest.action.teleport;
 
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
-import org.betonquest.betonquest.api.legacy.LegacyConversations;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
-import org.betonquest.betonquest.conversation.Conversation;
+import org.betonquest.betonquest.api.service.conversation.Conversations;
 import org.bukkit.Location;
 
 /**
@@ -16,7 +15,7 @@ public class TeleportAction implements OnlineAction {
     /**
      * Conversation API.
      */
-    private final LegacyConversations conversationApi;
+    private final Conversations conversations;
 
     /**
      * Location to teleport to.
@@ -26,20 +25,17 @@ public class TeleportAction implements OnlineAction {
     /**
      * Create a new teleport action that teleports the player to the given location.
      *
-     * @param conversationApi the Conversation API
-     * @param location        location to teleport to
+     * @param conversations the Conversation API
+     * @param location      location to teleport to
      */
-    public TeleportAction(final LegacyConversations conversationApi, final Argument<Location> location) {
-        this.conversationApi = conversationApi;
+    public TeleportAction(final Conversations conversations, final Argument<Location> location) {
+        this.conversations = conversations;
         this.location = location;
     }
 
     @Override
     public void execute(final OnlineProfile profile) throws QuestException {
-        final Conversation conv = conversationApi.getActive(profile);
-        if (conv != null) {
-            conv.endConversation();
-        }
+        conversations.cancel(profile);
         final Location playerLocation = location.getValue(profile);
         profile.getPlayer().teleport(playerLocation);
     }

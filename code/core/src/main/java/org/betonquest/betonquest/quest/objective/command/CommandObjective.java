@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.quest.objective.command;
 
 import org.apache.commons.lang3.Strings;
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.DefaultObjective;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
@@ -9,6 +8,7 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.objective.service.ObjectiveService;
+import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import java.util.List;
@@ -17,6 +17,11 @@ import java.util.List;
  * Requires the player to execute a specific command.
  */
 public class CommandObjective extends DefaultObjective {
+
+    /**
+     * The action manager.
+     */
+    private final ActionManager actionManager;
 
     /**
      * Command that the player has to execute.
@@ -46,18 +51,20 @@ public class CommandObjective extends DefaultObjective {
     /**
      * Creates a new instance of the CommandObjective.
      *
-     * @param service     the objective service
-     * @param command     the command that the player has to execute
-     * @param ignoreCase  whether the command should ignore the capitalization
-     * @param exact       whether the command should be matched exactly or just the start
-     * @param cancel      whether the command should be cancelled after matching
-     * @param failActions actions to trigger if the command is not matched
+     * @param service       the objective service
+     * @param actionManager the action manager
+     * @param command       the command that the player has to execute
+     * @param ignoreCase    whether the command should ignore the capitalization
+     * @param exact         whether the command should be matched exactly or just the start
+     * @param cancel        whether the command should be cancelled after matching
+     * @param failActions   actions to trigger if the command is not matched
      * @throws QuestException if there is an error in the instruction
      */
-    public CommandObjective(final ObjectiveService service, final Argument<String> command,
+    public CommandObjective(final ObjectiveService service, final ActionManager actionManager, final Argument<String> command,
                             final FlagArgument<Boolean> ignoreCase, final FlagArgument<Boolean> exact,
                             final FlagArgument<Boolean> cancel, final Argument<List<ActionIdentifier>> failActions) throws QuestException {
         super(service);
+        this.actionManager = actionManager;
         this.command = command;
         this.ignoreCase = ignoreCase;
         this.exact = exact;
@@ -81,7 +88,7 @@ public class CommandObjective extends DefaultObjective {
             getService().complete(onlineProfile);
             return;
         }
-        BetonQuest.getInstance().getBetonQuestManagers().actions().run(onlineProfile, failActions.getValue(onlineProfile));
+        actionManager.run(onlineProfile, failActions.getValue(onlineProfile));
     }
 
     private boolean foundMatch(final OnlineProfile onlineProfile, final String commandExecuted, final String commandRequired) throws QuestException {

@@ -14,8 +14,6 @@ import org.betonquest.betonquest.kernel.processor.adapter.ActionAdapterFactory;
 import org.betonquest.betonquest.kernel.registry.QuestTypeRegistry;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 /**
  * Stores the action types that can be used in BetonQuest.
  */
@@ -30,7 +28,7 @@ public class ActionTypeRegistry extends QuestTypeRegistry<PlayerAction, Playerle
     /**
      * The condition manager to check conditions.
      */
-    private final Supplier<ConditionManager> conditionManager;
+    private final ConditionManager conditionManager;
 
     /**
      * Create a new action type registry.
@@ -39,7 +37,7 @@ public class ActionTypeRegistry extends QuestTypeRegistry<PlayerAction, Playerle
      * @param loggerFactory    the logger factory to create a new custom logger
      * @param conditionManager the condition manager
      */
-    public ActionTypeRegistry(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory, final Supplier<ConditionManager> conditionManager) {
+    public ActionTypeRegistry(final BetonQuestLogger log, final BetonQuestLoggerFactory loggerFactory, final ConditionManager conditionManager) {
         super(log, "action");
         this.loggerFactory = loggerFactory;
         this.conditionManager = conditionManager;
@@ -49,6 +47,6 @@ public class ActionTypeRegistry extends QuestTypeRegistry<PlayerAction, Playerle
     protected TypeFactory<ActionAdapter> getFactoryAdapter(
             @Nullable final PlayerQuestFactory<PlayerAction> playerFactory,
             @Nullable final PlayerlessQuestFactory<PlayerlessAction> playerlessFactory) {
-        return new ActionAdapterFactory(loggerFactory, conditionManager.get(), playerFactory, playerlessFactory);
+        return new ActionAdapterFactory(loggerFactory, conditionManager, playerFactory, playerlessFactory);
     }
 }

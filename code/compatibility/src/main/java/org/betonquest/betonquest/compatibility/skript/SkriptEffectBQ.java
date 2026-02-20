@@ -74,8 +74,8 @@ public class SkriptEffectBQ extends Effect {
                 try {
                     final ProfileProvider profileProvider = plugin.getProfileProvider();
                     final IdentifierFactory<ActionIdentifier> actionIdentifierFactory =
-                            plugin.getBetonQuestRegistries().identifiers().getFactory(ActionIdentifier.class);
-                    plugin.getBetonQuestManagers().actions().run(profileProvider.getProfile(player.getSingle(event)),
+                            plugin.getBetonQuestApi().identifiers().getFactory(ActionIdentifier.class);
+                    plugin.getCoreQuestTypeHandler().getActionProcessor().run(profileProvider.getProfile(player.getSingle(event)),
                             actionIdentifierFactory.parseIdentifier(null, actionID));
                 } catch (final QuestException e) {
                     log.warn("Error when running Skript event - could not load '" + actionID + "' action: " + e.getMessage(), e);

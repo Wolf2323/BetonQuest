@@ -10,13 +10,16 @@ import org.betonquest.betonquest.api.identifier.CompassIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.identifier.QuestCancelerIdentifier;
-import org.betonquest.betonquest.api.legacy.LegacyFeatures;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
+import org.betonquest.betonquest.api.service.item.ItemManager;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.database.PlayerData;
 import org.betonquest.betonquest.feature.journal.Journal;
 import org.betonquest.betonquest.item.typehandler.QuestHandler;
+import org.betonquest.betonquest.kernel.processor.feature.CancelerProcessor;
+import org.betonquest.betonquest.kernel.processor.feature.CompassProcessor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,6 +32,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +54,31 @@ public class Backpack implements Listener {
      * Custom {@link BetonQuestLogger} instance for this class.
      */
     private final BetonQuestLogger log;
+
+    /**
+     * The plugin instance.
+     */
+    private final Plugin plugin;
+
+    /**
+     * The {@link CancelerProcessor} to access the cancelers.
+     */
+    private final CancelerProcessor cancelerProcessor;
+
+    /**
+     * The {@link CompassProcessor} to access the compass targets.
+     */
+    private final CompassProcessor compassProcessor;
+
+    /**
+     * The {@link ItemManager} to access the items.
+     */
+    private final ItemManager itemManager;
+
+    /**
+     * The {@link Identifiers} factory.
+     */
+    private final Identifiers identifiers;
 
     /**
      * The {@link PluginMessage} instance.
@@ -79,19 +108,33 @@ public class Backpack implements Listener {
     /**
      * Creates new backpack GUI opened at given page type.
      *
-     * @param config        the plugin configuration file
-     * @param pluginMessage the {@link PluginMessage} instance
-     * @param onlineProfile the {@link OnlineProfile} of the player
-     * @param type          type of the display
+     * @param plugin            the plugin instance
+     * @param log               the BetonQuest logger
+     * @param playerData        the storage handler for the player data
+     * @param cancelerProcessor the {@link CancelerProcessor} to access the cancelers
+     * @param compassProcessor  the {@link CompassProcessor} to access the compass targets
+     * @param config            the plugin configuration file
+     * @param pluginMessage     the {@link PluginMessage} instance
+     * @param onlineProfile     the {@link OnlineProfile} of the player
+     * @param itemManager       the {@link ItemManager} to access the items
+     * @param identifiers       the identifier factory
+     * @param type              type of the display
      */
-    public Backpack(final ConfigAccessor config, final PluginMessage pluginMessage,
-                    final OnlineProfile onlineProfile, final DisplayType type) {
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    public Backpack(final Plugin plugin, final BetonQuestLogger log, final PlayerData playerData,
+                    final CancelerProcessor cancelerProcessor, final CompassProcessor compassProcessor,
+                    final ConfigAccessor config, final PluginMessage pluginMessage, final OnlineProfile onlineProfile,
+                    final ItemManager itemManager, final Identifiers identifiers, final DisplayType type) {
+        this.plugin = plugin;
+        this.cancelerProcessor = cancelerProcessor;
+        this.compassProcessor = compassProcessor;
+        this.itemManager = itemManager;
+        this.identifiers = identifiers;
         this.config = config;
         this.pluginMessage = pluginMessage;
-        final BetonQuest instance = BetonQuest.getInstance();
-        this.log = instance.getLoggerFactory().create(getClass());
+        this.log = log;
         this.onlineProfile = onlineProfile;
-        this.playerData = instance.getPlayerDataStorage().get(onlineProfile);
+        this.playerData = playerData;
         this.display = switch (type) {
             case DEFAULT -> new BackpackPage(1);
             case CANCEL -> new Cancelers();
@@ -102,12 +145,24 @@ public class Backpack implements Listener {
     /**
      * Creates new backpack GUI.
      *
-     * @param config        the plugin configuration file
-     * @param pluginMessage the {@link PluginMessage} instance
-     * @param onlineProfile the {@link OnlineProfile} of the player
+     * @param plugin            the plugin instance
+     * @param betonQuestLogger  the BetonQuest logger
+     * @param playerData        the storage handler for the player data
+     * @param cancelerProcessor the {@link CancelerProcessor} to access the cancelers
+     * @param compassProcessor  the {@link CompassProcessor} to access the compass targets
+     * @param itemManager       the {@link ItemManager} to access the items
+     * @param config            the plugin configuration file
+     * @param pluginMessage     the {@link PluginMessage} instance
+     * @param identifiers       the identifier factory
+     * @param onlineProfile     the {@link OnlineProfile} of the player
      */
-    public Backpack(final ConfigAccessor config, final PluginMessage pluginMessage, final OnlineProfile onlineProfile) {
-        this(config, pluginMessage, onlineProfile, DisplayType.DEFAULT);
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    public Backpack(final Plugin plugin, final BetonQuestLogger betonQuestLogger, final PlayerData playerData,
+                    final CancelerProcessor cancelerProcessor, final CompassProcessor compassProcessor,
+                    final ItemManager itemManager, final ConfigAccessor config, final PluginMessage pluginMessage,
+                    final Identifiers identifiers, final OnlineProfile onlineProfile) {
+        this(plugin, betonQuestLogger, playerData, cancelerProcessor, compassProcessor, config, pluginMessage,
+                onlineProfile, itemManager, identifiers, DisplayType.DEFAULT);
     }
 
     /**
@@ -313,9 +368,9 @@ public class Backpack implements Listener {
             if (buttonString != null && !buttonString.isEmpty()) {
                 present = true;
                 try {
-                    final IdentifierFactory<ItemIdentifier> identifierFactory = BetonQuest.getInstance().getBetonQuestRegistries().identifiers().getFactory(ItemIdentifier.class);
+                    final IdentifierFactory<ItemIdentifier> identifierFactory = identifiers.getFactory(ItemIdentifier.class);
                     final ItemIdentifier itemIdentifier = identifierFactory.parseIdentifier(null, buttonString);
-                    stack = BetonQuest.getInstance().getBetonQuestManagers().items().getItem(onlineProfile, itemIdentifier).generate(1);
+                    stack = itemManager.getItem(onlineProfile, itemIdentifier).generate(1);
                 } catch (final QuestException e) {
                     log.warn("Could not load " + button + " button: " + e.getMessage(), e);
                 }
@@ -427,7 +482,7 @@ public class Backpack implements Listener {
         public Cancelers() {
             super();
             final List<QuestCanceler> cancelers = new ArrayList<>();
-            for (final Map.Entry<QuestCancelerIdentifier, QuestCanceler> entry : BetonQuest.getInstance().getLegacyFeatures().getCancelers().entrySet()) {
+            for (final Map.Entry<QuestCancelerIdentifier, QuestCanceler> entry : cancelerProcessor.getValues().entrySet()) {
                 try {
                     if (entry.getValue().isCancelable(onlineProfile)) {
                         cancelers.add(entry.getValue());
@@ -460,7 +515,7 @@ public class Backpack implements Listener {
             }
             inv.setContents(content);
             onlineProfile.getPlayer().openInventory(inv);
-            Bukkit.getPluginManager().registerEvents(Backpack.this, BetonQuest.getInstance());
+            Bukkit.getPluginManager().registerEvents(Backpack.this, plugin);
         }
 
         @Override
@@ -490,8 +545,7 @@ public class Backpack implements Listener {
         public Compass() {
             super();
             int counter = 0;
-            final LegacyFeatures featureApi = BetonQuest.getInstance().getLegacyFeatures();
-            for (final Map.Entry<CompassIdentifier, QuestCompass> entry : featureApi.getCompasses().entrySet()) {
+            for (final Map.Entry<CompassIdentifier, QuestCompass> entry : compassProcessor.getValues().entrySet()) {
                 if (playerData.hasTag(entry.getKey().getTag())) {
                     compasses.put(counter, entry.getValue());
                     counter++;
@@ -516,7 +570,7 @@ public class Backpack implements Listener {
             }
             inv.setContents(getContent(numberOfRows));
             onlineProfile.getPlayer().openInventory(inv);
-            Bukkit.getPluginManager().registerEvents(Backpack.this, BetonQuest.getInstance());
+            Bukkit.getPluginManager().registerEvents(Backpack.this, plugin);
         }
 
         @SuppressWarnings("NullAway")
@@ -531,7 +585,7 @@ public class Backpack implements Listener {
                 }
                 ItemStack compass;
                 try {
-                    compass = BetonQuest.getInstance().getBetonQuestManagers().items().getItem(onlineProfile, item).generate(1);
+                    compass = itemManager.getItem(onlineProfile, item).generate(1);
                 } catch (final QuestException e) {
                     log.warn("Could not find item: " + e.getMessage(), e);
                     compass = new ItemStack(Material.COMPASS);

@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.compatibility.shopkeepers;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.service.BetonQuestRegistries;
 import org.betonquest.betonquest.compatibility.HookException;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.betonquest.betonquest.compatibility.UnsupportedVersionException;
@@ -31,9 +30,8 @@ public class ShopkeepersIntegrator implements Integrator {
         if (comparator.isOlderThan(shopkeepersVersion, new Version("2.2.0"))) {
             throw new UnsupportedVersionException(shopkeepers, "2.2.0");
         }
-        final BetonQuestRegistries questRegistries = api.registries();
-        questRegistries.conditions().register("shopamount", new HavingShopConditionFactory());
-        questRegistries.actions().register("shopkeeper", new OpenShopActionFactory(api.loggerFactory()));
+        api.conditions().registry().register("shopamount", new HavingShopConditionFactory());
+        api.actions().registry().register("shopkeeper", new OpenShopActionFactory(api.loggerFactory()));
     }
 
     @Override

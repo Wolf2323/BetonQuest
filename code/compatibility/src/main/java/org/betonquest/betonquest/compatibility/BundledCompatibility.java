@@ -5,7 +5,7 @@ import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.BetonQuestRegistries;
+import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.compatibility.auraskills.AuraSkillsIntegratorFactory;
 import org.betonquest.betonquest.compatibility.brewery.BreweryIntegratorFactory;
@@ -42,6 +42,8 @@ import org.betonquest.betonquest.compatibility.traincarts.TrainCartsIntegratorFa
 import org.betonquest.betonquest.compatibility.vault.VaultIntegratorFactory;
 import org.betonquest.betonquest.compatibility.worldedit.WorldEditIntegratorFactory;
 import org.betonquest.betonquest.compatibility.worldguard.WorldGuardIntegratorFactory;
+import org.betonquest.betonquest.database.GlobalData;
+import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -58,16 +60,19 @@ public final class BundledCompatibility {
     /**
      * Registers the compatible factories.
      *
-     * @param loggerFactory the logger factory to use
-     * @param logger        the logger to use
-     * @param compatibility the compatibility instance to register the factories to
-     * @param instructions  the instructions instance
-     * @param registries    the registries instance
-     * @param plugin        the plugin instance
+     * @param loggerFactory        the logger factory to use
+     * @param logger               the logger to use
+     * @param compatibility        the compatibility instance to register the factories to
+     * @param instructions         the instructions instance
+     * @param identifiers          the identifiers instance
+     * @param globalData           the global data instance
+     * @param placeholderProcessor the placeholder processor to use
+     * @param plugin               the plugin instance
      */
     public static void registerCompatiblePlugins(final BetonQuestLoggerFactory loggerFactory, final BetonQuestLogger logger,
                                                  final Compatibility compatibility, final Instructions instructions,
-                                                 final BetonQuestRegistries registries, final Plugin plugin) {
+                                                 final Identifiers identifiers, final GlobalData globalData,
+                                                 final PlaceholderProcessor placeholderProcessor, final Plugin plugin) {
         compatibility.registerPlugin("MythicMobs", new MythicMobsIntegratorFactory());
         compatibility.registerPlugin("Citizens", new CitizensIntegratorFactory());
         compatibility.registerPlugin("Vault", new VaultIntegratorFactory());
@@ -91,15 +96,15 @@ public final class BundledCompatibility {
         compatibility.registerPlugin("Brewery", new BreweryIntegratorFactory());
         compatibility.registerPlugin("BreweryX", new BreweryIntegratorFactory());
         compatibility.registerPlugin("Jobs", new JobsRebornIntegratorFactory());
-        compatibility.registerPlugin("LuckPerms", new LuckPermsIntegratorFactory());
+        compatibility.registerPlugin("LuckPerms", new LuckPermsIntegratorFactory(globalData));
         compatibility.registerPlugin("AuraSkills", new AuraSkillsIntegratorFactory());
         try {
             final IdentifierFactory<PlaceholderIdentifier> placeholderIdentifierFactory =
-                    registries.identifiers().getFactory(PlaceholderIdentifier.class);
+                    identifiers.getFactory(PlaceholderIdentifier.class);
             compatibility.registerPlugin("DecentHolograms", new DecentHologramsIntegratorFactory(loggerFactory,
                     instructions, placeholderIdentifierFactory));
             compatibility.registerPlugin("HolographicDisplays", new HolographicDisplaysIntegratorFactory(loggerFactory,
-                    instructions, placeholderIdentifierFactory));
+                    instructions, placeholderIdentifierFactory, placeholderProcessor));
         } catch (final QuestException e) {
             logger.warn("Could not register DecentHolograms and HolographicDisplays compatibility.", e);
         }
