@@ -2,7 +2,7 @@
 
 If you have this plugin, BetonQuest will add a `betonquest` placeholder to it. You will be able to use the `ph` placeholder.
 
-### Placeholder: `betonquest`
+## PAPI Placeholder: `betonquest`
 
 You can even use BetonQuests conditions using the [condition placeholder](../../Placeholders-List.md#condition)!  
 You can use all BetonQuest placeholders in any other plugin that supports PlaceholderAPI.
@@ -16,11 +16,15 @@ Testing your placeholder is easy using this command:
 %betonquest_someGreatQuest:objective.killZombies.left%
 ```
 
-### Placeholder: `ph`
+## Placeholders
 
-**persistent**, **static**
+### `Ph`
 
-You can also use placeholders from other plugins in BetonQuest. Simply insert a placeholder starting with `ph`, the second argument should be the placeholder without percentage characters.
+__Context__: @snippet:placeholder-meta:independent@  
+__Syntax__: `ph.<id>`  
+__Description__: Use placeholders from another plugin via PlaceholderAPI.
+
+Insert a placeholder starting with `ph` and the second argument should be the placeholder without percentage characters.
 
 ```scss title="Example"
 %ph.player_item_in_hand%

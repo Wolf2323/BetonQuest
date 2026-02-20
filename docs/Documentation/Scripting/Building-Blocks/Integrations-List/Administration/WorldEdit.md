@@ -1,13 +1,14 @@
 # WorldEdit[](http://dev.bukkit.org/bukkit-plugins/worldedit/) or FastAsyncWorldEdit[](https://www.spigotmc.org/resources/13932/)
 
-### Actions
+## Actions
 
-#### Paste schematic: `paste`
+### `Paste`
 
-**persistent**, **static**
+__Context__: @snippet:action-meta:independent@  
+__Syntax__: `paste <location> <schematic> [rotation] [noair]`  
+__Description__: Paste the specified schematic at the specified location.
 
-This action will paste a schematic at the given location.
-The first argument is a location and the second one is the name of a schematic file.
+The first argument is the location, and the second one is the name of a schematic file.
 The file must be located in `WorldEdit/schematics` or `FastAsyncWorldEdit/schematics` and must have a name like
 `some_building.{++schematic++}`. If WorldEdit saves `.schem` schematic files, simply append `.schem` to the
 schematic name in the action's instruction.

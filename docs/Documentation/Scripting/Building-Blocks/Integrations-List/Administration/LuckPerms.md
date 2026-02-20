@@ -1,6 +1,6 @@
 # LuckPerms[](https://luckperms.net/)
 
-### Context Integration
+## Context Integration
 
 Any BetonQuest tag (global and per-player) can be used as a LuckPerms context. This means that a player needs the specified tag for a permission
 to be true - this removes the need for tons of `permission add ...` actions as you can hook your existing
@@ -18,7 +18,13 @@ The syntax is as follows:
 Check the [Luck Perms documentation](https://luckperms.net/wiki/Context)
 for an in-depth explanation on what contexts are and how to add them to permissions.
 
-### Permissions
+## Actions
+
+### `Luckperms`
+
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `luckperms <mode> <permission> [value] [context] [expiry] [unit]`  
+__Description__: Manage permissions via the LuckPerms API.
 
 If you prefer to directly add or remove permissions without triggering the LuckPerms changelog chat notifications,
 you can utilize the `luckperms addPermission` and `luckperms removePermission` actions.

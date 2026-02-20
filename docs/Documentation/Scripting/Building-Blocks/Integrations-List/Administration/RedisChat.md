@@ -1,6 +1,6 @@
 # RedisChat[](https://emibergo.gitbook.io/redischat/)
 
-### Chat Interceptor
+## Chat Interceptor
 
-#### RedisChat interceptor: `redischat`
+### `RedisChat`
 This chat interceptor works directly with RedisChat to pause the chat during conversations.
