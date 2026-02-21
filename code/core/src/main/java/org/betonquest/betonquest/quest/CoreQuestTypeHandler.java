@@ -11,6 +11,7 @@ import org.betonquest.betonquest.database.PlayerDataFactory;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
 import org.betonquest.betonquest.kernel.component.ActionsComponent;
 import org.betonquest.betonquest.kernel.component.ArgumentParsersComponent;
+import org.betonquest.betonquest.kernel.component.BStatsMetricsComponent;
 import org.betonquest.betonquest.kernel.component.BetonQuestApiComponent;
 import org.betonquest.betonquest.kernel.component.CancelersComponent;
 import org.betonquest.betonquest.kernel.component.CompassComponent;
@@ -128,6 +129,7 @@ public class CoreQuestTypeHandler {
         initCoreTypes();
         initFeatures();
         coreComponentLoader.register(new BetonQuestApiComponent());
+        coreComponentLoader.register(new BStatsMetricsComponent());
         coreComponentLoader.load();
         coreComponentLoader.getAll(QuestProcessor.class).forEach(allProcessors::add);
     }
