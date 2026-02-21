@@ -1,10 +1,10 @@
 package org.betonquest.betonquest.kernel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -15,7 +15,7 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, CoreComp
     /**
      * Contains all registered components.
      */
-    private final List<CoreComponent> components;
+    private final Set<CoreComponent> components;
 
     /**
      * Contains all initial injections.
@@ -26,8 +26,8 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, CoreComp
      * Create a new component loader.
      */
     public DefaultCoreComponentLoader() {
-        this.components = new ArrayList<>();
-        this.initialInjections = new HashMap<>();
+        this.components = new LinkedHashSet<>();
+        this.initialInjections = new LinkedHashMap<>();
     }
 
     @Override

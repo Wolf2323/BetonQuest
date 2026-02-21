@@ -12,7 +12,7 @@ public abstract class AbstractCoreComponent implements CoreComponent {
     /**
      * The injected dependencies of this component.
      */
-    private final Set<InjectedDependency<?>> injectedDependencies;
+    protected final Set<InjectedDependency<?>> injectedDependencies;
 
     /**
      * Create a new component.
@@ -73,9 +73,9 @@ public abstract class AbstractCoreComponent implements CoreComponent {
      * @param dependency the dependency instance itself
      * @param <T>        the generic type of the dependency
      */
-    private record InjectedDependency<T>(Class<T> type, T dependency) {
+    public record InjectedDependency<T>(Class<T> type, T dependency) {
 
-        public boolean match(final Class<?> type) {
+        boolean match(final Class<?> type) {
             return type.isAssignableFrom(this.type);
         }
     }
