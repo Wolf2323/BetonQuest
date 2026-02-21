@@ -7,6 +7,8 @@ import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.service.DefaultInstructions;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
+import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.kernel.LoadedDependency;
 import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +34,7 @@ public class InstructionsComponent extends AbstractCoreComponent {
 
     @Override
     public <U> void inject(final Class<U> dependencyClass, final U component) {
-        this.injectedDependencies.add(new InjectedDependency<>(dependencyClass, component));
+        this.injectedDependencies.add(new LoadedDependency<>(dependencyClass, component));
     }
 
     @Override

@@ -8,16 +8,11 @@ public interface CoreComponent {
 
     boolean requires(Class<?> type);
 
-    <U> void inject(Class<U> dependencyClass, U component);
+    void inject(LoadedDependency<?> loadedDependency);
 
     boolean canLoad();
 
     boolean isLoaded();
 
     void load(DependencyProvider providerCallback);
-
-    interface DependencyProvider {
-
-        <U> void take(Class<U> type, U dependency);
-    }
 }

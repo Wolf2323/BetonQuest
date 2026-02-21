@@ -12,6 +12,7 @@ import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
 import org.betonquest.betonquest.api.service.objective.Objectives;
 import org.betonquest.betonquest.id.objective.ObjectiveIdentifierFactory;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
+import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.quest.ActionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ConditionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ObjectiveProcessor;

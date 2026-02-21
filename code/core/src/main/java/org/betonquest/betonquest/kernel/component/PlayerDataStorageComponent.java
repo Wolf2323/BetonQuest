@@ -10,6 +10,8 @@ import org.betonquest.betonquest.database.PlayerDataFactory;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.feature.journal.JournalFactory;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
+import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.kernel.LoadedDependency;
 import org.betonquest.betonquest.kernel.processor.quest.ObjectiveProcessor;
 import org.bukkit.Server;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +44,7 @@ public class PlayerDataStorageComponent extends AbstractCoreComponent {
 
     @Override
     public <U> void inject(final Class<U> dependencyClass, final U component) {
-        this.injectedDependencies.add(new InjectedDependency<>(dependencyClass, component));
+        this.injectedDependencies.add(new LoadedDependency<>(dependencyClass, component));
     }
 
     @Override

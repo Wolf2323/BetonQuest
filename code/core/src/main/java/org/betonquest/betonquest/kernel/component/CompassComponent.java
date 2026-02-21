@@ -7,6 +7,7 @@ import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.id.compass.CompassIdentifierFactory;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
+import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.feature.CompassProcessor;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
 import org.jetbrains.annotations.Nullable;

@@ -7,6 +7,8 @@ import org.betonquest.betonquest.bstats.InstructionMetricsSupplier;
 import org.betonquest.betonquest.bstats.MetricsHolder;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
+import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.kernel.LoadedDependency;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +42,7 @@ public class BStatsMetricsComponent extends AbstractCoreComponent {
 
     @Override
     public <U> void inject(final Class<U> dependencyClass, final U component) {
-        this.injectedDependencies.add(new InjectedDependency<>(dependencyClass, component));
+        this.injectedDependencies.add(new LoadedDependency<>(dependencyClass, component));
     }
 
     @Override

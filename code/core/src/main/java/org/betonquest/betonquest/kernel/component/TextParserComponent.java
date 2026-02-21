@@ -3,6 +3,7 @@ package org.betonquest.betonquest.kernel.component;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
+import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.registry.feature.TextParserRegistryImpl;
 import org.betonquest.betonquest.text.DecidingTextParser;
 import org.betonquest.betonquest.text.TagTextParserDecider;

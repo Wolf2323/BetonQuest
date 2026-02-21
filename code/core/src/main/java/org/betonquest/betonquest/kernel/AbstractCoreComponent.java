@@ -12,7 +12,7 @@ public abstract class AbstractCoreComponent implements CoreComponent {
     /**
      * The injected dependencies of this component.
      */
-    protected final Set<InjectedDependency<?>> injectedDependencies;
+    protected final Set<LoadedDependency<?>> injectedDependencies;
 
     /**
      * Create a new component.
@@ -22,9 +22,9 @@ public abstract class AbstractCoreComponent implements CoreComponent {
     }
 
     @Override
-    public <U> void inject(final Class<U> dependencyClass, final U component) {
-        if (requires(dependencyClass)) {
-            this.injectedDependencies.add(new InjectedDependency<>(dependencyClass, component));
+    public void inject(final LoadedDependency<?> dependency) {
+        if (requires(dependency.type())) {
+            this.injectedDependencies.add(dependency);
         }
     }
 
@@ -56,22 +56,8 @@ public abstract class AbstractCoreComponent implements CoreComponent {
      * @return the dependency
      */
     protected <U> U getDependency(final Class<U> type) {
-        final InjectedDependency<?> injectedDependency = injectedDependencies.stream()
+        final LoadedDependency<?> injectedDependency = injectedDependencies.stream()
                 .filter(dependency -> dependency.match(type)).findFirst().orElseThrow();
         return type.cast(injectedDependency.dependency());
-    }
-
-    /**
-     * The record representing an injected dependency.
-     *
-     * @param type       the type of the dependency
-     * @param dependency the dependency instance itself
-     * @param <T>        the generic type of the dependency
-     */
-    public record InjectedDependency<T>(Class<T> type, T dependency) {
-
-        boolean match(final Class<?> type) {
-            return type.isAssignableFrom(this.type);
-        }
     }
 }

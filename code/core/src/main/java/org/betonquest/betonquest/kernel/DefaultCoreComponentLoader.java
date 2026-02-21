@@ -1,15 +1,13 @@
 package org.betonquest.betonquest.kernel;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * The default implementation of {@link CoreComponentLoader}.
  */
-public class DefaultCoreComponentLoader implements CoreComponentLoader, CoreComponent.DependencyProvider {
+public class DefaultCoreComponentLoader implements CoreComponentLoader, DependencyProvider {
 
     /**
      * Contains all registered components.
@@ -19,14 +17,20 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, CoreComp
     /**
      * Contains all initial injections.
      */
-    private final Map<Class<?>, Object> initialInjections;
+    private final Set<LoadedDependency<?>> initialInjections;
+
+    /**
+     * Contains all loaded components objects.
+     */
+    private final Set<LoadedDependency<?>> loaded;
 
     /**
      * Create a new component loader.
      */
     public DefaultCoreComponentLoader() {
         this.components = new LinkedHashSet<>();
-        this.initialInjections = new LinkedHashMap<>();
+        this.initialInjections = new LinkedHashSet<>();
+        this.loaded = new LinkedHashSet<>();
     }
 
     @Override
@@ -36,12 +40,25 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, CoreComp
 
     @Override
     public <T> void init(final Class<T> injectionClass, final T instance) {
-        initialInjections.put(injectionClass, instance);
+        initialInjections.add(new LoadedDependency<>(injectionClass, instance));
+    }
+
+    /**
+     * Get a loaded instance by its type.
+     *
+     * @param type the type of the instance to get
+     * @param <T>  the type of the instance
+     * @return the loaded instance
+     */
+    public <T> T get(final Class<T> type) {
+        final LoadedDependency<?> injectedDependency = loaded.stream()
+                .filter(dependency -> dependency.match(type)).findFirst().orElseThrow();
+        return type.cast(injectedDependency.dependency());
     }
 
     @Override
     public void load() {
-        initialInject();
+        initialInjections.forEach(this::injectToAll);
         do {
             checkForDependencyBlocking();
             components.stream().filter(CoreComponent::canLoad).forEach(component -> component.load(this));
@@ -58,18 +75,15 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, CoreComp
         }
     }
 
-    private void initialInject() {
-        initialInjections.forEach((type, dependency) -> {
-            injectToAll(type, type.cast(dependency));
-        });
-    }
-
-    private <U> void injectToAll(final Class<U> injectionClass, final Object dependency) {
-        components.forEach(comp -> comp.inject(injectionClass, injectionClass.cast(dependency)));
+    private void injectToAll(final LoadedDependency<?> loadedDependency) {
+        components.forEach(component -> component.inject(loadedDependency));
+        loaded.add(loadedDependency);
     }
 
     @Override
     public <U> void take(final Class<U> type, final U dependency) {
-        components.forEach(dep -> dep.inject(type, dependency));
+        final LoadedDependency<U> loadedDependency = new LoadedDependency<>(type, dependency);
+        components.forEach(component -> component.inject(loadedDependency));
+        loaded.add(loadedDependency);
     }
 }
