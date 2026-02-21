@@ -4,12 +4,12 @@ import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
-import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +36,7 @@ public class PluginMessageComponent extends AbstractCoreComponent {
     @Override
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class, BetonQuestLoggerFactory.class, ConfigAccessorFactory.class, LanguageProvider.class,
-                PlayerDataStorage.class, PlaceholderProcessor.class, TextParser.class);
+                PlayerDataStorage.class, PlaceholderManager.class, TextParser.class);
     }
 
     @Override
@@ -50,12 +50,12 @@ public class PluginMessageComponent extends AbstractCoreComponent {
         final ConfigAccessorFactory configAccessorFactory = getDependency(ConfigAccessorFactory.class);
         final LanguageProvider languageProvider = getDependency(LanguageProvider.class);
         final PlayerDataStorage playerDataStorage = getDependency(PlayerDataStorage.class);
-        final PlaceholderProcessor placeholderProcessor = getDependency(PlaceholderProcessor.class);
+        final PlaceholderManager placeholderManager = getDependency(PlaceholderManager.class);
         final TextParser textParser = getDependency(TextParser.class);
         final Plugin plugin = getDependency(Plugin.class);
 
         try {
-            pluginMessage = new PluginMessage(loggerFactory.create(PluginMessage.class), plugin, placeholderProcessor,
+            pluginMessage = new PluginMessage(loggerFactory.create(PluginMessage.class), plugin, placeholderManager,
                     playerDataStorage, textParser, configAccessorFactory, languageProvider);
         } catch (final QuestException e) {
             throw new IllegalStateException("Failed to load plugin message component: %s".formatted(e.getMessage()), e);

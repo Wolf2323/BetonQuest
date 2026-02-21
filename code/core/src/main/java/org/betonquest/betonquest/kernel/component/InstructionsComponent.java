@@ -51,6 +51,6 @@ public class InstructionsComponent extends AbstractCoreComponent {
                 Suppliers.memoize(() -> getDependency(ArgumentParsers.class)),
                 () -> loggerFactory);
 
-        dependencyProvider.take(Instructions.class, instructions);
+        dependencyProvider.take(DefaultInstructions.class, instructions);
     }
 }

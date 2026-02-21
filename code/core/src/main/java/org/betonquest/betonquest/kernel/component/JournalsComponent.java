@@ -6,6 +6,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalMainPageIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.text.TextParser;
@@ -17,7 +18,6 @@ import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.feature.JournalEntryProcessor;
 import org.betonquest.betonquest.kernel.processor.feature.JournalMainPageProcessor;
-import org.betonquest.betonquest.kernel.processor.quest.ConditionProcessor;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,7 +58,7 @@ public class JournalsComponent extends AbstractCoreComponent {
     public Set<Class<?>> requires() {
         return Set.of(QuestPackageManager.class, BetonQuestLoggerFactory.class, ConfigAccessor.class,
                 Identifiers.class, Instructions.class, PluginMessage.class, TextParser.class,
-                ParsedSectionTextCreator.class, FontRegistry.class, ConditionProcessor.class);
+                ParsedSectionTextCreator.class, FontRegistry.class, ConditionManager.class);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class JournalsComponent extends AbstractCoreComponent {
         final ConfigAccessor config = getDependency(ConfigAccessor.class);
         final TextParser textParser = getDependency(TextParser.class);
         final FontRegistry fontRegistry = getDependency(FontRegistry.class);
-        final ConditionProcessor conditionProcessor = getDependency(ConditionProcessor.class);
+        final ConditionManager conditionManager = getDependency(ConditionManager.class);
 
         final JournalEntryIdentifierFactory journalEntryIdentifierFactory = new JournalEntryIdentifierFactory(questPackageManager);
         identifiers.register(JournalEntryIdentifier.class, journalEntryIdentifierFactory);
@@ -89,7 +89,7 @@ public class JournalsComponent extends AbstractCoreComponent {
         this.journalMainPageProcessor = new JournalMainPageProcessor(loggerFactory.create(JournalMainPageProcessor.class),
                 instructions, parsedSectionTextCreator, journalMainPageIdentifierFactory);
 
-        this.journalFactory = new JournalFactory(loggerFactory, pluginMessage, conditionProcessor, journalMainPageProcessor, journalEntryProcessor, config, textParser, fontRegistry);
+        this.journalFactory = new JournalFactory(loggerFactory, pluginMessage, conditionManager, journalMainPageProcessor, journalEntryProcessor, config, textParser, fontRegistry);
 
         dependencyProvider.take(JournalEntryIdentifierFactory.class, journalEntryIdentifierFactory);
         dependencyProvider.take(JournalMainPageIdentifierFactory.class, journalMainPageIdentifierFactory);

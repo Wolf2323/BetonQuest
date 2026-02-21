@@ -5,6 +5,8 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.service.npc.NpcManager;
@@ -17,8 +19,6 @@ import org.betonquest.betonquest.id.npc.NpcIdentifierFactory;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.feature.ConversationProcessor;
-import org.betonquest.betonquest.kernel.processor.quest.ActionProcessor;
-import org.betonquest.betonquest.kernel.processor.quest.ConditionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.NpcProcessor;
 import org.betonquest.betonquest.kernel.registry.quest.NpcTypeRegistry;
 import org.bukkit.plugin.Plugin;
@@ -56,7 +56,7 @@ public class NpcsComponent extends AbstractCoreComponent implements Npcs {
         return Set.of(Plugin.class,
                 QuestPackageManager.class, BetonQuestLoggerFactory.class, ProfileProvider.class, ConfigAccessor.class,
                 Saver.class, PluginMessage.class, Instructions.class, Identifiers.class,
-                ConversationProcessor.class, ActionProcessor.class, ConditionProcessor.class,
+                ConversationProcessor.class, ActionManager.class, ConditionManager.class,
                 ConversationIdentifierFactory.class);
     }
 
@@ -72,8 +72,8 @@ public class NpcsComponent extends AbstractCoreComponent implements Npcs {
         final Instructions instructions = getDependency(Instructions.class);
         final ProfileProvider profileProvider = getDependency(ProfileProvider.class);
         final ConversationProcessor conversationProcessor = getDependency(ConversationProcessor.class);
-        final ActionProcessor actionProcessor = getDependency(ActionProcessor.class);
-        final ConditionProcessor conditionProcessor = getDependency(ConditionProcessor.class);
+        final ActionManager actionManager = getDependency(ActionManager.class);
+        final ConditionManager conditionManager = getDependency(ConditionManager.class);
         final ConversationIdentifierFactory conversationIdentifierFactory = getDependency(ConversationIdentifierFactory.class);
         final PluginMessage pluginMessage = getDependency(PluginMessage.class);
         final ConfigAccessor config = getDependency(ConfigAccessor.class);
@@ -86,7 +86,7 @@ public class NpcsComponent extends AbstractCoreComponent implements Npcs {
         this.npcTypeRegistry = new NpcTypeRegistry(loggerFactory.create(NpcTypeRegistry.class), instructions);
         this.npcProcessor = new NpcProcessor(loggerFactory.create(NpcProcessor.class), loggerFactory, plugin,
                 npcIdentifierFactory, conversationIdentifierFactory, npcTypeRegistry, pluginMessage,
-                profileProvider, actionProcessor, conditionProcessor, conversationProcessor.getStarter(), instructions,
+                profileProvider, actionManager, conditionManager, conversationProcessor.getStarter(), instructions,
                 identifiers, saver, config, conversationProcessor);
 
         dependencyProvider.take(NpcIdentifierFactory.class, npcIdentifierFactory);

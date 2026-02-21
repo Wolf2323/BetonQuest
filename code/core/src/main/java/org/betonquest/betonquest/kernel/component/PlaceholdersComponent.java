@@ -73,7 +73,7 @@ public class PlaceholdersComponent extends AbstractCoreComponent implements Plac
 
         dependencyProvider.take(PlaceholderIdentifierFactory.class, placeholderIdentifierFactory);
         dependencyProvider.take(PlaceholderTypeRegistry.class, placeholderTypeRegistry);
-        dependencyProvider.take(PlaceholderManager.class, placeholderProcessor);
+        dependencyProvider.take(PlaceholderProcessor.class, placeholderProcessor);
         dependencyProvider.take(Placeholders.class, this);
     }
 
