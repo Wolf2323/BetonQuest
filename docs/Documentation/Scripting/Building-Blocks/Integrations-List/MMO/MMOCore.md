@@ -1,51 +1,98 @@
 # [MMOCore](https://www.spigotmc.org/resources/70575/)
 
-### Conditions
+## Actions
 
-#### MMOCore class: `mmoclass`
+### `MmoClassExperience`
 
-Checks if a player has the given MMOCore class. You can check for any class that is not the default class by writing `*`
-instead of a class name.
-If a level has been specified the player needs to be on that level
-or higher to meet the condition.
-You can disable this behaviour by adding the `equal` argument.
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `mmoclassexperience <amount> [level]`  
+__Description__: Adds experience to the players class.
 
-```YAML title="Example"
-conditions:
-  5: "mmoclass * 5"
-  warrior: "mmoclass WARRIOR"
-  mage5: "mmoclass MAGE 5"
-  mage5Equal: "mmoclass MAGE 5 equal"
-```
-
-#### MMOCore attribute: `mmoattribute`
-
-Checks if a player has the specified attribute on the given level or higher.
-You can disable this behaviour by adding the `equal` argument.
+The amount is a number. The `level` argument
+is optional and would convert the amount to levels instead of XP points.
 
 ```YAML title="Example"
-conditions:
-  strength2: "mmoclass mmoattribute strength 2"
-  strength2Equal: "mmoclass mmoattribute strength 2 equal"
+actions:
+  150: "mmoclassexperience 150"
+  level1: "mmoclassexperience 1 level"
 ```
 
-#### MMOCore profession: `mmoprofession`
+### `MmoProfessionExperience`
 
-Checks if a player has the specified profession on the given level or higher.
-You can disable this behaviour by adding the `equal` argument.
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `mmoprofessionexperience <profession> <amount> [level]`  
+__Description__: Adds experience in the specified player profession.
+
+The amount is a number. The `level` argument
+is optional and would convert the amount to levels instead of XP points.
 
 ```YAML title="Example"
-conditions:
-  mining2: "mmoprofession mining 2"
-  mining2Equal: "mmoprofession mining 2 equal"
+actions:
+  mining: "mmoprofessionexperience MINING 100"
+  customProf: "mmoprofessionexperience CUSTOM_PROFESSION_NAME 1 level"
 ```
 
-### Objectives
+### `MmoCoreClassPoints`
 
-#### Break Special Blocks: `mmocorebreakblock`
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `mmocoreclasspoints <amount>`  
+__Description__: Gives the player class points.
 
-This objective requires the player to break
-[special blocks from MMOCore](https://gitlab.com/phoenix-dvpmt/mmocore/-/wikis/Mining%20and%20Block%20Regen). Please note that you *must* use this objective over `block` if you are using MMOCore's custom mining system.
+The amount is a number.
+
+```YAML title="Example"
+actions:
+  give1: "mmocoreclasspoints 1"
+```
+
+### `MmoCoreSkillPoints`
+
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `mmocoreskillpoints <amount>`  
+__Description__: Gives the player skill points.
+
+The amount is a number.
+
+```YAML title="Example"
+actions:
+  give10: "mmocoreskillpoints 10"
+```
+
+### `MmoCoreAttributePoints`
+
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `mmocoreattributepoints <amount>`  
+__Description__: Gives the player attribute points.
+
+The amount is a number.
+
+```YAML title="Example"
+actions:
+  give2: "mmocoreattributepoints 2"
+```
+
+### `MmoCoreAttributeRealLocationPoints`
+
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `mmocoreattributereallocationpoints <amount>`  
+__Description__: Gives the player attribute reallocation points.
+
+The amount is a number.
+
+```YAML title="Example"
+actions:
+  give1: "mmocoreattributereallocationpoints 1"
+```
+
+## Objectives
+
+### `MmoCoreBreakBlock`
+
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `mmocorebreakblock <amount> [block]`  
+__Description__: The player needs to break [special blocks from MMOCore](https://gitlab.com/phoenix-dvpmt/mmocore/-/wikis/Mining%20and%20Block%20Regen).
+
+Please note that you *must* use this objective over `block` if you are using MMOCore's custom mining system.
 All three different block types and an amount can be defined. You can also send notifications to the player by appending
 the `notify` keyword optionally with the notification interval after a colon.
 
@@ -59,9 +106,11 @@ objectives:
   head: "mmocorebreakblock 1 block:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVy" #... this is a heads texture data
 ```
 
-#### Change MMOCore class: `mmochangeclass`
+### `MmoChangeClass`
 
-This objective requires the player to change their class.
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `mmochangeclass [class]`  
+__Description__: Requires the player to change their class.
 
 ```YAML title="Example"
 objectives:
@@ -69,9 +118,12 @@ objectives:
   selectMage: "mmochangeclass class:MAGE actions:startMageIntroQuest"
 ```
 
-#### MMOCore Profession levelup: `mmoprofessionlevelup`
+### `MmoProfessionLevelUp`
 
-This objective requires the player to level the given profession to the specified level.
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `mmoprofessionlevelup <profession> <level>`  
+__Description__: Requires the player to level the given profession to the specified level.
+
 Use `main` to check for class level ups.
 
 ```YAML title="Example"
@@ -79,62 +131,50 @@ objectives:
   mining10: "mmoprofessionlevelup MINING 10"
 ```
 
-### Actions
+## Conditions
 
-#### Give MMOCore class experience: `mmoclassexperience`
+### `MmoClass`
 
-Adds experience to the players class. The amount is a number. The `level` argument
-is optional and would convert the amount to levels instead of XP points.
+__Context__: @snippet:condition-meta:online-offline@  
+__Syntax__: `mmoclass <class> [equal]`  
+__Description__: Whether the player has the given MMOCore class.
+
+You can check for any class that is not the default class by writing `*` instead of a class name.
+If a level has been specified the player needs to be on that level or higher to meet the condition.
+You can disable this behaviour by adding the `equal` argument.
 
 ```YAML title="Example"
-actions:
-  150: "mmoclassexperience 150"
-  level1: "mmoclassexperience 1 level"
+conditions:
+  5: "mmoclass * 5"
+  warrior: "mmoclass WARRIOR"
+  mage5: "mmoclass MAGE 5"
+  mage5Equal: "mmoclass MAGE 5 equal"
 ```
 
-#### Give MMOCore profession experience: `mmoprofessionexperience`
+### `MmoAttribute`
 
-Adds experience in the specified player profession. The amount is a number. The `level` argument
-is optional and would convert the amount to levels instead of XP points.
+__Context__: @snippet:condition-meta:online-offline@  
+__Syntax__: `mmoattribute <attribute> <level> [equal]`  
+__Description__: Whether the player has the specified attribute on the given level or higher.
+
+You can disable this behaviour by adding the `equal` argument.
 
 ```YAML title="Example"
-actions:
-  mining: "mmoprofessionexperience MINING 100"
-  customProf: "mmoprofessionexperience CUSTOM_PROFESSION_NAME 1 level"
+conditions:
+  strength2: "mmoattribute strength 2"
+  strength2Equal: "mmoattribute strength 2 equal"
 ```
 
-#### Give class points: `mmocoreclasspoints`
+### `MmoProfession`
 
-Gives the player class points. The amount is a number.
+__Context__: @snippet:condition-meta:online-offline@  
+__Syntax__: `mmoprofession <profession> <level> [equal]`  
+__Description__: Whether the player has the specified profession on the given level or higher.
 
-```YAML title="Example"
-actions:
-  give1: "mmocoreclasspoints 1"
-```
-
-#### Give skill points: `mmocoreskillpoints`
-
-Gives the player skill points. The amount is a number.
+You can disable this behaviour by adding the `equal` argument.
 
 ```YAML title="Example"
-actions:
-  give10: "mmocoreskillpoints 10"
-```
-
-#### Give attribute points: `mmocoreattributepoints`
-
-Gives the player attribute points. The amount is a number.
-
-```YAML title="Example"
-actions:
-  give2: "mmocoreattributepoints 2"
-```
-
-#### Give attribute reallocation points: `mmocoreattributereallocationpoints`
-
-Gives the player attribute reallocation points. The amount is a number.
-
-```YAML title="Example"
-actions:
-  give1: "mmocoreattributereallocationpoints 1"
+conditions:
+  mining2: "mmoprofession mining 2"
+  mining2Equal: "mmoprofession mining 2 equal"
 ```

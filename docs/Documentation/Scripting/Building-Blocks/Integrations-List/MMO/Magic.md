@@ -1,10 +1,14 @@
 # [Magic](http://dev.bukkit.org/bukkit-plugins/magic/)
 
-### Conditions
+## Conditions
 
-#### Wand: `wand`
+### `Wand`
 
-This condition can check wands. The first argument is either `hand`, `inventory` or `lost`.
+__Context__: @snippet:condition-meta:online@  
+__Syntax__: `wand <hand|inventory|lost> [name] [amount] [spells]`  
+__Description__: Whether the player has the specified wand.
+
+The first argument is either `hand`, `inventory` or `lost`.
 If you choose `lost`, the condition will check if the player has lost a wand.
 If you choose `hand`, the condition will check if you're holding a wand in your hand.
 `inventory` will check your whole inventory instead of just the hand.
