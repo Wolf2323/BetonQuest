@@ -88,6 +88,7 @@ import org.betonquest.betonquest.web.updater.source.implementations.GitHubReleas
 import org.betonquest.betonquest.web.updater.source.implementations.ReposiliteReleaseAndDevelopmentSource;
 import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
@@ -310,8 +311,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
         setupFontRegistry();
 
-        compatibility = new Compatibility(loggerFactory.create(Compatibility.class), betonQuestApi, config, version);
-
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
         this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class), coreComponentLoader);
 
@@ -319,6 +318,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(Server.class, getServer());
         coreComponentLoader.init(PluginManager.class, getServer().getPluginManager());
         coreComponentLoader.init(BukkitScheduler.class, getServer().getScheduler());
+        coreComponentLoader.init(PluginDescriptionFile.class, getDescription());
         coreComponentLoader.init(LanguageProvider.class, this);
         coreComponentLoader.init(ServicesManager.class, getServer().getServicesManager());
         coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
@@ -331,10 +331,10 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(LastExecutionCache.class, lastExecutionCache);
         coreComponentLoader.init(FileConfigAccessor.class, config);
         coreComponentLoader.init(FontRegistry.class, fontRegistry);
-        coreComponentLoader.init(Compatibility.class, compatibility);
 
         coreQuestTypeHandler.init();
-        this.betonQuestApi = coreQuestTypeHandler.getBetonQuestApi();
+        this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
+        this.compatibility = coreComponentLoader.get(Compatibility.class);
 
         setupUpdater();
         registerListener();
