@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AbstractCoreComponentTest {
 
-    private TestComponent component;
+    private DummyComponent component;
 
     @Mock
     private BetonQuestLogger logger;
@@ -27,28 +27,28 @@ class AbstractCoreComponentTest {
 
     @BeforeEach
     void setUp() {
-        component = spy(new TestComponent());
+        component = spy(new DummyComponent());
         loader = new DefaultCoreComponentLoader(logger);
     }
 
     @Test
     void requirement_fulfilled() {
-        assertTrue(component.requires(BetonQuestLogger.class));
+        assertTrue(component.requires(BetonQuestLogger.class), "Component should require BetonQuestLogger");
         component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
-        assertFalse(component.requires(BetonQuestLogger.class));
+        assertFalse(component.requires(BetonQuestLogger.class), "Component should not require BetonQuestLogger anymore");
     }
 
     @Test
     void requirement_can_load() {
-        assertFalse(component.canLoad());
+        assertFalse(component.canLoad(), "Component should not be loadable before injecting dependencies");
         component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
-        assertTrue(component.canLoad());
+        assertTrue(component.canLoad(), "Component should be loadable after injecting dependencies");
     }
 
     @Test
     void loading_with_missing_dependencies() {
         loader.register(component);
-        assertThrows(IllegalStateException.class, () -> loader.load());
+        assertThrows(IllegalStateException.class, loader::load, "Component should not be loadable without dependencies");
         verify(component, never()).load(any());
     }
 
@@ -58,23 +58,23 @@ class AbstractCoreComponentTest {
         loader.register(component);
         loader.load();
         verify(component, times(1)).load(any());
-        assertTrue(component.isLoaded());
+        assertTrue(component.isLoaded(), "Component should be loaded after loading");
     }
 
     @Test
     void get_dependency_with_fulfilled_requirement() {
         component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
-        assertEquals(logger, component.getDependency(BetonQuestLogger.class));
+        assertEquals(logger, component.getDependency(BetonQuestLogger.class), "Should return injected dependency");
     }
 
     @Test
     void get_missing_dependency() {
-        assertThrows(NoSuchElementException.class, () -> component.getDependency(BetonQuestLogger.class));
+        assertThrows(NoSuchElementException.class, () -> component.getDependency(BetonQuestLogger.class), "Should throw exception on missing dependency");
     }
 
-    class TestComponent extends AbstractCoreComponent {
+    private static final class DummyComponent extends AbstractCoreComponent {
 
-        private boolean loaded = false;
+        private boolean loaded;
 
         @Override
         public Set<Class<?>> requires() {
