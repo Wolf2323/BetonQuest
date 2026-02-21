@@ -1,58 +1,56 @@
 package org.betonquest.betonquest.kernel;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Default abstract implementation of {@link CoreComponent} aiming to reduce boilerplate code.
- *
- * @param <T> the type of the component
  */
-public abstract class AbstractCoreComponent<T> implements CoreComponent<T> {
-
-    /**
-     * The type of the component.
-     */
-    private final Class<T> type;
-
-    /**
-     * The dependencies of the component.
-     */
-    private final Set<Class<?>> dependencies;
+public abstract class AbstractCoreComponent implements CoreComponent {
 
     /**
      * The injected dependencies of this component.
      */
-    private final Map<Class<?>, Object> injectedDependencies;
+    private final Set<InjectedDependency<?>> injectedDependencies;
 
     /**
      * Create a new component.
-     *
-     * @param type         the type of the component
-     * @param dependencies the dependencies of the component
      */
-    public AbstractCoreComponent(final Class<T> type, final Class<?>... dependencies) {
-        this.type = type;
-        this.dependencies = Arrays.stream(dependencies).collect(Collectors.toSet());
-        this.injectedDependencies = new HashMap<>();
-    }
-
-    @Override
-    public Class<T> type() {
-        return type;
-    }
-
-    @Override
-    public Set<Class<?>> dependencies() {
-        return dependencies;
+    public AbstractCoreComponent() {
+        this.injectedDependencies = new HashSet<>();
     }
 
     @Override
     public <U> void inject(final Class<U> dependencyClass, final U component) {
-        this.injectedDependencies.put(dependencyClass, component);
+        if (requires(dependencyClass)) {
+            this.injectedDependencies.add(new InjectedDependency<>(dependencyClass, component));
+        }
+    }
+
+    @Override
+    public boolean canLoad() {
+        return !isLoaded() && remainingRequirements().findAny().isEmpty();
+    }
+
+    @Override
+    public boolean provides(final Class<?> type) {
+        return provides().stream().anyMatch(type::isAssignableFrom);
+    }
+
+    @Override
+    public boolean requires(final Class<?> type) {
+        return remainingRequirements().anyMatch(required -> required.isAssignableFrom(type));
+    }
+
+    /**
+     * Creates a stream of all classes that are required as defined by #requires() but are not yet injected.
+     *
+     * @return a stream of remaining required classes
+     */
+    private Stream<Class<?>> remainingRequirements() {
+        return requires().stream().filter(requirement -> injectedDependencies.stream()
+                .noneMatch(dependency -> dependency.match(requirement)));
     }
 
     /**
@@ -63,6 +61,22 @@ public abstract class AbstractCoreComponent<T> implements CoreComponent<T> {
      * @return the dependency
      */
     protected <U> U getDependency(final Class<U> type) {
-        return type.cast(injectedDependencies.get(type));
+        final InjectedDependency<?> injectedDependency = injectedDependencies.stream()
+                .filter(dependency -> dependency.match(type)).findFirst().orElseThrow();
+        return type.cast(injectedDependency.dependency());
+    }
+
+    /**
+     * The record representing an injected dependency.
+     *
+     * @param type       the type of the dependency
+     * @param dependency the dependency instance itself
+     * @param <T>        the generic type of the dependency
+     */
+    private record InjectedDependency<T>(Class<T> type, T dependency) {
+
+        public boolean match(final Class<?> type) {
+            return type.isAssignableFrom(this.type);
+        }
     }
 }

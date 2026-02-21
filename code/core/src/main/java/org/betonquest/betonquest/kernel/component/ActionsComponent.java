@@ -18,11 +18,12 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * The implementation of {@link AbstractCoreComponent} for {@link ActionTypeRegistry}.
  */
-public class ActionsComponent extends AbstractCoreComponent<Actions> implements Actions {
+public class ActionsComponent extends AbstractCoreComponent implements Actions {
 
     /**
      * The action type registry to load.
@@ -37,11 +38,20 @@ public class ActionsComponent extends AbstractCoreComponent<Actions> implements 
     private ActionProcessor actionProcessor;
 
     /**
-     * Create a new component.
+     * Create a new ActionsComponent.
      */
     public ActionsComponent() {
-        super(Actions.class,
-                Plugin.class, BukkitScheduler.class,
+        super();
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(ActionIdentifierFactory.class, ActionTypeRegistry.class, ActionProcessor.class, Actions.class);
+    }
+
+    @Override
+    public Set<Class<?>> requires() {
+        return Set.of(Plugin.class, BukkitScheduler.class,
                 QuestPackageManager.class, BetonQuestLoggerFactory.class,
                 Identifiers.class, ConditionProcessor.class, Instructions.class);
     }

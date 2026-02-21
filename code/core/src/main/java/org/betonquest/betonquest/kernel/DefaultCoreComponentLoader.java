@@ -1,24 +1,21 @@
 package org.betonquest.betonquest.kernel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * The default implementation of {@link CoreComponentLoader}.
  */
-public class DefaultCoreComponentLoader implements CoreComponentLoader {
+public class DefaultCoreComponentLoader implements CoreComponentLoader, CoreComponent.DependencyProvider {
 
     /**
      * Contains all registered components.
      */
-    private final List<CoreComponent<?>> components;
+    private final List<CoreComponent> components;
 
     /**
      * Contains all initial injections.
@@ -34,7 +31,7 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader {
     }
 
     @Override
-    public void register(final CoreComponent<?> component) {
+    public void register(final CoreComponent component) {
         this.components.add(component);
     }
 
@@ -44,26 +41,27 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader {
     }
 
     @Override
-    public boolean isLoaded(final Class<?>... types) {
-        final List<Class<?>> typeList = Arrays.asList(types);
-        return components.stream().filter(comp -> typeList.contains(comp.type())).allMatch(CoreComponent::isLoaded);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> CoreComponent<T> component(final Class<T> type) {
-        return components.stream().filter(comp -> type.isAssignableFrom(comp.type()))
-                .map(comp -> (CoreComponent<T>) comp).findFirst().orElseThrow();
+    public Optional<CoreComponent> component(final Class<?> type) {
+        return components.stream().filter(comp -> comp.provides(type)).findFirst();
     }
 
     @Override
     public void load() {
         initialInject();
-        final Set<Class<?>> loadedTypes = new HashSet<>();
         do {
-            final Collection<Class<?>> freshlyLoaded = cycle(loadedTypes);
-            loadedTypes.addAll(freshlyLoaded);
-        } while (loadedTypes.size() != components.size());
+            checkForDependencyBlocking();
+            components.stream().filter(CoreComponent::canLoad).forEach(component -> component.load(this));
+        } while (components.stream().anyMatch(component -> !component.isLoaded()));
+    }
+
+    private void checkForDependencyBlocking() {
+        if (components.stream().noneMatch(CoreComponent::canLoad)) {
+            final String remainingComponents = components.stream()
+                    .filter(coreComponent -> !coreComponent.canLoad())
+                    .map(Object::getClass).map(Class::getSimpleName)
+                    .collect(Collectors.joining(","));
+            throw new IllegalStateException("Potential cyclomatic dependency while preparing components. Remaining components are missing dependencies: %s".formatted(remainingComponents));
+        }
     }
 
     private void initialInject() {
@@ -76,31 +74,8 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader {
         components.forEach(comp -> comp.inject(injectionClass, injectionClass.cast(dependency)));
     }
 
-    private Collection<Class<?>> cycle(final Collection<Class<?>> loadedTypes) {
-        final Set<CoreComponent<?>> toLoad = components.stream().filter(comp -> !comp.isLoaded())
-                .filter(comp -> loadedTypes.containsAll(comp.dependencies()))
-                .collect(Collectors.toSet());
-        if (toLoad.isEmpty()) {
-            final String remainingComponents = components.stream().map(CoreComponent::type).map(Class::getSimpleName).collect(Collectors.joining(","));
-            throw new IllegalStateException("Cyclomatic dependency while preparing components. Remaining components: %s".formatted(remainingComponents));
-        }
-        toLoad.forEach(this::loadComponent);
-        return toLoad.stream().map(CoreComponent::type).collect(Collectors.toSet());
-    }
-
-    private <T> void loadComponent(final CoreComponent<T> component) {
-        final Set<CoreComponent<?>> dependent = components.stream()
-                .filter(comp -> comp.dependencies().contains(component.type()))
-                .collect(Collectors.toSet());
-        component.load(injectToAll(dependent));
-    }
-
-    private CoreComponent.DependencyProvider injectToAll(final Collection<CoreComponent<?>> targets) {
-        return new CoreComponent.DependencyProvider() {
-            @Override
-            public <U> void take(final Class<U> type, final U dependency) {
-                targets.forEach(dep -> dep.inject(type, dependency));
-            }
-        };
+    @Override
+    public <U> void take(final Class<U> type, final U dependency) {
+        components.forEach(dep -> dep.inject(type, dependency));
     }
 }
