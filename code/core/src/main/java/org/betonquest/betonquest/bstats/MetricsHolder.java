@@ -5,6 +5,7 @@ import java.util.Map;
 /**
  * The {@link MetricsHolder} identifies a class being considered for metrics published to {@link BStatsMetrics}.
  */
+@FunctionalInterface
 public interface MetricsHolder {
 
     /**
