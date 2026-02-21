@@ -34,11 +34,6 @@ public abstract class AbstractCoreComponent implements CoreComponent {
     }
 
     @Override
-    public boolean provides(final Class<?> type) {
-        return provides().stream().anyMatch(type::isAssignableFrom);
-    }
-
-    @Override
     public boolean requires(final Class<?> type) {
         return remainingRequirements().anyMatch(required -> required.isAssignableFrom(type));
     }

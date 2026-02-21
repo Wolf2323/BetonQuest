@@ -26,11 +26,6 @@ public class IdentifiersComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(IdentifierTypeRegistry.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(BetonQuestLoggerFactory.class);
     }

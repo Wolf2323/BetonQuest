@@ -46,11 +46,6 @@ public class PlayerDataStorageComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(PlayerDataFactory.class, PlayerDataStorage.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(BetonQuestLoggerFactory.class, ConfigAccessor.class, Saver.class, Identifiers.class,
                 ProfileProvider.class, ObjectiveProcessor.class, Server.class);

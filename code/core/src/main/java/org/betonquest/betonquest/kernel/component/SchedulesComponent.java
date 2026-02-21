@@ -38,11 +38,6 @@ public class SchedulesComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(ScheduleIdentifierFactory.class, ScheduleRegistry.class, ActionScheduling.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(QuestPackageManager.class, BetonQuestLoggerFactory.class, Identifiers.class, Instructions.class);
     }

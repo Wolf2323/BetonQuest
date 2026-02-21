@@ -1,6 +1,6 @@
 package org.betonquest.betonquest.kernel;
 
-import java.util.Optional;
+import org.betonquest.betonquest.api.QuestException;
 
 public interface CoreComponentLoader {
 
@@ -8,7 +8,5 @@ public interface CoreComponentLoader {
 
     <T> void init(Class<T> injectionClass, T instance);
 
-    Optional<CoreComponent> component(Class<?> type);
-
-    void load();
+    void load() throws QuestException;
 }

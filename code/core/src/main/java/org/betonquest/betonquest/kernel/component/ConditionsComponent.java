@@ -44,11 +44,6 @@ public class ConditionsComponent extends AbstractCoreComponent implements Condit
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(ConditionIdentifierFactory.class, ConditionTypeRegistry.class, ConditionProcessor.class, Conditions.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class, BukkitScheduler.class,
                 QuestPackageManager.class, BetonQuestLoggerFactory.class,

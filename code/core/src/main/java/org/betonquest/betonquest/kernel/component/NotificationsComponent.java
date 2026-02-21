@@ -26,11 +26,6 @@ public class NotificationsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(NotifyIORegistry.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(BetonQuestLoggerFactory.class);
     }

@@ -29,11 +29,6 @@ public class TextSectionParserComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(ParsedSectionTextCreator.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(LanguageProvider.class, PlayerDataStorage.class, TextParser.class, PlaceholderProcessor.class);
     }

@@ -54,12 +54,6 @@ public class JournalsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(JournalEntryIdentifierFactory.class, JournalMainPageIdentifierFactory.class,
-                JournalEntryProcessor.class, JournalMainPageProcessor.class, JournalFactory.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(QuestPackageManager.class, BetonQuestLoggerFactory.class, ConfigAccessor.class,
                 Identifiers.class, Instructions.class, PluginMessage.class, TextParser.class,

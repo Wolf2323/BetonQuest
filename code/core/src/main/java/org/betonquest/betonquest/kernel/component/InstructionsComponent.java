@@ -43,11 +43,6 @@ public class InstructionsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(Instructions.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(QuestPackageManager.class, BetonQuestLoggerFactory.class);
     }

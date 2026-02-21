@@ -42,11 +42,6 @@ public class ItemsComponent extends AbstractCoreComponent implements Items {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(ItemIdentifierFactory.class, ItemTypeRegistry.class, ItemProcessor.class, Items.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(QuestPackageManager.class, BetonQuestLoggerFactory.class, Identifiers.class, Instructions.class);
     }
@@ -68,7 +63,7 @@ public class ItemsComponent extends AbstractCoreComponent implements Items {
         this.itemTypeRegistry = new ItemTypeRegistry(loggerFactory.create(ItemTypeRegistry.class));
         this.itemProcessor = new ItemProcessor(loggerFactory.create(ItemProcessor.class),
                 itemIdentifierFactory, itemTypeRegistry, instructions);
-        
+
         providerCallback.take(ItemIdentifierFactory.class, itemIdentifierFactory);
         providerCallback.take(ItemTypeRegistry.class, itemTypeRegistry);
         providerCallback.take(ItemProcessor.class, itemProcessor);

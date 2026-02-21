@@ -44,11 +44,6 @@ public class PlaceholdersComponent extends AbstractCoreComponent implements Plac
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(PlaceholderIdentifierFactory.class, PlaceholderTypeRegistry.class, PlaceholderManager.class, Placeholders.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class, BukkitScheduler.class,
                 QuestPackageManager.class, BetonQuestLoggerFactory.class,

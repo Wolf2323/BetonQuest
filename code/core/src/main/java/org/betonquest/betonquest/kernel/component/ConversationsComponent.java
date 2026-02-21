@@ -56,12 +56,6 @@ public class ConversationsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(ConversationIdentifierFactory.class, ConversationOptionIdentifierFactory.class,
-                ConversationIORegistry.class, InterceptorRegistry.class, ConversationProcessor.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class,
                 QuestPackageManager.class, BetonQuestLoggerFactory.class, ProfileProvider.class, ConfigAccessor.class,

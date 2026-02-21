@@ -48,11 +48,6 @@ public class ObjectivesComponent extends AbstractCoreComponent implements Object
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(ObjectiveIdentifierFactory.class, ObjectiveTypeRegistry.class, ObjectiveProcessor.class, Objectives.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class, PluginManager.class,
                 QuestPackageManager.class, BetonQuestLoggerFactory.class, ProfileProvider.class,

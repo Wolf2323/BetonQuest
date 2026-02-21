@@ -36,11 +36,6 @@ public class TextParserComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(TextParserRegistryImpl.class, DecidingTextParser.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(BetonQuestLoggerFactory.class, ConfigAccessor.class);
     }

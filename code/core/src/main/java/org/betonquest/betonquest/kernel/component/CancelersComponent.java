@@ -38,11 +38,6 @@ public class CancelersComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(QuestCancelerIdentifierFactory.class, CancelerProcessor.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(QuestPackageManager.class, BetonQuestLoggerFactory.class, PlayerDataStorage.class,
                 PluginMessage.class, Identifiers.class, Instructions.class, ParsedSectionTextCreator.class,

@@ -3,7 +3,6 @@ package org.betonquest.betonquest.kernel;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,11 +37,6 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, CoreComp
     @Override
     public <T> void init(final Class<T> injectionClass, final T instance) {
         initialInjections.put(injectionClass, instance);
-    }
-
-    @Override
-    public Optional<CoreComponent> component(final Class<?> type) {
-        return components.stream().filter(comp -> comp.provides(type)).findFirst();
     }
 
     @Override

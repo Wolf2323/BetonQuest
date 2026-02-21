@@ -45,11 +45,6 @@ public class ActionsComponent extends AbstractCoreComponent implements Actions {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(ActionIdentifierFactory.class, ActionTypeRegistry.class, ActionProcessor.class, Actions.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class, BukkitScheduler.class,
                 QuestPackageManager.class, BetonQuestLoggerFactory.class,

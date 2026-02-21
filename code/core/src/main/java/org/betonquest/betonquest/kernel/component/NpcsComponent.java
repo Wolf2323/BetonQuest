@@ -51,11 +51,6 @@ public class NpcsComponent extends AbstractCoreComponent implements Npcs {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(NpcIdentifierFactory.class, NpcTypeRegistry.class, NpcProcessor.class, Npcs.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class,
                 QuestPackageManager.class, BetonQuestLoggerFactory.class, ProfileProvider.class, ConfigAccessor.class,

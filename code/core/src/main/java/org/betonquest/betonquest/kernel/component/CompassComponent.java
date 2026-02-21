@@ -32,11 +32,6 @@ public class CompassComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of(CompassIdentifierFactory.class, CompassProcessor.class);
-    }
-
-    @Override
     public Set<Class<?>> requires() {
         return Set.of(QuestPackageManager.class, BetonQuestLoggerFactory.class, Identifiers.class, Instructions.class,
                 ParsedSectionTextCreator.class);
