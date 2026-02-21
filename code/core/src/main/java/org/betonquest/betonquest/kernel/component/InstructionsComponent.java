@@ -8,7 +8,6 @@ import org.betonquest.betonquest.api.service.DefaultInstructions;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
-import org.betonquest.betonquest.kernel.LoadedDependency;
 import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,12 +28,7 @@ public class InstructionsComponent extends AbstractCoreComponent {
      * Create a new InstructionsComponent.
      */
     public InstructionsComponent() {
-        super();
-    }
-
-    @Override
-    public <U> void inject(final Class<U> dependencyClass, final U component) {
-        this.injectedDependencies.add(new LoadedDependency<>(dependencyClass, component));
+        super(true);
     }
 
     @Override
