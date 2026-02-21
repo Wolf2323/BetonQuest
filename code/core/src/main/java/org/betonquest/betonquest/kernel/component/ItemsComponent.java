@@ -53,7 +53,7 @@ public class ItemsComponent extends AbstractCoreComponent implements Items {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Instructions instructions = getDependency(Instructions.class);
@@ -65,10 +65,10 @@ public class ItemsComponent extends AbstractCoreComponent implements Items {
         this.itemProcessor = new ItemProcessor(loggerFactory.create(ItemProcessor.class),
                 itemIdentifierFactory, itemTypeRegistry, instructions);
 
-        providerCallback.take(ItemIdentifierFactory.class, itemIdentifierFactory);
-        providerCallback.take(ItemTypeRegistry.class, itemTypeRegistry);
-        providerCallback.take(ItemProcessor.class, itemProcessor);
-        providerCallback.take(Items.class, this);
+        dependencyProvider.take(ItemIdentifierFactory.class, itemIdentifierFactory);
+        dependencyProvider.take(ItemTypeRegistry.class, itemTypeRegistry);
+        dependencyProvider.take(ItemProcessor.class, itemProcessor);
+        dependencyProvider.take(Items.class, this);
     }
 
     @Override

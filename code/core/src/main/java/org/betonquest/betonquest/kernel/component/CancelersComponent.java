@@ -51,7 +51,7 @@ public class CancelersComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager packManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
@@ -70,7 +70,7 @@ public class CancelersComponent extends AbstractCoreComponent {
                 loggerFactory, pluginMessage, instructions, actionProcessor, conditionProcessor,
                 objectiveProcessor, itemProcessor, parsedSectionTextCreator, playerDataStorage, questCancelerIdentifierFactory);
 
-        providerCallback.take(QuestCancelerIdentifierFactory.class, questCancelerIdentifierFactory);
-        providerCallback.take(CancelerProcessor.class, cancelerProcessor);
+        dependencyProvider.take(QuestCancelerIdentifierFactory.class, questCancelerIdentifierFactory);
+        dependencyProvider.take(CancelerProcessor.class, cancelerProcessor);
     }
 }

@@ -57,7 +57,7 @@ public class ConditionsComponent extends AbstractCoreComponent implements Condit
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
@@ -71,10 +71,10 @@ public class ConditionsComponent extends AbstractCoreComponent implements Condit
         this.conditionProcessor = new ConditionProcessor(loggerFactory.create(ConditionProcessor.class),
                 conditionTypeRegistry, bukkitScheduler, conditionIdentifierFactory, plugin, instructions);
 
-        providerCallback.take(ConditionIdentifierFactory.class, conditionIdentifierFactory);
-        providerCallback.take(ConditionTypeRegistry.class, conditionTypeRegistry);
-        providerCallback.take(ConditionProcessor.class, conditionProcessor);
-        providerCallback.take(Conditions.class, this);
+        dependencyProvider.take(ConditionIdentifierFactory.class, conditionIdentifierFactory);
+        dependencyProvider.take(ConditionTypeRegistry.class, conditionTypeRegistry);
+        dependencyProvider.take(ConditionProcessor.class, conditionProcessor);
+        dependencyProvider.take(Conditions.class, this);
     }
 
     @Override

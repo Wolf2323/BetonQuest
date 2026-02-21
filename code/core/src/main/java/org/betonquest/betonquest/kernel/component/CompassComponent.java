@@ -44,7 +44,7 @@ public class CompassComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Instructions instructions = getDependency(Instructions.class);
@@ -56,7 +56,7 @@ public class CompassComponent extends AbstractCoreComponent {
         this.compassProcessor = new CompassProcessor(loggerFactory.create(CompassProcessor.class),
                 instructions, parsedSectionTextCreator, compassIdentifierFactory);
 
-        providerCallback.take(CompassIdentifierFactory.class, compassIdentifierFactory);
-        providerCallback.take(CompassProcessor.class, compassProcessor);
+        dependencyProvider.take(CompassIdentifierFactory.class, compassIdentifierFactory);
+        dependencyProvider.take(CompassProcessor.class, compassProcessor);
     }
 }

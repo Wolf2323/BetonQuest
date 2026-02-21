@@ -49,7 +49,7 @@ public class SchedulesComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Instructions instructions = getDependency(Instructions.class);
@@ -61,8 +61,8 @@ public class SchedulesComponent extends AbstractCoreComponent {
         this.scheduleProcessor = new ActionScheduling(loggerFactory.create(ActionScheduling.class, "Schedules"),
                 instructions, scheduleRegistry, scheduleIdentifierFactory);
 
-        providerCallback.take(ScheduleIdentifierFactory.class, scheduleIdentifierFactory);
-        providerCallback.take(ScheduleRegistry.class, scheduleRegistry);
-        providerCallback.take(ActionScheduling.class, scheduleProcessor);
+        dependencyProvider.take(ScheduleIdentifierFactory.class, scheduleIdentifierFactory);
+        dependencyProvider.take(ScheduleRegistry.class, scheduleRegistry);
+        dependencyProvider.take(ActionScheduling.class, scheduleProcessor);
     }
 }

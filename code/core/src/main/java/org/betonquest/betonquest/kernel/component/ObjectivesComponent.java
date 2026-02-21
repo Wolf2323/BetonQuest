@@ -61,7 +61,7 @@ public class ObjectivesComponent extends AbstractCoreComponent implements Object
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
@@ -81,10 +81,10 @@ public class ObjectivesComponent extends AbstractCoreComponent implements Object
                 objectiveTypeRegistry, objectiveIdentifierFactory, pluginManager,
                 objectiveServiceProvider, instructions, plugin);
 
-        providerCallback.take(ObjectiveIdentifierFactory.class, objectiveIdentifierFactory);
-        providerCallback.take(ObjectiveTypeRegistry.class, objectiveTypeRegistry);
-        providerCallback.take(ObjectiveProcessor.class, objectiveProcessor);
-        providerCallback.take(Objectives.class, this);
+        dependencyProvider.take(ObjectiveIdentifierFactory.class, objectiveIdentifierFactory);
+        dependencyProvider.take(ObjectiveTypeRegistry.class, objectiveTypeRegistry);
+        dependencyProvider.take(ObjectiveProcessor.class, objectiveProcessor);
+        dependencyProvider.take(Objectives.class, this);
     }
 
     @Override

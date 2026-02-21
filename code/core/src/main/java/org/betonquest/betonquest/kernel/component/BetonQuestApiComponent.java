@@ -55,7 +55,7 @@ public class BetonQuestApiComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager packManager = getDependency(QuestPackageManager.class);
         final ServicesManager servicesManager = getDependency(ServicesManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
@@ -77,6 +77,6 @@ public class BetonQuestApiComponent extends AbstractCoreComponent {
 
         servicesManager.register(BetonQuestApi.class, defaultBetonQuestApi, plugin, ServicePriority.Highest);
 
-        providerCallback.take(DefaultBetonQuestApi.class, defaultBetonQuestApi);
+        dependencyProvider.take(DefaultBetonQuestApi.class, defaultBetonQuestApi);
     }
 }

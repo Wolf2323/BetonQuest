@@ -67,7 +67,7 @@ public class JournalsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
@@ -91,10 +91,10 @@ public class JournalsComponent extends AbstractCoreComponent {
 
         this.journalFactory = new JournalFactory(loggerFactory, pluginMessage, conditionProcessor, journalMainPageProcessor, journalEntryProcessor, config, textParser, fontRegistry);
 
-        providerCallback.take(JournalEntryIdentifierFactory.class, journalEntryIdentifierFactory);
-        providerCallback.take(JournalMainPageIdentifierFactory.class, journalMainPageIdentifierFactory);
-        providerCallback.take(JournalEntryProcessor.class, journalEntryProcessor);
-        providerCallback.take(JournalMainPageProcessor.class, journalMainPageProcessor);
-        providerCallback.take(JournalFactory.class, journalFactory);
+        dependencyProvider.take(JournalEntryIdentifierFactory.class, journalEntryIdentifierFactory);
+        dependencyProvider.take(JournalMainPageIdentifierFactory.class, journalMainPageIdentifierFactory);
+        dependencyProvider.take(JournalEntryProcessor.class, journalEntryProcessor);
+        dependencyProvider.take(JournalMainPageProcessor.class, journalMainPageProcessor);
+        dependencyProvider.take(JournalFactory.class, journalFactory);
     }
 }

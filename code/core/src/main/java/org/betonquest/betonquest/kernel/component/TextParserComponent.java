@@ -47,7 +47,7 @@ public class TextParserComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final ConfigAccessor config = getDependency(ConfigAccessor.class);
 
@@ -55,7 +55,7 @@ public class TextParserComponent extends AbstractCoreComponent {
         final String defaultParser = config.getString("text_parser", "legacyminimessage");
         this.decidingTextParser = new DecidingTextParser(textParserRegistry, new TagTextParserDecider(defaultParser));
 
-        providerCallback.take(TextParserRegistryImpl.class, textParserRegistry);
-        providerCallback.take(DecidingTextParser.class, decidingTextParser);
+        dependencyProvider.take(TextParserRegistryImpl.class, textParserRegistry);
+        dependencyProvider.take(DecidingTextParser.class, decidingTextParser);
     }
 }

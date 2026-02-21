@@ -40,7 +40,7 @@ public class TextSectionParserComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final LanguageProvider languageProvider = getDependency(LanguageProvider.class);
         final PlayerDataStorage playerDataStorage = getDependency(PlayerDataStorage.class);
         final TextParser textParser = getDependency(TextParser.class);
@@ -48,6 +48,6 @@ public class TextSectionParserComponent extends AbstractCoreComponent {
 
         this.parsedSectionTextCreator = new ParsedSectionTextCreator(textParser, playerDataStorage, languageProvider, placeholderProcessor);
 
-        providerCallback.take(ParsedSectionTextCreator.class, parsedSectionTextCreator);
+        dependencyProvider.take(ParsedSectionTextCreator.class, parsedSectionTextCreator);
     }
 }

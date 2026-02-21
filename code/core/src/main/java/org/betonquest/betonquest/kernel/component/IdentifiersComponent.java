@@ -37,11 +37,11 @@ public class IdentifiersComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
 
         identifierTypeRegistry = new IdentifierTypeRegistry(loggerFactory.create(IdentifierTypeRegistry.class));
 
-        providerCallback.take(IdentifierTypeRegistry.class, identifierTypeRegistry);
+        dependencyProvider.take(IdentifierTypeRegistry.class, identifierTypeRegistry);
     }
 }

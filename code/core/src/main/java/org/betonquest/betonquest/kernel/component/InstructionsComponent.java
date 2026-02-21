@@ -42,7 +42,7 @@ public class InstructionsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
 
@@ -51,6 +51,6 @@ public class InstructionsComponent extends AbstractCoreComponent {
                 Suppliers.memoize(() -> getDependency(ArgumentParsers.class)),
                 () -> loggerFactory);
 
-        providerCallback.take(Instructions.class, instructions);
+        dependencyProvider.take(Instructions.class, instructions);
     }
 }

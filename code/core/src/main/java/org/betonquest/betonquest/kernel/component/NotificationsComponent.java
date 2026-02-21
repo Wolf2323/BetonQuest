@@ -37,11 +37,11 @@ public class NotificationsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
 
         this.notifyIORegistry = new NotifyIORegistry(loggerFactory.create(NotifyIORegistry.class));
 
-        providerCallback.take(NotifyIORegistry.class, notifyIORegistry);
+        dependencyProvider.take(NotifyIORegistry.class, notifyIORegistry);
     }
 }

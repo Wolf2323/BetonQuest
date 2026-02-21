@@ -45,7 +45,7 @@ public class PluginMessageComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final ConfigAccessorFactory configAccessorFactory = getDependency(ConfigAccessorFactory.class);
         final LanguageProvider languageProvider = getDependency(LanguageProvider.class);
@@ -61,6 +61,6 @@ public class PluginMessageComponent extends AbstractCoreComponent {
             throw new IllegalStateException("Failed to load plugin message component: %s".formatted(e.getMessage()), e);
         }
 
-        providerCallback.take(PluginMessage.class, pluginMessage);
+        dependencyProvider.take(PluginMessage.class, pluginMessage);
     }
 }

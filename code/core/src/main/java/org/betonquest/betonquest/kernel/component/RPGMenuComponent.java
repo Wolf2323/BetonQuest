@@ -59,7 +59,7 @@ public class RPGMenuComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager packManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Instructions instructions = getDependency(Instructions.class);
@@ -85,6 +85,6 @@ public class RPGMenuComponent extends AbstractCoreComponent {
                 menuIdentifierFactory, menuItemIdentifierFactory, actionRegistry, conditionRegistry,
                 objectiveRegistry, placeholderRegistry, actionManager, conditionManager);
 
-        providerCallback.take(RPGMenu.class, rpgMenu);
+        dependencyProvider.take(RPGMenu.class, rpgMenu);
     }
 }

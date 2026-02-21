@@ -66,7 +66,7 @@ public class NpcsComponent extends AbstractCoreComponent implements Npcs {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Instructions instructions = getDependency(Instructions.class);
@@ -89,10 +89,10 @@ public class NpcsComponent extends AbstractCoreComponent implements Npcs {
                 profileProvider, actionProcessor, conditionProcessor, conversationProcessor.getStarter(), instructions,
                 identifiers, saver, config, conversationProcessor);
 
-        providerCallback.take(NpcIdentifierFactory.class, npcIdentifierFactory);
-        providerCallback.take(NpcTypeRegistry.class, npcTypeRegistry);
-        providerCallback.take(NpcProcessor.class, npcProcessor);
-        providerCallback.take(Npcs.class, this);
+        dependencyProvider.take(NpcIdentifierFactory.class, npcIdentifierFactory);
+        dependencyProvider.take(NpcTypeRegistry.class, npcTypeRegistry);
+        dependencyProvider.take(NpcProcessor.class, npcProcessor);
+        dependencyProvider.take(Npcs.class, this);
     }
 
     @Override

@@ -50,7 +50,7 @@ public class BStatsMetricsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final JavaPlugin plugin = getDependency(JavaPlugin.class);
         final Compatibility compatibility = getDependency(Compatibility.class);
         final BetonQuestApi betonQuestApi = getDependency(BetonQuestApi.class);
@@ -63,6 +63,6 @@ public class BStatsMetricsComponent extends AbstractCoreComponent {
 
         this.bStatsMetrics = new BStatsMetrics(plugin, new Metrics(plugin, BSTATS_METRICS_ID), collectedMetrics, compatibility, betonQuestApi.instructions());
 
-        providerCallback.take(BStatsMetrics.class, bStatsMetrics);
+        dependencyProvider.take(BStatsMetrics.class, bStatsMetrics);
     }
 }

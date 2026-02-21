@@ -57,7 +57,7 @@ public class PlaceholdersComponent extends AbstractCoreComponent implements Plac
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
@@ -71,10 +71,10 @@ public class PlaceholdersComponent extends AbstractCoreComponent implements Plac
         this.placeholderProcessor = new PlaceholderProcessor(loggerFactory.create(PlaceholderProcessor.class),
                 questPackageManager, placeholderTypeRegistry, bukkitScheduler, placeholderIdentifierFactory, instructions, plugin);
 
-        providerCallback.take(PlaceholderIdentifierFactory.class, placeholderIdentifierFactory);
-        providerCallback.take(PlaceholderTypeRegistry.class, placeholderTypeRegistry);
-        providerCallback.take(PlaceholderManager.class, placeholderProcessor);
-        providerCallback.take(Placeholders.class, this);
+        dependencyProvider.take(PlaceholderIdentifierFactory.class, placeholderIdentifierFactory);
+        dependencyProvider.take(PlaceholderTypeRegistry.class, placeholderTypeRegistry);
+        dependencyProvider.take(PlaceholderManager.class, placeholderProcessor);
+        dependencyProvider.take(Placeholders.class, this);
     }
 
     @Override

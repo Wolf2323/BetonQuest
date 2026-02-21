@@ -70,7 +70,7 @@ public class ConversationsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Plugin plugin = getDependency(Plugin.class);
@@ -95,10 +95,10 @@ public class ConversationsComponent extends AbstractCoreComponent {
                 loggerFactory, plugin, parsedSectionTextCreator, questPackageManager, placeholderProcessor, profileProvider, config, conversationIORegistry, interceptorRegistry,
                 instructions, pluginMessage, actionProcessor, conditionProcessor, conversationIdentifierFactory, identifiers, saver);
 
-        providerCallback.take(ConversationIdentifierFactory.class, conversationIdentifierFactory);
-        providerCallback.take(ConversationOptionIdentifierFactory.class, conversationOptionIdentifierFactory);
-        providerCallback.take(ConversationIORegistry.class, conversationIORegistry);
-        providerCallback.take(InterceptorRegistry.class, interceptorRegistry);
-        providerCallback.take(ConversationProcessor.class, conversationProcessor);
+        dependencyProvider.take(ConversationIdentifierFactory.class, conversationIdentifierFactory);
+        dependencyProvider.take(ConversationOptionIdentifierFactory.class, conversationOptionIdentifierFactory);
+        dependencyProvider.take(ConversationIORegistry.class, conversationIORegistry);
+        dependencyProvider.take(InterceptorRegistry.class, interceptorRegistry);
+        dependencyProvider.take(ConversationProcessor.class, conversationProcessor);
     }
 }

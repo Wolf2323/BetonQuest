@@ -53,7 +53,7 @@ public class PlayerDataStorageComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
         final Saver saver = getDependency(Saver.class);
@@ -67,7 +67,7 @@ public class PlayerDataStorageComponent extends AbstractCoreComponent {
         this.playerDataStorage = new PlayerDataStorage(loggerFactory.create(PlayerDataStorage.class), config,
                 playerDataFactory, objectiveProcessor, profileProvider);
 
-        providerCallback.take(PlayerDataFactory.class, playerDataFactory);
-        providerCallback.take(PlayerDataStorage.class, playerDataStorage);
+        dependencyProvider.take(PlayerDataFactory.class, playerDataFactory);
+        dependencyProvider.take(PlayerDataStorage.class, playerDataStorage);
     }
 }

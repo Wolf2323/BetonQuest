@@ -58,7 +58,7 @@ public class ActionsComponent extends AbstractCoreComponent implements Actions {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
@@ -73,10 +73,10 @@ public class ActionsComponent extends AbstractCoreComponent implements Actions {
         this.actionProcessor = new ActionProcessor(loggerFactory.create(ActionProcessor.class),
                 actionIdentifierFactory, actionTypeRegistry, bukkitScheduler, instructions, plugin);
 
-        providerCallback.take(ActionIdentifierFactory.class, actionIdentifierFactory);
-        providerCallback.take(ActionTypeRegistry.class, actionTypeRegistry);
-        providerCallback.take(ActionProcessor.class, actionProcessor);
-        providerCallback.take(Actions.class, this);
+        dependencyProvider.take(ActionIdentifierFactory.class, actionIdentifierFactory);
+        dependencyProvider.take(ActionTypeRegistry.class, actionTypeRegistry);
+        dependencyProvider.take(ActionProcessor.class, actionProcessor);
+        dependencyProvider.take(Actions.class, this);
     }
 
     @Override

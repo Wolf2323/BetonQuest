@@ -41,7 +41,7 @@ public class ArgumentParsersComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public void load(final DependencyProvider providerCallback) {
+    public void load(final DependencyProvider dependencyProvider) {
         final ItemManager itemManager = getDependency(ItemManager.class);
         final ItemIdentifierFactory itemIdentifierFactory = getDependency(ItemIdentifierFactory.class);
         final TextParser textParser = getDependency(TextParser.class);
@@ -50,6 +50,6 @@ public class ArgumentParsersComponent extends AbstractCoreComponent {
 
         this.defaultArgumentParsers = new DefaultArgumentParsers(itemManager, itemIdentifierFactory, textParser, server, identifiers);
 
-        providerCallback.take(DefaultArgumentParsers.class, defaultArgumentParsers);
+        dependencyProvider.take(DefaultArgumentParsers.class, defaultArgumentParsers);
     }
 }
