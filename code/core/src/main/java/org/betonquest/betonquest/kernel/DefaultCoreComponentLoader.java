@@ -88,6 +88,10 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
         log.info("Loading BetonQuest %s components...".formatted(components.size()));
         initialInjections.forEach(this::injectToAll);
         log.debug("Injected initial %s dependencies into components.".formatted(initialInjections.size()));
+        if (components.isEmpty()) {
+            log.warn("No components were registered. Skipping loading.");
+            return;
+        }
         do {
             checkForDependencyBlocking();
             components.stream().filter(CoreComponent::canLoad).forEach(component -> component.load(this));
