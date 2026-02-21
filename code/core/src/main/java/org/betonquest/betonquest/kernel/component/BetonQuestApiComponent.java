@@ -2,6 +2,7 @@ package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.BetonQuestApiService;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
+import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestApi;
@@ -72,15 +73,18 @@ public class BetonQuestApiComponent extends AbstractCoreComponent {
         final Npcs npcs = getDependency(Npcs.class);
         final Plugin plugin = getDependency(Plugin.class);
 
+        final BetonQuestLogger log = loggerFactory.create(BetonQuestApiComponent.class);
+
         this.defaultBetonQuestApi = new DefaultBetonQuestApi(profileProvider, packManager, loggerFactory, instructions,
                 actions, conditions, objectives, placeholders, items, npcs,
                 conversations, identifiers);
 
         servicesManager.register(BetonQuestApiService.class, new DefaultBetonQuestApiService(callerPlugin -> {
-            loggerFactory.create(plugin).debug("Loading API for plugin " + callerPlugin.getName());
+            log.debug("Loading API for plugin %s".formatted(callerPlugin.getName()));
             return defaultBetonQuestApi;
         }), plugin, ServicePriority.Highest);
 
+        log.info("BetonQuest API enabled.");
         dependencyProvider.take(DefaultBetonQuestApi.class, defaultBetonQuestApi);
     }
 }
