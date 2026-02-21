@@ -17,6 +17,7 @@ import org.betonquest.betonquest.api.quest.objective.service.ObjectiveServicePro
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.bstats.CompositeInstructionMetricsSupplier;
+import org.betonquest.betonquest.bstats.MetricsHolder;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.PlayerData;
 import org.betonquest.betonquest.kernel.processor.QuestProcessor;
@@ -37,7 +38,7 @@ import java.util.Set;
  * Stores Objectives and starts/stops/resumes them.
  */
 @SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.TooManyMethods", "PMD.GodClass"})
-public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Objective> implements ObjectiveManager {
+public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Objective> implements ObjectiveManager, MetricsHolder {
 
     /**
      * Instruction API.
@@ -103,11 +104,7 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
         return PackageIdentifierParser.INSTANCE.apply(objectiveID.getPackage(), "global-" + objectiveID.get());
     }
 
-    /**
-     * Gets the bstats metric supplier for registered and active types.
-     *
-     * @return the metric with its type identifier
-     */
+    @Override
     public Map.Entry<String, CompositeInstructionMetricsSupplier<?>> metricsSupplier() {
         return Map.entry(internal, new CompositeInstructionMetricsSupplier<>(values::keySet, types::keySet));
     }
