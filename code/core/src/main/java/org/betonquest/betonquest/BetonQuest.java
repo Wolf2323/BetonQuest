@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.BetonQuestApiService;
 import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.bukkit.event.LoadDataEvent;
@@ -21,8 +20,6 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.service.DefaultBetonQuestApiService;
-import org.betonquest.betonquest.bstats.BStatsMetrics;
 import org.betonquest.betonquest.command.BackpackCommand;
 import org.betonquest.betonquest.command.CancelQuestCommand;
 import org.betonquest.betonquest.command.CompassCommand;
@@ -51,6 +48,7 @@ import org.betonquest.betonquest.database.SQLite;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.feature.CoreFeatureFactories;
 import org.betonquest.betonquest.item.QuestItemHandler;
+import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
 import org.betonquest.betonquest.kernel.processor.QuestProcessor;
 import org.betonquest.betonquest.kernel.registry.quest.ActionTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;
@@ -88,14 +86,13 @@ import org.betonquest.betonquest.web.updater.source.DevelopmentUpdateSource;
 import org.betonquest.betonquest.web.updater.source.ReleaseUpdateSource;
 import org.betonquest.betonquest.web.updater.source.implementations.GitHubReleaseSource;
 import org.betonquest.betonquest.web.updater.source.implementations.ReposiliteReleaseAndDevelopmentSource;
-import org.bstats.bukkit.Metrics;
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -318,9 +315,27 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
         setupFontRegistry();
 
-        this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class),
-                new CoreQuestTypeHandler.ConstructorParams(this, loggerFactory, profileProvider,
-                        configAccessorFactory, questManager, config, this, saver, fontRegistry));
+        compatibility = new Compatibility(loggerFactory.create(Compatibility.class), betonQuestApi, config, version);
+
+        final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader();
+        this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class), coreComponentLoader);
+
+        coreComponentLoader.init(JavaPlugin.class, this);
+        coreComponentLoader.init(Server.class, getServer());
+        coreComponentLoader.init(PluginManager.class, getServer().getPluginManager());
+        coreComponentLoader.init(BukkitScheduler.class, getServer().getScheduler());
+        coreComponentLoader.init(LanguageProvider.class, this);
+        coreComponentLoader.init(ServicesManager.class, getServer().getServicesManager());
+        coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
+        coreComponentLoader.init(QuestManager.class, questManager);
+        coreComponentLoader.init(ProfileProvider.class, profileProvider);
+        coreComponentLoader.init(GlobalData.class, globalData);
+        coreComponentLoader.init(Connector.class, connector);
+        coreComponentLoader.init(AsyncSaver.class, saver);
+        coreComponentLoader.init(LastExecutionCache.class, lastExecutionCache);
+        coreComponentLoader.init(FileConfigAccessor.class, config);
+        coreComponentLoader.init(FontRegistry.class, fontRegistry);
+        coreComponentLoader.init(Compatibility.class, compatibility);
 
         coreQuestTypeHandler.init();
         this.betonQuestApi = coreQuestTypeHandler.getBetonQuestApi();
@@ -337,10 +352,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         } catch (final QuestException e) {
             throw new IllegalStateException("Could not load conversation colors! " + e.getMessage(), e);
         }
-
-        setupApi();
-
-        compatibility = new Compatibility(loggerFactory.create(Compatibility.class), betonQuestApi, config, version);
 
         registerCommands(receiverSelector, debugHistoryHandler, coreQuestTypeHandler.getPlayerDataFactory());
 
@@ -367,8 +378,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
             log.warn("Could not disable /betonquestanswer logging", e);
         }
 
-        new BStatsMetrics(this, new Metrics(this, BSTATS_METRICS_ID), coreQuestTypeHandler.metricsSupplier(), compatibility, betonQuestApi.instructions());
-
         log.info("BetonQuest successfully enabled!");
     }
 
@@ -393,13 +402,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreFeatureFactories.register(coreQuestTypeHandler.getConversationIORegistry(), coreQuestTypeHandler.getInterceptorRegistry(),
                 coreQuestTypeHandler.getItemRegistry(), coreQuestTypeHandler.getNotifyIORegistry(),
                 coreQuestTypeHandler.getScheduleRegistry(), coreQuestTypeHandler.getTextParserRegistry());
-    }
-
-    private void setupApi() {
-        Bukkit.getServicesManager().register(BetonQuestApiService.class, new DefaultBetonQuestApiService(plugin -> {
-            log.debug("Loading API for plugin " + plugin.getName());
-            return betonQuestApi;
-        }), this, ServicePriority.Highest);
     }
 
     private void setupFontRegistry() {
