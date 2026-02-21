@@ -1,6 +1,5 @@
 package org.betonquest.betonquest.quest;
 
-import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.text.TextParser;
@@ -55,6 +54,7 @@ import org.betonquest.betonquest.text.ParsedSectionTextCreator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -196,7 +196,8 @@ public class CoreQuestTypeHandler {
      * @return all loaded amounts
      */
     public String readableSize() {
-        return allProcessors.stream().map(QuestProcessor::readableSize).collect(Collectors.joining(", "));
+        return allProcessors.stream().sorted(Comparator.comparing(questProcessor -> questProcessor.readableSize().split(" ")[1]))
+                .map(QuestProcessor::readableSize).collect(Collectors.joining(", "));
     }
 
     /**
@@ -207,15 +208,6 @@ public class CoreQuestTypeHandler {
      */
     public Collection<QuestProcessor<?, ?>> getAdditionalProcessors() {
         return additionalProcessors;
-    }
-
-    /**
-     * Gets the BetonQuest API.
-     *
-     * @return the API
-     */
-    public BetonQuestApi getBetonQuestApi() {
-        return coreComponentLoader.get(BetonQuestApi.class);
     }
 
     /**
