@@ -1,40 +1,21 @@
 package org.betonquest.betonquest.quest;
 
 import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.LanguageProvider;
-import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
-import org.betonquest.betonquest.api.identifier.ActionIdentifier;
-import org.betonquest.betonquest.api.identifier.CompassIdentifier;
-import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
-import org.betonquest.betonquest.api.identifier.ConversationOptionIdentifier;
 import org.betonquest.betonquest.api.identifier.IdentifierFactory;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
-import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
-import org.betonquest.betonquest.api.identifier.JournalMainPageIdentifier;
-import org.betonquest.betonquest.api.identifier.MenuIdentifier;
-import org.betonquest.betonquest.api.identifier.MenuItemIdentifier;
-import org.betonquest.betonquest.api.identifier.NpcIdentifier;
-import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
-import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
-import org.betonquest.betonquest.api.identifier.QuestCancelerIdentifier;
 import org.betonquest.betonquest.api.identifier.ReadableIdentifier;
-import org.betonquest.betonquest.api.identifier.ScheduleIdentifier;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
-import org.betonquest.betonquest.api.instruction.argument.parser.DefaultArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.quest.objective.service.DefaultObjectiveServiceProvider;
-import org.betonquest.betonquest.api.service.DefaultBetonQuestApi;
-import org.betonquest.betonquest.api.service.DefaultInstructions;
 import org.betonquest.betonquest.api.service.action.Actions;
 import org.betonquest.betonquest.api.service.condition.Conditions;
 import org.betonquest.betonquest.api.service.feature.DefaultActions;
@@ -55,22 +36,28 @@ import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.PlayerDataFactory;
 import org.betonquest.betonquest.database.Saver;
-import org.betonquest.betonquest.feature.journal.JournalFactory;
-import org.betonquest.betonquest.id.action.ActionIdentifierFactory;
-import org.betonquest.betonquest.id.cancel.QuestCancelerIdentifierFactory;
-import org.betonquest.betonquest.id.compass.CompassIdentifierFactory;
-import org.betonquest.betonquest.id.condition.ConditionIdentifierFactory;
-import org.betonquest.betonquest.id.conversation.ConversationIdentifierFactory;
-import org.betonquest.betonquest.id.conversation.ConversationOptionIdentifierFactory;
-import org.betonquest.betonquest.id.item.ItemIdentifierFactory;
-import org.betonquest.betonquest.id.journal.JournalEntryIdentifierFactory;
-import org.betonquest.betonquest.id.journal.JournalMainPageIdentifierFactory;
-import org.betonquest.betonquest.id.menu.MenuIdentifierFactory;
-import org.betonquest.betonquest.id.menu.MenuItemIdentifierFactory;
-import org.betonquest.betonquest.id.npc.NpcIdentifierFactory;
-import org.betonquest.betonquest.id.objective.ObjectiveIdentifierFactory;
-import org.betonquest.betonquest.id.placeholder.PlaceholderIdentifierFactory;
-import org.betonquest.betonquest.id.schedule.ScheduleIdentifierFactory;
+import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
+import org.betonquest.betonquest.kernel.component.ActionsComponent;
+import org.betonquest.betonquest.kernel.component.ArgumentParsersComponent;
+import org.betonquest.betonquest.kernel.component.BetonQuestApiComponent;
+import org.betonquest.betonquest.kernel.component.CancelersComponent;
+import org.betonquest.betonquest.kernel.component.CompassComponent;
+import org.betonquest.betonquest.kernel.component.ConditionsComponent;
+import org.betonquest.betonquest.kernel.component.ConversationsComponent;
+import org.betonquest.betonquest.kernel.component.IdentifiersComponent;
+import org.betonquest.betonquest.kernel.component.InstructionsComponent;
+import org.betonquest.betonquest.kernel.component.ItemsComponent;
+import org.betonquest.betonquest.kernel.component.JournalsComponent;
+import org.betonquest.betonquest.kernel.component.NotificationsComponent;
+import org.betonquest.betonquest.kernel.component.NpcsComponent;
+import org.betonquest.betonquest.kernel.component.ObjectivesComponent;
+import org.betonquest.betonquest.kernel.component.PlaceholdersComponent;
+import org.betonquest.betonquest.kernel.component.PlayerDataStorageComponent;
+import org.betonquest.betonquest.kernel.component.PluginMessageComponent;
+import org.betonquest.betonquest.kernel.component.RPGMenuComponent;
+import org.betonquest.betonquest.kernel.component.SchedulesComponent;
+import org.betonquest.betonquest.kernel.component.TextParserComponent;
+import org.betonquest.betonquest.kernel.component.TextSectionParserComponent;
 import org.betonquest.betonquest.kernel.processor.QuestProcessor;
 import org.betonquest.betonquest.kernel.processor.StartTask;
 import org.betonquest.betonquest.kernel.processor.TypedQuestProcessor;
@@ -99,9 +86,7 @@ import org.betonquest.betonquest.kernel.registry.quest.ObjectiveTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.quest.PlaceholderTypeRegistry;
 import org.betonquest.betonquest.menu.RPGMenu;
 import org.betonquest.betonquest.schedule.ActionScheduling;
-import org.betonquest.betonquest.text.DecidingTextParser;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
-import org.betonquest.betonquest.text.TagTextParserDecider;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -194,6 +179,11 @@ public class CoreQuestTypeHandler {
      * Contains all processors that are not part of the main quest processing chain.
      */
     private final Collection<QuestProcessor<?, ?>> additionalProcessors;
+
+    /**
+     * The default core component loader to load the components in this class.
+     */
+    private final DefaultCoreComponentLoader coreComponentLoader;
 
     /**
      * The identifier factory for conversations.
@@ -427,297 +417,44 @@ public class CoreQuestTypeHandler {
         this.fontRegistry = params.fontRegistry();
         this.allProcessors = new ArrayList<>();
         this.additionalProcessors = new ArrayList<>();
-    }
-
-    private void initIdentifiers() {
-        identifierTypeRegistry = new IdentifierTypeRegistry(loggerFactory.create(IdentifierTypeRegistry.class));
-    }
-
-    private void initConditions() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before conditions!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before conditions!");
-        final ConditionIdentifierFactory conditionIdentifierFactory = new ConditionIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(ConditionIdentifier.class, conditionIdentifierFactory);
-        this.conditionTypeRegistry = new ConditionTypeRegistry(loggerFactory.create(ConditionTypeRegistry.class));
-        this.conditionProcessor = new ConditionProcessor(loggerFactory.create(ConditionProcessor.class),
-                conditionTypeRegistry, bukkitScheduler, conditionIdentifierFactory, plugin, instructions);
-        this.allProcessors.add(conditionProcessor);
-    }
-
-    private void initActions() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before actions!");
-        Objects.requireNonNull(this.conditionProcessor, "Condition processor must be initialized before actions!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before actions!");
-        final ActionIdentifierFactory actionIdentifierFactory = new ActionIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(ActionIdentifier.class, actionIdentifierFactory);
-        this.actionTypeRegistry = new ActionTypeRegistry(loggerFactory.create(ActionTypeRegistry.class), loggerFactory, conditionProcessor);
-        this.actionProcessor = new ActionProcessor(loggerFactory.create(ActionProcessor.class),
-                actionIdentifierFactory, actionTypeRegistry, bukkitScheduler, instructions, plugin);
-        this.allProcessors.add(actionProcessor);
-    }
-
-    private void initObjectives() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before objectives!");
-        Objects.requireNonNull(this.conditionProcessor, "Condition processor must be initialized before objectives!");
-        Objects.requireNonNull(this.actionProcessor, "Action processor must be initialized before objectives!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before objectives!");
-        final DefaultObjectiveServiceProvider objectiveServiceProvider = new DefaultObjectiveServiceProvider(plugin, conditionProcessor, actionProcessor,
-                loggerFactory, profileProvider, instructions);
-        final ObjectiveIdentifierFactory objectiveIdentifierFactory = new ObjectiveIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(ObjectiveIdentifier.class, objectiveIdentifierFactory);
-        this.objectiveTypeRegistry = new ObjectiveTypeRegistry(loggerFactory.create(ObjectiveTypeRegistry.class));
-        this.objectiveProcessor = new ObjectiveProcessor(loggerFactory.create(ObjectiveProcessor.class),
-                objectiveTypeRegistry, objectiveIdentifierFactory, pluginManager,
-                objectiveServiceProvider, instructions, plugin);
-        this.allProcessors.add(objectiveProcessor);
-    }
-
-    private void initPlaceholders() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before placeholders!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before placeholders!");
-        final PlaceholderIdentifierFactory placeholderIdentifierFactory = new PlaceholderIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(PlaceholderIdentifier.class, placeholderIdentifierFactory);
-        this.placeholderTypeRegistry = new PlaceholderTypeRegistry(loggerFactory.create(PlaceholderTypeRegistry.class));
-        this.placeholderProcessor = new PlaceholderProcessor(loggerFactory.create(PlaceholderProcessor.class),
-                packManager, placeholderTypeRegistry, bukkitScheduler, placeholderIdentifierFactory, instructions, plugin);
-        this.allProcessors.add(placeholderProcessor);
-    }
-
-    private void initConversations() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before conversations!");
-        Objects.requireNonNull(this.parsedSectionTextCreator, "Parsed section text creator must be initialized before conversations!");
-        Objects.requireNonNull(this.placeholderProcessor, "Placeholder processor must be initialized before conversations!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before conversations!");
-        Objects.requireNonNull(this.pluginMessage, "Plugin message must be initialized before conversations!");
-        Objects.requireNonNull(this.actionProcessor, "Action processor must be initialized before conversations!");
-        Objects.requireNonNull(this.conditionProcessor, "Condition processor must be initialized before conversations!");
-        this.conversationIdentifierFactory = new ConversationIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(ConversationIdentifier.class, conversationIdentifierFactory);
-        final ConversationOptionIdentifierFactory conversationOptionIdentifierFactory = new ConversationOptionIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(ConversationOptionIdentifier.class, conversationOptionIdentifierFactory);
-        this.conversationIORegistry = new ConversationIORegistry(loggerFactory.create(ConversationIORegistry.class));
-        this.interceptorRegistry = new InterceptorRegistry(loggerFactory.create(InterceptorRegistry.class));
-        this.conversationProcessor = new ConversationProcessor(loggerFactory.create(ConversationProcessor.class),
-                loggerFactory, plugin, parsedSectionTextCreator, packManager, placeholderProcessor, profileProvider, config, conversationIORegistry, interceptorRegistry,
-                instructions, pluginMessage, actionProcessor, conditionProcessor, conversationIdentifierFactory, identifierTypeRegistry, saver);
-        this.allProcessors.add(conversationProcessor);
-    }
-
-    private void initNpcs() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before npcs!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before npcs!");
-        Objects.requireNonNull(this.actionProcessor, "Action processor must be initialized before npcs!");
-        Objects.requireNonNull(this.conditionProcessor, "Condition processor must be initialized before npcs!");
-        Objects.requireNonNull(this.conversationProcessor, "Conversation processor must be initialized before npcs!");
-        Objects.requireNonNull(this.conversationIdentifierFactory, "Conversation identifier factory must be initialized before npcs!");
-        Objects.requireNonNull(this.pluginMessage, "Plugin message must be initialized before npcs!");
-        final NpcIdentifierFactory npcIdentifierFactory = new NpcIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(NpcIdentifier.class, npcIdentifierFactory);
-        this.npcRegistry = new NpcTypeRegistry(loggerFactory.create(NpcTypeRegistry.class), instructions);
-        this.npcProcessor = new NpcProcessor(loggerFactory.create(NpcProcessor.class), loggerFactory, plugin,
-                npcIdentifierFactory, conversationIdentifierFactory, npcRegistry, pluginMessage,
-                profileProvider, actionProcessor, conditionProcessor, conversationProcessor.getStarter(), instructions,
-                identifierTypeRegistry, saver, config, conversationProcessor);
-        this.allProcessors.add(npcProcessor);
-    }
-
-    private void initItems() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before items!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before items!");
-        this.itemIdentifierFactory = new ItemIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(ItemIdentifier.class, itemIdentifierFactory);
-        this.itemRegistry = new ItemTypeRegistry(loggerFactory.create(ItemTypeRegistry.class));
-        this.itemProcessor = new ItemProcessor(loggerFactory.create(ItemProcessor.class),
-                itemIdentifierFactory, itemRegistry, instructions);
-        this.allProcessors.add(itemProcessor);
-    }
-
-    private void initCompasses() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before compasses!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before compasses!");
-        Objects.requireNonNull(this.parsedSectionTextCreator, "Parsed section text creator must be initialized before compasses!");
-        final CompassIdentifierFactory compassIdentifierFactory = new CompassIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(CompassIdentifier.class, compassIdentifierFactory);
-        this.compassProcessor = new CompassProcessor(loggerFactory.create(CompassProcessor.class),
-                instructions, parsedSectionTextCreator, compassIdentifierFactory);
-        this.allProcessors.add(compassProcessor);
-    }
-
-    private void initJournalEntries() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before journal entries!");
-        Objects.requireNonNull(this.parsedSectionTextCreator, "Parsed section text creator must be initialized before journal entries!");
-        final JournalEntryIdentifierFactory journalEntryIdentifierFactory = new JournalEntryIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(JournalEntryIdentifier.class, journalEntryIdentifierFactory);
-        this.journalEntryProcessor = new JournalEntryProcessor(loggerFactory.create(JournalEntryProcessor.class),
-                journalEntryIdentifierFactory, parsedSectionTextCreator);
-        this.allProcessors.add(journalEntryProcessor);
-    }
-
-    private void initJournalMainPages() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before journal main pages!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before journal main pages!");
-        Objects.requireNonNull(this.parsedSectionTextCreator, "Parsed section text creator must be initialized before journal main pages!");
-        final JournalMainPageIdentifierFactory journalMainPageIdentifierFactory = new JournalMainPageIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(JournalMainPageIdentifier.class, journalMainPageIdentifierFactory);
-        this.journalMainPageProcessor = new JournalMainPageProcessor(loggerFactory.create(JournalMainPageProcessor.class),
-                instructions, parsedSectionTextCreator, journalMainPageIdentifierFactory);
-        this.allProcessors.add(journalMainPageProcessor);
-    }
-
-    private void initSchedules() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before schedules!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before schedules!");
-        final ScheduleIdentifierFactory scheduleIdentifierFactory = new ScheduleIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(ScheduleIdentifier.class, scheduleIdentifierFactory);
-        this.scheduleRegistry = new ScheduleRegistry(loggerFactory.create(ScheduleRegistry.class));
-        this.scheduleProcessor = new ActionScheduling(loggerFactory.create(ActionScheduling.class, "Schedules"),
-                instructions, scheduleRegistry, scheduleIdentifierFactory);
-        this.allProcessors.add(scheduleProcessor);
-    }
-
-    private void initCancelers() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before cancelers!");
-        Objects.requireNonNull(this.pluginMessage, "Plugin message must be initialized before cancelers!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before cancelers!");
-        Objects.requireNonNull(this.actionProcessor, "Action processor must be initialized before cancelers!");
-        Objects.requireNonNull(this.conditionProcessor, "Condition processor must be initialized before cancelers!");
-        Objects.requireNonNull(this.parsedSectionTextCreator, "Parsed section text creator must be initialized before cancelers!");
-        Objects.requireNonNull(this.objectiveProcessor, "Objective processor must be initialized before cancelers!");
-        Objects.requireNonNull(this.itemProcessor, "Item processor must be initialized before cancelers!");
-        Objects.requireNonNull(this.playerDataStorage, "Player data storage must be initialized before cancelers!");
-        final QuestCancelerIdentifierFactory questCancelerIdentifierFactory = new QuestCancelerIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(QuestCancelerIdentifier.class, questCancelerIdentifierFactory);
-        this.cancelerProcessor = new CancelerProcessor(loggerFactory.create(CancelerProcessor.class),
-                loggerFactory, pluginMessage, instructions, actionProcessor, conditionProcessor,
-                objectiveProcessor, itemProcessor, parsedSectionTextCreator, playerDataStorage, questCancelerIdentifierFactory);
-        allProcessors.add(cancelerProcessor);
-    }
-
-    private void initNotifyIOs() {
-        this.notifyIORegistry = new NotifyIORegistry(loggerFactory.create(NotifyIORegistry.class));
-    }
-
-    private void initTextParser() {
-        this.textParserRegistry = new TextParserRegistryImpl(loggerFactory.create(TextParserRegistryImpl.class));
-        final String defaultParser = config.getString("text_parser", "legacyminimessage");
-        this.textParser = new DecidingTextParser(textParserRegistry, new TagTextParserDecider(defaultParser));
-    }
-
-    private void initTextSectionParser() {
-        Objects.requireNonNull(this.textParser, "Text parser must be initialized before text section parser!");
-        Objects.requireNonNull(this.playerDataStorage, "Player data storage must be initialized before text section parser!");
-        Objects.requireNonNull(this.placeholderProcessor, "Placeholder processor must be initialized before text section parser!");
-        this.parsedSectionTextCreator = new ParsedSectionTextCreator(textParser, playerDataStorage, languageProvider, placeholderProcessor);
-    }
-
-    private void initPlayerDataStorage() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before player data storage!");
-        Objects.requireNonNull(this.objectiveProcessor, "Objective processor must be initialized before player data storage!");
-        this.playerDataFactory = new PlayerDataFactory(loggerFactory, saver, server,
-                identifierTypeRegistry, objectiveProcessor, Suppliers.memoize(() -> {
-            Objects.requireNonNull(this.pluginMessage, "Plugin message must be initialized before player data storage!");
-            Objects.requireNonNull(this.conditionProcessor, "Condition processor must be initialized before player data storage!");
-            Objects.requireNonNull(this.journalMainPageProcessor, "Journal main page processor must be initialized before player data storage!");
-            Objects.requireNonNull(this.journalEntryProcessor, "Journal entry processor must be initialized before player data storage!");
-            Objects.requireNonNull(this.textParser, "Text parser must be initialized before player data storage!");
-            return new JournalFactory(loggerFactory, pluginMessage, conditionProcessor, journalMainPageProcessor, journalEntryProcessor, config, textParser, fontRegistry);
-        }));
-        playerDataStorage = new PlayerDataStorage(loggerFactory.create(PlayerDataStorage.class), config,
-                playerDataFactory, objectiveProcessor, profileProvider);
-    }
-
-    private void initPluginMessage() throws QuestException {
-        Objects.requireNonNull(this.placeholderProcessor, "Placeholder processor must be initialized before plugin message!");
-        Objects.requireNonNull(this.playerDataStorage, "Player data storage must be initialized before plugin message!");
-        Objects.requireNonNull(this.textParser, "Text parser must be initialized before plugin message!");
-        pluginMessage = new PluginMessage(loggerFactory.create(PluginMessage.class), plugin, placeholderProcessor,
-                playerDataStorage, textParser, configAccessorFactory, languageProvider);
-    }
-
-    private void initRPGMenu() {
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before RPG menu!");
-        Objects.requireNonNull(this.pluginMessage, "Plugin message must be initialized before RPG menu!");
-        Objects.requireNonNull(this.parsedSectionTextCreator, "Parsed section text creator must be initialized before RPG menu!");
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before RPG menu!");
-        Objects.requireNonNull(this.argumentParsers, "Argument parsers must be initialized before RPG menu!");
-        Objects.requireNonNull(this.actionTypeRegistry, "Action type registry must be initialized before RPG menu!");
-        Objects.requireNonNull(this.conditionTypeRegistry, "Condition type registry must be initialized before RPG menu!");
-        Objects.requireNonNull(this.objectiveTypeRegistry, "Objective type registry must be initialized before RPG menu!");
-        Objects.requireNonNull(this.placeholderTypeRegistry, "Placeholder type registry must be initialized before RPG menu!");
-        Objects.requireNonNull(this.actionProcessor, "Action processor must be initialized before RPG menu!");
-        Objects.requireNonNull(this.conditionProcessor, "Condition processor must be initialized before RPG menu!");
-        final MenuIdentifierFactory menuIdentifierFactory = new MenuIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(MenuIdentifier.class, menuIdentifierFactory);
-        final MenuItemIdentifierFactory menuItemIdentifierFactory = new MenuItemIdentifierFactory(packManager);
-        this.identifierTypeRegistry.register(MenuItemIdentifier.class, menuItemIdentifierFactory);
-        this.rpgMenu = new RPGMenu(loggerFactory.create(RPGMenu.class), loggerFactory, instructions, config,
-                pluginMessage, parsedSectionTextCreator, profileProvider, this.argumentParsers.get(),
-                menuIdentifierFactory, menuItemIdentifierFactory, actionTypeRegistry, conditionTypeRegistry,
-                objectiveTypeRegistry, placeholderTypeRegistry, actionProcessor, conditionProcessor);
-    }
-
-    private void initInstructions() {
-        Objects.requireNonNull(this.argumentParsers, "Argument parsers must be initialized before instructions!");
-        this.instructions = new DefaultInstructions(() -> placeholderProcessor, () -> packManager, argumentParsers, () -> loggerFactory);
-    }
-
-    private void initArguments() {
-        this.argumentParsers = () -> {
-            Objects.requireNonNull(this.itemProcessor, "Item processor must be initialized before arguments!");
-            Objects.requireNonNull(this.itemIdentifierFactory, "Item identifier factory must be initialized before arguments!");
-            Objects.requireNonNull(this.textParser, "Text parser must be initialized before arguments!");
-            Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before arguments!");
-            return new DefaultArgumentParsers(itemProcessor, itemIdentifierFactory, textParser, server, identifierTypeRegistry);
-        };
-    }
-
-    private void initBetonQuestApi() {
-        Objects.requireNonNull(this.instructions, "Instructions must be initialized before BetonQuest API!");
-        Objects.requireNonNull(this.conversationProcessor, "Conversation processor must be initialized before BetonQuest API!");
-        Objects.requireNonNull(this.identifierTypeRegistry, "Identifier registry must be initialized before BetonQuest API!");
-        this.betonQuestApi = new DefaultBetonQuestApi(profileProvider, packManager, loggerFactory, instructions,
-                getActions(), getConditions(), getObjectives(), getPlaceholders(), getItems(), getNpcs(),
-                conversationProcessor, identifierTypeRegistry);
+        this.coreComponentLoader = new DefaultCoreComponentLoader();
     }
 
     private void initCoreTypes() {
-        initIdentifiers();
-        initConditions();
-        initActions();
-        initObjectives();
-        initPlaceholders();
+        coreComponentLoader.register(new IdentifiersComponent());
+        coreComponentLoader.register(new ConditionsComponent());
+        coreComponentLoader.register(new ActionsComponent());
+        coreComponentLoader.register(new ObjectivesComponent());
+        coreComponentLoader.register(new PlaceholdersComponent());
     }
 
-    private void initFeatures() throws QuestException {
-        initTextParser();
-        initPlayerDataStorage();
-        initTextSectionParser();
-        initSchedules();
-        initNotifyIOs();
-        initJournalEntries();
-        initJournalMainPages();
-        initPluginMessage();
-        initItems();
-        initCompasses();
-        initConversations();
-        initNpcs();
-        initCancelers();
-        initRPGMenu();
+    private void initFeatures() {
+        coreComponentLoader.register(new TextParserComponent());
+        coreComponentLoader.register(new PlayerDataStorageComponent());
+        coreComponentLoader.register(new TextSectionParserComponent());
+        coreComponentLoader.register(new SchedulesComponent());
+        coreComponentLoader.register(new NotificationsComponent());
+        coreComponentLoader.register(new JournalsComponent());
+        coreComponentLoader.register(new PluginMessageComponent());
+        coreComponentLoader.register(new ItemsComponent());
+        coreComponentLoader.register(new CompassComponent());
+        coreComponentLoader.register(new ConversationsComponent());
+        coreComponentLoader.register(new NpcsComponent());
+        coreComponentLoader.register(new CancelersComponent());
+        coreComponentLoader.register(new RPGMenuComponent());
     }
 
     /**
      * Initializes the quest types in a strict order to maintain dependencies between them.
      */
     public void init() {
-        initArguments();
-        initInstructions();
+        coreComponentLoader.register(new ArgumentParsersComponent());
+        coreComponentLoader.register(new InstructionsComponent());
         initCoreTypes();
-        try {
-            initFeatures();
-        } catch (final QuestException e) {
-            log.error("Failed to initialize features!", e);
-        }
-        initBetonQuestApi();
+        initFeatures();
+        coreComponentLoader.register(new BetonQuestApiComponent());
+        coreComponentLoader.load();
+        coreComponentLoader.getAll(QuestProcessor.class).forEach(allProcessors::add);
     }
 
     /**
