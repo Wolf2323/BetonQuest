@@ -1,6 +1,8 @@
 # [MMOItems](https://www.spigotmc.org/resources/39267/)
 
-### Item system integration: `mmoitem`
+## Items
+
+### `MmoItem`
 
 MMOItems usage is integrated to the [Items](../../../../Features/Items.md) system and thus used for actions and 
 conditions.
@@ -20,33 +22,30 @@ actions:
   giveGem: "give gem:3"
 ```
 
-#### Craft item: `craft`
+!!! info
+    When MMOItems is installed the [`craft`](../../Objectives-List.md#craft) objective also processes MMOItems
+    "recipe-amounts" crafting and MMOItems station crafting.
+    The amount is based on how many items have actually been crafted, not how often a specific recipe has been used!
+    Therefore, a recipe that makes four items at once will let the objective progress by four steps.
 
-When MMOItems is installed the [`craft`](../../Objectives-List.md#craft) objective also processes MMOItems
-"recipe-amounts" crafting and MMOItems station crafting.
-The amount is based on how many items have actually been crafted, not how often a specific recipe has been used!
-Therefore, a recipe that makes four items at once will let the objective progress by four steps.
+## Objectives
 
-```YAML title="Example"
-items:
-  potion: "mmoitem HEALTH_POTION_RECIPE"
-objectives:
-  craftPotion: "craft potion 5 notify"
-```
+### `MmoItemUpgrade`
 
-### Upgrade Item: `mmoitemupgrade`
-
-This objective tracks if a player upgrades the given item with an upgrade consumable.
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `mmoitemupgrade <itemType> <itemID>`  
+__Description__: The player has to upgrade the given item with an upgrade consumable.
 
 ```YAML title="Example"
 objectives:
   sword: "mmoitemupgrade SWORD FALCON_BLADE"
 ```
 
-### Apply gemstone: `mmoitemapplygem`
+### `MmoItemApplyGem`
 
-This objective is completed when the player applies the gemstone with the given gemstoneID to an item with the given
-itemType and itemID.
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `mmoitemapplygem <itemType> <itemID> <gemstoneID>`  
+__Description__: The player has to apply a gemstone to an item.
 
 ```YAML title="Example"
 objectives:

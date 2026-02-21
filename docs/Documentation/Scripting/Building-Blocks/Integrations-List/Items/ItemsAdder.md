@@ -3,7 +3,9 @@
 !!! info ""
     **Required ItemsAdder version: _4.0.10_ or above**
 
-### Items
+## Items
+
+### `ItemsAdder`
 
 ItemsAdder usage is integrated to the [Items](../../../../Features/Items.md) system and thus used for actions and conditions.
 
@@ -19,27 +21,28 @@ actions:
   giveRuby: "give ruby:3"
 ```
 
-### Conditions
+## Actions
 
-#### Check for block `itemsAdderBlock`
+### `ItemsAdderAnimation`
 
-Check if the ItemsAdder block is at a location.
+__Context__: @snippet:action-meta:online@  
+__Syntax__: `itemsadderanimation <animationId>`  
+__Description__: Plays an ItemsAdder totem animation.
 
-| Parameter  | Syntax                                                     | Default Value          | Explanation                         |
-|------------|------------------------------------------------------------|------------------------|-------------------------------------|
-| _itemId_   | string                                                     | :octicons-x-circle-16: | Identifier of the block to check.   |
-| _location_ | [ULF](../../../Data-Formats.md#unified-location-formating) | :octicons-x-circle-16: | The location to check the block at. |
+| Parameter     | Syntax | Default Value          | Explanation             |
+|---------------|--------|------------------------|-------------------------|
+| _animationId_ | string | :octicons-x-circle-16: | Animation name to play. |
 
 ```YAML title="Example"
-conditions:
-  iaBlock: "itemsAdderBlock itemsadder:ruby_ore 40;72;3;world"
+actions:
+  iaPlayAnimation: "itemsAdderAnimation totem1"
 ```
 
-### Actions
+### `ItemsAdderBlock`
 
-#### Place block `itemsAdderBlock`
-
-Changes the block at the given position.
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `itemsadderblock <itemId> <location>`  
+__Description__: Changes the block at the given position.
 
 | Parameter  | Syntax                                                     | Default Value          | Explanation                         |
 |------------|------------------------------------------------------------|------------------------|-------------------------------------|
@@ -51,24 +54,14 @@ actions:
   iaSetBlock: "itemsAdderBlock itemsadder:ruby_ore 100;200;300;world"
 ```
 
-#### Play totem animation `itemsAdderAnimation`
+## Objectives
 
-Plays an ItemsAdder totem animation.
+### `ItemsAdderBlockBreak`
 
-| Parameter     | Syntax | Default Value          | Explanation             |
-|---------------|--------|------------------------|-------------------------|
-| _animationId_ | string | :octicons-x-circle-16: | Animation name to play. |
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `itemsadderblockbreak <itemId> <amount>`  
+__Description__: The player must break specified amount of ItemsAdder blocks.
 
-```YAML title="Example"
-actions:
-  iaPlayAnimation: "itemsAdderAnimation totem1"
-```
-
-### Objectives
-
-#### Break Block `itemsAdderBlockBreak`
-
-To complete this objective player must break specified amount of ItemsAdder blocks.
 You can add a `notify` keyword if you want to send a notification to players whenever the objective progresses.
 
 | Parameter | Syntax        | Default Value          | Explanation                       |
@@ -81,9 +74,12 @@ objectives:
   iaBreak: "itemsAdderBlockBreak itemsadder:ruby_ore amount:20 notify:5"
 ```
 
-#### Place Block `itemsAdderBlockPlace`
+### `ItemsAdderBlockPlace`
 
-To complete this objective player must place specified amount of ItemsAdder blocks.
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `itemsadderblockplace <itemId> <amount>`  
+__Description__:  The player must place specified amount of ItemsAdder blocks.
+
 You can add a `notify` keyword if you want to send a notification to players whenever the objective progresses.
 
 | Parameter | Syntax        | Default Value          | Explanation                       |
@@ -94,4 +90,22 @@ You can add a `notify` keyword if you want to send a notification to players whe
 ```YAML title="Example"
 objectives:
   iaPlace: "itemsAdderBlockPlace iasurvival:restoration_table"
+```
+
+## Conditions
+
+### `ItemsAdderBlock`
+
+__Context__: @snippet:condition-meta:independent@  
+__Syntax__: `itemsadderblock <itemId> <location>`  
+__Description__: Whether the ItemsAdder block is at a location.
+
+| Parameter  | Syntax                                                     | Default Value          | Explanation                         |
+|------------|------------------------------------------------------------|------------------------|-------------------------------------|
+| _itemId_   | string                                                     | :octicons-x-circle-16: | Identifier of the block to check.   |
+| _location_ | [ULF](../../../Data-Formats.md#unified-location-formating) | :octicons-x-circle-16: | The location to check the block at. |
+
+```YAML title="Example"
+conditions:
+  iaBlock: "itemsAdderBlock itemsadder:ruby_ore 40;72;3;world"
 ```

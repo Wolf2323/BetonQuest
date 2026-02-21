@@ -1,6 +1,8 @@
 # [Nexo](https://polymart.org/product/6901/nexo)
 
-### Items
+## Items
+
+### `Nexo`
 
 Nexo usage is integrated to the [Items](../../../../Features/Items.md) system and thus used for actions and conditions.
 

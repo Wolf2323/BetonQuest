@@ -7,7 +7,9 @@
     MythicMobs integration supports all [BetonQuest NPC](../NPCs/index.md) features as well.
     For those, please visit the [MythicMobs](../NPCs/MythicMobs.md) NPC page.
 
-### Items
+## Items
+
+### `Mythic`
 
 Mythic(Mobs) items are integrated to the [BetonQuest Items](../Items/index.md) system.
 
