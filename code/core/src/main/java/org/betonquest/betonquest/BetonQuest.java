@@ -112,11 +112,6 @@ import java.util.logging.Handler;
 public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
     /**
-     * BStats Plugin id.
-     */
-    private static final int BSTATS_METRICS_ID = 551;
-
-    /**
      * The indicator for dev versions.
      */
     private static final String DEV_INDICATOR = "DEV";
