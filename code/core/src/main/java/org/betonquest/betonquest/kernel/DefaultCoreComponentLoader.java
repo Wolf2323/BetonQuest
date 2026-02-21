@@ -1,5 +1,7 @@
 package org.betonquest.betonquest.kernel;
 
+import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -26,9 +28,17 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
     private final Set<LoadedDependency<?>> loaded;
 
     /**
-     * Create a new component loader.
+     * The logger to use for debugging and error messages.
      */
-    public DefaultCoreComponentLoader() {
+    private final BetonQuestLogger log;
+
+    /**
+     * Create a new component loader.
+     *
+     * @param log the logger to use
+     */
+    public DefaultCoreComponentLoader(final BetonQuestLogger log) {
+        this.log = log;
         this.components = new LinkedHashSet<>();
         this.initialInjections = new LinkedHashSet<>();
         this.loaded = new LinkedHashSet<>();
@@ -68,23 +78,27 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
     public <T> Collection<T> getAll(final Class<T> type) {
         return loaded.stream()
                 .filter(dependency -> dependency.match(type))
+                .map(LoadedDependency::dependency)
                 .map(type::cast)
                 .collect(Collectors.toSet());
     }
 
     @Override
     public void load() {
+        log.info("Loading BetonQuest %s components...".formatted(components.size()));
         initialInjections.forEach(this::injectToAll);
+        log.debug("Injected initial %s dependencies into components.".formatted(initialInjections.size()));
         do {
             checkForDependencyBlocking();
             components.stream().filter(CoreComponent::canLoad).forEach(component -> component.load(this));
         } while (components.stream().anyMatch(component -> !component.isLoaded()));
+        log.info("All %s components successfully loaded.".formatted(components.size()));
     }
 
     private void checkForDependencyBlocking() {
         if (components.stream().noneMatch(CoreComponent::canLoad)) {
             final String remainingComponents = components.stream()
-                    .filter(coreComponent -> !coreComponent.canLoad())
+                    .filter(coreComponent -> !coreComponent.canLoad() && !coreComponent.isLoaded())
                     .map(Object::getClass).map(Class::getSimpleName)
                     .collect(Collectors.joining(","));
             throw new IllegalStateException("Potential cyclomatic dependency while preparing components. Remaining components are missing dependencies: %s".formatted(remainingComponents));

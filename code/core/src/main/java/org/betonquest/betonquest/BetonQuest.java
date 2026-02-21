@@ -312,7 +312,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
         compatibility = new Compatibility(loggerFactory.create(Compatibility.class), betonQuestApi, config, version);
 
-        final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader();
+        final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
         this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class), coreComponentLoader);
 
         coreComponentLoader.init(JavaPlugin.class, this);
@@ -322,6 +322,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(LanguageProvider.class, this);
         coreComponentLoader.init(ServicesManager.class, getServer().getServicesManager());
         coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
+        coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
         coreComponentLoader.init(QuestManager.class, questManager);
         coreComponentLoader.init(ProfileProvider.class, profileProvider);
         coreComponentLoader.init(GlobalData.class, globalData);
