@@ -1,20 +1,13 @@
 package org.betonquest.betonquest.kernel.component;
 
-import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
-import org.betonquest.betonquest.api.instruction.argument.parser.DefaultArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.service.DefaultInstructions;
-import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
-import org.betonquest.betonquest.api.service.item.ItemManager;
-import org.betonquest.betonquest.api.text.TextParser;
-import org.betonquest.betonquest.id.item.ItemIdentifierFactory;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
-import org.bukkit.Server;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -59,13 +52,9 @@ public class InstructionsComponent extends AbstractCoreComponent {
 
         this.instructions = new DefaultInstructions(Suppliers.memoize(() -> getDependency(PlaceholderProcessor.class)),
                 () -> questPackageManager,
-                Suppliers.memoize(getArgumentParsers()),
+                Suppliers.memoize(() -> getDependency(ArgumentParsers.class)),
                 () -> loggerFactory);
 
         providerCallback.take(Instructions.class, instructions);
-    }
-
-    private Supplier<ArgumentParsers> getArgumentParsers() {
-        return () -> new DefaultArgumentParsers(getDependency(ItemManager.class), getDependency(ItemIdentifierFactory.class), getDependency(TextParser.class), getDependency(Server.class), getDependency(Identifiers.class));
     }
 }
