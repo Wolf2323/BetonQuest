@@ -39,8 +39,8 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
     }
 
     @Override
-    public <T> void init(final Class<T> injectionClass, final T instance) {
-        initialInjections.add(new LoadedDependency<>(injectionClass, instance));
+    public <T> void init(final Class<T> type, final T instance) {
+        initialInjections.add(new LoadedDependency<>(type, instance));
     }
 
     /**
