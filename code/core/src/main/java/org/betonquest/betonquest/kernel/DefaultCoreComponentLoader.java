@@ -54,27 +54,14 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
         initialInjections.add(new LoadedDependency<>(type, instance));
     }
 
-    /**
-     * Get a loaded instance by its type.
-     * Will ignore multiple instances of the same type and just return the first one to find.
-     *
-     * @param type the type of the instance to get
-     * @param <T>  the type of the instance
-     * @return the loaded instance
-     */
+    @Override
     public <T> T get(final Class<T> type) {
         final LoadedDependency<?> injectedDependency = loaded.stream()
                 .filter(dependency -> dependency.match(type)).findFirst().orElseThrow();
         return type.cast(injectedDependency.dependency());
     }
 
-    /**
-     * Get all loaded instances matching a given type.
-     *
-     * @param type the type of the instances to get
-     * @param <T>  the type of the instances
-     * @return a collection of loaded instances
-     */
+    @Override
     public <T> Collection<T> getAll(final Class<T> type) {
         return loaded.stream()
                 .filter(dependency -> dependency.match(type))
