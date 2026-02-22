@@ -7,11 +7,15 @@ in addition to the normal NPC functionality.
 !!! info
     In addition Citizens integration supports all [BetonQuest NPC](./index.md) features.
 
-### Actions
+## Actions
 
-#### Move NPC: `npcmove`
+### `NpcMove`
 
-This action will make the NPC move to a specified location. It will not return on its own,
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `npcmove <npcId> <locations> [block] [wait] [done] [fail]`  
+__Description__: This will make the NPC move to a specified location.
+
+It will not return on its own,
 so you have to set a single path point with _/npc path_ command - it will then return to that point every time.
 If you make it move too far away, it will teleport or break, so beware.
 You can change maximum pathfinding range in Citizens configuration files.
@@ -32,9 +36,11 @@ actions:
   showPath: "npcmove innkeeper 100;200;300;world,105;200;280;world block wait:20 done:msg_were_here,give_reward fail:msg_cant_go,give_reward"
 ```
 
-#### Stop moving NPC: `npcstop`
+### `NpcStop`
 
-This will stop all current move tasks for the NPC.
+__Context__: @snippet:action-meta:independent@  
+__Syntax__: `npcstop <npcId>`  
+__Description__: This will stop all current move tasks for the NPC.
 
 | Parameter | Syntax | Default Value          | Explanation |
 |-----------|--------|------------------------|-------------|
@@ -45,11 +51,13 @@ actions:
   stopGuide: "npcstop guard"
 ```
 
-### Objectives
+## Objectives
 
-#### NPC Kill: `npckill`
+### `NpcKill`
 
-The NPC Kill objective requires the player to kill a NPC.
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `npckill <npcId> [amount] [notify]`  
+__Description__: The NPC kill objective requires the player to kill a NPC.
 
 | Parameter | Syntax        | Default Value          | Explanation                                                                                                       |
 |-----------|---------------|------------------------|-------------------------------------------------------------------------------------------------------------------|
