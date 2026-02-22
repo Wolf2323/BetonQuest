@@ -10,7 +10,7 @@ import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArguments;
-import org.betonquest.betonquest.quest.action.DoNothingPlayerlessAction;
+import org.betonquest.betonquest.quest.action.ThrowExceptionPlayerlessAction;
 import org.bukkit.World;
 
 /**
@@ -33,7 +33,7 @@ public class TimeActionFactory implements PlayerActionFactory, PlayerlessActionF
     @Override
     public PlayerlessAction parsePlayerless(final Instruction instruction) throws QuestException {
         if (instruction.copy().string().get("world").isEmpty()) {
-            return new DoNothingPlayerlessAction();
+            return new ThrowExceptionPlayerlessAction("Playerless time action '%s' requires a world argument.".formatted(instruction.getID()));
         }
         return createTimeAction(instruction);
     }

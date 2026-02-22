@@ -1,18 +1,19 @@
 package org.betonquest.betonquest.quest.action;
 
+import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test {@link DoNothingPlayerlessAction}.
+ * Test {@link ThrowExceptionPlayerlessAction}.
  */
 class DoNothingPlayerlessActionTest {
 
     @Test
     void testExecuteDoesNothing() {
-        final PlayerlessAction action = new DoNothingPlayerlessAction();
-        assertDoesNotThrow(action::execute, "Doing nothing should not thrown an exception.");
+        final PlayerlessAction action = new ThrowExceptionPlayerlessAction("Test exception");
+        assertThrows(QuestException.class, action::execute, "Action should thrown an exception.");
     }
 }
