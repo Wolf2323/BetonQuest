@@ -9,7 +9,6 @@ import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -17,12 +16,6 @@ import java.util.Set;
  * The implementation of {@link AbstractCoreComponent} for {@link Instructions}.
  */
 public class InstructionsComponent extends AbstractCoreComponent {
-
-    /**
-     * The default instructions implementation to load.
-     */
-    @Nullable
-    private DefaultInstructions instructions;
 
     /**
      * Create a new InstructionsComponent.
@@ -42,16 +35,11 @@ public class InstructionsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return instructions != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
 
-        this.instructions = new DefaultInstructions(Suppliers.memoize(() -> getDependency(PlaceholderProcessor.class)),
+        final DefaultInstructions instructions = new DefaultInstructions(Suppliers.memoize(() -> getDependency(PlaceholderProcessor.class)),
                 () -> questPackageManager,
                 Suppliers.memoize(() -> getDependency(ArgumentParsers.class)),
                 () -> loggerFactory);

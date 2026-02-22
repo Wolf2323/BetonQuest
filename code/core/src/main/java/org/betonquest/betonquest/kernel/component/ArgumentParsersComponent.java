@@ -8,7 +8,6 @@ import org.betonquest.betonquest.id.item.ItemIdentifierFactory;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.bukkit.Server;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -16,12 +15,6 @@ import java.util.Set;
  * The implementation of {@link AbstractCoreComponent} for {@link DefaultArgumentParsers}.
  */
 public class ArgumentParsersComponent extends AbstractCoreComponent {
-
-    /**
-     * The default argument parsers to load.
-     */
-    @Nullable
-    private DefaultArgumentParsers defaultArgumentParsers;
 
     /**
      * Create a new ArgumentParsersComponent.
@@ -36,19 +29,14 @@ public class ArgumentParsersComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return defaultArgumentParsers != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final ItemManager itemManager = getDependency(ItemManager.class);
         final ItemIdentifierFactory itemIdentifierFactory = getDependency(ItemIdentifierFactory.class);
         final TextParser textParser = getDependency(TextParser.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
         final Server server = getDependency(Server.class);
 
-        this.defaultArgumentParsers = new DefaultArgumentParsers(itemManager, itemIdentifierFactory, textParser, server, identifiers);
+        final DefaultArgumentParsers defaultArgumentParsers = new DefaultArgumentParsers(itemManager, itemIdentifierFactory, textParser, server, identifiers);
 
         dependencyProvider.take(DefaultArgumentParsers.class, defaultArgumentParsers);
     }

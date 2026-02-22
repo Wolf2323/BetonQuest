@@ -3,9 +3,8 @@ package org.betonquest.betonquest.kernel.component;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.condition.ConditionManager;
-import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
 import org.betonquest.betonquest.api.service.condition.Conditions;
+import org.betonquest.betonquest.api.service.feature.DefaultConditions;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.id.condition.ConditionIdentifierFactory;
@@ -15,27 +14,13 @@ import org.betonquest.betonquest.kernel.processor.quest.ConditionProcessor;
 import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
  * The implementation of {@link AbstractCoreComponent} for {@link Conditions}.
  */
-public class ConditionsComponent extends AbstractCoreComponent implements Conditions {
-
-    /**
-     * The condition type registry to load.
-     */
-    @Nullable
-    private ConditionTypeRegistry conditionTypeRegistry;
-
-    /**
-     * The condition processor to load.
-     */
-    @Nullable
-    private ConditionProcessor conditionProcessor;
+public class ConditionsComponent extends AbstractCoreComponent {
 
     /**
      * Create a new ConditionsComponent.
@@ -52,12 +37,7 @@ public class ConditionsComponent extends AbstractCoreComponent implements Condit
     }
 
     @Override
-    public boolean isLoaded() {
-        return conditionTypeRegistry != null && conditionProcessor != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
@@ -67,23 +47,13 @@ public class ConditionsComponent extends AbstractCoreComponent implements Condit
 
         final ConditionIdentifierFactory conditionIdentifierFactory = new ConditionIdentifierFactory(questPackageManager);
         identifiers.register(ConditionIdentifier.class, conditionIdentifierFactory);
-        this.conditionTypeRegistry = new ConditionTypeRegistry(loggerFactory.create(ConditionTypeRegistry.class));
-        this.conditionProcessor = new ConditionProcessor(loggerFactory.create(ConditionProcessor.class),
+        final ConditionTypeRegistry conditionTypeRegistry = new ConditionTypeRegistry(loggerFactory.create(ConditionTypeRegistry.class));
+        final ConditionProcessor conditionProcessor = new ConditionProcessor(loggerFactory.create(ConditionProcessor.class),
                 conditionTypeRegistry, bukkitScheduler, conditionIdentifierFactory, plugin, instructions);
 
         dependencyProvider.take(ConditionIdentifierFactory.class, conditionIdentifierFactory);
         dependencyProvider.take(ConditionTypeRegistry.class, conditionTypeRegistry);
         dependencyProvider.take(ConditionProcessor.class, conditionProcessor);
-        dependencyProvider.take(Conditions.class, this);
-    }
-
-    @Override
-    public ConditionManager manager() {
-        return Objects.requireNonNull(conditionProcessor, "Condition processor not loaded yet");
-    }
-
-    @Override
-    public ConditionRegistry registry() {
-        return Objects.requireNonNull(conditionTypeRegistry, "Condition registry not loaded yet");
+        dependencyProvider.take(DefaultConditions.class, new DefaultConditions(conditionProcessor, conditionTypeRegistry));
     }
 }

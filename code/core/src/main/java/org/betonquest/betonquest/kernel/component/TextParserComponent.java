@@ -7,7 +7,6 @@ import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.registry.feature.TextParserRegistryImpl;
 import org.betonquest.betonquest.text.DecidingTextParser;
 import org.betonquest.betonquest.text.TagTextParserDecider;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -16,18 +15,6 @@ import java.util.Set;
  * for {@link TextParserRegistryImpl} and {@link DecidingTextParser}.
  */
 public class TextParserComponent extends AbstractCoreComponent {
-
-    /**
-     * The text parser registry to load.
-     */
-    @Nullable
-    private TextParserRegistryImpl textParserRegistry;
-
-    /**
-     * The deciding text parser to load.
-     */
-    @Nullable
-    private DecidingTextParser decidingTextParser;
 
     /**
      * Create a new TextParserComponent.
@@ -42,18 +29,13 @@ public class TextParserComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return textParserRegistry != null && decidingTextParser != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final ConfigAccessor config = getDependency(ConfigAccessor.class);
 
-        this.textParserRegistry = new TextParserRegistryImpl(loggerFactory.create(TextParserRegistryImpl.class));
+        final TextParserRegistryImpl textParserRegistry = new TextParserRegistryImpl(loggerFactory.create(TextParserRegistryImpl.class));
         final String defaultParser = config.getString("text_parser", "legacyminimessage");
-        this.decidingTextParser = new DecidingTextParser(textParserRegistry, new TagTextParserDecider(defaultParser));
+        final DecidingTextParser decidingTextParser = new DecidingTextParser(textParserRegistry, new TagTextParserDecider(defaultParser));
 
         dependencyProvider.take(TextParserRegistryImpl.class, textParserRegistry);
         dependencyProvider.take(DecidingTextParser.class, decidingTextParser);

@@ -13,7 +13,6 @@ import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.quest.ObjectiveProcessor;
 import org.bukkit.Server;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -21,18 +20,6 @@ import java.util.Set;
  * The implementation of {@link AbstractCoreComponent} for {@link PlayerDataStorage}.
  */
 public class PlayerDataStorageComponent extends AbstractCoreComponent {
-
-    /**
-     * The player data factory to load.
-     */
-    @Nullable
-    private PlayerDataFactory playerDataFactory;
-
-    /**
-     * The player data storage to load.
-     */
-    @Nullable
-    private PlayerDataStorage playerDataStorage;
 
     /**
      * Create a new PlayerDataStorageComponent.
@@ -53,12 +40,7 @@ public class PlayerDataStorageComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return playerDataFactory != null && playerDataStorage != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
         final Saver saver = getDependency(Saver.class);
@@ -67,9 +49,9 @@ public class PlayerDataStorageComponent extends AbstractCoreComponent {
         final ConfigAccessor config = getDependency(ConfigAccessor.class);
         final Server server = getDependency(Server.class);
 
-        this.playerDataFactory = new PlayerDataFactory(loggerFactory, saver, server,
+        final PlayerDataFactory playerDataFactory = new PlayerDataFactory(loggerFactory, saver, server,
                 identifiers, objectiveProcessor, Suppliers.memoize(() -> getDependency(JournalFactory.class)));
-        this.playerDataStorage = new PlayerDataStorage(loggerFactory.create(PlayerDataStorage.class), config,
+        final PlayerDataStorage playerDataStorage = new PlayerDataStorage(loggerFactory.create(PlayerDataStorage.class), config,
                 playerDataFactory, objectiveProcessor, profileProvider);
 
         dependencyProvider.take(PlayerDataFactory.class, playerDataFactory);

@@ -7,10 +7,9 @@ import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.feature.DefaultNpcs;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
-import org.betonquest.betonquest.api.service.npc.NpcManager;
-import org.betonquest.betonquest.api.service.npc.NpcRegistry;
 import org.betonquest.betonquest.api.service.npc.Npcs;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.database.Saver;
@@ -22,27 +21,13 @@ import org.betonquest.betonquest.kernel.processor.feature.ConversationProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.NpcProcessor;
 import org.betonquest.betonquest.kernel.registry.quest.NpcTypeRegistry;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
  * The implementation of {@link AbstractCoreComponent} for {@link Npcs}.
  */
-public class NpcsComponent extends AbstractCoreComponent implements Npcs {
-
-    /**
-     * The NPC type registry to load.
-     */
-    @Nullable
-    private NpcTypeRegistry npcTypeRegistry;
-
-    /**
-     * The NPC processor to load.
-     */
-    @Nullable
-    private NpcProcessor npcProcessor;
+public class NpcsComponent extends AbstractCoreComponent {
 
     /**
      * Create a new NpcsComponent.
@@ -61,12 +46,7 @@ public class NpcsComponent extends AbstractCoreComponent implements Npcs {
     }
 
     @Override
-    public boolean isLoaded() {
-        return npcTypeRegistry != null && npcProcessor != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Instructions instructions = getDependency(Instructions.class);
@@ -83,8 +63,8 @@ public class NpcsComponent extends AbstractCoreComponent implements Npcs {
 
         final NpcIdentifierFactory npcIdentifierFactory = new NpcIdentifierFactory(questPackageManager);
         identifiers.register(NpcIdentifier.class, npcIdentifierFactory);
-        this.npcTypeRegistry = new NpcTypeRegistry(loggerFactory.create(NpcTypeRegistry.class), instructions);
-        this.npcProcessor = new NpcProcessor(loggerFactory.create(NpcProcessor.class), loggerFactory, plugin,
+        final NpcTypeRegistry npcTypeRegistry = new NpcTypeRegistry(loggerFactory.create(NpcTypeRegistry.class), instructions);
+        final NpcProcessor npcProcessor = new NpcProcessor(loggerFactory.create(NpcProcessor.class), loggerFactory, plugin,
                 npcIdentifierFactory, conversationIdentifierFactory, npcTypeRegistry, pluginMessage,
                 profileProvider, actionManager, conditionManager, conversationProcessor.getStarter(), instructions,
                 identifiers, saver, config, conversationProcessor);
@@ -92,16 +72,6 @@ public class NpcsComponent extends AbstractCoreComponent implements Npcs {
         dependencyProvider.take(NpcIdentifierFactory.class, npcIdentifierFactory);
         dependencyProvider.take(NpcTypeRegistry.class, npcTypeRegistry);
         dependencyProvider.take(NpcProcessor.class, npcProcessor);
-        dependencyProvider.take(Npcs.class, this);
-    }
-
-    @Override
-    public NpcManager manager() {
-        return Objects.requireNonNull(npcProcessor, "NPC processor not loaded yet");
-    }
-
-    @Override
-    public NpcRegistry registry() {
-        return Objects.requireNonNull(npcTypeRegistry, "NPC registry not loaded yet");
+        dependencyProvider.take(DefaultNpcs.class, new DefaultNpcs(npcProcessor, npcTypeRegistry));
     }
 }

@@ -16,7 +16,6 @@ import org.betonquest.betonquest.kernel.processor.quest.ActionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ConditionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ObjectiveProcessor;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -24,12 +23,6 @@ import java.util.Set;
  * The implementation of {@link AbstractCoreComponent} for {@link CancelerProcessor}.
  */
 public class CancelersComponent extends AbstractCoreComponent {
-
-    /**
-     * The canceler processor to load.
-     */
-    @Nullable
-    private CancelerProcessor cancelerProcessor;
 
     /**
      * Create a new CancelersComponent.
@@ -46,12 +39,7 @@ public class CancelersComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return cancelerProcessor != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager packManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
@@ -66,7 +54,7 @@ public class CancelersComponent extends AbstractCoreComponent {
 
         final QuestCancelerIdentifierFactory questCancelerIdentifierFactory = new QuestCancelerIdentifierFactory(packManager);
         identifiers.register(QuestCancelerIdentifier.class, questCancelerIdentifierFactory);
-        this.cancelerProcessor = new CancelerProcessor(loggerFactory.create(CancelerProcessor.class),
+        final CancelerProcessor cancelerProcessor = new CancelerProcessor(loggerFactory.create(CancelerProcessor.class),
                 loggerFactory, pluginMessage, instructions, actionProcessor, conditionProcessor,
                 objectiveProcessor, itemProcessor, parsedSectionTextCreator, playerDataStorage, questCancelerIdentifierFactory);
 

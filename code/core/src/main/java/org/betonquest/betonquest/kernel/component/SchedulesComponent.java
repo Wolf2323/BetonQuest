@@ -10,7 +10,6 @@ import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.registry.feature.ScheduleRegistry;
 import org.betonquest.betonquest.schedule.ActionScheduling;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -18,18 +17,6 @@ import java.util.Set;
  * The implementation of {@link AbstractCoreComponent} for {@link ScheduleRegistry}.
  */
 public class SchedulesComponent extends AbstractCoreComponent {
-
-    /**
-     * The schedule registry to load.
-     */
-    @Nullable
-    private ScheduleRegistry scheduleRegistry;
-
-    /**
-     * The schedule processor to load.
-     */
-    @Nullable
-    private ActionScheduling scheduleProcessor;
 
     /**
      * Create a new SchedulesComponent.
@@ -44,12 +31,7 @@ public class SchedulesComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return scheduleRegistry != null && scheduleProcessor != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Instructions instructions = getDependency(Instructions.class);
@@ -57,8 +39,8 @@ public class SchedulesComponent extends AbstractCoreComponent {
 
         final ScheduleIdentifierFactory scheduleIdentifierFactory = new ScheduleIdentifierFactory(questPackageManager);
         identifiers.register(ScheduleIdentifier.class, scheduleIdentifierFactory);
-        this.scheduleRegistry = new ScheduleRegistry(loggerFactory.create(ScheduleRegistry.class));
-        this.scheduleProcessor = new ActionScheduling(loggerFactory.create(ActionScheduling.class, "Schedules"),
+        final ScheduleRegistry scheduleRegistry = new ScheduleRegistry(loggerFactory.create(ScheduleRegistry.class));
+        final ActionScheduling scheduleProcessor = new ActionScheduling(loggerFactory.create(ActionScheduling.class, "Schedules"),
                 instructions, scheduleRegistry, scheduleIdentifierFactory);
 
         dependencyProvider.take(ScheduleIdentifierFactory.class, scheduleIdentifierFactory);

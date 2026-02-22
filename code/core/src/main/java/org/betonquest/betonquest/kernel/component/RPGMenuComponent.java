@@ -22,7 +22,6 @@ import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.menu.RPGMenu;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -30,12 +29,6 @@ import java.util.Set;
  * The implementation of {@link AbstractCoreComponent} for {@link RPGMenu}.
  */
 public class RPGMenuComponent extends AbstractCoreComponent {
-
-    /**
-     * The RPG menu to load.
-     */
-    @Nullable
-    private RPGMenu rpgMenu;
 
     /**
      * Create a new RPGMenuComponent.
@@ -54,12 +47,7 @@ public class RPGMenuComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return rpgMenu != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager packManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Instructions instructions = getDependency(Instructions.class);
@@ -80,7 +68,7 @@ public class RPGMenuComponent extends AbstractCoreComponent {
         identifiers.register(MenuIdentifier.class, menuIdentifierFactory);
         final MenuItemIdentifierFactory menuItemIdentifierFactory = new MenuItemIdentifierFactory(packManager);
         identifiers.register(MenuItemIdentifier.class, menuItemIdentifierFactory);
-        this.rpgMenu = new RPGMenu(loggerFactory.create(RPGMenu.class), loggerFactory, instructions, config,
+        final RPGMenu rpgMenu = new RPGMenu(loggerFactory.create(RPGMenu.class), loggerFactory, instructions, config,
                 pluginMessage, parsedSectionTextCreator, profileProvider, argumentParsers,
                 menuIdentifierFactory, menuItemIdentifierFactory, actionRegistry, conditionRegistry,
                 objectiveRegistry, placeholderRegistry, actionManager, conditionManager);

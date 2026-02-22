@@ -22,7 +22,6 @@ import org.betonquest.betonquest.kernel.registry.feature.ConversationIORegistry;
 import org.betonquest.betonquest.kernel.registry.feature.InterceptorRegistry;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -30,24 +29,6 @@ import java.util.Set;
  * The implementation of {@link AbstractCoreComponent} for {@link ConversationProcessor} and conversation classes.
  */
 public class ConversationsComponent extends AbstractCoreComponent {
-
-    /**
-     * The conversation IO registry to load.
-     */
-    @Nullable
-    private ConversationIORegistry conversationIORegistry;
-
-    /**
-     * The interceptor registry to load.
-     */
-    @Nullable
-    private InterceptorRegistry interceptorRegistry;
-
-    /**
-     * The conversation processor to load.
-     */
-    @Nullable
-    private ConversationProcessor conversationProcessor;
 
     /**
      * Create a new ConversationsComponent.
@@ -65,12 +46,7 @@ public class ConversationsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return conversationIORegistry != null && interceptorRegistry != null && conversationProcessor != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Plugin plugin = getDependency(Plugin.class);
@@ -89,9 +65,9 @@ public class ConversationsComponent extends AbstractCoreComponent {
         identifiers.register(ConversationIdentifier.class, conversationIdentifierFactory);
         final ConversationOptionIdentifierFactory conversationOptionIdentifierFactory = new ConversationOptionIdentifierFactory(questPackageManager);
         identifiers.register(ConversationOptionIdentifier.class, conversationOptionIdentifierFactory);
-        this.conversationIORegistry = new ConversationIORegistry(loggerFactory.create(ConversationIORegistry.class));
-        this.interceptorRegistry = new InterceptorRegistry(loggerFactory.create(InterceptorRegistry.class));
-        this.conversationProcessor = new ConversationProcessor(loggerFactory.create(ConversationProcessor.class),
+        final ConversationIORegistry conversationIORegistry = new ConversationIORegistry(loggerFactory.create(ConversationIORegistry.class));
+        final InterceptorRegistry interceptorRegistry = new InterceptorRegistry(loggerFactory.create(InterceptorRegistry.class));
+        final ConversationProcessor conversationProcessor = new ConversationProcessor(loggerFactory.create(ConversationProcessor.class),
                 loggerFactory, plugin, parsedSectionTextCreator, questPackageManager, placeholderProcessor, profileProvider, config, conversationIORegistry, interceptorRegistry,
                 instructions, pluginMessage, actionProcessor, conditionProcessor, conversationIdentifierFactory, identifiers, saver);
 

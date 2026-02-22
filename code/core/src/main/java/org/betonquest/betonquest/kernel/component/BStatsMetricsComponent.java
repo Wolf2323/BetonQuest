@@ -10,7 +10,6 @@ import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Set;
@@ -25,12 +24,6 @@ public class BStatsMetricsComponent extends AbstractCoreComponent {
      * The BStats metrics ID that is required and important for the bstats metrics to work properly.
      */
     private static final int BSTATS_METRICS_ID = 551;
-
-    /**
-     * The BStats metrics to load.
-     */
-    @Nullable
-    private BStatsMetrics bStatsMetrics;
 
     /**
      * Create a new BStatsMetricsComponent.
@@ -50,12 +43,7 @@ public class BStatsMetricsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return bStatsMetrics != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final JavaPlugin plugin = getDependency(JavaPlugin.class);
         final Compatibility compatibility = getDependency(Compatibility.class);
         final BetonQuestApi betonQuestApi = getDependency(BetonQuestApi.class);
@@ -66,7 +54,7 @@ public class BStatsMetricsComponent extends AbstractCoreComponent {
                 .map(MetricsHolder::metricsSupplier)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        this.bStatsMetrics = new BStatsMetrics(plugin, new Metrics(plugin, BSTATS_METRICS_ID), collectedMetrics, compatibility, betonQuestApi.instructions());
+        final BStatsMetrics bStatsMetrics = new BStatsMetrics(plugin, new Metrics(plugin, BSTATS_METRICS_ID), collectedMetrics, compatibility, betonQuestApi.instructions());
 
         dependencyProvider.take(BStatsMetrics.class, bStatsMetrics);
     }

@@ -19,7 +19,6 @@ import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.feature.JournalEntryProcessor;
 import org.betonquest.betonquest.kernel.processor.feature.JournalMainPageProcessor;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -28,24 +27,6 @@ import java.util.Set;
  * for {@link JournalEntryProcessor}, {@link JournalMainPageProcessor} and {@link JournalFactory}.
  */
 public class JournalsComponent extends AbstractCoreComponent {
-
-    /**
-     * The journal entry processor to load.
-     */
-    @Nullable
-    private JournalEntryProcessor journalEntryProcessor;
-
-    /**
-     * The journal main page processor to load.
-     */
-    @Nullable
-    private JournalMainPageProcessor journalMainPageProcessor;
-
-    /**
-     * The journal factory to load.
-     */
-    @Nullable
-    private JournalFactory journalFactory;
 
     /**
      * Create a new JournalsComponent.
@@ -62,12 +43,7 @@ public class JournalsComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return journalEntryProcessor != null && journalMainPageProcessor != null && journalFactory != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
@@ -81,15 +57,15 @@ public class JournalsComponent extends AbstractCoreComponent {
 
         final JournalEntryIdentifierFactory journalEntryIdentifierFactory = new JournalEntryIdentifierFactory(questPackageManager);
         identifiers.register(JournalEntryIdentifier.class, journalEntryIdentifierFactory);
-        this.journalEntryProcessor = new JournalEntryProcessor(loggerFactory.create(JournalEntryProcessor.class),
+        final JournalEntryProcessor journalEntryProcessor = new JournalEntryProcessor(loggerFactory.create(JournalEntryProcessor.class),
                 journalEntryIdentifierFactory, parsedSectionTextCreator);
 
         final JournalMainPageIdentifierFactory journalMainPageIdentifierFactory = new JournalMainPageIdentifierFactory(questPackageManager);
         identifiers.register(JournalMainPageIdentifier.class, journalMainPageIdentifierFactory);
-        this.journalMainPageProcessor = new JournalMainPageProcessor(loggerFactory.create(JournalMainPageProcessor.class),
+        final JournalMainPageProcessor journalMainPageProcessor = new JournalMainPageProcessor(loggerFactory.create(JournalMainPageProcessor.class),
                 instructions, parsedSectionTextCreator, journalMainPageIdentifierFactory);
 
-        this.journalFactory = new JournalFactory(loggerFactory, pluginMessage, conditionManager, journalMainPageProcessor, journalEntryProcessor, config, textParser, fontRegistry);
+        final JournalFactory journalFactory = new JournalFactory(loggerFactory, pluginMessage, conditionManager, journalMainPageProcessor, journalEntryProcessor, config, textParser, fontRegistry);
 
         dependencyProvider.take(JournalEntryIdentifierFactory.class, journalEntryIdentifierFactory);
         dependencyProvider.take(JournalMainPageIdentifierFactory.class, journalMainPageIdentifierFactory);

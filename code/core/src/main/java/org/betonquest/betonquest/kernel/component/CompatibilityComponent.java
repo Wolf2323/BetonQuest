@@ -7,7 +7,6 @@ import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -15,12 +14,6 @@ import java.util.Set;
  * The implementation of {@link AbstractCoreComponent} for {@link Compatibility}.
  */
 public class CompatibilityComponent extends AbstractCoreComponent {
-
-    /**
-     * The compatibility handler to load.
-     */
-    @Nullable
-    private Compatibility compatibility;
 
     /**
      * Create a new CompatibilityComponent.
@@ -35,18 +28,13 @@ public class CompatibilityComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return compatibility != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final BetonQuestApi betonQuestApi = getDependency(BetonQuestApi.class);
         final ConfigAccessor config = getDependency(ConfigAccessor.class);
         final PluginDescriptionFile descriptionFile = getDependency(PluginDescriptionFile.class);
 
-        this.compatibility = new Compatibility(loggerFactory.create(Compatibility.class), betonQuestApi, config, descriptionFile.getVersion());
+        final Compatibility compatibility = new Compatibility(loggerFactory.create(Compatibility.class), betonQuestApi, config, descriptionFile.getVersion());
 
         dependencyProvider.take(Compatibility.class, compatibility);
     }

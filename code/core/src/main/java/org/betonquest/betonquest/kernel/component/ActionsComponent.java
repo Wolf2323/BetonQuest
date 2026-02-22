@@ -3,9 +3,7 @@ package org.betonquest.betonquest.kernel.component;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.action.ActionManager;
-import org.betonquest.betonquest.api.service.action.ActionRegistry;
-import org.betonquest.betonquest.api.service.action.Actions;
+import org.betonquest.betonquest.api.service.feature.DefaultActions;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.id.action.ActionIdentifierFactory;
@@ -16,27 +14,13 @@ import org.betonquest.betonquest.kernel.processor.quest.ConditionProcessor;
 import org.betonquest.betonquest.kernel.registry.quest.ActionTypeRegistry;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
  * The implementation of {@link AbstractCoreComponent} for {@link ActionTypeRegistry}.
  */
-public class ActionsComponent extends AbstractCoreComponent implements Actions {
-
-    /**
-     * The action type registry to load.
-     */
-    @Nullable
-    private ActionTypeRegistry actionTypeRegistry;
-
-    /**
-     * The action processor to load.
-     */
-    @Nullable
-    private ActionProcessor actionProcessor;
+public class ActionsComponent extends AbstractCoreComponent {
 
     /**
      * Create a new ActionsComponent.
@@ -53,12 +37,7 @@ public class ActionsComponent extends AbstractCoreComponent implements Actions {
     }
 
     @Override
-    public boolean isLoaded() {
-        return actionTypeRegistry != null && actionProcessor != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Identifiers identifiers = getDependency(Identifiers.class);
@@ -69,23 +48,13 @@ public class ActionsComponent extends AbstractCoreComponent implements Actions {
 
         final ActionIdentifierFactory actionIdentifierFactory = new ActionIdentifierFactory(questPackageManager);
         identifiers.register(ActionIdentifier.class, actionIdentifierFactory);
-        this.actionTypeRegistry = new ActionTypeRegistry(loggerFactory.create(ActionTypeRegistry.class), loggerFactory, conditionProcessor);
-        this.actionProcessor = new ActionProcessor(loggerFactory.create(ActionProcessor.class),
+        final ActionTypeRegistry actionTypeRegistry = new ActionTypeRegistry(loggerFactory.create(ActionTypeRegistry.class), loggerFactory, conditionProcessor);
+        final ActionProcessor actionProcessor = new ActionProcessor(loggerFactory.create(ActionProcessor.class),
                 actionIdentifierFactory, actionTypeRegistry, bukkitScheduler, instructions, plugin);
 
         dependencyProvider.take(ActionIdentifierFactory.class, actionIdentifierFactory);
         dependencyProvider.take(ActionTypeRegistry.class, actionTypeRegistry);
         dependencyProvider.take(ActionProcessor.class, actionProcessor);
-        dependencyProvider.take(Actions.class, this);
-    }
-
-    @Override
-    public ActionManager manager() {
-        return Objects.requireNonNull(actionProcessor, "Action processor not loaded yet");
-    }
-
-    @Override
-    public ActionRegistry registry() {
-        return Objects.requireNonNull(actionTypeRegistry, "Action type registry not loaded yet");
+        dependencyProvider.take(DefaultActions.class, new DefaultActions(actionProcessor, actionTypeRegistry));
     }
 }

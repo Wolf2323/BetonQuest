@@ -11,7 +11,6 @@ import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -19,12 +18,6 @@ import java.util.Set;
  * The implementation of {@link AbstractCoreComponent} for {@link PluginMessage}.
  */
 public class PluginMessageComponent extends AbstractCoreComponent {
-
-    /**
-     * The plugin message processor to load.
-     */
-    @Nullable
-    private PluginMessage pluginMessage;
 
     /**
      * Create a new PluginMessageComponent.
@@ -40,12 +33,7 @@ public class PluginMessageComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return pluginMessage != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final ConfigAccessorFactory configAccessorFactory = getDependency(ConfigAccessorFactory.class);
         final LanguageProvider languageProvider = getDependency(LanguageProvider.class);
@@ -55,12 +43,11 @@ public class PluginMessageComponent extends AbstractCoreComponent {
         final Plugin plugin = getDependency(Plugin.class);
 
         try {
-            pluginMessage = new PluginMessage(loggerFactory.create(PluginMessage.class), plugin, placeholderManager,
+            final PluginMessage pluginMessage = new PluginMessage(loggerFactory.create(PluginMessage.class), plugin, placeholderManager,
                     playerDataStorage, textParser, configAccessorFactory, languageProvider);
+            dependencyProvider.take(PluginMessage.class, pluginMessage);
         } catch (final QuestException e) {
             throw new IllegalStateException("Failed to load plugin message component: %s".formatted(e.getMessage()), e);
         }
-
-        dependencyProvider.take(PluginMessage.class, pluginMessage);
     }
 }

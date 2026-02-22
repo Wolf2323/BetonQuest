@@ -10,7 +10,6 @@ import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.feature.CompassProcessor;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -18,12 +17,6 @@ import java.util.Set;
  * The implementation of {@link AbstractCoreComponent} for {@link CompassProcessor}.
  */
 public class CompassComponent extends AbstractCoreComponent {
-
-    /**
-     * The compass processor to load.
-     */
-    @Nullable
-    private CompassProcessor compassProcessor;
 
     /**
      * Create a new CompassComponent.
@@ -39,12 +32,7 @@ public class CompassComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return compassProcessor != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final Instructions instructions = getDependency(Instructions.class);
@@ -53,7 +41,7 @@ public class CompassComponent extends AbstractCoreComponent {
 
         final CompassIdentifierFactory compassIdentifierFactory = new CompassIdentifierFactory(questPackageManager);
         identifiers.register(CompassIdentifier.class, compassIdentifierFactory);
-        this.compassProcessor = new CompassProcessor(loggerFactory.create(CompassProcessor.class),
+        final CompassProcessor compassProcessor = new CompassProcessor(loggerFactory.create(CompassProcessor.class),
                 instructions, parsedSectionTextCreator, compassIdentifierFactory);
 
         dependencyProvider.take(CompassIdentifierFactory.class, compassIdentifierFactory);

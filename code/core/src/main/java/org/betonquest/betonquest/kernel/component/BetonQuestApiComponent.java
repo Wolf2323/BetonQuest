@@ -21,7 +21,6 @@ import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -29,12 +28,6 @@ import java.util.Set;
  * The implementation of {@link AbstractCoreComponent} for {@link DefaultBetonQuestApi}.
  */
 public class BetonQuestApiComponent extends AbstractCoreComponent {
-
-    /**
-     * The default BetonQuest API implementation to load.
-     */
-    @Nullable
-    private DefaultBetonQuestApi defaultBetonQuestApi;
 
     /**
      * Create a new BetonQuestApiComponent.
@@ -52,12 +45,7 @@ public class BetonQuestApiComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return defaultBetonQuestApi != null;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager packManager = getDependency(QuestPackageManager.class);
         final ServicesManager servicesManager = getDependency(ServicesManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
@@ -73,18 +61,16 @@ public class BetonQuestApiComponent extends AbstractCoreComponent {
         final Npcs npcs = getDependency(Npcs.class);
         final Plugin plugin = getDependency(Plugin.class);
 
-        final BetonQuestLogger log = loggerFactory.create(BetonQuestApiComponent.class);
-
-        this.defaultBetonQuestApi = new DefaultBetonQuestApi(profileProvider, packManager, loggerFactory, instructions,
+        final DefaultBetonQuestApi defaultBetonQuestApi = new DefaultBetonQuestApi(profileProvider, packManager, loggerFactory, instructions,
                 actions, conditions, objectives, placeholders, items, npcs,
                 conversations, identifiers);
 
+        final BetonQuestLogger serviceLogger = loggerFactory.create(BetonQuestApiService.class);
         servicesManager.register(BetonQuestApiService.class, new DefaultBetonQuestApiService(callerPlugin -> {
-            log.debug("Loading API for plugin %s".formatted(callerPlugin.getName()));
+            serviceLogger.debug("Loading API for plugin %s version %s".formatted(callerPlugin.getName(), callerPlugin.getDescription().getVersion()));
             return defaultBetonQuestApi;
         }), plugin, ServicePriority.Highest);
 
-        log.info("BetonQuest API enabled.");
         dependencyProvider.take(DefaultBetonQuestApi.class, defaultBetonQuestApi);
     }
 }
