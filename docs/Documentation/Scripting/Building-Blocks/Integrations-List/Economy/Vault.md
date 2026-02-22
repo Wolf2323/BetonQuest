@@ -1,23 +1,12 @@
 # Vault[](http://dev.bukkit.org/bukkit-plugins/vault/)
 
-### Conditions
+## Actions
 
-#### Vault Money Condition: `money`
+### `money`
 
-Checks if the player has the specified amount of money.
-
-```YAML title="Example"
-conditions:
-  hasMoney: "money 1"
-  canAffordPlot: "money 10000"
-  isRich: "money 1000000"
-```
-
-### Actions
-
-#### Vault Money Action: `money`
-
-Deposits, withdraws or multiplies money in the player's account.
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `money <amount> [notify] [multiply]`  
+__Description__: Deposits, withdraws or multiplies money in the player's account.
 
 | Parameter  | Syntax              | Default Value          | Explanation                                                              |
 |------------|---------------------|------------------------|--------------------------------------------------------------------------|
@@ -32,9 +21,11 @@ actions:
   winLottery: "money 7 multiply notify"
 ```
 
-#### Change Permission (Groups): `permission`
+### `permission`
 
-Adds or removes a permission or a group.
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `permission <action> <type> <name> [world]`  
+__Description__: Adds or removes a permission or a group.
 
 | Parameter | Syntax                      | Default Value          | Explanation                                                                                                          |
 |-----------|-----------------------------|------------------------|----------------------------------------------------------------------------------------------------------------------|
@@ -50,9 +41,28 @@ actions:
   leaveBandit: "permission remove group bandit"
 ```
 
-### Placeholders
+## Conditions
 
-#### Vault Money Placeholder: `money`
+### `money`
+
+__Context__: @snippet:condition-meta:online-offline@  
+__Syntax__: `money <amount>`  
+__Description__: Checks if the player has the specified amount of money.
+
+```YAML title="Example"
+conditions:
+  hasMoney: "money 1"
+  canAffordPlot: "money 10000"
+  isRich: "money 1000000"
+```
+
+## Placeholders
+
+### `money`
+
+__Context__: @snippet:placeholder-meta:online-offline@  
+__Syntax__: `money.<amount|left>`  
+__Description__: Represents the amount of money the player has.
 
 Use `%money.amount%` for showing the player's balance.
 Use `%money.left:500%` for showing the difference between the player's balance and the specified amount of money.
