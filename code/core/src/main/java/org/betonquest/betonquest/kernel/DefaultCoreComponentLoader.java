@@ -116,6 +116,9 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
 
     @Override
     public <U> void take(final Class<U> type, final U dependency) {
+        if (loaded.stream().anyMatch(known -> known.type().equals(type))) {
+            throw new IllegalStateException("Should loaded identical dependencies twice: %s".formatted(type.getSimpleName()));
+        }
         final LoadedDependency<U> loadedDependency = new LoadedDependency<>(type, dependency);
         components.forEach(component -> component.inject(loadedDependency));
         loaded.add(loadedDependency);
