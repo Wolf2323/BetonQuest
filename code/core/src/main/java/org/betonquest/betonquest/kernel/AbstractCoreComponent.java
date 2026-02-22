@@ -15,33 +15,15 @@ public abstract class AbstractCoreComponent implements CoreComponent {
     protected final Set<LoadedDependency<?>> injectedDependencies;
 
     /**
-     * Whether to disable the dependency injection filter.
-     * See {@link #AbstractCoreComponent(boolean)} for more information.
-     */
-    private final boolean disableDependencyInjectionFilter;
-
-    /**
      * Create a new component.
      */
     public AbstractCoreComponent() {
-        this(false);
-    }
-
-    /**
-     * Create a new component and optionally disable the dependency injection filter.
-     * The dependency injection filter in {@link #inject(LoadedDependency)} ensures that only dependencies
-     * that are required by this component are injected - disabling will lead to accepting all injected dependencies.
-     *
-     * @param disableDependencyInjectionFilter whether to disable the dependency injection filter
-     */
-    public AbstractCoreComponent(final boolean disableDependencyInjectionFilter) {
         this.injectedDependencies = new HashSet<>();
-        this.disableDependencyInjectionFilter = disableDependencyInjectionFilter;
     }
 
     @Override
     public void inject(final LoadedDependency<?> dependency) {
-        if (disableDependencyInjectionFilter || requires(dependency.type())) {
+        if (requires(dependency.type())) {
             this.injectedDependencies.add(dependency);
         }
     }

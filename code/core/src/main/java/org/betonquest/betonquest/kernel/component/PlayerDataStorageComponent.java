@@ -38,13 +38,18 @@ public class PlayerDataStorageComponent extends AbstractCoreComponent {
      * Create a new PlayerDataStorageComponent.
      */
     public PlayerDataStorageComponent() {
-        super(true);
+        super();
     }
 
     @Override
     public Set<Class<?>> requires() {
         return Set.of(BetonQuestLoggerFactory.class, ConfigAccessor.class, Saver.class, Identifiers.class,
                 ProfileProvider.class, ObjectiveProcessor.class, Server.class);
+    }
+
+    @Override
+    public boolean requires(final Class<?> type) {
+        return JournalFactory.class.isAssignableFrom(type) || super.requires(type);
     }
 
     @Override

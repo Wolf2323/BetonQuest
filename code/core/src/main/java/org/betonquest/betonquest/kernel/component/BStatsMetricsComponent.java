@@ -36,12 +36,17 @@ public class BStatsMetricsComponent extends AbstractCoreComponent {
      * Create a new BStatsMetricsComponent.
      */
     public BStatsMetricsComponent() {
-        super(true);
+        super();
     }
 
     @Override
     public Set<Class<?>> requires() {
         return Set.of(JavaPlugin.class, Compatibility.class, BetonQuestApi.class);
+    }
+
+    @Override
+    public boolean requires(final Class<?> type) {
+        return MetricsHolder.class.isAssignableFrom(type) || super.requires(type);
     }
 
     @Override

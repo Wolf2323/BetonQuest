@@ -28,12 +28,17 @@ public class InstructionsComponent extends AbstractCoreComponent {
      * Create a new InstructionsComponent.
      */
     public InstructionsComponent() {
-        super(true);
+        super();
     }
 
     @Override
     public Set<Class<?>> requires() {
         return Set.of(QuestPackageManager.class, BetonQuestLoggerFactory.class);
+    }
+
+    @Override
+    public boolean requires(final Class<?> type) {
+        return ArgumentParsers.class.isAssignableFrom(type) || PlaceholderProcessor.class.isAssignableFrom(type) || super.requires(type);
     }
 
     @Override
