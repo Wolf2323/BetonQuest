@@ -46,12 +46,24 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
 
     @Override
     public void register(final CoreComponent component) {
+        if (component.isLoaded()) {
+            throw new IllegalArgumentException("Cannot register already loaded component: %s - Use CoreComponentLoader.init() instead.".formatted(component.getClass().getSimpleName()));
+        }
         this.components.add(component);
     }
 
     @Override
     public <T> void init(final Class<T> type, final T instance) {
-        initialInjections.add(new LoadedDependency<>(type, instance));
+        if (initialInjections.stream().anyMatch(dependency -> dependency.match(type))) {
+            final String existing = initialInjections.stream().filter(dependency -> dependency.match(type))
+                    .map(LoadedDependency::type).map(Class::getSimpleName).collect(Collectors.joining(","));
+            throw new IllegalStateException("Attempted to inject an instance for an already injected dependency: new %s ~ %s".formatted(type.getSimpleName(), existing));
+        }
+        final LoadedDependency<T> newlyAddedDependency = new LoadedDependency<>(type, instance);
+        if (initialInjections.removeIf(dependency -> newlyAddedDependency.match(dependency.type()))) {
+            log.debug("Removed initial dependencies by overwriting. New type: " + type.getSimpleName());
+        }
+        initialInjections.add(newlyAddedDependency);
     }
 
     @Override
@@ -72,9 +84,15 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
 
     @Override
     public void load() {
-        log.info("Loading BetonQuest %s components...".formatted(components.size()));
+        log.info("Loading %s BetonQuest components...".formatted(components.size()));
         initialInjections.forEach(this::injectToAll);
         log.debug("Injected initial %s dependencies into components.".formatted(initialInjections.size()));
+        if (components.stream().anyMatch(CoreComponent::isLoaded)) {
+            final String loaded = components.stream().filter(CoreComponent::isLoaded)
+                    .map(CoreComponent::getClass).map(Class::getSimpleName).collect(Collectors.joining(","));
+            components.removeIf(CoreComponent::isLoaded);
+            log.warn("Components '%s' were already loaded. This might lead to unexpected behavior.".formatted(loaded));
+        }
         if (components.isEmpty()) {
             log.warn("No components were registered. Skipping loading.");
             return;
@@ -103,8 +121,8 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
 
     @Override
     public <U> void take(final Class<U> type, final U dependency) {
-        if (loaded.stream().anyMatch(known -> known.type().equals(type))) {
-            throw new IllegalStateException("Should loaded identical dependencies twice: %s".formatted(type.getSimpleName()));
+        if (loaded.stream().anyMatch(known -> known.type().isAssignableFrom(type) || type.isAssignableFrom(known.type()))) {
+            throw new IllegalStateException("Attempted to load a dependency compatible with another. This might cause non-deterministic behaviour and is therefore prevented: new %s ~ %s".formatted(type.getSimpleName(), dependency.getClass().getSimpleName()));
         }
         final LoadedDependency<U> loadedDependency = new LoadedDependency<>(type, dependency);
         components.forEach(component -> component.inject(loadedDependency));
