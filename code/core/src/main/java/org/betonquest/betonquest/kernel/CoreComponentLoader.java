@@ -13,6 +13,7 @@ public interface CoreComponentLoader {
      * The registered component may not be yet loaded.
      *
      * @param component the component to register
+     * @throws IllegalArgumentException if the component is already loaded
      */
     void register(CoreComponent component);
 
@@ -23,6 +24,7 @@ public interface CoreComponentLoader {
      * @param type     the class of the dependency
      * @param instance the instance of the dependency
      * @param <T>      the type of the dependency
+     * @throws IllegalStateException if the dependency or a subclass of it was already injected
      */
     <T> void init(Class<T> type, T instance);
 
@@ -33,21 +35,24 @@ public interface CoreComponentLoader {
      * @param type the type of the instance to get
      * @param <T>  the type of the instance
      * @return the loaded instance
+     * @throws java.util.NoSuchElementException if no instance of the given type was found
      */
-    <T> T get(final Class<T> type);
+    <T> T get(Class<T> type);
 
     /**
      * Get all loaded instances matching a given type.
      *
      * @param type the type of the instances to get
      * @param <T>  the type of the instances
-     * @return a collection of loaded instances
+     * @return a collection of loaded instances that may be empty
      */
-    <T> Collection<T> getAll(final Class<T> type);
+    <T> Collection<T> getAll(Class<T> type);
 
     /**
      * Loads all registered components in the correct order as their dependencies suggest.
      * May throw an exception in case of unsolvable dependencies causing the loading to abort.
+     *
+     * @throws IllegalStateException in case of any errors
      */
     void load();
 }
