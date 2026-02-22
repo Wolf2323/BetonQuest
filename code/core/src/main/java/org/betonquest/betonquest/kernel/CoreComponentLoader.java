@@ -1,7 +1,9 @@
 package org.betonquest.betonquest.kernel;
 
+import java.util.Collection;
+
 /**
- * The core component loader essentially manages a number of {@link CoreComponent}s and loads them the order
+ * The core component loader essentially manages a number of {@link CoreComponent}s and loads them in the order
  * their dependencies suggest. It detects unsolvable dependencies and throws an exception in case of any.
  */
 public interface CoreComponentLoader {
@@ -23,6 +25,25 @@ public interface CoreComponentLoader {
      * @param <T>      the type of the dependency
      */
     <T> void init(Class<T> type, T instance);
+
+    /**
+     * Get a loaded instance by its type.
+     * Will ignore multiple instances of the same type and just return the first one to find.
+     *
+     * @param type the type of the instance to get
+     * @param <T>  the type of the instance
+     * @return the loaded instance
+     */
+    <T> T get(final Class<T> type);
+
+    /**
+     * Get all loaded instances matching a given type.
+     *
+     * @param type the type of the instances to get
+     * @param <T>  the type of the instances
+     * @return a collection of loaded instances
+     */
+    <T> Collection<T> getAll(final Class<T> type);
 
     /**
      * Loads all registered components in the correct order as their dependencies suggest.
