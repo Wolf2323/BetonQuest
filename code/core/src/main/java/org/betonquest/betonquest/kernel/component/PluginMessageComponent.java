@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.LanguageProvider;
-import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
@@ -42,12 +41,9 @@ public class PluginMessageComponent extends AbstractCoreComponent {
         final TextParser textParser = getDependency(TextParser.class);
         final Plugin plugin = getDependency(Plugin.class);
 
-        try {
-            final PluginMessage pluginMessage = new PluginMessage(loggerFactory.create(PluginMessage.class), plugin, placeholderManager,
-                    playerDataStorage, textParser, configAccessorFactory, languageProvider);
-            dependencyProvider.take(PluginMessage.class, pluginMessage);
-        } catch (final QuestException e) {
-            throw new IllegalStateException("Failed to load plugin message component: %s".formatted(e.getMessage()), e);
-        }
+        final PluginMessage pluginMessage = new PluginMessage(loggerFactory.create(PluginMessage.class), plugin, placeholderManager,
+                playerDataStorage, textParser, configAccessorFactory, languageProvider);
+
+        dependencyProvider.take(PluginMessage.class, pluginMessage);
     }
 }
