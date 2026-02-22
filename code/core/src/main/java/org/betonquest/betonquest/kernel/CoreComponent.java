@@ -62,5 +62,5 @@ public interface CoreComponent {
      * @param dependencyProvider the dependency provider to use for loading dependencies
      * @throws IllegalStateException if an invalid state occurs during loading
      */
-    void load(DependencyProvider dependencyProvider);
+    void loadComponent(DependencyProvider dependencyProvider);
 }
