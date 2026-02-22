@@ -7,54 +7,28 @@
     MythicMobs integration supports [BetonQuest Item](../Items/index.md) features as well.
     For those, please visit the [MythicMobs](../Items/MythicMobs.md) Item page.
 
-### Objectives
+## Actions
 
-#### MobKill: `mmobkill`
+### `MCast`
 
-You need to kill the specified amount of MythicMobs to complete this objective.
-You can add a `notify` keyword if you want to send a notification to players whenever the objective progresses.
+__Context__: @snippet:action-meta:online@  
+__Syntax__: `mcast <name>`  
+__Description__: Cast a MythicMobs skill.
 
-| Parameter                      | Syntax                              | Default Value          | Explanation                                                                                                                                             |
-|--------------------------------|-------------------------------------|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| _identifier_                   | strings                             | :octicons-x-circle-16: | Identifiers for mobs that must be killed, based on `mode`. Multiple mob identifiers must be comma separated.                                            |
-| _mode_                         | mode:mode                           | INTERNAL_NAME          | What of the mob should be checked. Either `INTERNAL_NAME` of the mob (as defined in the config) or `FACTION`.                                           |
-| _amount_                       | amount:number                       | 1                      | Amount of mobs required to kill.                                                                                                                        |
-| _minLevel_                     | minLevel:number                     | Disabled               | Minimal level of mob to kill.                                                                                                                           |
-| _maxLevel_                     | maxLevel:number                     | Disabled               | Maximal level of mob to kill.                                                                                                                           |
-| _neutralDeathRadiusAllPlayers_ | neutralDeathRadiusAllPlayers:number | Disabled               | Radius to count objective progress for each nearby player when the mob is killed by any non-player source.                                              |
-| _deathRadiusAllPlayers_        | deathRadiusAllPlayers:number        | Disabled               | Radius to count objective progress for each nearby player, no matter if it was killed by a non-player source or not. Disables the neutral death radius. |
-| _marked_                       | marked:text                         | None                   | Check for mark on mobs as used in `mspawnmob` action.                                                                                                   |
-
-This objective has three properties: `amount`, `left` and `total`. `amount` is the amount of mythic mobs already killed,
-`left` is the amount of mythic mobs still needed to kill and `total` is the amount of mythic mobs initially required.
-`mode` gives the identification type.
+| Parameter | Syntax | Default Value          | Explanation            |
+|-----------|--------|------------------------|------------------------|
+| _name_    | Name   | :octicons-x-circle-16: | Name of Skill to cast. |
 
 ```YAML title="Example"
-objectives:
-  killKnight: mmobkill SkeletalKnight amount:2 actions:reward
-  killSnails: mmobkill SnekBoss,SnailBoss,SunBoss amount:10 actions:reward
-  snailFaction: mmobkill snail mode:faction amount:10 actions:reward
-  killBoss: mmobkill SnekBoss amount:2 minlevel:4 maxlevel:6 actions:reward marked:DungeonBoss3
-  killDevil: mmobkill dungeonDevil deathRadiusAllPlayers:30 actions:reward
-  bandits: mmobkill bandit deathRadiusAllPlayers:30 mode:FACTION actions:spawnTrader
+actions:
+  castPoison: "mcast AngrySludgePoison"
 ```
 
-### Conditions
+### `MSpawnMob`
 
-#### MythicMob distance: `mythicmobdistance`
-
-Check whether the player is near a specific MythicMobs entity. The first argument is the internal name of the mob (the one defined in MythicMobs' configuration). The second argument is the distance to check, measured in block lengths in a circular radius.
-
-```YAML title="Example"
-conditions:
-  nearKnight: "mythicmobdistance SkeletalKnight 7"
-```
-
-### Actions
-
-#### :material-skull: Spawn MythicMob: `mspawnmob`
-
-**static**
+__Context__: @snippet:action-meta:online-independent@  
+__Syntax__: `mspawnmob <location> <name> <amount> [target] [private] [marked]`  
+__Description__: Spawn a MythicMob at a specific location.
 
 | Parameter  | Syntax                                                     | Default Value          | Explanation                                                                                                                             |
 |------------|------------------------------------------------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
@@ -81,13 +55,52 @@ actions:
 !!! info "Private & Target Arguments"
     The `private` and `target` arguments are ignored when the action is used in a static context like [Schedules](../../../Schedules.md).
 
-#### Cast Mythic Skill: `mcast`
+## Objectives
 
-| Parameter | Syntax | Default Value          | Explanation            |
-|-----------|--------|------------------------|------------------------|
-| _name_    | Name   | :octicons-x-circle-16: | Name of Skill to cast. |
+### `MMobKill`
+
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `mmobkill <identifier> [mode] [amount] [minLevel] [maxLevel] [neutralDeathRadiusAllPlayers] [deathRadiusAllPlayers] [marked]`  
+__Description__: The player needs to kill the specified amount of MythicMobs.
+
+You can add a `notify` keyword if you want to send a notification to players whenever the objective progresses.
+
+| Parameter                          | Syntax                                      | Default Value          | Explanation                                                                                                                                             |
+|------------------------------------|---------------------------------------------|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _identifier_                       | strings                                     | :octicons-x-circle-16: | Identifiers for mobs that must be killed, based on `mode`. Multiple mob identifiers must be comma separated.                                            |
+| _mode_                             | mode:mode                                   | INTERNAL_NAME          | What of the mob should be checked. Either `INTERNAL_NAME` of the mob (as defined in the config) or `FACTION`.                                           |
+| _amount_                           | amount:number                               | 1                      | Amount of mobs required to kill.                                                                                                                        |
+| _minLevel_                         | minLevel:number                             | Disabled               | Minimal level of mob to kill.                                                                                                                           |
+| _maxLevel_                         | maxLevel:number                             | Disabled               | Maximal level of mob to kill.                                                                                                                           |
+| _neutralDeath<br>RadiusAllPlayers_ | neutralDeath<br>RadiusAllPlayers<br>:number | Disabled               | Radius to count objective progress for each nearby player when the mob is killed by any non-player source.                                              |
+| _deathRadius<br>AllPlayers_        | deathRadius<br>AllPlayers:number            | Disabled               | Radius to count objective progress for each nearby player, no matter if it was killed by a non-player source or not. Disables the neutral death radius. |
+| _marked_                           | marked:text                                 | None                   | Check for mark on mobs as used in `mspawnmob` action.                                                                                                   |
+
+This objective has three properties: `amount`, `left` and `total`. `amount` is the amount of mythic mobs already killed,
+`left` is the amount of mythic mobs still needed to kill and `total` is the amount of mythic mobs initially required.
+`mode` gives the identification type.
 
 ```YAML title="Example"
-actions:
-  castPoison: "mcast AngrySludgePoison"
+objectives:
+  killKnight: mmobkill SkeletalKnight amount:2 actions:reward
+  killSnails: mmobkill SnekBoss,SnailBoss,SunBoss amount:10 actions:reward
+  snailFaction: mmobkill snail mode:faction amount:10 actions:reward
+  killBoss: mmobkill SnekBoss amount:2 minlevel:4 maxlevel:6 actions:reward marked:DungeonBoss3
+  killDevil: mmobkill dungeonDevil deathRadiusAllPlayers:30 actions:reward
+  bandits: mmobkill bandit deathRadiusAllPlayers:30 mode:FACTION actions:spawnTrader
+```
+
+## Conditions
+
+### `MythicMobDistance`
+
+__Context__: @snippet:condition-meta:online@  
+__Syntax__: `mythicmobdistance <name> <distance>`  
+__Description__: Whether the player is near a specific MythicMobs entity.
+
+The first argument is the internal name of the mob (the one defined in MythicMobs' configuration). The second argument is the distance to check, measured in block lengths in a circular radius.
+
+```YAML title="Example"
+conditions:
+  nearKnight: "mythicmobdistance SkeletalKnight 7"
 ```
