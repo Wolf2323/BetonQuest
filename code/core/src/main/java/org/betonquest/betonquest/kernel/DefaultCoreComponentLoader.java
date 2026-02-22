@@ -96,7 +96,7 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
         }
         do {
             checkForDependencyBlocking();
-            components.stream().filter(CoreComponent::canLoad).forEach(component -> component.load(this));
+            components.stream().filter(CoreComponent::canLoad).forEach(component -> component.loadComponent(this));
         } while (components.stream().anyMatch(component -> !component.isLoaded()));
         log.info("All %s components successfully loaded.".formatted(components.size()));
     }
