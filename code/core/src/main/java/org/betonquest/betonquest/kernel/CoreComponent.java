@@ -5,11 +5,23 @@ import java.util.Set;
 /**
  * A core component of the BetonQuest plugin representing a unique unit of functionality that may be loaded
  * by a {@link CoreComponentLoader} respecting its dependencies and thereby being loaded in order.
+ * <br> <br>
+ * Every {@link CoreComponent} defines a list of dependencies in {@link #requires()} that must be injected
+ * via {@link #inject(LoadedDependency)} before the component can be loaded (see {@link #canLoad()}).
+ * <br> <br>
+ * The loading process essentially follows a few steps:
+ * <ul>
+ *     <li>The {@link #loadComponent(DependencyProvider)} initiates the loading process expecting all dependencies to be
+ *     injected and may throw an exception if an invalid state occurs.</li>
+ *     <li>During loading the component may choose to provide instances other components depend on via the
+ *     {@link DependencyProvider} provided as parameter.</li>
+ *     <li>After the loading process has finished successfully, {@link #isLoaded()} returns true</li>
+ * </ul>
  */
 public interface CoreComponent {
 
     /**
-     * Specifies the types that this component requires to be loaded before it.
+     * Specifies an unmodifiable set of types that this component requires to be loaded before itself.
      * Essentially contains all classes that are dependencies of this component.
      *
      * @return all dependencies of this component
@@ -29,6 +41,7 @@ public interface CoreComponent {
 
     /**
      * Injects a loaded dependency into this component and removes it from the list of required dependencies.
+     * Injecting a dependency not required as defined by {@link #requires(Class)} will have no effect.
      *
      * @param loadedDependency the dependency instance to inject
      */
@@ -36,8 +49,9 @@ public interface CoreComponent {
 
     /**
      * Checks whether this component can be loaded.
-     * This may be true if all required dependencies have been injected and shall never be true if the component
-     * is already loaded {@link #isLoaded()}.
+     * <br> <br>
+     * This may be true if all required dependencies have been injected. <br>
+     * It must never be true if the component is already loaded ({@link #isLoaded()} is true).
      *
      * @return if this component can be loaded
      */
@@ -45,6 +59,8 @@ public interface CoreComponent {
 
     /**
      * Checks whether this component has been loaded.
+     * <br> <br>
+     * This method must return true after #loadComponent() has been called successfully.
      *
      * @return if this component has been loaded
      */
