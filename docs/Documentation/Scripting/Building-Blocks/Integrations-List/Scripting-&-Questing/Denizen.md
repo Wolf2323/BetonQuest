@@ -2,11 +2,15 @@
 
 Depenizen is also integrated with BetonQuest! Discover available features on the [meta documentation](https://meta.denizenscript.com/Docs/Search/BetonQuest).
 
-### Actions
+## Actions
 
-#### Script: `script`
+### `Script`
 
-With this action you can fire Denizen task scripts. Don't confuse it with `skript` action, these are different. The first and only argument is the name of the script.
+__Context__: @snippet:action-meta:online-offline@  
+__Syntax__: `script <name>`  
+__Description__: With this action you can fire Denizen task scripts.
+
+Don't confuse it with `skript` action, these are different. The first and only argument is the name of the script.
 
 ```YAML title="Example"
 actions:

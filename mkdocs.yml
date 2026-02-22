@@ -93,10 +93,10 @@ nav:
                   - 'EffectLib': Documentation/Scripting/Building-Blocks/Integrations-List/Visuals/EffectLib.md
                   - 'FakeBlock': Documentation/Scripting/Building-Blocks/Integrations-List/Visuals/FakeBlock.md
               - 'Scripting & Questing':
-                  - 'Documentation/Scripting/Building-Blocks/Integrations-List/Scripting/index.md'
-                  - 'Denizen': Documentation/Scripting/Building-Blocks/Integrations-List/Scripting/Denizen.md
-                  - 'Quests': Documentation/Scripting/Building-Blocks/Integrations-List/Scripting/Quests.md
-                  - 'Skript': Documentation/Scripting/Building-Blocks/Integrations-List/Scripting/Skript.md
+                  - 'Documentation/Scripting/Building-Blocks/Integrations-List/Scripting-&-Questing/index.md'
+                  - 'Denizen': Documentation/Scripting/Building-Blocks/Integrations-List/Scripting-&-Questing/Denizen.md
+                  - 'Quests': Documentation/Scripting/Building-Blocks/Integrations-List/Scripting-&-Questing/Quests.md
+                  - 'Skript': Documentation/Scripting/Building-Blocks/Integrations-List/Scripting-&-Questing/Skript.md
               - 'Economy':
                   - 'Documentation/Scripting/Building-Blocks/Integrations-List/Economy/index.md'
                   - 'JobsReborn': Documentation/Scripting/Building-Blocks/Integrations-List/Economy/JobsReborn.md
