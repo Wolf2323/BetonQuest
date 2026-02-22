@@ -24,11 +24,6 @@ public class RawDummyComponent extends AbstractCoreComponent {
     private final boolean injectSelf;
 
     /**
-     * Whether this component is loaded.
-     */
-    private boolean loaded;
-
-    /**
      * Create a new dummy component.
      *
      * @param dependencies the dependencies of this component
@@ -70,16 +65,10 @@ public class RawDummyComponent extends AbstractCoreComponent {
     }
 
     @Override
-    public boolean isLoaded() {
-        return loaded;
-    }
-
-    @Override
-    public void load(final DependencyProvider dependencyProvider) {
+    void load() {
         loadMethod.accept(dependencyProvider);
         if (injectSelf) {
-            dependencyProvider.take(RawDummyComponent.class, this);
+            provide(RawDummyComponent.class, this);
         }
-        loaded = true;
     }
 }
