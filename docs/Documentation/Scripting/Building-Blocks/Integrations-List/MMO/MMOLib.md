@@ -1,20 +1,12 @@
 # [MMOLib](https://www.spigotmc.org/resources/90306/)
 
-### MythicLib stat: `mmostat`
+## Objectives
 
-Checks [these](https://gitlab.com/phoenix-dvpmt/mythiclib/-/blob/master/plugin/src/main/java/io/lumine/mythic/lib/api/stat/SharedStat.java)
-stats that combine all sorts of stats from MMOCore and MMOItems.
-The player needs to be on the specified level or higher in order to meet this condition.
-You can disable this behaviour by adding the `equal` argument.
+### `MmoSkill`
 
-```YAML title="Example"
-conditions:
-  damageReduction3: "mmostat DAMAGE_REDUCTION 3"
-```
-
-### Activate MythicLib skill: `mmoskill`
-
-This objective requires the player to activate a MythicLib skill (e.g. with MMOItems or MMOCore).
+__Context__: @snippet:objective-meta:online@  
+__Syntax__: `mmoskill <skill> [trigger]`  
+__Description__: Requires the player to activate a MythicLib skill (e.g. with MMOItems or MMOCore).
 
 | Parameter | Syntax     | Default Value          | Explanation                                                                                                                                                                          |
 |-----------|------------|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -26,4 +18,21 @@ objectives:
   triggerSkill: "mmoskill LIFE_ENDER actions:updateStatistics"
   castSkillWithMMOCore: "mmoskill DEEP_WOUND trigger:CAST actions:completeTutorial"
   itemSkill: "mmoskill DEEP_WOUND trigger:RIGHT_CLICK,LEFT_CLICK actions:giveReward"
+```
+
+## Conditions
+
+### `MmoStat`
+
+__Context__: @snippet:condition-meta:online-offline@  
+__Syntax__: `mmostat <stat> <value> [equal]`  
+__Description__: Whether the player has a certain stat.
+
+Checks [stats](https://gitlab.com/phoenix-dvpmt/mythiclib/-/blob/master/plugin/src/main/java/io/lumine/mythic/lib/api/stat/SharedStat.java)
+that combine all sorts of stats from MMOCore and MMOItems.
+You can disable this behaviour by adding the `equal` argument.
+
+```YAML title="Example"
+conditions:
+  damageReduction3: "mmostat DAMAGE_REDUCTION 3"
 ```
