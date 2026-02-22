@@ -20,7 +20,7 @@ public interface CoreComponent {
      * Checks whether this component still requires the specified type.
      * May be used to check whether a dependency has been already injected.
      * <br>
-     * Generally refers to dependencies defined {@link #requires()}.
+     * Generally refers to dependencies defined in {@link #requires()}.
      *
      * @param type the type to check
      * @return if this component still requires the specified type
@@ -60,6 +60,7 @@ public interface CoreComponent {
      * to distribute them to all components.
      *
      * @param dependencyProvider the dependency provider to use for loading dependencies
+     * @throws IllegalStateException if an invalid state occurs during loading
      */
     void load(DependencyProvider dependencyProvider);
 }
