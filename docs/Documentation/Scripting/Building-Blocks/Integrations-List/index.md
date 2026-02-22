@@ -42,12 +42,12 @@ The categories are just to make it easier for you to find the plugins you're loo
     - [EffectLib](./Visuals/EffectLib.md)
     - [FakeBlock](./Visuals/FakeBlock.md)
     
--    [Scripting & Questing](./Scripting/index.md)
+-    [Scripting & Questing](./Scripting-&-Questing/index.md)
 
      ---
-    - [Denizen](./Scripting/Denizen.md)
-    - [Quests](./Scripting/Quests.md)
-    - [Skript](./Scripting/Skript.md)
+    - [Denizen](./Scripting-&-Questing/Denizen.md)
+    - [Quests](./Scripting-&-Questing/Quests.md)
+    - [Skript](./Scripting-&-Questing/Skript.md)
 
 -    [Economy](./Economy/index.md)
 
