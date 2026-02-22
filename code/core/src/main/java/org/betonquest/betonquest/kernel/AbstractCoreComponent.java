@@ -35,7 +35,11 @@ public abstract class AbstractCoreComponent implements CoreComponent {
         this.injectedDependencies = new HashSet<>();
     }
 
-    abstract void load();
+    /**
+     * Implement all loading logic here.
+     * Use #provide(Class, Object) to provide dependencies to other components.
+     */
+    protected abstract void load();
 
     @Override
     public void inject(final LoadedDependency<?> dependency) {
