@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -18,7 +17,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AbstractCoreComponentTest {
 
-    private DummyComponent component;
+    private AbstractCoreComponent component;
 
     @Mock
     private BetonQuestLogger logger;
@@ -27,7 +26,7 @@ class AbstractCoreComponentTest {
 
     @BeforeEach
     void setUp() {
-        component = spy(new DummyComponent());
+        component = spy(new RawDummyComponent(BetonQuestLogger.class));
         loader = new DefaultCoreComponentLoader(logger);
     }
 
@@ -70,26 +69,6 @@ class AbstractCoreComponentTest {
     @Test
     void get_missing_dependency() {
         assertThrows(NoSuchElementException.class, () -> component.getDependency(BetonQuestLogger.class), "Should throw exception on missing dependency");
-    }
-
-    private static final class DummyComponent extends AbstractCoreComponent {
-
-        private boolean loaded;
-
-        @Override
-        public Set<Class<?>> requires() {
-            return Set.of(BetonQuestLogger.class);
-        }
-
-        @Override
-        public boolean isLoaded() {
-            return loaded;
-        }
-
-        @Override
-        public void load(final DependencyProvider dependencyProvider) {
-            loaded = true;
-        }
     }
 }
 
