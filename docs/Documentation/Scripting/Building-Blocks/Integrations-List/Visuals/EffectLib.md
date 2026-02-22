@@ -40,16 +40,17 @@ effectlib: #(1)!
 10. Controls the horizontal direction of the effect.
 11. Controls how often the conditions should be checked (in ticks). Optional, default: 100 ticks
 
-### Actions
+## Actions
 
-#### Particle: `particle`
+### `Particle`
 
-This action will load an effect defined in `effects` section
-and display it on player's location. The only argument
-is the name of the effect. You can optionally add `loc:` argument
-followed by a location written like `100;200;300;world;180;-90` to put
-it on that location. If you add `private` argument the effect will only
-be displayed to the player for which you ran the action.
+__Context__: @snippet:action-meta:online@  
+__Syntax__: `particle <effect> [loc] [private]`  
+__Description__: Load an effect defined in `effects` section and display it on player's location.
+
+The only argument is the name of the effect. You can optionally add `loc:` argument
+followed by a location written like `100;200;300;world;180;-90` to put it on that location.
+If you add `private` argument the effect will only be displayed to the player for which you ran the action.
 
 ```YAML title="Example"
 effects:
