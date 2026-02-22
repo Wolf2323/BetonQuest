@@ -38,14 +38,41 @@ class DefaultCoreComponentLoaderTest {
     }
 
     @Test
-    void start_with_empty_component_list() {
+    void loading_before_registration_fails() {
+        final RawDummyComponent another = spy(new RawDummyComponent(false));
+        another.load(new DependencyProvider() {
+            @Override
+            public <U> void take(final Class<U> type, final U dependency) {
+                // Empty
+            }
+        });
+        assertThrows(IllegalArgumentException.class, () -> loader.register(another));
+    }
+
+    @Test
+    void manually_loading_after_registration_fails_in_load_method_with_warning() {
+        final RawDummyComponent another = spy(new RawDummyComponent(false));
+        loader.register(another);
+        another.load(new DependencyProvider() {
+            @Override
+            public <U> void take(final Class<U> type, final U dependency) {
+                // Empty
+            }
+        });
+        loader.load();
+        verify(logger, atLeastOnce()).warn(anyString());
+        verify(another, atMostOnce()).load(any());
+    }
+
+    @Test
+    void loading_with_empty_component_list_does_nothing() {
         loader.load();
         assertThrows(NoSuchElementException.class, () -> loader.get(Object.class), "Should throw an exception because there are no components loaded");
         assertEquals(0, this.loader.getAll(Object.class).size(), "Should contain no components");
     }
 
     @Test
-    void load_initial_injections() {
+    void loading_initial_injections_should_also_provide_them_as_instances() {
         loader.init(BetonQuestLogger.class, logger);
         assertThrows(NoSuchElementException.class, () -> loader.get(Object.class), "Should throw an exception because there are no components loaded");
         loader.load();
@@ -53,7 +80,13 @@ class DefaultCoreComponentLoaderTest {
     }
 
     @Test
-    void load_component_with_dependencies() {
+    void loading_initial_injections_multiple_times_fails() {
+        loader.init(BetonQuestLogger.class, logger);
+        assertThrows(IllegalStateException.class, () -> loader.init(BetonQuestLogger.class, logger));
+    }
+
+    @Test
+    void loading_component_to_check_change_in_availability() {
         final CoreComponent component = spy(new RawDummyComponent(true));
         loader.register(component);
         assertThrows(NoSuchElementException.class, () -> loader.get(RawDummyComponent.class), "Component should not be loaded before loading");
@@ -62,7 +95,7 @@ class DefaultCoreComponentLoaderTest {
     }
 
     @Test
-    void load_component() {
+    void loading_component_to_check_result() {
         final CoreComponent component = spy(new RawDummyComponent());
         loader.register(component);
         loader.load();
@@ -71,7 +104,7 @@ class DefaultCoreComponentLoaderTest {
     }
 
     @Test
-    void can_load_component() {
+    void can_load_method_works_properly() {
         final CoreComponent component = spy(new RawDummyComponent());
         loader.register(component);
         assertTrue(component.canLoad(), "Component should be loadable before loading");
@@ -80,7 +113,7 @@ class DefaultCoreComponentLoaderTest {
     }
 
     @Test
-    void load_blocking_component() {
+    void loading_a_component_with_unavailable_dependency_fails() {
         final CoreComponent component = spy(new RawDummyComponent(RawDummyComponent.class));
         loader.register(component);
         assertThrows(IllegalStateException.class, loader::load, "Should throw an exception because a blocking component that cannot be loaded");
@@ -132,7 +165,7 @@ class DefaultCoreComponentLoaderTest {
 
         @ParameterizedTest
         @MethodSource("dependencies")
-        void test_dependencies(final int loadedObjectsCount, final Collection<RawDummyComponent> components) {
+        void test_working_dependencies(final int loadedObjectsCount, final Collection<RawDummyComponent> components) {
             components.forEach(loader::register);
             loader.load();
             assertEquals(loadedObjectsCount, loader.getAll(Object.class).size(), String.format("Should contain exactly %d components", loadedObjectsCount));
@@ -141,7 +174,7 @@ class DefaultCoreComponentLoaderTest {
 
         @ParameterizedTest
         @MethodSource("failDependencies")
-        void test_fail_dependencies(final Collection<RawDummyComponent> components) {
+        void test_failing_dependencies(final Collection<RawDummyComponent> components) {
             components.forEach(loader::register);
             assertThrows(IllegalStateException.class, loader::load, "Should throw an exception because a component should fail to load");
             assertFalse(components.stream().allMatch(CoreComponent::isLoaded), "Not all components should be loaded");
@@ -164,7 +197,7 @@ class DefaultCoreComponentLoaderTest {
         }
 
         @Test
-        void load_with_logger_init() {
+        void loading_with_initial_logger_injection_to_check_components_load_calls() {
             loader.init(BetonQuestLogger.class, logger);
             loader.load();
             verify(dummyDependency, times(1)).load(loader);
@@ -172,26 +205,26 @@ class DefaultCoreComponentLoaderTest {
         }
 
         @Test
-        void load_without_dependency_init() {
+        void loading_without_initial_dependencies_fails() {
             assertThrows(IllegalStateException.class, loader::load, "Should throw an exception because a component should fail to load without dependencies");
             verify(dummyDependency, never()).load(loader);
         }
 
         @Test
-        void load_without_logger_init_instances() {
-            assertThrows(IllegalStateException.class, loader::load);
+        void loading_without_initial_logger_should_still_load_components_before_that() {
+            assertThrows(IllegalStateException.class, loader::load, "Should throw an exception because a component should fail to load without logger");
             assertEquals(1, loader.getAll(CoreComponent.class).size(), "Should contain exactly one component");
         }
 
         @Test
-        void load_check_results() {
+        void loading_correctly_to_check_results() {
             loader.init(BetonQuestLogger.class, logger);
             loader.load();
             assertEquals(1, loader.getAll(RawDummyComponent.class).size(), "Should contain exactly one component");
         }
 
         @Test
-        void get_all_elements() {
+        void loading_correctly_to_test_get_all_method() {
             loader.init(BetonQuestLogger.class, logger);
             loader.load();
             assertEquals(1, loader.getAll(CoreComponent.class).size(), "Should contain exactly one component");
