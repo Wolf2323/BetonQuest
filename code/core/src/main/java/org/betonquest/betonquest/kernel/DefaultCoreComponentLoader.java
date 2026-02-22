@@ -54,14 +54,11 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
 
     @Override
     public <T> void init(final Class<T> type, final T instance) {
-        if (initialInjections.stream().anyMatch(dependency -> dependency.match(type))) {
-            final String existing = initialInjections.stream().filter(dependency -> dependency.match(type))
-                    .map(LoadedDependency::type).map(Class::getSimpleName).collect(Collectors.joining(","));
-            throw new IllegalStateException("Attempted to inject an instance for an already injected dependency: new %s ~ %s".formatted(type.getSimpleName(), existing));
-        }
         final LoadedDependency<T> newlyAddedDependency = new LoadedDependency<>(type, instance);
-        if (initialInjections.removeIf(dependency -> newlyAddedDependency.match(dependency.type()))) {
-            log.debug("Removed initial dependencies by overwriting. New type: " + type.getSimpleName());
+        if (initialInjections.stream().anyMatch(dependency -> dependency.match(type) || newlyAddedDependency.match(dependency.type()))) {
+            final String existing = initialInjections.stream().filter(dependency -> dependency.match(type))
+                    .map(LoadedDependency::type).map(Class::getSimpleName).sorted().collect(Collectors.joining(","));
+            throw new IllegalStateException("Attempted to inject an instance for an already injected dependency: new %s ~ %s".formatted(type.getSimpleName(), existing));
         }
         initialInjections.add(newlyAddedDependency);
     }
@@ -89,7 +86,7 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
         log.debug("Injected initial %s dependencies into components.".formatted(initialInjections.size()));
         if (components.stream().anyMatch(CoreComponent::isLoaded)) {
             final String loaded = components.stream().filter(CoreComponent::isLoaded)
-                    .map(CoreComponent::getClass).map(Class::getSimpleName).collect(Collectors.joining(","));
+                    .map(CoreComponent::getClass).map(Class::getSimpleName).sorted().collect(Collectors.joining(","));
             components.removeIf(CoreComponent::isLoaded);
             log.warn("Components '%s' were already loaded. This might lead to unexpected behavior.".formatted(loaded));
         }
@@ -108,7 +105,9 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
         if (components.stream().noneMatch(CoreComponent::canLoad)) {
             final String remainingComponents = components.stream()
                     .filter(coreComponent -> !coreComponent.canLoad() && !coreComponent.isLoaded())
-                    .map(Object::getClass).map(Class::getSimpleName)
+                    .map(Object::getClass)
+                    .map(Class::getSimpleName)
+                    .sorted()
                     .collect(Collectors.joining(","));
             throw new IllegalStateException("Potential cyclomatic dependency while preparing components. Remaining components are missing dependencies: %s".formatted(remainingComponents));
         }
