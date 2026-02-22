@@ -1,8 +1,9 @@
 package org.betonquest.betonquest.kernel;
 
 /**
- * Provides dependencies to the core components in the {@link CoreComponent#load(DependencyProvider)} method and
- * distributes them across all components in the {@link CoreComponentLoader}.
+ * Provides dependencies to the core components in the
+ * {@link CoreComponent#loadComponent(DependencyProvider)} method and distributes them
+ * across all components in the {@link CoreComponentLoader}.
  */
 @FunctionalInterface
 public interface DependencyProvider {
