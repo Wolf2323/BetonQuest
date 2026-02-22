@@ -108,12 +108,10 @@ public class PluginMessage {
      * @param textParser            the {@link TextParser} instance
      * @param configAccessorFactory the config accessor factory
      * @param languageProvider      the {@link LanguageProvider} instance
-     * @throws QuestException if the messages could not be loaded
      */
     public PluginMessage(final BetonQuestLogger log, final Plugin instance, final PlaceholderManager placeholders,
                          final PlayerDataStorage playerDataStorage, final TextParser textParser,
-                         final ConfigAccessorFactory configAccessorFactory, final LanguageProvider languageProvider)
-            throws QuestException {
+                         final ConfigAccessorFactory configAccessorFactory, final LanguageProvider languageProvider) {
         this.log = log;
         this.placeholders = placeholders;
         this.textParser = textParser;
@@ -124,9 +122,13 @@ public class PluginMessage {
             messages = loadMessageFiles(instance, configAccessorFactory);
             internal = configAccessorFactory.create(instance, "messages-internal.yml");
         } catch (InvalidConfigurationException | URISyntaxException | IOException e) {
-            throw new QuestException("Failed to load messages", e);
+            throw new IllegalStateException("Failed to load message files in PluginMessage: %s".formatted(e.getMessage()), e);
         }
-        loadedMessages = loadMessages();
+        try {
+            loadedMessages = loadMessages();
+        } catch (final QuestException e) {
+            throw new IllegalStateException("Failed to parse messages in PluginMessage: %s".formatted(e.getMessage()), e);
+        }
 
         for (final String language : getLanguages()) {
             log.debug("Loaded " + language + " language");
