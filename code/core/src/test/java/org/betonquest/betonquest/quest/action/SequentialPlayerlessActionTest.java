@@ -22,7 +22,7 @@ class SequentialPlayerlessActionTest {
     @Test
     void testCanExecuteWithZeroActions() {
         final PlayerlessAction action = new SequentialPlayerlessAction(List.of());
-        assertDoesNotThrow(action::execute, "SequentialStaticAction should not fail with no actions to execute.");
+        assertDoesNotThrow(action::execute, "SequentialPlayerlessAction should not fail with no actions to execute.");
     }
 
     @Test

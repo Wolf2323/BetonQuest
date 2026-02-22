@@ -10,23 +10,15 @@ For actions run from a schedule this is not the case as there is no specific pla
 This means you can only use actions that are player independent, like `setblock` or `globaltag`, in schedules.
 The same applies to the conditions used by these actions.
 
-To determine if an action is player independent (and can be used in schedules), look for the **static** flag in the docs.
-
-!!! example annotate
-    <h2>Set Block: `setblock`</h2>
-
-    **persistent**, ==**static**== (1)
-
-    Changes the block at the given position.
-
-1.  This flag states that `setblock` can be used player independent.
+All player-independent actions (and therefore can be used in schedules) are tagged with the **independent** icon 
+@snippet:action-meta:independent@ listed in the context section in the docs for each action.
 
 Some actions behave differently when called from a schedule in independent mode.
 For example, `tag delete` will include offline players.
 A list of all actions that act differently can be found in the [`runIndependent`](Building-Blocks/Actions-List.md#runindependent) docs.
 
-But sometimes you might want your schedule to run a player dependent action, like `message` or `give` for all players on the server.
-To do this you can use the [`runforall`](Building-Blocks/Actions-List.md#runforall) action. It will run the given actions for all players on the server. 
+But sometimes you might want your schedule to run a player-dependent action, like `message` or `give` for all players on the server.
+To do this, you can use the [`runforall`](Building-Blocks/Actions-List.md#runforall) action. It will run the given actions for all players on the server. 
 You can even use conditions to filter out players.
 
 ## Realtime schedules

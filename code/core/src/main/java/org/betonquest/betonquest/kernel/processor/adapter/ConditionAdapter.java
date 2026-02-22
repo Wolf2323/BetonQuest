@@ -26,7 +26,7 @@ public class ConditionAdapter extends QuestAdapter<PlayerCondition, PlayerlessCo
     }
 
     /**
-     * Checks the condition for specified player.
+     * Checks the condition for the specified player.
      *
      * @param profile the {@link Profile} used for checking
      * @return f the condition is fulfilled
@@ -35,7 +35,7 @@ public class ConditionAdapter extends QuestAdapter<PlayerCondition, PlayerlessCo
     public boolean check(@Nullable final Profile profile) throws QuestException {
         if (player == null || profile == null) {
             if (playerless == null) {
-                throw new QuestException("Non-static condition cannot be checked without a profile reference!");
+                throw new QuestException("Non-playerless condition cannot be checked without a profile reference!");
             }
             return playerless.check();
         }

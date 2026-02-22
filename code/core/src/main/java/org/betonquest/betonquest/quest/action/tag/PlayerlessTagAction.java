@@ -5,12 +5,12 @@ import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.database.TagData;
 
 /**
- * The static tag action, doing what was defined in its instruction.
+ * The playerless tag action, doing what was defined in its instruction.
  */
 public class PlayerlessTagAction implements PlayerlessAction {
 
     /**
-     * Static tagData that shall be tagged.
+     * The tagData that shall be tagged.
      */
     private final TagData tagData;
 
@@ -20,9 +20,9 @@ public class PlayerlessTagAction implements PlayerlessAction {
     private final TagChanger tagChanger;
 
     /**
-     * Create a static tag action.
+     * Create a playerless tag action.
      *
-     * @param tagData    Static tagData that shall be tagged.
+     * @param tagData    the tagData that shall be tagged.
      * @param tagChanger changes the defined tags
      */
     public PlayerlessTagAction(final TagData tagData, final TagChanger tagChanger) {

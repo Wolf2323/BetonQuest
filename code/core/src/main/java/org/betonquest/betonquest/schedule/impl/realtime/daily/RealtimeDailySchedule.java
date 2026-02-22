@@ -12,7 +12,7 @@ import java.time.ZoneId;
 import java.util.List;
 
 /**
- * A schedule that mimics the functionality and style of the old static action system.
+ * A schedule that mimics the functionality and style of the old playerless action system.
  * Time is just {@code HH:mm} format (e.g., 14:45)
  * and defines the time of day when the actions from this schedule will be run.
  */

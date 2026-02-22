@@ -7,8 +7,8 @@ import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import java.util.List;
 
 /**
- * A static action that is composed of other static actions executed in sequence. If an error occurs execution is stopped
- * at that point.
+ * A playerless action that is composed of other playerless actions executed in sequence.
+ * If an error occurs execution is stopped at that point.
  */
 public class SequentialPlayerlessAction implements PlayerlessAction {
 
@@ -18,7 +18,7 @@ public class SequentialPlayerlessAction implements PlayerlessAction {
     private final List<PlayerlessAction> playerlessActions;
 
     /**
-     * Create a static action sequence. The actions at the front of the array will be executed first, at the end will be
+     * Create a playerless action sequence. The actions at the front of the array will be executed first, at the end will be
      * executed last.
      *
      * @param playerlessActions actions to be executed

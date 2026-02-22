@@ -118,7 +118,7 @@ public class ObjectiveAction implements NullableAction {
         for (final ObjectiveIdentifier objectiveID : objectives.getValue(profile)) {
             final Objective objective = objectiveManager.getObjective(objectiveID);
             if (profile == null) {
-                handleStatic(objectiveID);
+                handlePlayerless(objectiveID);
             } else if (profile.getOnlineProfile().isEmpty()) {
                 handleForOfflinePlayer(profile, objectiveID);
             } else {
@@ -127,13 +127,13 @@ public class ObjectiveAction implements NullableAction {
         }
     }
 
-    private void handleStatic(final ObjectiveIdentifier objectiveID) {
+    private void handlePlayerless(final ObjectiveIdentifier objectiveID) {
         if ("delete".equals(action) || "remove".equals(action)) {
             final ProfileProvider profileProvider = this.profileProvider;
             profileProvider.getOnlineProfiles().forEach(onlineProfile -> cancelObjectiveForOnlinePlayer(onlineProfile, objectiveID));
             this.saver.add(new Saver.Record(UpdateType.REMOVE_ALL_OBJECTIVES, objectiveID.toString()));
         } else {
-            log.warn(questPackage, "You tried to call an objective add / finish action in a static context! Only objective delete works here.");
+            log.warn(questPackage, "You tried to call an objective add / finish action in a playerless context! Only objective delete works here.");
         }
     }
 
