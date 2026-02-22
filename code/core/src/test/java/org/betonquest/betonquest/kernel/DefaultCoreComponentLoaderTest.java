@@ -40,7 +40,7 @@ class DefaultCoreComponentLoaderTest {
     @Test
     void loading_before_registration_fails() {
         final RawDummyComponent another = spy(new RawDummyComponent(false));
-        another.load(new DependencyProvider() {
+        another.loadComponent(new DependencyProvider() {
             @Override
             public <U> void take(final Class<U> type, final U dependency) {
                 // Empty
@@ -53,7 +53,7 @@ class DefaultCoreComponentLoaderTest {
     void manually_loading_after_registration_fails_in_load_method_with_warning() {
         final RawDummyComponent another = spy(new RawDummyComponent(false));
         loader.register(another);
-        another.load(new DependencyProvider() {
+        another.loadComponent(new DependencyProvider() {
             @Override
             public <U> void take(final Class<U> type, final U dependency) {
                 // Empty
