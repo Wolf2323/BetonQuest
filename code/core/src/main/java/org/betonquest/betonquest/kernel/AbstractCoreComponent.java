@@ -17,7 +17,7 @@ public abstract class AbstractCoreComponent implements CoreComponent {
     /**
      * Whether this component was already loaded.
      */
-    private boolean loaded = false;
+    private boolean loaded;
 
     /**
      * Create a new component.
@@ -32,7 +32,7 @@ public abstract class AbstractCoreComponent implements CoreComponent {
      *
      * @param dependencyProvider the dependency provider to use
      */
-    protected abstract void load(final DependencyProvider dependencyProvider);
+    protected abstract void load(DependencyProvider dependencyProvider);
 
     @Override
     public void inject(final LoadedDependency<?> dependency) {
