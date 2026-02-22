@@ -65,10 +65,10 @@ public class RawDummyComponent extends AbstractCoreComponent {
     }
 
     @Override
-    void load() {
+    protected void load(final DependencyProvider dependencyProvider) {
         loadMethod.accept(dependencyProvider);
         if (injectSelf) {
-            provide(RawDummyComponent.class, this);
+            dependencyProvider.take(RawDummyComponent.class, this);
         }
     }
 }

@@ -99,7 +99,7 @@ class DefaultCoreComponentLoaderTest {
         final CoreComponent component = spy(new RawDummyComponent());
         loader.register(component);
         loader.load();
-        verify(component, times(1)).load(loader);
+        verify(component, times(1)).loadComponent(loader);
         assertTrue(component.isLoaded(), "Component should be loaded after loading");
     }
 
@@ -117,7 +117,7 @@ class DefaultCoreComponentLoaderTest {
         final CoreComponent component = spy(new RawDummyComponent(RawDummyComponent.class));
         loader.register(component);
         assertThrows(IllegalStateException.class, loader::load, "Should throw an exception because a blocking component that cannot be loaded");
-        verify(component, never()).load(loader);
+        verify(component, never()).loadComponent(loader);
     }
 
     @Nested
