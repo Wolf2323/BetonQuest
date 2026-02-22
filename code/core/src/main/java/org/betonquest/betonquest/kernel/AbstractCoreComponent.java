@@ -1,9 +1,6 @@
 package org.betonquest.betonquest.kernel;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -18,12 +15,6 @@ public abstract class AbstractCoreComponent implements CoreComponent {
     protected final Set<LoadedDependency<?>> injectedDependencies;
 
     /**
-     * The dependency provider instance that is available before loading #load() to enable #provide().
-     */
-    @Nullable
-    protected DependencyProvider dependencyProvider;
-
-    /**
      * Whether this component was already loaded.
      */
     private boolean loaded = false;
@@ -36,10 +27,12 @@ public abstract class AbstractCoreComponent implements CoreComponent {
     }
 
     /**
-     * Implement all loading logic here.
-     * Use #provide(Class, Object) to provide dependencies to other components.
+     * Implement all loading logic here and use the provided {@link DependencyProvider} to inject dependencies into
+     * all other components.
+     *
+     * @param dependencyProvider the dependency provider to use
      */
-    protected abstract void load();
+    protected abstract void load(final DependencyProvider dependencyProvider);
 
     @Override
     public void inject(final LoadedDependency<?> dependency) {
@@ -63,22 +56,9 @@ public abstract class AbstractCoreComponent implements CoreComponent {
         return remainingRequirements().anyMatch(required -> required.isAssignableFrom(type));
     }
 
-    /**
-     * Provides a new instance to the dependency provider to propagate.
-     *
-     * @param type       the type of the dependency
-     * @param dependency the dependency instance
-     * @param <T>        the type of the dependency
-     */
-    protected <T> void provide(final Class<T> type, final T dependency) {
-        Objects.requireNonNull(dependencyProvider, "Dependency provider not yet available");
-        dependencyProvider.take(type, dependency);
-    }
-
     @Override
-    public void load(final DependencyProvider dependencyProvider) {
-        this.dependencyProvider = dependencyProvider;
-        load();
+    public final void loadComponent(final DependencyProvider dependencyProvider) {
+        load(dependencyProvider);
         this.loaded = true;
     }
 
