@@ -40,12 +40,7 @@ class DefaultCoreComponentLoaderTest {
     @Test
     void loading_before_registration_fails() {
         final RawDummyComponent another = spy(new RawDummyComponent(false));
-        another.loadComponent(new DependencyProvider() {
-            @Override
-            public <U> void take(final Class<U> type, final U dependency) {
-                // Empty
-            }
-        });
+        another.loadComponent(mock(DependencyProvider.class));
         assertThrows(IllegalArgumentException.class, () -> loader.register(another));
     }
 
@@ -53,12 +48,7 @@ class DefaultCoreComponentLoaderTest {
     void manually_loading_after_registration_fails_in_load_method_with_warning() {
         final RawDummyComponent another = spy(new RawDummyComponent(false));
         loader.register(another);
-        another.loadComponent(new DependencyProvider() {
-            @Override
-            public <U> void take(final Class<U> type, final U dependency) {
-                // Empty
-            }
-        });
+        another.loadComponent(mock(DependencyProvider.class));
         loader.load();
         verify(logger, atLeastOnce()).warn(anyString());
         verify(another, atMostOnce()).load(any());
