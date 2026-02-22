@@ -9,6 +9,7 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.quest.TypeFactory;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.bstats.CompositeInstructionMetricsSupplier;
+import org.betonquest.betonquest.bstats.MetricsHolder;
 import org.betonquest.betonquest.kernel.registry.FactoryTypeRegistry;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -21,7 +22,7 @@ import java.util.Map;
  * @param <I> the {@link ReadableIdentifier} identifying the type
  * @param <T> the legacy type
  */
-public abstract class TypedQuestProcessor<I extends ReadableIdentifier, T> extends QuestProcessor<I, T> {
+public abstract class TypedQuestProcessor<I extends ReadableIdentifier, T> extends QuestProcessor<I, T> implements MetricsHolder {
 
     /**
      * Available types.
@@ -51,11 +52,7 @@ public abstract class TypedQuestProcessor<I extends ReadableIdentifier, T> exten
         this.instructionApi = instructionApi;
     }
 
-    /**
-     * Gets the bstats metric supplier for registered and active types.
-     *
-     * @return the metric with its type identifier
-     */
+    @Override
     public Map.Entry<String, CompositeInstructionMetricsSupplier<?>> metricsSupplier() {
         return Map.entry(internal, new CompositeInstructionMetricsSupplier<>(values::keySet, types::keySet));
     }
