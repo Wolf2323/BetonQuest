@@ -9,13 +9,21 @@ import org.betonquest.betonquest.api.quest.condition.PlayerlessCondition;
 public class ThrowExceptionPlayerlessCondition implements PlayerlessCondition {
 
     /**
-     * Create a playerless condition that throws an exception when checked.
+     * Additional warning text.
      */
-    public ThrowExceptionPlayerlessCondition() {
+    private final String warning;
+
+    /**
+     * Create a playerless condition that throws an exception when checked.
+     *
+     * @param warning additional warning text
+     */
+    public ThrowExceptionPlayerlessCondition(final String warning) {
+        this.warning = warning;
     }
 
     @Override
     public boolean check() throws QuestException {
-        throw new QuestException("This condition cannot be checked in the current context.");
+        throw new QuestException("Executing in an independent context failed. %s".formatted(warning));
     }
 }

@@ -38,6 +38,6 @@ public class WeatherConditionFactory implements PlayerConditionFactory, Playerle
         final Argument<Weather> weather = instruction.parse(Weather::parseWeather).get();
         final Optional<Argument<World>> optionalWorld = instruction.world().get("world");
         return optionalWorld.map(world -> (PlayerlessCondition) new NullableConditionAdapter(new WeatherCondition(weather, optionalWorld.orElse(null))))
-                .orElse(new ThrowExceptionPlayerlessCondition());
+                .orElse(new ThrowExceptionPlayerlessCondition("Condition requires a 'world' argument."));
     }
 }
