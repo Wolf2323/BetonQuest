@@ -34,9 +34,7 @@ public final class OnlineActionAdapter implements PlayerAction {
      */
     public OnlineActionAdapter(final OnlineAction onlineAction, final BetonQuestLogger log, final QuestPackage questPackage) {
         this(onlineAction, profile -> log.debug(
-                questPackage,
-                profile + " is offline, cannot fire action because it's not persistent."
-        ));
+                questPackage, "Cannot fire an online action for the offline profile %s".formatted(profile)));
     }
 
     /**

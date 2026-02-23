@@ -37,7 +37,7 @@ public final class OnlineConditionAdapter implements PlayerCondition {
         this(onlineCondition, profile -> {
             log.debug(
                     questPackage,
-                    profile + " is offline, cannot check condition because it's not persistent."
+                    "Cannot check an online condition for the offline profile %s".formatted(profile)
             );
             return false;
         });

@@ -30,7 +30,7 @@ public final class OnlinePlaceholderAdapter implements PlayerPlaceholder {
      */
     public OnlinePlaceholderAdapter(final OnlinePlaceholder onlinePlaceholder) {
         this(onlinePlaceholder, profile -> {
-            throw new QuestException(profile + " is offline, cannot get placeholder value because it's not persistent.");
+            throw new QuestException("Cannot get an online placeholder for the offline profile %s".formatted(profile));
         });
     }
 
