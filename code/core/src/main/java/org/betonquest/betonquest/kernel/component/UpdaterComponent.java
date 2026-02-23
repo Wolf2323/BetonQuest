@@ -76,7 +76,7 @@ public class UpdaterComponent extends AbstractCoreComponent {
     @Override
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class, BukkitScheduler.class, PluginDescriptionFile.class,
-                ConfigAccessor.class, BetonQuestLoggerFactory.class, UpdateDownloader.class);
+                Server.class, ConfigAccessor.class, BetonQuestLoggerFactory.class);
     }
 
     @Override
