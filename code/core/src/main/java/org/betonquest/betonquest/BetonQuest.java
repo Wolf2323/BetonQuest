@@ -11,8 +11,6 @@ import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
 import org.betonquest.betonquest.api.config.FileConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
-import org.betonquest.betonquest.api.identifier.IdentifierFactory;
-import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
@@ -30,7 +28,6 @@ import org.betonquest.betonquest.config.QuestManager;
 import org.betonquest.betonquest.config.patcher.migration.Migrator;
 import org.betonquest.betonquest.config.patcher.migration.QuestMigrator;
 import org.betonquest.betonquest.conversation.AnswerFilter;
-import org.betonquest.betonquest.conversation.CombatTagger;
 import org.betonquest.betonquest.conversation.Conversation;
 import org.betonquest.betonquest.conversation.ConversationColors;
 import org.betonquest.betonquest.data.PlayerDataStorage;
@@ -43,11 +40,11 @@ import org.betonquest.betonquest.database.MySQL;
 import org.betonquest.betonquest.database.PlayerDataFactory;
 import org.betonquest.betonquest.database.SQLite;
 import org.betonquest.betonquest.database.Saver;
-import org.betonquest.betonquest.item.QuestItemHandler;
 import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
 import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
+import org.betonquest.betonquest.kernel.component.ListenersComponent;
 import org.betonquest.betonquest.kernel.component.UpdaterComponent;
 import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConditionTypesComponent;
@@ -61,10 +58,6 @@ import org.betonquest.betonquest.kernel.component.types.ScheduleTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.TextParserTypesComponent;
 import org.betonquest.betonquest.kernel.processor.QuestProcessor;
 import org.betonquest.betonquest.lib.logger.CachingBetonQuestLoggerFactory;
-import org.betonquest.betonquest.listener.CustomDropListener;
-import org.betonquest.betonquest.listener.JoinQuitListener;
-import org.betonquest.betonquest.listener.MobKillListener;
-import org.betonquest.betonquest.listener.QuestItemConvertListener;
 import org.betonquest.betonquest.logger.DefaultBetonQuestLoggerFactory;
 import org.betonquest.betonquest.logger.HandlerFactory;
 import org.betonquest.betonquest.logger.PlayerLogWatcher;
@@ -323,13 +316,12 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.register(new ConversationColorsComponent());
         registerFeatureQuestTypes(coreComponentLoader);
         setupUpdater(coreComponentLoader);
+        registerListener(coreComponentLoader);
 
         coreQuestTypeHandler.init();
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
         this.compatibility = coreComponentLoader.get(Compatibility.class);
         this.updater = coreComponentLoader.get(Updater.class);
-
-        registerListener();
 
         conversationColors = coreComponentLoader.get(ConversationColors.class);
 
@@ -414,24 +406,8 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         this.connector = new Connector(loggerFactory.create(Connector.class), config.getString("mysql.prefix"), database);
     }
 
-    private void registerListener() {
-        final IdentifierFactory<ItemIdentifier> itemIdentifierFactory;
-        try {
-            itemIdentifierFactory = betonQuestApi.identifiers().getFactory(ItemIdentifier.class);
-        } catch (final QuestException e) {
-            throw new IllegalStateException("Could not register the listeners!", e);
-        }
-        final PluginManager pluginManager = getServer().getPluginManager();
-        List.of(
-                new CombatTagger(profileProvider, config.getInt("conversation.damage.combat_delay")),
-                new MobKillListener(profileProvider),
-                new CustomDropListener(loggerFactory.create(CustomDropListener.class), this, betonQuestApi.items().manager(), itemIdentifierFactory),
-                new QuestItemHandler(config, coreQuestTypeHandler.getPlayerDataStorage(), profileProvider),
-                new QuestItemConvertListener(loggerFactory.create(QuestItemConvertListener.class),
-                        () -> config.getBoolean("item.quest.update_legacy_on_join"), coreQuestTypeHandler.getPluginMessage(), profileProvider),
-                new JoinQuitListener(config, coreQuestTypeHandler.getObjectiveProcessor(), coreQuestTypeHandler.getPlayerDataStorage(),
-                        betonQuestApi.conversations(), profileProvider, updater)
-        ).forEach(listener -> pluginManager.registerEvents(listener, this));
+    private void registerListener(final CoreComponentLoader coreComponentLoader) {
+        coreComponentLoader.register(new ListenersComponent());
     }
 
     private void registerCommands(final AccumulatingReceiverSelector receiverSelector, final HistoryHandler debugHistoryHandler,
