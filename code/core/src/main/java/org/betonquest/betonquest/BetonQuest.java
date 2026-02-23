@@ -251,7 +251,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         return servicesManager.load(clazz);
     }
 
-    @SuppressWarnings({"PMD.NcssCount", "PMD.DoNotUseThreads", "PMD.CyclomaticComplexity"})
+    @SuppressWarnings({"PMD.NcssCount", "PMD.DoNotUseThreads"})
     @Override
     public void onEnable() {
         instance = this;
