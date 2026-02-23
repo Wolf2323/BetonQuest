@@ -109,11 +109,6 @@ import java.util.logging.Handler;
 public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
     /**
-     * The indicator for dev versions.
-     */
-    private static final String DEV_INDICATOR = "DEV";
-
-    /**
      * The File where last executions should be cached.
      */
     private static final String CACHE_FILE = ".cache/schedules.yml";
