@@ -1,14 +1,11 @@
 package org.betonquest.betonquest;
 
-import net.kyori.adventure.key.Key;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.bukkit.event.LoadDataEvent;
-import org.betonquest.betonquest.api.common.component.font.Font;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
@@ -50,6 +47,7 @@ import org.betonquest.betonquest.item.QuestItemHandler;
 import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
+import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
 import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConditionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConversationIOTypesComponent;
@@ -61,7 +59,6 @@ import org.betonquest.betonquest.kernel.component.types.PlaceholderTypeComponent
 import org.betonquest.betonquest.kernel.component.types.ScheduleTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.TextParserTypesComponent;
 import org.betonquest.betonquest.kernel.processor.QuestProcessor;
-import org.betonquest.betonquest.lib.font.FontRetriever;
 import org.betonquest.betonquest.lib.logger.CachingBetonQuestLoggerFactory;
 import org.betonquest.betonquest.listener.CustomDropListener;
 import org.betonquest.betonquest.listener.JoinQuitListener;
@@ -205,11 +202,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     private QuestManager questManager;
 
     /**
-     * The registry for fonts to calculate width of text.
-     */
-    private FontRegistry fontRegistry;
-
-    /**
      * The colors for conversations.
      */
     private ConversationColors conversationColors;
@@ -228,6 +220,11 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      * The betonQuestApi instance.
      */
     private BetonQuestApi betonQuestApi;
+
+    /**
+     * The core component loader instance.
+     */
+    private CoreComponentLoader coreComponentLoader;
 
     /**
      * The required default constructor without arguments for plugin creation.
@@ -315,10 +312,11 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         }
         lastExecutionCache = new LastExecutionCache(loggerFactory.create(LastExecutionCache.class, "Cache"), cache);
 
-        setupFontRegistry();
-
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
+        this.coreComponentLoader = coreComponentLoader;
         this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class), coreComponentLoader);
+
+        setupFontRegistry(coreComponentLoader);
 
         coreComponentLoader.init(JavaPlugin.class, this);
         coreComponentLoader.init(Server.class, getServer());
@@ -336,7 +334,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(AsyncSaver.class, saver);
         coreComponentLoader.init(LastExecutionCache.class, lastExecutionCache);
         coreComponentLoader.init(FileConfigAccessor.class, config);
-        coreComponentLoader.init(FontRegistry.class, fontRegistry);
 
         registerCoreQuestTypes(coreComponentLoader);
         coreComponentLoader.register(new ConversationColorsComponent());
@@ -395,18 +392,8 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.register(new TextParserTypesComponent());
     }
 
-    private void setupFontRegistry() {
-        final Key defaultkey = Key.key("default");
-        final File fontFolder = new File(getDataFolder(), "fonts");
-        final FontRetriever fontRetriever = new FontRetriever();
-        fontRegistry = new FontRegistry(defaultkey);
-        saveResource("fonts/default.font.bin", true);
-        final List<Pair<Key, Font>> fonts = fontRetriever.loadFonts(fontFolder.toPath());
-        fonts.forEach(pair -> fontRegistry.registerFont(pair.getKey(), pair.getValue()));
-        log.info("Loaded " + fonts.size() + " font index files.");
-        if (fonts.isEmpty()) {
-            throw new IllegalStateException("Could not load fonts!");
-        }
+    private void setupFontRegistry(final CoreComponentLoader coreComponentLoader) {
+        coreComponentLoader.register(new FontRegistryComponent());
     }
 
     private void setupDatabase() {
@@ -633,6 +620,15 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     }
 
     /**
+     * Returns the {@link CoreComponentLoader} instance.
+     *
+     * @return the {@link CoreComponentLoader} instance
+     */
+    public CoreComponentLoader getComponentLoader() {
+        return coreComponentLoader;
+    }
+
+    /**
      * Returns the {@link BetonQuestLoggerFactory} instance.
      *
      * @return the {@link BetonQuestLoggerFactory} instance
@@ -774,7 +770,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      * @return the font registry
      */
     public FontRegistry getFontRegistry() {
-        return fontRegistry;
+        return coreComponentLoader.get(FontRegistry.class);
     }
 
     /**
