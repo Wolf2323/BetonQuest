@@ -1,14 +1,11 @@
 package org.betonquest.betonquest;
 
-import net.kyori.adventure.key.Key;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.bukkit.event.LoadDataEvent;
-import org.betonquest.betonquest.api.common.component.font.Font;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
@@ -50,6 +47,8 @@ import org.betonquest.betonquest.item.QuestItemHandler;
 import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
+import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
+import org.betonquest.betonquest.kernel.component.UpdaterComponent;
 import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConditionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConversationIOTypesComponent;
@@ -61,7 +60,6 @@ import org.betonquest.betonquest.kernel.component.types.PlaceholderTypeComponent
 import org.betonquest.betonquest.kernel.component.types.ScheduleTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.TextParserTypesComponent;
 import org.betonquest.betonquest.kernel.processor.QuestProcessor;
-import org.betonquest.betonquest.lib.font.FontRetriever;
 import org.betonquest.betonquest.lib.logger.CachingBetonQuestLoggerFactory;
 import org.betonquest.betonquest.listener.CustomDropListener;
 import org.betonquest.betonquest.listener.JoinQuitListener;
@@ -78,20 +76,8 @@ import org.betonquest.betonquest.playerhider.PlayerHider;
 import org.betonquest.betonquest.profile.UUIDProfileProvider;
 import org.betonquest.betonquest.quest.CoreQuestTypeHandler;
 import org.betonquest.betonquest.schedule.LastExecutionCache;
-import org.betonquest.betonquest.versioning.Version;
 import org.betonquest.betonquest.versioning.java.JREVersionPrinter;
-import org.betonquest.betonquest.web.DownloadSource;
-import org.betonquest.betonquest.web.TempFileDownloadSource;
-import org.betonquest.betonquest.web.WebContentSource;
-import org.betonquest.betonquest.web.WebDownloadSource;
-import org.betonquest.betonquest.web.updater.UpdateDownloader;
-import org.betonquest.betonquest.web.updater.UpdateSourceHandler;
 import org.betonquest.betonquest.web.updater.Updater;
-import org.betonquest.betonquest.web.updater.UpdaterConfig;
-import org.betonquest.betonquest.web.updater.source.DevelopmentUpdateSource;
-import org.betonquest.betonquest.web.updater.source.ReleaseUpdateSource;
-import org.betonquest.betonquest.web.updater.source.implementations.GitHubReleaseSource;
-import org.betonquest.betonquest.web.updater.source.implementations.ReposiliteReleaseAndDevelopmentSource;
 import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -117,11 +103,6 @@ import java.util.logging.Handler;
 @SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass", "PMD.TooManyMethods",
         "PMD.TooManyFields", "NullAway.Init"})
 public class BetonQuest extends JavaPlugin implements LanguageProvider {
-
-    /**
-     * The indicator for dev versions.
-     */
-    private static final String DEV_INDICATOR = "DEV";
 
     /**
      * The File where last executions should be cached.
@@ -205,11 +186,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     private QuestManager questManager;
 
     /**
-     * The registry for fonts to calculate width of text.
-     */
-    private FontRegistry fontRegistry;
-
-    /**
      * The colors for conversations.
      */
     private ConversationColors conversationColors;
@@ -228,6 +204,11 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      * The betonQuestApi instance.
      */
     private BetonQuestApi betonQuestApi;
+
+    /**
+     * The core component loader instance.
+     */
+    private CoreComponentLoader coreComponentLoader;
 
     /**
      * The required default constructor without arguments for plugin creation.
@@ -315,10 +296,11 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         }
         lastExecutionCache = new LastExecutionCache(loggerFactory.create(LastExecutionCache.class, "Cache"), cache);
 
-        setupFontRegistry();
-
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
+        this.coreComponentLoader = coreComponentLoader;
         this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class), coreComponentLoader);
+
+        setupFontRegistry(coreComponentLoader);
 
         coreComponentLoader.init(JavaPlugin.class, this);
         coreComponentLoader.init(Server.class, getServer());
@@ -336,17 +318,17 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(AsyncSaver.class, saver);
         coreComponentLoader.init(LastExecutionCache.class, lastExecutionCache);
         coreComponentLoader.init(FileConfigAccessor.class, config);
-        coreComponentLoader.init(FontRegistry.class, fontRegistry);
 
         registerCoreQuestTypes(coreComponentLoader);
         coreComponentLoader.register(new ConversationColorsComponent());
         registerFeatureQuestTypes(coreComponentLoader);
+        setupUpdater(coreComponentLoader);
 
         coreQuestTypeHandler.init();
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
         this.compatibility = coreComponentLoader.get(Compatibility.class);
+        this.updater = coreComponentLoader.get(Updater.class);
 
-        setupUpdater();
         registerListener();
 
         conversationColors = coreComponentLoader.get(ConversationColors.class);
@@ -395,18 +377,8 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.register(new TextParserTypesComponent());
     }
 
-    private void setupFontRegistry() {
-        final Key defaultkey = Key.key("default");
-        final File fontFolder = new File(getDataFolder(), "fonts");
-        final FontRetriever fontRetriever = new FontRetriever();
-        fontRegistry = new FontRegistry(defaultkey);
-        saveResource("fonts/default.font.bin", true);
-        final List<Pair<Key, Font>> fonts = fontRetriever.loadFonts(fontFolder.toPath());
-        fonts.forEach(pair -> fontRegistry.registerFont(pair.getKey(), pair.getValue()));
-        log.info("Loaded " + fonts.size() + " font index files.");
-        if (fonts.isEmpty()) {
-            throw new IllegalStateException("Could not load fonts!");
-        }
+    private void setupFontRegistry(final CoreComponentLoader coreComponentLoader) {
+        coreComponentLoader.register(new FontRegistryComponent());
     }
 
     private void setupDatabase() {
@@ -498,27 +470,8 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         }
     }
 
-    private void setupUpdater() {
-        final File updateFolder = getServer().getUpdateFolderFile();
-        final File file = new File(updateFolder, this.getFile().getName());
-        final DownloadSource downloadSource = new TempFileDownloadSource(new WebDownloadSource());
-        final UpdateDownloader updateDownloader = new UpdateDownloader(downloadSource, file);
-
-        final ReposiliteReleaseAndDevelopmentSource reposiliteReleaseAndDevelopmentSource =
-                new ReposiliteReleaseAndDevelopmentSource("https://repo.betonquest.org",
-                        "betonquest", "BetonQuest", new WebContentSource());
-        final GitHubReleaseSource gitHubReleaseSource = new GitHubReleaseSource(
-                "https://api.github.com/repos/BetonQuest/BetonQuest",
-                new WebContentSource(GitHubReleaseSource.HTTP_CODE_HANDLER));
-        final List<ReleaseUpdateSource> releaseHandlers = List.of(reposiliteReleaseAndDevelopmentSource, gitHubReleaseSource);
-        final List<DevelopmentUpdateSource> developmentHandlers = List.of(reposiliteReleaseAndDevelopmentSource);
-        final UpdateSourceHandler updateSourceHandler = new UpdateSourceHandler(loggerFactory.create(UpdateSourceHandler.class),
-                releaseHandlers, developmentHandlers);
-
-        final Version pluginVersion = new Version(this.getDescription().getVersion());
-        final UpdaterConfig updaterConfig = new UpdaterConfig(loggerFactory.create(UpdaterConfig.class), config, pluginVersion, DEV_INDICATOR);
-        updater = new Updater(loggerFactory.create(Updater.class), updaterConfig, pluginVersion, updateSourceHandler, updateDownloader,
-                this, getServer().getScheduler(), InstantSource.system());
+    private void setupUpdater(final CoreComponentLoader coreComponentLoader) {
+        coreComponentLoader.register(new UpdaterComponent(this.getFile()));
     }
 
     @SuppressWarnings("PMD.DoNotUseThreads")
@@ -630,6 +583,15 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      */
     public void addProcessor(final QuestProcessor<?, ?> processor) {
         coreQuestTypeHandler.getAdditionalProcessors().add(processor);
+    }
+
+    /**
+     * Returns the {@link CoreComponentLoader} instance.
+     *
+     * @return the {@link CoreComponentLoader} instance
+     */
+    public CoreComponentLoader getComponentLoader() {
+        return coreComponentLoader;
     }
 
     /**
@@ -774,7 +736,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      * @return the font registry
      */
     public FontRegistry getFontRegistry() {
-        return fontRegistry;
+        return coreComponentLoader.get(FontRegistry.class);
     }
 
     /**
