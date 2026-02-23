@@ -93,6 +93,7 @@ import java.util.Set;
 /**
  * The {@link AbstractCoreComponent} loading all action types.
  */
+@SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.NcssCount"})
 public class ActionTypesComponent extends AbstractCoreComponent {
 
     /**
