@@ -4,6 +4,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.betonquest.betonquest.api.text.TextParserRegistry;
+import org.betonquest.betonquest.conversation.ConversationColors;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.text.parser.LegacyParser;
@@ -27,12 +28,13 @@ public class TextParserTypesComponent extends AbstractCoreComponent {
 
     @Override
     public Set<Class<?>> requires() {
-        return Set.of(TextParserRegistry.class);
+        return Set.of(TextParserRegistry.class, ConversationColors.class);
     }
 
     @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final TextParserRegistry textParserRegistry = getDependency(TextParserRegistry.class);
+        final ConversationColors conversationColors = getDependency(ConversationColors.class);
 
         final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.builder()
                 .hexColors()
@@ -51,5 +53,7 @@ public class TextParserTypesComponent extends AbstractCoreComponent {
                 .build();
         textParserRegistry.register("legacyminimessage", new MiniMessageParser(legacyMiniMessage));
         textParserRegistry.register("minedown", new MineDownParser());
+
+        conversationColors.load();
     }
 }

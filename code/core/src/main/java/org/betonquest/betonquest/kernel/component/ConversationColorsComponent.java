@@ -31,7 +31,6 @@ public class ConversationColorsComponent extends AbstractCoreComponent {
         final TextParser textParser = getDependency(TextParser.class);
 
         final ConversationColors conversationColors = new ConversationColors(textParser, config);
-        conversationColors.load();
 
         dependencyProvider.take(ConversationColors.class, conversationColors);
     }
