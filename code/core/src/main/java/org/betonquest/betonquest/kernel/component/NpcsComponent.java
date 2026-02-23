@@ -5,6 +5,7 @@ import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
+import org.betonquest.betonquest.api.quest.npc.DefaultNpcHider;
 import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
 import org.betonquest.betonquest.api.service.feature.DefaultNpcs;
@@ -72,6 +73,7 @@ public class NpcsComponent extends AbstractCoreComponent {
         dependencyProvider.take(NpcIdentifierFactory.class, npcIdentifierFactory);
         dependencyProvider.take(NpcTypeRegistry.class, npcTypeRegistry);
         dependencyProvider.take(NpcProcessor.class, npcProcessor);
+        dependencyProvider.take(DefaultNpcHider.class, npcProcessor.getNpcHider());
         dependencyProvider.take(DefaultNpcs.class, new DefaultNpcs(npcProcessor, npcTypeRegistry));
     }
 }
