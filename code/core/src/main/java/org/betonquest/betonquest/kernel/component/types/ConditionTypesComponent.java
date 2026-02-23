@@ -76,6 +76,7 @@ import java.util.Set;
 /**
  * The {@link AbstractCoreComponent} loading all condition types.
  */
+@SuppressWarnings("PMD.NcssCount")
 public class ConditionTypesComponent extends AbstractCoreComponent {
 
     /**
