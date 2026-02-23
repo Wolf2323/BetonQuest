@@ -53,7 +53,7 @@ actions:
     Additionally, the mob should be configured to never change its AI target using MythicMobs.
 
 !!! info "Private & Target Arguments"
-    The `private` and `target` arguments are ignored when the action is used in a playerless context like [Schedules]
+    The `private` and `target` arguments are ignored when the action is used in an independent context like [Schedules]
     (../../../Schedules.md).
 
 ## Objectives
