@@ -133,7 +133,7 @@ public class ObjectiveAction implements NullableAction {
             profileProvider.getOnlineProfiles().forEach(onlineProfile -> cancelObjectiveForOnlinePlayer(onlineProfile, objectiveID));
             this.saver.add(new Saver.Record(UpdateType.REMOVE_ALL_OBJECTIVES, objectiveID.toString()));
         } else {
-            log.warn(questPackage, "You tried to call an objective add / finish action in a playerless context! Only objective delete works here.");
+            log.warn(questPackage, "You tried to call an objective add / finish action in an independent context! Only objective delete works here.");
         }
     }
 
