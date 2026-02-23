@@ -48,6 +48,7 @@ import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
 import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
+import org.betonquest.betonquest.kernel.component.UpdaterComponent;
 import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConditionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConversationIOTypesComponent;
@@ -75,20 +76,12 @@ import org.betonquest.betonquest.playerhider.PlayerHider;
 import org.betonquest.betonquest.profile.UUIDProfileProvider;
 import org.betonquest.betonquest.quest.CoreQuestTypeHandler;
 import org.betonquest.betonquest.schedule.LastExecutionCache;
-import org.betonquest.betonquest.versioning.Version;
 import org.betonquest.betonquest.versioning.java.JREVersionPrinter;
 import org.betonquest.betonquest.web.DownloadSource;
 import org.betonquest.betonquest.web.TempFileDownloadSource;
-import org.betonquest.betonquest.web.WebContentSource;
 import org.betonquest.betonquest.web.WebDownloadSource;
 import org.betonquest.betonquest.web.updater.UpdateDownloader;
-import org.betonquest.betonquest.web.updater.UpdateSourceHandler;
 import org.betonquest.betonquest.web.updater.Updater;
-import org.betonquest.betonquest.web.updater.UpdaterConfig;
-import org.betonquest.betonquest.web.updater.source.DevelopmentUpdateSource;
-import org.betonquest.betonquest.web.updater.source.ReleaseUpdateSource;
-import org.betonquest.betonquest.web.updater.source.implementations.GitHubReleaseSource;
-import org.betonquest.betonquest.web.updater.source.implementations.ReposiliteReleaseAndDevelopmentSource;
 import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -338,12 +331,13 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         registerCoreQuestTypes(coreComponentLoader);
         coreComponentLoader.register(new ConversationColorsComponent());
         registerFeatureQuestTypes(coreComponentLoader);
+        setupUpdater(coreComponentLoader);
 
         coreQuestTypeHandler.init();
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
         this.compatibility = coreComponentLoader.get(Compatibility.class);
+        this.updater = coreComponentLoader.get(Updater.class);
 
-        setupUpdater();
         registerListener();
 
         conversationColors = coreComponentLoader.get(ConversationColors.class);
@@ -485,27 +479,14 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         }
     }
 
-    private void setupUpdater() {
+    private void setupUpdater(final CoreComponentLoader coreComponentLoader) {
         final File updateFolder = getServer().getUpdateFolderFile();
         final File file = new File(updateFolder, this.getFile().getName());
         final DownloadSource downloadSource = new TempFileDownloadSource(new WebDownloadSource());
         final UpdateDownloader updateDownloader = new UpdateDownloader(downloadSource, file);
 
-        final ReposiliteReleaseAndDevelopmentSource reposiliteReleaseAndDevelopmentSource =
-                new ReposiliteReleaseAndDevelopmentSource("https://repo.betonquest.org",
-                        "betonquest", "BetonQuest", new WebContentSource());
-        final GitHubReleaseSource gitHubReleaseSource = new GitHubReleaseSource(
-                "https://api.github.com/repos/BetonQuest/BetonQuest",
-                new WebContentSource(GitHubReleaseSource.HTTP_CODE_HANDLER));
-        final List<ReleaseUpdateSource> releaseHandlers = List.of(reposiliteReleaseAndDevelopmentSource, gitHubReleaseSource);
-        final List<DevelopmentUpdateSource> developmentHandlers = List.of(reposiliteReleaseAndDevelopmentSource);
-        final UpdateSourceHandler updateSourceHandler = new UpdateSourceHandler(loggerFactory.create(UpdateSourceHandler.class),
-                releaseHandlers, developmentHandlers);
-
-        final Version pluginVersion = new Version(this.getDescription().getVersion());
-        final UpdaterConfig updaterConfig = new UpdaterConfig(loggerFactory.create(UpdaterConfig.class), config, pluginVersion, DEV_INDICATOR);
-        updater = new Updater(loggerFactory.create(Updater.class), updaterConfig, pluginVersion, updateSourceHandler, updateDownloader,
-                this, getServer().getScheduler(), InstantSource.system());
+        coreComponentLoader.init(UpdateDownloader.class, updateDownloader);
+        coreComponentLoader.register(new UpdaterComponent());
     }
 
     @SuppressWarnings("PMD.DoNotUseThreads")
