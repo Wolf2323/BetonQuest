@@ -3,7 +3,6 @@ package org.betonquest.betonquest.quest;
 import org.betonquest.betonquest.api.config.quest.QuestPackage;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.text.TextParser;
-import org.betonquest.betonquest.api.text.TextParserRegistry;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.PlayerDataFactory;
@@ -46,8 +45,6 @@ import org.betonquest.betonquest.kernel.registry.feature.ConversationIORegistry;
 import org.betonquest.betonquest.kernel.registry.feature.InterceptorRegistry;
 import org.betonquest.betonquest.kernel.registry.feature.ItemTypeRegistry;
 import org.betonquest.betonquest.kernel.registry.feature.NotifyIORegistry;
-import org.betonquest.betonquest.kernel.registry.feature.ScheduleRegistry;
-import org.betonquest.betonquest.kernel.registry.feature.TextParserRegistryImpl;
 import org.betonquest.betonquest.menu.RPGMenu;
 import org.betonquest.betonquest.schedule.ActionScheduling;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
@@ -373,30 +370,12 @@ public class CoreQuestTypeHandler {
     }
 
     /**
-     * Gets the schedule registry.
-     *
-     * @return the schedule registry
-     */
-    public ScheduleRegistry getScheduleRegistry() {
-        return coreComponentLoader.get(ScheduleRegistry.class);
-    }
-
-    /**
      * Gets the item registry.
      *
      * @return the item registry
      */
     public ItemTypeRegistry getItemRegistry() {
         return coreComponentLoader.get(ItemTypeRegistry.class);
-    }
-
-    /**
-     * Gets the text parser registry.
-     *
-     * @return the text parser registry
-     */
-    public TextParserRegistry getTextParserRegistry() {
-        return coreComponentLoader.get(TextParserRegistryImpl.class);
     }
 
     /**
