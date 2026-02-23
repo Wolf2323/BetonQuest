@@ -13,11 +13,11 @@ import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.Saver;
-import org.betonquest.betonquest.quest.action.DoNothingPlayerlessAction;
 import org.betonquest.betonquest.quest.action.IngameNotificationSender;
 import org.betonquest.betonquest.quest.action.NoNotificationSender;
 import org.betonquest.betonquest.quest.action.NotificationLevel;
 import org.betonquest.betonquest.quest.action.NotificationSender;
+import org.betonquest.betonquest.quest.action.ThrowExceptionPlayerlessAction;
 
 import java.time.InstantSource;
 import java.util.Locale;
@@ -91,8 +91,9 @@ public class JournalActionFactory implements PlayerActionFactory, PlayerlessActi
     public PlayerlessAction parsePlayerless(final Instruction instruction) throws QuestException {
         final String operation = instruction.string().get().getValue(null);
         return switch (operation.toLowerCase(Locale.ROOT)) {
-            case "update", "add" -> new DoNothingPlayerlessAction();
-            case "delete" -> createPlayerlessJournalDeleteAction(instruction);
+            case "update", "add" ->
+                    new ThrowExceptionPlayerlessAction("Operation '%s' requires a player.".formatted(operation));
+            case "delete" -> createStaticJournalDeleteAction(instruction);
             default -> throw new QuestException("Unknown journal operation: " + operation);
         };
     }
@@ -118,7 +119,7 @@ public class JournalActionFactory implements PlayerActionFactory, PlayerlessActi
         return new JournalAction(dataStorage, journalChanger, notificationSender);
     }
 
-    private PlayerlessAction createPlayerlessJournalDeleteAction(final Instruction instruction) throws QuestException {
+    private PlayerlessAction createStaticJournalDeleteAction(final Instruction instruction) throws QuestException {
         final Argument<JournalEntryIdentifier> entryID = instruction.chainForArgument(instruction.getPart(2)).identifier(JournalEntryIdentifier.class).get();
         return new DeleteJournalPlayerlessAction(dataStorage, saver, profileProvider, entryID);
     }

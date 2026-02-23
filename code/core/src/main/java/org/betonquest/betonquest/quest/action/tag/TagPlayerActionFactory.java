@@ -10,7 +10,7 @@ import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.Saver;
-import org.betonquest.betonquest.quest.action.DoNothingPlayerlessAction;
+import org.betonquest.betonquest.quest.action.ThrowExceptionPlayerlessAction;
 
 import java.util.List;
 import java.util.Locale;
@@ -64,7 +64,7 @@ public class TagPlayerActionFactory implements PlayerActionFactory, PlayerlessAc
         final String action = instruction.string().get().getValue(null);
         final Argument<List<String>> tags = instruction.packageIdentifier().list().get();
         return switch (action.toLowerCase(Locale.ROOT)) {
-            case "add" -> new DoNothingPlayerlessAction();
+            case "add" -> new ThrowExceptionPlayerlessAction("Adding tags requires a player.");
             case "delete", "del" -> new DeleteTagPlayerlessAction(dataStorage, saver, profileProvider, tags);
             default -> throw new QuestException("Unknown tag action: " + action);
         };

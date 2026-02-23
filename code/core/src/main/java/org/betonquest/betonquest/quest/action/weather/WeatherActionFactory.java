@@ -11,7 +11,7 @@ import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerlessAction;
 import org.betonquest.betonquest.api.quest.action.PlayerlessActionFactory;
 import org.betonquest.betonquest.lib.instruction.argument.DefaultArguments;
-import org.betonquest.betonquest.quest.action.DoNothingPlayerlessAction;
+import org.betonquest.betonquest.quest.action.ThrowExceptionPlayerlessAction;
 import org.bukkit.World;
 
 /**
@@ -52,7 +52,7 @@ public class WeatherActionFactory implements PlayerActionFactory, PlayerlessActi
     @Override
     public PlayerlessAction parsePlayerless(final Instruction instruction) throws QuestException {
         if (requiresPlayer(instruction)) {
-            return new DoNothingPlayerlessAction();
+            return new ThrowExceptionPlayerlessAction("Action requires a 'world' argument.");
         }
         return parseWeatherAction(instruction);
     }
