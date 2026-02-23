@@ -48,12 +48,13 @@ import org.betonquest.betonquest.database.SQLite;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.feature.CoreFeatureFactories;
 import org.betonquest.betonquest.item.QuestItemHandler;
+import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
+import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
+import org.betonquest.betonquest.kernel.component.types.ConditionTypesComponent;
+import org.betonquest.betonquest.kernel.component.types.ObjectiveTypeComponent;
+import org.betonquest.betonquest.kernel.component.types.PlaceholderTypeComponent;
 import org.betonquest.betonquest.kernel.processor.QuestProcessor;
-import org.betonquest.betonquest.kernel.registry.quest.ActionTypeRegistry;
-import org.betonquest.betonquest.kernel.registry.quest.ConditionTypeRegistry;
-import org.betonquest.betonquest.kernel.registry.quest.ObjectiveTypeRegistry;
-import org.betonquest.betonquest.kernel.registry.quest.PlaceholderTypeRegistry;
 import org.betonquest.betonquest.lib.font.FontRetriever;
 import org.betonquest.betonquest.lib.logger.CachingBetonQuestLoggerFactory;
 import org.betonquest.betonquest.listener.CustomDropListener;
@@ -70,7 +71,6 @@ import org.betonquest.betonquest.notify.Notify;
 import org.betonquest.betonquest.playerhider.PlayerHider;
 import org.betonquest.betonquest.profile.UUIDProfileProvider;
 import org.betonquest.betonquest.quest.CoreQuestTypeHandler;
-import org.betonquest.betonquest.quest.CoreQuestTypes;
 import org.betonquest.betonquest.schedule.LastExecutionCache;
 import org.betonquest.betonquest.versioning.Version;
 import org.betonquest.betonquest.versioning.java.JREVersionPrinter;
@@ -332,6 +332,8 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(FileConfigAccessor.class, config);
         coreComponentLoader.init(FontRegistry.class, fontRegistry);
 
+        registerCoreQuestTypes(coreComponentLoader);
+
         coreQuestTypeHandler.init();
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
         this.compatibility = coreComponentLoader.get(Compatibility.class);
@@ -339,7 +341,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         setupUpdater();
         registerListener();
 
-        registerCoreQuestTypes();
         conversationColors = new ConversationColors(coreQuestTypeHandler.getTextParser(), config);
         registerFeatureQuestTypes();
 
@@ -377,17 +378,11 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         log.info("BetonQuest successfully enabled!");
     }
 
-    private void registerCoreQuestTypes() {
-        final CoreQuestTypes.ConstructorParams constructorParams = new CoreQuestTypes.ConstructorParams(loggerFactory,
-                this, coreQuestTypeHandler.getPluginMessage(), betonQuestApi.instructions(), profileProvider,
-                saver, coreQuestTypeHandler.getTextParser(), globalData, coreQuestTypeHandler.getPlayerDataFactory(),
-                coreQuestTypeHandler.getPlayerDataStorage(), this, betonQuestApi.conversations());
-        final CoreQuestTypes.ConstructorManagerParams constructorManagerParams = new CoreQuestTypes.ConstructorManagerParams(betonQuestApi.actions(),
-                betonQuestApi.conditions(), betonQuestApi.objectives(), betonQuestApi.placeholders(), betonQuestApi.npcs().manager());
-        final CoreQuestTypes.LegacyFeatureParams legacyFeatureParams = new CoreQuestTypes.LegacyFeatureParams(coreQuestTypeHandler.getCancelerProcessor(), coreQuestTypeHandler.getCompassProcessor(), coreQuestTypeHandler.getNpcProcessor().getNpcHider());
-        final CoreQuestTypes coreQuestTypes = new CoreQuestTypes(constructorParams, constructorManagerParams, legacyFeatureParams);
-        coreQuestTypes.register((ConditionTypeRegistry) betonQuestApi.conditions().registry(), (ActionTypeRegistry) betonQuestApi.actions().registry(),
-                (ObjectiveTypeRegistry) betonQuestApi.objectives().registry(), (PlaceholderTypeRegistry) betonQuestApi.placeholders().registry());
+    private void registerCoreQuestTypes(final CoreComponentLoader coreComponentLoader) {
+        coreComponentLoader.register(new ActionTypesComponent());
+        coreComponentLoader.register(new ConditionTypesComponent());
+        coreComponentLoader.register(new ObjectiveTypeComponent());
+        coreComponentLoader.register(new PlaceholderTypeComponent());
     }
 
     private void registerFeatureQuestTypes() {
