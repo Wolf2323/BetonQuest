@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.web.updater;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.versioning.Version;
@@ -9,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,9 +63,9 @@ public class Updater {
     private final UpdateDownloader updateDownloader;
 
     /**
-     * The {@link org.bukkit.plugin.Plugin} instance.
+     * The {@link Plugin} instance.
      */
-    private final BetonQuest plugin;
+    private final Plugin plugin;
 
     /**
      * The {@link BukkitScheduler} instance.
@@ -108,13 +108,13 @@ public class Updater {
      * @param currentVersion      the current version of the plugin
      * @param updateSourceHandler the {@link UpdateSourceHandler} to get all available versions
      * @param updateDownloader    the {@link UpdateDownloader} to download new versions
-     * @param plugin              the {@link org.bukkit.plugin.Plugin} instance
+     * @param plugin              the {@link Plugin} instance
      * @param scheduler           the {@link BukkitScheduler} instance
      * @param instantSource       the {@link InstantSource} instance
      */
     public Updater(final BetonQuestLogger log, final UpdaterConfig config, final Version currentVersion,
                    final UpdateSourceHandler updateSourceHandler, final UpdateDownloader updateDownloader,
-                   final BetonQuest plugin, final BukkitScheduler scheduler, final InstantSource instantSource) {
+                   final Plugin plugin, final BukkitScheduler scheduler, final InstantSource instantSource) {
         this.log = log;
         this.config = config;
         this.latest = Pair.of(currentVersion, null);
