@@ -46,14 +46,20 @@ import org.betonquest.betonquest.database.MySQL;
 import org.betonquest.betonquest.database.PlayerDataFactory;
 import org.betonquest.betonquest.database.SQLite;
 import org.betonquest.betonquest.database.Saver;
-import org.betonquest.betonquest.feature.CoreFeatureFactories;
 import org.betonquest.betonquest.item.QuestItemHandler;
 import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
+import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
 import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConditionTypesComponent;
+import org.betonquest.betonquest.kernel.component.types.ConversationIOTypesComponent;
+import org.betonquest.betonquest.kernel.component.types.InterceptorTypesComponent;
+import org.betonquest.betonquest.kernel.component.types.ItemTypesComponent;
+import org.betonquest.betonquest.kernel.component.types.NotifyIOTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ObjectiveTypeComponent;
 import org.betonquest.betonquest.kernel.component.types.PlaceholderTypeComponent;
+import org.betonquest.betonquest.kernel.component.types.ScheduleTypesComponent;
+import org.betonquest.betonquest.kernel.component.types.TextParserTypesComponent;
 import org.betonquest.betonquest.kernel.processor.QuestProcessor;
 import org.betonquest.betonquest.lib.font.FontRetriever;
 import org.betonquest.betonquest.lib.logger.CachingBetonQuestLoggerFactory;
@@ -333,6 +339,8 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(FontRegistry.class, fontRegistry);
 
         registerCoreQuestTypes(coreComponentLoader);
+        coreComponentLoader.register(new ConversationColorsComponent());
+        registerFeatureQuestTypes(coreComponentLoader);
 
         coreQuestTypeHandler.init();
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
@@ -341,14 +349,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         setupUpdater();
         registerListener();
 
-        conversationColors = new ConversationColors(coreQuestTypeHandler.getTextParser(), config);
-        registerFeatureQuestTypes();
-
-        try {
-            conversationColors.load();
-        } catch (final QuestException e) {
-            throw new IllegalStateException("Could not load conversation colors! " + e.getMessage(), e);
-        }
+        conversationColors = coreComponentLoader.get(ConversationColors.class);
 
         registerCommands(receiverSelector, debugHistoryHandler, coreQuestTypeHandler.getPlayerDataFactory());
 
@@ -385,14 +386,13 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.register(new PlaceholderTypeComponent());
     }
 
-    private void registerFeatureQuestTypes() {
-        final CoreFeatureFactories coreFeatureFactories = new CoreFeatureFactories(loggerFactory, questManager, lastExecutionCache, this, profileProvider,
-                coreQuestTypeHandler.getPlaceholderProcessor(), betonQuestApi.conversations(), config, conversationColors,
-                betonQuestApi.instructions(), betonQuestApi.actions().manager(), this.getServer().getPluginManager(),
-                betonQuestApi.items().manager(), coreQuestTypeHandler.getTextParser(), fontRegistry, coreQuestTypeHandler.getPluginMessage());
-        coreFeatureFactories.register(coreQuestTypeHandler.getConversationIORegistry(), coreQuestTypeHandler.getInterceptorRegistry(),
-                coreQuestTypeHandler.getItemRegistry(), coreQuestTypeHandler.getNotifyIORegistry(),
-                coreQuestTypeHandler.getScheduleRegistry(), coreQuestTypeHandler.getTextParserRegistry());
+    private void registerFeatureQuestTypes(final CoreComponentLoader coreComponentLoader) {
+        coreComponentLoader.register(new ConversationIOTypesComponent());
+        coreComponentLoader.register(new InterceptorTypesComponent());
+        coreComponentLoader.register(new ItemTypesComponent());
+        coreComponentLoader.register(new NotifyIOTypesComponent());
+        coreComponentLoader.register(new ScheduleTypesComponent());
+        coreComponentLoader.register(new TextParserTypesComponent());
     }
 
     private void setupFontRegistry() {
@@ -564,11 +564,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
         updater.search();
         log.debug("Restarting global locations");
-        try {
-            conversationColors.load();
-        } catch (final QuestException e) {
-            log.warn("Could not reload conversation colors! " + e.getMessage(), e);
-        }
+        conversationColors.load();
         compatibility.reload();
         loadData();
         coreQuestTypeHandler.getPlayerDataStorage().reloadProfiles(profileProvider.getOnlineProfiles());
