@@ -71,9 +71,9 @@ public class ConversationColors {
     /**
      * Loads all the colors from the config.
      *
-     * @throws QuestException if the config is not valid
+     * @throws IllegalStateException if a color does not exist in the config or cannot be parsed
      */
-    public void load() throws QuestException {
+    public void load() {
         text = getColor("conversation.color.text");
         npc = getColor("conversation.color.npc");
         player = getColor("conversation.color.player");
@@ -82,12 +82,16 @@ public class ConversationColors {
         option = getColor("conversation.color.option");
     }
 
-    private Component getColor(final String name) throws QuestException {
+    private Component getColor(final String name) {
         final String raw = config.getString(name);
         if (raw == null) {
-            throw new QuestException("Conversation color '" + name + "' does not exist in the config!");
+            throw new IllegalStateException("Conversation color '%s' does not exist in the config!".formatted(name));
         }
-        return textParser.parse(raw);
+        try {
+            return textParser.parse(raw);
+        } catch (final QuestException e) {
+            throw new IllegalStateException("Could not parse conversation color '%s': %s".formatted(name, e.getMessage()), e);
+        }
     }
 
     /**
