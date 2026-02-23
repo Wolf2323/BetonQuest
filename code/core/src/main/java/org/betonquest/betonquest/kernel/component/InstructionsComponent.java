@@ -39,10 +39,9 @@ public class InstructionsComponent extends AbstractCoreComponent {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
 
-        final DefaultInstructions instructions = new DefaultInstructions(Suppliers.memoize(() -> getDependency(PlaceholderProcessor.class)),
-                () -> questPackageManager,
-                Suppliers.memoize(() -> getDependency(ArgumentParsers.class)),
-                () -> loggerFactory);
+        final DefaultInstructions instructions = new DefaultInstructions(loggerFactory, questPackageManager,
+                Suppliers.memoize(() -> getDependency(PlaceholderProcessor.class)),
+                Suppliers.memoize(() -> getDependency(ArgumentParsers.class)));
 
         dependencyProvider.take(DefaultInstructions.class, instructions);
     }

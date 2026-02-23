@@ -38,7 +38,7 @@ public class DefaultInstructions implements Instructions {
     /**
      * The {@link QuestPackageManager} supplier.
      */
-    private final Supplier<QuestPackageManager> packageManager;
+    private final QuestPackageManager packageManager;
 
     /**
      * The {@link ArgumentParsers} supplier.
@@ -48,18 +48,18 @@ public class DefaultInstructions implements Instructions {
     /**
      * The {@link BetonQuestLoggerFactory} supplier.
      */
-    private final Supplier<BetonQuestLoggerFactory> loggerFactory;
+    private final BetonQuestLoggerFactory loggerFactory;
 
     /**
      * Creates a new instance of the {@link DefaultInstructions}.
      *
-     * @param placeholders    the {@link PlaceholderManager} supplier
-     * @param packageManager  the {@link QuestPackageManager} supplier
-     * @param argumentParsers the {@link ArgumentParsers} supplier
      * @param loggerFactory   the {@link BetonQuestLoggerFactory} supplier
+     * @param packageManager  the {@link QuestPackageManager} supplier
+     * @param placeholders    the {@link PlaceholderManager} supplier
+     * @param argumentParsers the {@link ArgumentParsers} supplier
      */
-    public DefaultInstructions(final Supplier<PlaceholderManager> placeholders, final Supplier<QuestPackageManager> packageManager,
-                               final Supplier<ArgumentParsers> argumentParsers, final Supplier<BetonQuestLoggerFactory> loggerFactory) {
+    public DefaultInstructions(final BetonQuestLoggerFactory loggerFactory, final QuestPackageManager packageManager,
+                               final Supplier<PlaceholderManager> placeholders, final Supplier<ArgumentParsers> argumentParsers) {
         this.placeholders = placeholders;
         this.packageManager = packageManager;
         this.argumentParsers = argumentParsers;
@@ -73,28 +73,28 @@ public class DefaultInstructions implements Instructions {
 
     @Override
     public InstructionChainParser createForArgument(final QuestPackage questPackage, final QuestSupplier<String> argument) {
-        final ChainableInstruction instruction = new DefaultChainableInstruction(placeholders.get(), packageManager.get(), questPackage,
+        final ChainableInstruction instruction = new DefaultChainableInstruction(placeholders.get(), packageManager, questPackage,
                 argument, key -> argument.get(), key -> Map.entry(FlagState.DEFINED, key));
         return new DefaultInstructionChainParser(instruction, argumentParsers.get());
     }
 
     @Override
     public Instruction create(final Identifier identifier, final String instruction) throws QuestException {
-        return new DefaultInstruction(placeholders.get(), packageManager.get(), identifier.getPackage(), identifier, argumentParsers.get(), instruction);
+        return new DefaultInstruction(placeholders.get(), packageManager, identifier.getPackage(), identifier, argumentParsers.get(), instruction);
     }
 
     @Override
     public Instruction create(final QuestPackage questPackage, final String instruction) throws QuestException {
-        return new DefaultInstruction(placeholders.get(), packageManager.get(), questPackage, null, argumentParsers.get(), instruction);
+        return new DefaultInstruction(placeholders.get(), packageManager, questPackage, null, argumentParsers.get(), instruction);
     }
 
     @Override
     public Instruction createPlaceholder(final PlaceholderIdentifier placeholderIdentifier, final String placeholder) throws QuestException {
-        return new PlaceholderInstruction(placeholders.get(), packageManager.get(), placeholderIdentifier.getPackage(), placeholderIdentifier, argumentParsers.get(), placeholder);
+        return new PlaceholderInstruction(placeholders.get(), packageManager, placeholderIdentifier.getPackage(), placeholderIdentifier, argumentParsers.get(), placeholder);
     }
 
     @Override
     public SectionInstruction createSection(final QuestPackage questPackage, final ConfigurationSection section) throws QuestException {
-        return new DefaultSectionInstruction(argumentParsers.get(), placeholders.get(), packageManager.get(), questPackage, section, loggerFactory.get());
+        return new DefaultSectionInstruction(argumentParsers.get(), placeholders.get(), packageManager, questPackage, section, loggerFactory);
     }
 }

@@ -3,8 +3,9 @@ package org.betonquest.betonquest.kernel.component;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
+import org.betonquest.betonquest.api.service.condition.ConditionManager;
+import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
 import org.betonquest.betonquest.api.service.condition.Conditions;
-import org.betonquest.betonquest.api.service.feature.DefaultConditions;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.id.condition.ConditionIdentifierFactory;
@@ -55,5 +56,15 @@ public class ConditionsComponent extends AbstractCoreComponent {
         dependencyProvider.take(ConditionTypeRegistry.class, conditionTypeRegistry);
         dependencyProvider.take(ConditionProcessor.class, conditionProcessor);
         dependencyProvider.take(DefaultConditions.class, new DefaultConditions(conditionProcessor, conditionTypeRegistry));
+    }
+
+    /**
+     * Default implementation of the {@link Conditions} service.
+     *
+     * @param manager  the condition manager
+     * @param registry the condition registry
+     */
+    /* default */ record DefaultConditions(ConditionManager manager, ConditionRegistry registry) implements Conditions {
+
     }
 }

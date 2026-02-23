@@ -3,9 +3,10 @@ package org.betonquest.betonquest.kernel.component;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.feature.DefaultPlaceholders;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
+import org.betonquest.betonquest.api.service.placeholder.PlaceholderRegistry;
 import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.id.placeholder.PlaceholderIdentifierFactory;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
@@ -55,5 +56,16 @@ public class PlaceholdersComponent extends AbstractCoreComponent {
         dependencyProvider.take(PlaceholderTypeRegistry.class, placeholderTypeRegistry);
         dependencyProvider.take(PlaceholderProcessor.class, placeholderProcessor);
         dependencyProvider.take(DefaultPlaceholders.class, new DefaultPlaceholders(placeholderProcessor, placeholderTypeRegistry));
+    }
+
+    /**
+     * Default implementation of the {@link Placeholders} service.
+     *
+     * @param manager  the placeholder manager
+     * @param registry the placeholder registry
+     */
+    /* default */ record DefaultPlaceholders(PlaceholderManager manager,
+                                             PlaceholderRegistry registry) implements Placeholders {
+
     }
 }

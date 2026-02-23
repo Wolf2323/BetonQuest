@@ -3,7 +3,9 @@ package org.betonquest.betonquest.kernel.component;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.feature.DefaultActions;
+import org.betonquest.betonquest.api.service.action.ActionManager;
+import org.betonquest.betonquest.api.service.action.ActionRegistry;
+import org.betonquest.betonquest.api.service.action.Actions;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
 import org.betonquest.betonquest.id.action.ActionIdentifierFactory;
@@ -56,5 +58,15 @@ public class ActionsComponent extends AbstractCoreComponent {
         dependencyProvider.take(ActionTypeRegistry.class, actionTypeRegistry);
         dependencyProvider.take(ActionProcessor.class, actionProcessor);
         dependencyProvider.take(DefaultActions.class, new DefaultActions(actionProcessor, actionTypeRegistry));
+    }
+
+    /**
+     * Default implementation of the {@link Actions} service.
+     *
+     * @param manager  the action manager
+     * @param registry the action registry
+     */
+    /* default */ record DefaultActions(ActionManager manager, ActionRegistry registry) implements Actions {
+
     }
 }
