@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 class OnlineProfileGroupPlayerlessActionAdapterTest {
 
     /**
-     * Internal non-static action mock that is adapted to a static action by the tested class.
+     * Internal non-playerless action mock that is adapted to a playerless action by the tested class.
      */
     @Mock
     private PlayerAction internalPlayerAction;

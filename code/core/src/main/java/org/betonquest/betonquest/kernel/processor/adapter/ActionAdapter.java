@@ -85,10 +85,10 @@ public class ActionAdapter extends QuestAdapter<PlayerAction, PlayerlessAction> 
     private boolean handleNullProfile() throws QuestException {
         if (playerless == null) {
             //throw new QuestException("Non-static action '" + instruction + "' cannot be executed without a profile reference!");
-            log.warn(getPackage(), "Cannot execute non-static action '" + instruction.getID() + "' without a player!");
+            log.warn(getPackage(), "Cannot execute non-playerless action '%s' without a player!".formatted(instruction.getID()));
             return false;
         }
-        log.debug(getPackage(), "Static action will be fired without a profile.");
+        log.debug(getPackage(), "Playerless action will be fired without a profile.");
         if (!conditionManager.testAll(null, conditions.getValue(null))) {
             log.debug(getPackage(), "Action conditions were not met");
             return false;

@@ -43,10 +43,10 @@ public class DropActionFactory implements PlayerActionFactory, PlayerlessActionF
 
     @Override
     public PlayerlessAction parsePlayerless(final Instruction instruction) throws QuestException {
-        return createStaticDropAction(instruction);
+        return createPlayerlessDropAction(instruction);
     }
 
-    private PlayerlessAction createStaticDropAction(final Instruction instruction) throws QuestException {
+    private PlayerlessAction createPlayerlessDropAction(final Instruction instruction) throws QuestException {
         final NullableActionAdapter dropAction = createDropAction(instruction);
         if (instruction.location().get("location").isEmpty()) {
             return new OnlineProfileGroupPlayerlessActionAdapter(profileProvider::getOnlineProfiles, dropAction);

@@ -43,7 +43,7 @@ public class PlaceholderAdapter extends QuestAdapter<PlayerPlaceholder, Playerle
     public String getValue(@Nullable final Profile profile) throws QuestException {
         if (player == null || profile == null) {
             if (playerless == null) {
-                throw new QuestException("Non-static placeholder '" + instruction + "' cannot be retrieved without a profile reference!");
+                throw new QuestException("Non-playerless placeholder '%s' cannot be retrieved without a profile reference!".formatted(instruction));
             }
             return playerless.getValue();
         }

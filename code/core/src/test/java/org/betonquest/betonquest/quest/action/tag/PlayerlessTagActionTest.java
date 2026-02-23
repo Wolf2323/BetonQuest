@@ -13,17 +13,17 @@ import static org.mockito.Mockito.*;
  * Test {@link PlayerlessTagAction}.
  */
 @ExtendWith(MockitoExtension.class)
-class StaticTagActionTest {
+class PlayerlessTagActionTest {
 
     @Test
-    void testStaticTagAction(
+    void test_playerless_tag_action(
             @Mock final TagData data,
             @Mock final TagChanger tagChanger) throws QuestException {
-        final PlayerlessTagAction staticTagAction = new PlayerlessTagAction(data, tagChanger);
+        final PlayerlessTagAction playerlessTagAction = new PlayerlessTagAction(data, tagChanger);
 
-        staticTagAction.execute();
-        staticTagAction.execute();
-        staticTagAction.execute();
+        playerlessTagAction.execute();
+        playerlessTagAction.execute();
+        playerlessTagAction.execute();
 
         verify(tagChanger, times(3)).changeTags(data, null);
     }

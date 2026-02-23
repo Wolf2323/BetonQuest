@@ -114,7 +114,7 @@ public class ConditionProcessor extends TypedQuestProcessor<ConditionIdentifier,
         }
         if (profile == null && !condition.allowsPlayerless()) {
             log.warn(conditionID.getPackage(),
-                    "Cannot check non-static condition '" + conditionID + "' without a player, returning false");
+                    "Cannot check non-playerless condition '%s' without a player, returning false".formatted(conditionID));
             return false;
         }
         if (condition.isPrimaryThreadEnforced() && !Bukkit.isPrimaryThread()) {

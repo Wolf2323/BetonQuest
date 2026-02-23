@@ -495,8 +495,8 @@ __Description__: Check a condition and run one of two actions.
 
 This action will check a condition, and based on the outcome it will run the first or second action. The instruction
 string is `if condition action1 else action2`, where `condition` is a condition ID and `action1` and `action2` are action IDs.
- `else` keyword is mandatory between actions for no practical reason. Keep in mind that this action is `persistent`
- and `static` but probably the condition or the actions are not.
+ `else` keyword is mandatory between actions for no practical reason. Keep in mind that this action is player-independent 
+but probably the condition or the actions are not.
 
 ```YAML title="Example"
 actions:

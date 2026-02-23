@@ -12,9 +12,9 @@ import java.util.List;
 /**
  * Runs specified actions player independently.
  * <p>
- * Although the implementation is a {@link PlayerlessAction}, using it in a static context does not make much sense.
- * Recommended usage is to wrap it in a {@link CallPlayerlessActionAdapter} and using it to call static actions
- * from non-static context.
+ * Although the implementation is a {@link PlayerlessAction}, using it in a playerless context does not make much sense.
+ * Recommended usage is to wrap it in a {@link CallPlayerlessActionAdapter} and using it to call playerless actions
+ * from non-playerless context.
  */
 public class RunIndependentAction implements PlayerlessAction {
 

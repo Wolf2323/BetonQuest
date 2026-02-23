@@ -107,7 +107,7 @@ must specify a [package](../../../Packages-&-Templates.md) before the `placehold
 
 ??? warning "HolographicDisplays: Potential lags"
     The HolographicDisplays documentation warns against using too many individual hologram placeholders since they are rendered
-    for each player individually. If you are using HolographicDisplays to save resources, it is recommended to minimize the use of non-static placeholders.
+    for each player individually. If you are using HolographicDisplays to save resources, it is recommended to minimize the use of non-playerless placeholders.
 
 The hologram's conditions are checked every 10 seconds, meaning a hologram will respond to a condition being met or unmet
 every 10 seconds. If you want to make it faster, decrease `hologram.update_interval` option in "_config.yml_" file and set it to a

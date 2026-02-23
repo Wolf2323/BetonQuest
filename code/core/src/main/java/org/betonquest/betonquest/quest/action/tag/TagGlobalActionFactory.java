@@ -47,18 +47,18 @@ public class TagGlobalActionFactory implements PlayerActionFactory, PlayerlessAc
         final String action = instruction.string().get().getValue(null);
         final Argument<List<String>> tags = instruction.packageIdentifier().list().get();
         return switch (action.toLowerCase(Locale.ROOT)) {
-            case "add" -> createStaticAddTagAction(tags);
-            case "delete", "del" -> createStaticDeleteTagAction(tags);
+            case "add" -> createPlayerlessAddTagAction(tags);
+            case "delete", "del" -> createPlayerlessDeleteTagAction(tags);
             default -> throw new QuestException("Unknown tag action: " + action);
         };
     }
 
-    private PlayerlessAction createStaticAddTagAction(final Argument<List<String>> tags) {
+    private PlayerlessAction createPlayerlessAddTagAction(final Argument<List<String>> tags) {
         final TagChanger tagChanger = new AddTagChanger(tags);
         return new PlayerlessTagAction(globalData, tagChanger);
     }
 
-    private PlayerlessAction createStaticDeleteTagAction(final Argument<List<String>> tags) {
+    private PlayerlessAction createPlayerlessDeleteTagAction(final Argument<List<String>> tags) {
         final TagChanger tagChanger = new DeleteTagChanger(tags);
         return new PlayerlessTagAction(globalData, tagChanger);
     }

@@ -92,7 +92,7 @@ public class JournalActionFactory implements PlayerActionFactory, PlayerlessActi
         final String operation = instruction.string().get().getValue(null);
         return switch (operation.toLowerCase(Locale.ROOT)) {
             case "update", "add" -> new DoNothingPlayerlessAction();
-            case "delete" -> createStaticJournalDeleteAction(instruction);
+            case "delete" -> createPlayerlessJournalDeleteAction(instruction);
             default -> throw new QuestException("Unknown journal operation: " + operation);
         };
     }
@@ -118,7 +118,7 @@ public class JournalActionFactory implements PlayerActionFactory, PlayerlessActi
         return new JournalAction(dataStorage, journalChanger, notificationSender);
     }
 
-    private PlayerlessAction createStaticJournalDeleteAction(final Instruction instruction) throws QuestException {
+    private PlayerlessAction createPlayerlessJournalDeleteAction(final Instruction instruction) throws QuestException {
         final Argument<JournalEntryIdentifier> entryID = instruction.chainForArgument(instruction.getPart(2)).identifier(JournalEntryIdentifier.class).get();
         return new DeleteJournalPlayerlessAction(dataStorage, saver, profileProvider, entryID);
     }
