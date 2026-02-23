@@ -84,7 +84,7 @@ public class NpcsComponent extends AbstractCoreComponent {
      * @param manager  the npc manager
      * @param registry the npc registry
      */
-    record DefaultNpcs(NpcManager manager, NpcRegistry registry) implements Npcs {
+    /* default */ record DefaultNpcs(NpcManager manager, NpcRegistry registry) implements Npcs {
 
     }
 }

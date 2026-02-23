@@ -90,11 +90,13 @@ public class BetonQuestApiComponent extends AbstractCoreComponent {
      * @param conversations the conversation api accessor
      * @param identifiers   the identifier api accessor
      */
-    record DefaultBetonQuestApi(ProfileProvider profiles, QuestPackageManager packages,
-                                BetonQuestLoggerFactory loggerFactory, Instructions instructions, Actions actions,
-                                Conditions conditions, Objectives objectives, Placeholders placeholders, Items items,
-                                Npcs npcs, Conversations conversations,
-                                Identifiers identifiers) implements BetonQuestApi {
+    /* default */ record DefaultBetonQuestApi(ProfileProvider profiles, QuestPackageManager packages,
+                                              BetonQuestLoggerFactory loggerFactory, Instructions instructions,
+                                              Actions actions,
+                                              Conditions conditions, Objectives objectives, Placeholders placeholders,
+                                              Items items,
+                                              Npcs npcs, Conversations conversations,
+                                              Identifiers identifiers) implements BetonQuestApi {
 
     }
 }

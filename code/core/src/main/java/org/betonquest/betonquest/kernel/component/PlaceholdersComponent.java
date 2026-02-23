@@ -64,7 +64,8 @@ public class PlaceholdersComponent extends AbstractCoreComponent {
      * @param manager  the placeholder manager
      * @param registry the placeholder registry
      */
-    record DefaultPlaceholders(PlaceholderManager manager, PlaceholderRegistry registry) implements Placeholders {
+    /* default */ record DefaultPlaceholders(PlaceholderManager manager,
+                                             PlaceholderRegistry registry) implements Placeholders {
 
     }
 }

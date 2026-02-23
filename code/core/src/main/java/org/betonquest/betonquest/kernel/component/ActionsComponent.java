@@ -66,7 +66,7 @@ public class ActionsComponent extends AbstractCoreComponent {
      * @param manager  the action manager
      * @param registry the action registry
      */
-    record DefaultActions(ActionManager manager, ActionRegistry registry) implements Actions {
+    /* default */ record DefaultActions(ActionManager manager, ActionRegistry registry) implements Actions {
 
     }
 }

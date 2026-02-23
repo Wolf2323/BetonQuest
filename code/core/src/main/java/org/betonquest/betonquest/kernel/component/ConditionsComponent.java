@@ -64,7 +64,7 @@ public class ConditionsComponent extends AbstractCoreComponent {
      * @param manager  the condition manager
      * @param registry the condition registry
      */
-    record DefaultConditions(ConditionManager manager, ConditionRegistry registry) implements Conditions {
+    /* default */ record DefaultConditions(ConditionManager manager, ConditionRegistry registry) implements Conditions {
 
     }
 }

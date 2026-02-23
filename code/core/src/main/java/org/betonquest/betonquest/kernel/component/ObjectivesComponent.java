@@ -74,7 +74,7 @@ public class ObjectivesComponent extends AbstractCoreComponent {
      * @param manager  the objective manager
      * @param registry the objective registry
      */
-    record DefaultObjectives(ObjectiveManager manager, ObjectiveRegistry registry) implements Objectives {
+    /* default */ record DefaultObjectives(ObjectiveManager manager, ObjectiveRegistry registry) implements Objectives {
 
     }
 }
