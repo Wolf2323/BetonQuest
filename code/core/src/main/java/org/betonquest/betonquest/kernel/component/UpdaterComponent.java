@@ -5,7 +5,10 @@ import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.versioning.Version;
+import org.betonquest.betonquest.web.DownloadSource;
+import org.betonquest.betonquest.web.TempFileDownloadSource;
 import org.betonquest.betonquest.web.WebContentSource;
+import org.betonquest.betonquest.web.WebDownloadSource;
 import org.betonquest.betonquest.web.updater.UpdateDownloader;
 import org.betonquest.betonquest.web.updater.UpdateSourceHandler;
 import org.betonquest.betonquest.web.updater.Updater;
@@ -14,10 +17,13 @@ import org.betonquest.betonquest.web.updater.source.DevelopmentUpdateSource;
 import org.betonquest.betonquest.web.updater.source.ReleaseUpdateSource;
 import org.betonquest.betonquest.web.updater.source.implementations.GitHubReleaseSource;
 import org.betonquest.betonquest.web.updater.source.implementations.ReposiliteReleaseAndDevelopmentSource;
+import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.io.File;
 import java.time.InstantSource;
 import java.util.List;
 import java.util.Set;
@@ -53,10 +59,18 @@ public class UpdaterComponent extends AbstractCoreComponent {
     public static final String REPO_API_URL = "https://api.github.com/repos/BetonQuest/BetonQuest";
 
     /**
-     * Creates a new UpdaterComponent.
+     * The plugin file sourced from {@link JavaPlugin}.
      */
-    public UpdaterComponent() {
+    private final File pluginFile;
+
+    /**
+     * Creates a new UpdaterComponent.
+     *
+     * @param pluginFile the plugin file
+     */
+    public UpdaterComponent(final File pluginFile) {
         super();
+        this.pluginFile = pluginFile;
     }
 
     @Override
@@ -68,12 +82,16 @@ public class UpdaterComponent extends AbstractCoreComponent {
     @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final Plugin plugin = getDependency(Plugin.class);
+        final Server server = getDependency(Server.class);
         final BukkitScheduler scheduler = getDependency(BukkitScheduler.class);
         final PluginDescriptionFile descriptionFile = getDependency(PluginDescriptionFile.class);
         final ConfigAccessor config = getDependency(ConfigAccessor.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
-        final UpdateDownloader updateDownloader = getDependency(UpdateDownloader.class);
 
+        final File updateFolder = server.getUpdateFolderFile();
+        final File file = new File(updateFolder, pluginFile.getName());
+        final DownloadSource downloadSource = new TempFileDownloadSource(new WebDownloadSource());
+        final UpdateDownloader updateDownloader = new UpdateDownloader(downloadSource, file);
         final ReposiliteReleaseAndDevelopmentSource reposiliteReleaseAndDevelopmentSource =
                 new ReposiliteReleaseAndDevelopmentSource(REPOSILITE_URL, REPOSITORY_NAME, POM_MAPPER_ID, new WebContentSource());
         final GitHubReleaseSource gitHubReleaseSource = new GitHubReleaseSource(REPO_API_URL, new WebContentSource(GitHubReleaseSource.HTTP_CODE_HANDLER));

@@ -77,10 +77,6 @@ import org.betonquest.betonquest.profile.UUIDProfileProvider;
 import org.betonquest.betonquest.quest.CoreQuestTypeHandler;
 import org.betonquest.betonquest.schedule.LastExecutionCache;
 import org.betonquest.betonquest.versioning.java.JREVersionPrinter;
-import org.betonquest.betonquest.web.DownloadSource;
-import org.betonquest.betonquest.web.TempFileDownloadSource;
-import org.betonquest.betonquest.web.WebDownloadSource;
-import org.betonquest.betonquest.web.updater.UpdateDownloader;
 import org.betonquest.betonquest.web.updater.Updater;
 import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -475,13 +471,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     }
 
     private void setupUpdater(final CoreComponentLoader coreComponentLoader) {
-        final File updateFolder = getServer().getUpdateFolderFile();
-        final File file = new File(updateFolder, this.getFile().getName());
-        final DownloadSource downloadSource = new TempFileDownloadSource(new WebDownloadSource());
-        final UpdateDownloader updateDownloader = new UpdateDownloader(downloadSource, file);
-
-        coreComponentLoader.init(UpdateDownloader.class, updateDownloader);
-        coreComponentLoader.register(new UpdaterComponent());
+        coreComponentLoader.register(new UpdaterComponent(this.getFile()));
     }
 
     @SuppressWarnings("PMD.DoNotUseThreads")
