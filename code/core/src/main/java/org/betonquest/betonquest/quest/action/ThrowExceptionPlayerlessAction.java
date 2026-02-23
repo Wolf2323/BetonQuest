@@ -25,6 +25,6 @@ public class ThrowExceptionPlayerlessAction implements PlayerlessAction {
 
     @Override
     public void execute() throws QuestException {
-        throw new QuestException("This action is not defined and shall not be reached: %s".formatted(warning));
+        throw new QuestException("Executing in an independent context failed. %s".formatted(warning));
     }
 }

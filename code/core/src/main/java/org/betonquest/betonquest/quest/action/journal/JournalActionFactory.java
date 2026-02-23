@@ -92,7 +92,7 @@ public class JournalActionFactory implements PlayerActionFactory, PlayerlessActi
         final String operation = instruction.string().get().getValue(null);
         return switch (operation.toLowerCase(Locale.ROOT)) {
             case "update", "add" ->
-                    new ThrowExceptionPlayerlessAction("Operation '%s' is not supported for playerless actions (%s).".formatted(operation, instruction.getID()));
+                    new ThrowExceptionPlayerlessAction("Operation '%s' requires a player.".formatted(operation));
             case "delete" -> createStaticJournalDeleteAction(instruction);
             default -> throw new QuestException("Unknown journal operation: " + operation);
         };

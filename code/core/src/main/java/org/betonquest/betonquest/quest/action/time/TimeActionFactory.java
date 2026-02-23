@@ -33,7 +33,7 @@ public class TimeActionFactory implements PlayerActionFactory, PlayerlessActionF
     @Override
     public PlayerlessAction parsePlayerless(final Instruction instruction) throws QuestException {
         if (instruction.copy().string().get("world").isEmpty()) {
-            return new ThrowExceptionPlayerlessAction("Playerless time action '%s' requires a world argument.".formatted(instruction.getID()));
+            return new ThrowExceptionPlayerlessAction("Action requires a 'world' argument.");
         }
         return createTimeAction(instruction);
     }

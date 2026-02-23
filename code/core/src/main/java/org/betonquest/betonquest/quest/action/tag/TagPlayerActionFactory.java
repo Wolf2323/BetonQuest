@@ -64,8 +64,7 @@ public class TagPlayerActionFactory implements PlayerActionFactory, PlayerlessAc
         final String action = instruction.string().get().getValue(null);
         final Argument<List<String>> tags = instruction.packageIdentifier().list().get();
         return switch (action.toLowerCase(Locale.ROOT)) {
-            case "add" ->
-                    new ThrowExceptionPlayerlessAction("Adding tags requires a player. (%s)".formatted(instruction.getID()));
+            case "add" -> new ThrowExceptionPlayerlessAction("Adding tags requires a player.");
             case "delete", "del" -> new DeleteTagPlayerlessAction(dataStorage, saver, profileProvider, tags);
             default -> throw new QuestException("Unknown tag action: " + action);
         };

@@ -52,7 +52,7 @@ public class WeatherActionFactory implements PlayerActionFactory, PlayerlessActi
     @Override
     public PlayerlessAction parsePlayerless(final Instruction instruction) throws QuestException {
         if (requiresPlayer(instruction)) {
-            return new ThrowExceptionPlayerlessAction("Playerless weather action '%s' requires the 'world' argument.".formatted(instruction.getID()));
+            return new ThrowExceptionPlayerlessAction("Action requires a 'world' argument.");
         }
         return parseWeatherAction(instruction);
     }
