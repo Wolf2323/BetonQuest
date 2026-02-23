@@ -83,7 +83,7 @@ public class PacketEventsIntegrator implements Integrator {
         final ChatHistory chatHistory = displayHistory ? getPacketChatHistory(packetEventsAPI, pluginManager, plugin) : new NoneChatHistory();
         BetonQuest.getInstance().getCoreQuestTypeHandler().getInterceptorRegistry().register("packetevents", new PacketEventsInterceptorFactory(packetEventsAPI, chatHistory));
 
-        api.actions().registry().register("freeze", new FreezeActionFactory(plugin, packetEventsAPI, api.loggerFactory()));
+        api.actions().registry().register("freeze", new FreezeActionFactory(plugin, packetEventsAPI));
     }
 
     private PacketChatHistory getPacketChatHistory(final PacketEventsAPI<?> packetEventsAPI, final PluginManager pluginManager, final BetonQuest plugin) {

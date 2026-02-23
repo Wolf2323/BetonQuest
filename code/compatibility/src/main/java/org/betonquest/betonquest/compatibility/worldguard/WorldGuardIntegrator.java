@@ -46,7 +46,7 @@ public class WorldGuardIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        api.conditions().registry().register("region", new RegionConditionFactory(api.loggerFactory()));
+        api.conditions().registry().register("region", new RegionConditionFactory());
         api.objectives().registry().register("region", new RegionObjectiveFactory());
         api.conditions().registry().registerCombined("npcregion", new NpcRegionConditionFactory(api.npcs().manager()));
     }

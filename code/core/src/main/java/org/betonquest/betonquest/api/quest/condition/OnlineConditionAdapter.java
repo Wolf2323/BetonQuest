@@ -1,8 +1,6 @@
 package org.betonquest.betonquest.api.quest.condition;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 
@@ -30,16 +28,10 @@ public final class OnlineConditionAdapter implements PlayerCondition {
      * and returns 'false'.
      *
      * @param onlineCondition condition to run for online players
-     * @param log             log to write to if the player is not online
-     * @param questPackage    quest package to reference in the log
      */
-    public OnlineConditionAdapter(final OnlineCondition onlineCondition, final BetonQuestLogger log, final QuestPackage questPackage) {
+    public OnlineConditionAdapter(final OnlineCondition onlineCondition) {
         this(onlineCondition, profile -> {
-            log.debug(
-                    questPackage,
-                    "Cannot check an online condition for the offline profile %s".formatted(profile)
-            );
-            return false;
+            throw new QuestException("Cannot check an online condition for the offline player %s".formatted(profile));
         });
     }
 

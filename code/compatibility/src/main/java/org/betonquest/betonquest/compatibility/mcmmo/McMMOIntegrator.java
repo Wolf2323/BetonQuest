@@ -2,7 +2,6 @@ package org.betonquest.betonquest.compatibility.mcmmo;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.compatibility.Integrator;
 import org.bukkit.plugin.Plugin;
 
@@ -27,10 +26,8 @@ public class McMMOIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
-
-        api.conditions().registry().register("mcmmolevel", new McMMOSkillLevelConditionFactory(loggerFactory));
-        api.actions().registry().register("mcmmoexp", new McMMOAddExpActionFactory(loggerFactory));
+        api.conditions().registry().register("mcmmolevel", new McMMOSkillLevelConditionFactory());
+        api.actions().registry().register("mcmmoexp", new McMMOAddExpActionFactory());
         final BetonQuestLogger log = api.loggerFactory().create(McMMOIntegrator.class);
         try {
             plugin.getServer().getPluginManager().registerEvents(new MCMMOQuestItemHandler(), plugin);

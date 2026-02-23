@@ -4,7 +4,6 @@ import com.herocraftonline.heroes.characters.CharacterManager;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
@@ -16,11 +15,6 @@ import org.betonquest.betonquest.compatibility.heroes.HeroesClassType;
 public class HeroesExperienceActionFactory implements PlayerActionFactory {
 
     /**
-     * The logger factory.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * The {@link CharacterManager} of the Heroes plugin.
      */
     private final CharacterManager characterManager;
@@ -28,11 +22,9 @@ public class HeroesExperienceActionFactory implements PlayerActionFactory {
     /**
      * Create a new Factory to create Give Brew Actions.
      *
-     * @param loggerFactory    the logger factory.
      * @param characterManager the {@link CharacterManager} of the Heroes plugin.
      */
-    public HeroesExperienceActionFactory(final BetonQuestLoggerFactory loggerFactory, final CharacterManager characterManager) {
-        this.loggerFactory = loggerFactory;
+    public HeroesExperienceActionFactory(final CharacterManager characterManager) {
         this.characterManager = characterManager;
     }
 
@@ -41,7 +33,6 @@ public class HeroesExperienceActionFactory implements PlayerActionFactory {
         final Argument<HeroesClassType> classType = instruction.enumeration(HeroesClassType.class).get();
         final Argument<Number> amount = instruction.number().get();
 
-        return new OnlineActionAdapter(new HeroesExperienceAction(characterManager, classType, amount),
-                loggerFactory.create(HeroesExperienceAction.class), instruction.getPackage());
+        return new OnlineActionAdapter(new HeroesExperienceAction(characterManager, classType, amount));
     }
 }

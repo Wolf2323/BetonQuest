@@ -31,7 +31,7 @@ public class ShopkeepersIntegrator implements Integrator {
             throw new UnsupportedVersionException(shopkeepers, "2.2.0");
         }
         api.conditions().registry().register("shopamount", new HavingShopConditionFactory());
-        api.actions().registry().register("shopkeeper", new OpenShopActionFactory(api.loggerFactory()));
+        api.actions().registry().register("shopkeeper", new OpenShopActionFactory());
     }
 
     @Override

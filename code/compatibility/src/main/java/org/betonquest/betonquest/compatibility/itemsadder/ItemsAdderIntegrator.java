@@ -51,7 +51,7 @@ public class ItemsAdderIntegrator implements Integrator {
 
         final ActionRegistry action = api.actions().registry();
         action.register(ITEMS_ADDER + "Block", new IASetBlockAtActionFactory());
-        action.register(ITEMS_ADDER + "Animation", new IAPlayAnimationActionFactory(api.loggerFactory()));
+        action.register(ITEMS_ADDER + "Animation", new IAPlayAnimationActionFactory());
 
         final ObjectiveRegistry objective = api.objectives().registry();
         objective.register(ITEMS_ADDER + "BlockBreak", new IABlockBreakObjectiveFactory());

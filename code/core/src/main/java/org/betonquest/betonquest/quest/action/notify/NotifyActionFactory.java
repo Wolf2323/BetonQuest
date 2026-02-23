@@ -4,7 +4,6 @@ import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
@@ -38,11 +37,6 @@ public class NotifyActionFactory implements PlayerActionFactory {
     private static final Pattern LANGUAGE_PATTERN = Pattern.compile("\\{(?<lang>" + LANG_KEY + ")}\\s(?<text>.*?)(?=\\s+\\{" + LANG_KEY + "}\\s|$)");
 
     /**
-     * Logger factory to create a logger for the actions.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * The {@link TextParser} to use for parsing text.
      */
     private final TextParser textParser;
@@ -60,14 +54,12 @@ public class NotifyActionFactory implements PlayerActionFactory {
     /**
      * Creates a new factory for {@link NotifyAction}.
      *
-     * @param loggerFactory     the logger factory to create a logger for the actions
      * @param textParser        the text parser to use for parsing text
      * @param playerDataStorage the storage providing player data
      * @param languageProvider  the language provider to get the default language
      */
-    public NotifyActionFactory(final BetonQuestLoggerFactory loggerFactory, final TextParser textParser,
+    public NotifyActionFactory(final TextParser textParser,
                                final PlayerDataStorage playerDataStorage, final LanguageProvider languageProvider) {
-        this.loggerFactory = loggerFactory;
         this.textParser = textParser;
         this.playerDataStorage = playerDataStorage;
         this.languageProvider = languageProvider;
@@ -81,9 +73,7 @@ public class NotifyActionFactory implements PlayerActionFactory {
         final Text text = getText(instruction, keyValueMatcher, rawInstruction);
         final NotifyIO notifyIO = processInstruction(instruction, keyValueMatcher);
 
-        return new OnlineActionAdapter(new NotifyAction(notifyIO, text),
-                loggerFactory.create(NotifyAction.class),
-                instruction.getPackage());
+        return new OnlineActionAdapter(new NotifyAction(notifyIO, text));
     }
 
     private Text getText(final Instruction instruction, final Matcher keyValueMatcher, final String rawInstruction) throws QuestException {

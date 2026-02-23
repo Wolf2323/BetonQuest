@@ -3,7 +3,6 @@ package org.betonquest.betonquest.quest.action.effect;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
@@ -19,17 +18,9 @@ import java.util.List;
 public class DeleteEffectActionFactory implements PlayerActionFactory {
 
     /**
-     * Logger factory to create a logger for the actions.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * Create the delete effect action factory.
-     *
-     * @param loggerFactory the logger factory to create a logger for the actions
      */
-    public DeleteEffectActionFactory(final BetonQuestLoggerFactory loggerFactory) {
-        this.loggerFactory = loggerFactory;
+    public DeleteEffectActionFactory() {
     }
 
     @Override
@@ -48,7 +39,6 @@ public class DeleteEffectActionFactory implements PlayerActionFactory {
         } else {
             effects = new DefaultArgument<>(Collections.emptyList());
         }
-        return new OnlineActionAdapter(new DeleteEffectAction(effects),
-                loggerFactory.create(DeleteEffectAction.class), instruction.getPackage());
+        return new OnlineActionAdapter(new DeleteEffectAction(effects));
     }
 }

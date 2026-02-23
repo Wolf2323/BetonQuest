@@ -69,6 +69,6 @@ public class GiveActionFactory implements PlayerActionFactory {
                 itemsDroppedSender,
                 instruction.bool().getFlag("backpack", true),
                 dataStorage
-        ), log, instruction.getPackage());
+        ));
     }
 }

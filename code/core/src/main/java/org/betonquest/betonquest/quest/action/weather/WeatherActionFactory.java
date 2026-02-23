@@ -3,7 +3,6 @@ package org.betonquest.betonquest.quest.action.weather;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.NullableActionAdapter;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
@@ -20,17 +19,9 @@ import org.bukkit.World;
 public class WeatherActionFactory implements PlayerActionFactory, PlayerlessActionFactory {
 
     /**
-     * Logger factory to create a logger for the actions.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * Creates the weather action factory.
-     *
-     * @param loggerFactory the logger factory to create a logger for the actions
      */
-    public WeatherActionFactory(final BetonQuestLoggerFactory loggerFactory) {
-        this.loggerFactory = loggerFactory;
+    public WeatherActionFactory() {
     }
 
     @Override
@@ -38,11 +29,7 @@ public class WeatherActionFactory implements PlayerActionFactory, PlayerlessActi
         final PlayerAction weatherPlayerAction = parseWeatherAction(instruction);
         final PlayerAction playerAction;
         if (requiresPlayer(instruction)) {
-            playerAction = new OnlineActionAdapter(
-                    weatherPlayerAction::execute,
-                    loggerFactory.create(WeatherAction.class),
-                    instruction.getPackage()
-            );
+            playerAction = new OnlineActionAdapter(weatherPlayerAction::execute);
         } else {
             playerAction = weatherPlayerAction;
         }

@@ -4,7 +4,6 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
@@ -16,17 +15,9 @@ import org.bukkit.potion.PotionEffectType;
 public class EffectActionFactory implements PlayerActionFactory {
 
     /**
-     * Logger factory to create a logger for the actions.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * Create the effect action factory.
-     *
-     * @param loggerFactory the logger factory to create a logger for the actions
      */
-    public EffectActionFactory(final BetonQuestLoggerFactory loggerFactory) {
-        this.loggerFactory = loggerFactory;
+    public EffectActionFactory() {
     }
 
     @Override
@@ -41,8 +32,7 @@ public class EffectActionFactory implements PlayerActionFactory {
             final FlagArgument<Boolean> ambient = instruction.bool().getFlag("ambient", true);
             final FlagArgument<Boolean> hidden = instruction.bool().getFlag("hidden", true);
             final FlagArgument<Boolean> noicon = instruction.bool().getFlag("noicon", true);
-            return new OnlineActionAdapter(new EffectAction(effect, duration, level, ambient, hidden, noicon),
-                    loggerFactory.create(EffectAction.class), instruction.getPackage());
+            return new OnlineActionAdapter(new EffectAction(effect, duration, level, ambient, hidden, noicon));
         } catch (final QuestException e) {
             throw new QuestException("Could not parse effect duration and amplifier", e);
         }

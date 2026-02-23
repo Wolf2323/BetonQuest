@@ -1,8 +1,6 @@
 package org.betonquest.betonquest.api.quest.action;
 
 import org.betonquest.betonquest.api.QuestException;
-import org.betonquest.betonquest.api.config.quest.QuestPackage;
-import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 
@@ -29,12 +27,11 @@ public final class OnlineActionAdapter implements PlayerAction {
      * If the player is not online, it logs a message into the debug log.
      *
      * @param onlineAction action to run for online players
-     * @param log          log to write to if the player is not online
-     * @param questPackage quest package to reference in the log
      */
-    public OnlineActionAdapter(final OnlineAction onlineAction, final BetonQuestLogger log, final QuestPackage questPackage) {
-        this(onlineAction, profile -> log.debug(
-                questPackage, "Cannot fire an online action for the offline profile %s".formatted(profile)));
+    public OnlineActionAdapter(final OnlineAction onlineAction) {
+        this(onlineAction, profile -> {
+            throw new QuestException("Cannot fire an online action for the offline player %s".formatted(profile));
+        });
     }
 
     /**

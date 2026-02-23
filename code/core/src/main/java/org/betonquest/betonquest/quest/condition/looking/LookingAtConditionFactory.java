@@ -5,8 +5,6 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.instruction.type.BlockSelector;
-import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.condition.OnlineConditionAdapter;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
@@ -19,17 +17,9 @@ import org.jetbrains.annotations.Nullable;
 public class LookingAtConditionFactory implements PlayerConditionFactory {
 
     /**
-     * Logger factory to create a logger for the conditions.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * Create the looking at factory.
-     *
-     * @param loggerFactory the logger factory to create a logger for the conditions
      */
-    public LookingAtConditionFactory(final BetonQuestLoggerFactory loggerFactory) {
-        this.loggerFactory = loggerFactory;
+    public LookingAtConditionFactory() {
     }
 
     @Override
@@ -38,8 +28,7 @@ public class LookingAtConditionFactory implements PlayerConditionFactory {
         final Argument<BlockSelector> selector = instruction.blockSelector()
                 .get("type").orElse(null);
         final FlagArgument<Boolean> exactMatch = instruction.bool().getFlag("exactMatch", true);
-        final BetonQuestLogger log = loggerFactory.create(LookingAtCondition.class);
-        return new OnlineConditionAdapter(createCondition(loc, selector, exactMatch), log, instruction.getPackage());
+        return new OnlineConditionAdapter(createCondition(loc, selector, exactMatch));
     }
 
     private LookingAtCondition createCondition(@Nullable final Argument<Location> loc, @Nullable final Argument<BlockSelector> selector, final FlagArgument<Boolean> exactMatch) {

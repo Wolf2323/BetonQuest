@@ -68,9 +68,9 @@ public class MythicMobsIntegrator implements Integrator {
         manager.registerEvents(mythicHider, plugin);
 
         final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
-        api.conditions().registry().register("mythicmobdistance", new MythicMobDistanceConditionFactory(loggerFactory, mobExecutor, new MythicMobParser(mobExecutor)));
+        api.conditions().registry().register("mythicmobdistance", new MythicMobDistanceConditionFactory(mobExecutor, new MythicMobParser(mobExecutor)));
         api.objectives().registry().register("mmobkill", new MythicMobKillObjectiveFactory());
-        api.actions().registry().registerCombined("mspawnmob", new MythicSpawnMobActionFactory(loggerFactory,
+        api.actions().registry().registerCombined("mspawnmob", new MythicSpawnMobActionFactory(
                 new MythicMobDoubleParser(mobExecutor), plugin, mythicHider));
         api.actions().registry().register("mcast", new MythicCastSkillActionFactory(loggerFactory, apiHelper));
 

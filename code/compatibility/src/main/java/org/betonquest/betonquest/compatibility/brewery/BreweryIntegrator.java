@@ -1,7 +1,6 @@
 package org.betonquest.betonquest.compatibility.brewery;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.service.condition.ConditionRegistry;
 import org.betonquest.betonquest.api.service.item.ItemRegistry;
 import org.betonquest.betonquest.compatibility.Integrator;
@@ -23,10 +22,9 @@ public class BreweryIntegrator implements Integrator {
 
     @Override
     public void hook(final BetonQuestApi api) {
-        final BetonQuestLoggerFactory loggerFactory = api.loggerFactory();
         final ConditionRegistry conditionRegistry = api.conditions().registry();
-        conditionRegistry.register("drunk", new DrunkConditionFactory(loggerFactory));
-        conditionRegistry.register("drunkquality", new DrunkQualityConditionFactory(loggerFactory));
+        conditionRegistry.register("drunk", new DrunkConditionFactory());
+        conditionRegistry.register("drunkquality", new DrunkQualityConditionFactory());
 
         final ItemRegistry item = api.items().registry();
         item.register("brew", new BrewItemFactory());

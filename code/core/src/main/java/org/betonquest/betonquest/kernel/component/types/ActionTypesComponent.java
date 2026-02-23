@@ -140,50 +140,50 @@ public class ActionTypesComponent extends AbstractCoreComponent {
         final CancelerProcessor cancelerProcessor = getDependency(CancelerProcessor.class);
         final DefaultNpcHider npcHider = getDependency(DefaultNpcHider.class);
 
-        actionTypes.register("burn", new BurnActionFactory(loggerFactory));
-        actionTypes.register("cancel", new CancelActionFactory(loggerFactory, cancelerProcessor));
-        actionTypes.register("cancelconversation", new CancelConversationActionFactory(loggerFactory, conversations));
-        actionTypes.register("chat", new ChatActionFactory(loggerFactory));
+        actionTypes.register("burn", new BurnActionFactory());
+        actionTypes.register("cancel", new CancelActionFactory(cancelerProcessor));
+        actionTypes.register("cancelconversation", new CancelConversationActionFactory(conversations));
+        actionTypes.register("chat", new ChatActionFactory());
         actionTypes.registerCombined("chestclear", new ChestClearActionFactory());
         actionTypes.registerCombined("chestgive", new ChestGiveActionFactory());
         actionTypes.registerCombined("chesttake", new ChestTakeActionFactory());
         actionTypes.register("compass", new CompassActionFactory(compassProcessor, playerDataStorage));
         actionTypes.registerCombined("command", new CommandActionFactory(loggerFactory, server));
-        actionTypes.register("conversation", new ConversationActionFactory(loggerFactory, conversations));
-        actionTypes.register("damage", new DamageActionFactory(loggerFactory));
-        actionTypes.register("deleffect", new DeleteEffectActionFactory(loggerFactory));
+        actionTypes.register("conversation", new ConversationActionFactory(conversations));
+        actionTypes.register("damage", new DamageActionFactory());
+        actionTypes.register("deleffect", new DeleteEffectActionFactory());
         actionTypes.registerCombined("deleteglobalpoint", new DeleteGlobalPointActionFactory(globalData));
         actionTypes.registerCombined("deletepoint", new DeletePointActionFactory(playerDataStorage, saver, profileProvider));
         actionTypes.registerCombined("door", new DoorActionFactory());
         actionTypes.registerCombined("drop", new DropActionFactory(profileProvider));
-        actionTypes.register("effect", new EffectActionFactory(loggerFactory));
+        actionTypes.register("effect", new EffectActionFactory());
         actionTypes.registerCombined("eval", new EvalActionFactory(instructions, actionTypes, scheduler, plugin));
-        actionTypes.register("experience", new ExperienceActionFactory(loggerFactory));
+        actionTypes.register("experience", new ExperienceActionFactory());
         actionTypes.registerCombined("explosion", new ExplosionActionFactory());
         actionTypes.registerCombined("folder", new FolderActionFactory(plugin, loggerFactory, pluginManager,
                 actionManager, conditionManager));
         actionTypes.registerCombined("first", new FirstActionFactory(actionManager));
         actionTypes.register("give", new GiveActionFactory(loggerFactory, playerDataStorage, pluginMessage));
-        actionTypes.register("givejournal", new GiveJournalActionFactory(loggerFactory, playerDataStorage));
+        actionTypes.register("givejournal", new GiveJournalActionFactory(playerDataStorage));
         actionTypes.registerCombined("globaltag", new TagGlobalActionFactory(globalData));
         actionTypes.registerCombined("globalpoint", new GlobalPointActionFactory(globalData));
-        actionTypes.register("hunger", new HungerActionFactory(loggerFactory));
+        actionTypes.register("hunger", new HungerActionFactory());
         actionTypes.registerCombined("if", new IfElseActionFactory(actionManager, conditionManager));
-        actionTypes.register("itemdurability", new ItemDurabilityActionFactory(loggerFactory));
+        actionTypes.register("itemdurability", new ItemDurabilityActionFactory());
         actionTypes.registerCombined("journal", new JournalActionFactory(loggerFactory, pluginMessage, playerDataStorage,
                 InstantSource.system(), saver, profileProvider));
-        actionTypes.register("kill", new KillActionFactory(loggerFactory));
+        actionTypes.register("kill", new KillActionFactory());
         actionTypes.register("language", new LanguageActionFactory(playerDataStorage));
         actionTypes.registerCombined("lever", new LeverActionFactory());
         actionTypes.registerCombined("lightning", new LightningActionFactory());
         actionTypes.registerCombined("log", new LogActionFactory(loggerFactory));
-        actionTypes.register("notify", new NotifyActionFactory(loggerFactory, textParser, playerDataStorage, languageProvider));
+        actionTypes.register("notify", new NotifyActionFactory(textParser, playerDataStorage, languageProvider));
         actionTypes.registerCombined("notifyall", new NotifyAllActionFactory(loggerFactory, textParser, playerDataStorage, profileProvider, languageProvider));
         actionTypes.registerCombined("npcteleport", new NpcTeleportActionFactory(npcManager));
         actionTypes.registerCombined("objective", new ObjectiveActionFactory(plugin, loggerFactory, profileProvider, saver,
                 objectiveManager, playerDataStorage, playerDataFactory));
-        actionTypes.register("opsudo", new OpSudoActionFactory(loggerFactory, server));
-        actionTypes.register("party", new PartyActionFactory(loggerFactory, profileProvider, actionManager, conditionManager));
+        actionTypes.register("opsudo", new OpSudoActionFactory(server));
+        actionTypes.register("party", new PartyActionFactory(profileProvider, actionManager, conditionManager));
         actionTypes.registerCombined("pickrandom", new PickRandomActionFactory(actionManager));
         actionTypes.register("point", new PointActionFactory(loggerFactory, playerDataStorage,
                 pluginMessage));
@@ -193,17 +193,17 @@ public class ActionTypesComponent extends AbstractCoreComponent {
         actionTypes.register("runIndependent", new RunIndependentActionFactory(actionManager));
         actionTypes.registerCombined("setblock", new SetBlockActionFactory());
         actionTypes.register("score", new ScoreboardObjectiveActionFactory());
-        actionTypes.register("scoretag", new ScoreboardTagActionFactory(loggerFactory));
+        actionTypes.register("scoretag", new ScoreboardTagActionFactory());
         actionTypes.registerCombined("spawn", new SpawnMobActionFactory());
         actionTypes.register("stage", new StageActionFactory(objectiveManager));
-        actionTypes.register("sudo", new SudoActionFactory(loggerFactory, server));
+        actionTypes.register("sudo", new SudoActionFactory(server));
         actionTypes.registerCombined("tag", new TagPlayerActionFactory(playerDataStorage, saver, profileProvider));
         actionTypes.register("take", new TakeActionFactory(loggerFactory, pluginMessage));
-        actionTypes.register("teleport", new TeleportActionFactory(loggerFactory, conversations));
+        actionTypes.register("teleport", new TeleportActionFactory(conversations));
         actionTypes.registerCombined("time", new TimeActionFactory());
-        actionTypes.register("updatevisibility", new UpdateVisibilityNowActionFactory(npcHider, loggerFactory));
+        actionTypes.register("updatevisibility", new UpdateVisibilityNowActionFactory(npcHider));
         actionTypes.register("variable", new VariableActionFactory(objectiveManager));
-        actionTypes.register("velocity", new VelocityActionFactory(loggerFactory));
-        actionTypes.registerCombined("weather", new WeatherActionFactory(loggerFactory));
+        actionTypes.register("velocity", new VelocityActionFactory());
+        actionTypes.registerCombined("weather", new WeatherActionFactory());
     }
 }
