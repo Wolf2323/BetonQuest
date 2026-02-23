@@ -377,7 +377,7 @@ __Description__: Run multiple actions in sequence.
 This action wraps multiple actions inside itself. Once triggered, it simply executes it's actions.
 This is usefully to easily refer to a bunch of actions at once, e.g. in a conversation.
 
-Actions marked as _persistent_ will be fired even after the player logs out.
+Actions marked with the offline icon @snippet:action-meta:offline@ will be fired even if the player is not online.
 Beware though, all conditions are false when the player is offline (even inverted ones),
 so those actions should not be blocked by any conditions!  
 You can use the `cancelOnLogout` argument to stop the folder executing any remaining actions if the player disconnects.
