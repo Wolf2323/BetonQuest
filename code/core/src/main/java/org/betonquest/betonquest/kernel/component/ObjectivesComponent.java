@@ -5,9 +5,10 @@ import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.objective.service.DefaultObjectiveServiceProvider;
-import org.betonquest.betonquest.api.service.feature.DefaultObjectives;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
+import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
 import org.betonquest.betonquest.api.service.objective.Objectives;
 import org.betonquest.betonquest.id.objective.ObjectiveIdentifierFactory;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
@@ -65,5 +66,15 @@ public class ObjectivesComponent extends AbstractCoreComponent {
         dependencyProvider.take(ObjectiveTypeRegistry.class, objectiveTypeRegistry);
         dependencyProvider.take(ObjectiveProcessor.class, objectiveProcessor);
         dependencyProvider.take(DefaultObjectives.class, new DefaultObjectives(objectiveProcessor, objectiveTypeRegistry));
+    }
+
+    /**
+     * Default implementation of the {@link Objectives} service.
+     *
+     * @param manager  the objective manager
+     * @param registry the objective registry
+     */
+    record DefaultObjectives(ObjectiveManager manager, ObjectiveRegistry registry) implements Objectives {
+
     }
 }

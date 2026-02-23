@@ -3,9 +3,10 @@ package org.betonquest.betonquest.kernel.component;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.identifier.ItemIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.api.service.feature.DefaultItems;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.item.ItemManager;
+import org.betonquest.betonquest.api.service.item.ItemRegistry;
 import org.betonquest.betonquest.api.service.item.Items;
 import org.betonquest.betonquest.id.item.ItemIdentifierFactory;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
@@ -49,5 +50,15 @@ public class ItemsComponent extends AbstractCoreComponent {
         dependencyProvider.take(ItemTypeRegistry.class, itemTypeRegistry);
         dependencyProvider.take(ItemProcessor.class, itemProcessor);
         dependencyProvider.take(DefaultItems.class, new DefaultItems(itemProcessor, itemTypeRegistry));
+    }
+
+    /**
+     * Default implementation of the {@link Items} service.
+     *
+     * @param manager  the item manager
+     * @param registry the item registry
+     */
+    record DefaultItems(ItemManager manager, ItemRegistry registry) implements Items {
+
     }
 }

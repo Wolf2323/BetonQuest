@@ -8,9 +8,10 @@ import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.npc.DefaultNpcHider;
 import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.api.service.condition.ConditionManager;
-import org.betonquest.betonquest.api.service.feature.DefaultNpcs;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.npc.NpcManager;
+import org.betonquest.betonquest.api.service.npc.NpcRegistry;
 import org.betonquest.betonquest.api.service.npc.Npcs;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.database.Saver;
@@ -75,5 +76,15 @@ public class NpcsComponent extends AbstractCoreComponent {
         dependencyProvider.take(NpcProcessor.class, npcProcessor);
         dependencyProvider.take(DefaultNpcHider.class, npcProcessor.getNpcHider());
         dependencyProvider.take(DefaultNpcs.class, new DefaultNpcs(npcProcessor, npcTypeRegistry));
+    }
+
+    /**
+     * Default implementation of the {@link Npcs} service.
+     *
+     * @param manager  the npc manager
+     * @param registry the npc registry
+     */
+    record DefaultNpcs(NpcManager manager, NpcRegistry registry) implements Npcs {
+
     }
 }

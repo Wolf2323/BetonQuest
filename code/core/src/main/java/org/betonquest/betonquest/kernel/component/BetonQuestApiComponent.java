@@ -1,11 +1,11 @@
 package org.betonquest.betonquest.kernel.component;
 
+import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.BetonQuestApiService;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.api.service.DefaultBetonQuestApi;
 import org.betonquest.betonquest.api.service.DefaultBetonQuestApiService;
 import org.betonquest.betonquest.api.service.action.Actions;
 import org.betonquest.betonquest.api.service.condition.Conditions;
@@ -72,5 +72,29 @@ public class BetonQuestApiComponent extends AbstractCoreComponent {
         }), plugin, ServicePriority.Highest);
 
         dependencyProvider.take(DefaultBetonQuestApi.class, defaultBetonQuestApi);
+    }
+
+    /**
+     * The default implementation of the {@link BetonQuestApi}.
+     *
+     * @param profiles      the profile provider handling profiles for players
+     * @param packages      the package manager for quest packages
+     * @param loggerFactory the logger factory to create loggers for individual services
+     * @param instructions  the instruction api accessor
+     * @param actions       the actions api accessor
+     * @param conditions    the conditions api accessor
+     * @param objectives    the objectives api accessor
+     * @param placeholders  the placeholders api accessor
+     * @param items         the item api accessor
+     * @param npcs          the npc api accessor
+     * @param conversations the conversation api accessor
+     * @param identifiers   the identifier api accessor
+     */
+    record DefaultBetonQuestApi(ProfileProvider profiles, QuestPackageManager packages,
+                                BetonQuestLoggerFactory loggerFactory, Instructions instructions, Actions actions,
+                                Conditions conditions, Objectives objectives, Placeholders placeholders, Items items,
+                                Npcs npcs, Conversations conversations,
+                                Identifiers identifiers) implements BetonQuestApi {
+
     }
 }
