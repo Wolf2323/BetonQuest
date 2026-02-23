@@ -37,7 +37,7 @@ public class MoonPhaseConditionFactory implements PlayerConditionFactory, Player
     public PlayerlessCondition parsePlayerless(final Instruction instruction) throws QuestException {
         final Argument<World> world = instruction.world().get("world").orElse(null);
         if (world == null) {
-            return new ThrowExceptionPlayerlessCondition();
+            return new ThrowExceptionPlayerlessCondition("Condition requires a 'world' argument.");
         }
         final Argument<List<MoonPhase>> moonPhases = instruction.enumeration(MoonPhase.class).list().get();
         return new NullableConditionAdapter(new MoonPhaseCondition(world, moonPhases));

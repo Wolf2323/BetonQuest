@@ -37,7 +37,7 @@ public class TimeConditionFactory implements PlayerConditionFactory, PlayerlessC
     public PlayerlessCondition parsePlayerless(final Instruction instruction) throws QuestException {
         final Optional<Argument<World>> world = instruction.world().get("world");
         if (world.isEmpty()) {
-            return new ThrowExceptionPlayerlessCondition();
+            return new ThrowExceptionPlayerlessCondition("Condition requires a 'world' argument.");
         }
         final Argument<TimeFrame> timeFrame = instruction.parse(TimeFrame::parse).get();
         return new NullableConditionAdapter(new TimeCondition(timeFrame, world.get()));

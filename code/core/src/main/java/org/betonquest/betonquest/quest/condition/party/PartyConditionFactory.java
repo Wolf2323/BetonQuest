@@ -54,7 +54,7 @@ public class PartyConditionFactory implements PlayerConditionFactory, Playerless
     public PlayerlessCondition parsePlayerless(final Instruction instruction) throws QuestException {
         final Argument<Location> location = instruction.location().get("location").orElse(null);
         if (location == null) {
-            return new ThrowExceptionPlayerlessCondition();
+            return new ThrowExceptionPlayerlessCondition("Condition requires a 'location' argument.");
         }
         return new NullableConditionAdapter(parse(instruction, location));
     }
