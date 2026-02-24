@@ -107,11 +107,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     private FileConfigAccessor config;
 
     /**
-     * The default language from the config.
-     */
-    private String defaultLanguage;
-
-    /**
      * The used Connector for the Database.
      */
     private Connector connector;
@@ -339,7 +334,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         } catch (final IOException e) {
             log.warn("Could not reload config! " + e.getMessage(), e);
         }
-        defaultLanguage = config.getString("language", "en-US");
         questManager.reload();
         try {
             coreQuestTypeHandler.getPluginMessage().reload();
@@ -447,7 +441,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
     @Override
     public String getDefaultLanguage() {
-        return defaultLanguage;
+        return coreComponentLoader.get(LanguageProvider.class).getDefaultLanguage();
     }
 
     /**
