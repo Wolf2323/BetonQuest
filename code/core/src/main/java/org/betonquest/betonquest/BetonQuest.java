@@ -20,7 +20,6 @@ import org.betonquest.betonquest.config.DefaultConfigAccessorFactory;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.config.QuestManager;
 import org.betonquest.betonquest.config.patcher.migration.Migrator;
-import org.betonquest.betonquest.config.patcher.migration.QuestMigrator;
 import org.betonquest.betonquest.conversation.AnswerFilter;
 import org.betonquest.betonquest.conversation.Conversation;
 import org.betonquest.betonquest.conversation.ConversationColors;
@@ -37,7 +36,10 @@ import org.betonquest.betonquest.kernel.component.DatabaseComponent;
 import org.betonquest.betonquest.kernel.component.ExecutionCacheComponent;
 import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
 import org.betonquest.betonquest.kernel.component.GlobalDataComponent;
+import org.betonquest.betonquest.kernel.component.LanguageProviderComponent;
 import org.betonquest.betonquest.kernel.component.ListenersComponent;
+import org.betonquest.betonquest.kernel.component.LogHandlerComponent;
+import org.betonquest.betonquest.kernel.component.QuestPackageManagerComponent;
 import org.betonquest.betonquest.kernel.component.UpdaterComponent;
 import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConditionTypesComponent;
@@ -52,10 +54,6 @@ import org.betonquest.betonquest.kernel.component.types.TextParserTypesComponent
 import org.betonquest.betonquest.kernel.processor.QuestProcessor;
 import org.betonquest.betonquest.lib.logger.CachingBetonQuestLoggerFactory;
 import org.betonquest.betonquest.logger.DefaultBetonQuestLoggerFactory;
-import org.betonquest.betonquest.logger.HandlerFactory;
-import org.betonquest.betonquest.logger.handler.chat.AccumulatingReceiverSelector;
-import org.betonquest.betonquest.logger.handler.chat.ChatHandler;
-import org.betonquest.betonquest.logger.handler.history.HistoryHandler;
 import org.betonquest.betonquest.notify.Notify;
 import org.betonquest.betonquest.playerhider.PlayerHider;
 import org.betonquest.betonquest.profile.UUIDProfileProvider;
@@ -75,13 +73,11 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.InstantSource;
-import java.util.logging.Handler;
 
 /**
  * Represents BetonQuest plugin.
  */
-@SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass", "PMD.TooManyMethods",
+@SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass",
         "PMD.TooManyFields", "NullAway.Init"})
 public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
@@ -109,11 +105,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      * The plugin configuration file.
      */
     private FileConfigAccessor config;
-
-    /**
-     * The default language from the config.
-     */
-    private String defaultLanguage;
 
     /**
      * The used Connector for the Database.
@@ -223,22 +214,10 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         } catch (final InvalidConfigurationException | FileNotFoundException e) {
             throw new IllegalStateException("Could not load the config.yml file!", e);
         }
-        defaultLanguage = config.getString("language", "en-US");
-
-        final HistoryHandler debugHistoryHandler = HandlerFactory.createHistoryHandler(loggerFactory, this,
-                this.getServer().getScheduler(), config, new File(getDataFolder(), "/logs"), InstantSource.system());
-        registerLogHandler(getServer(), debugHistoryHandler);
-        final AccumulatingReceiverSelector receiverSelector = new AccumulatingReceiverSelector();
-        final ChatHandler chatHandler = HandlerFactory.createChatHandler(this, getServer(), receiverSelector);
-        registerLogHandler(getServer(), chatHandler);
 
         final String version = getDescription().getVersion();
         log.debug("BetonQuest " + version + " is starting...");
         log.debug(jreInfo);
-
-        questManager = new QuestManager(loggerFactory, loggerFactory.create(QuestManager.class), configAccessorFactory,
-                getDataFolder(), new QuestMigrator(loggerFactory.create(QuestMigrator.class), getDescription()));
-        Notify.load(config, questManager.getPackages().values());
 
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
         this.coreComponentLoader = coreComponentLoader;
@@ -246,9 +225,9 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         initPluginDependencies(coreComponentLoader);
         registerComponents(coreComponentLoader);
         registerTypesComponents(coreComponentLoader);
-        registerCommands(coreComponentLoader, receiverSelector, debugHistoryHandler);
         coreQuestTypeHandler.init();
 
+        this.questManager = coreComponentLoader.get(QuestManager.class);
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
         this.compatibility = coreComponentLoader.get(Compatibility.class);
         this.updater = coreComponentLoader.get(Updater.class);
@@ -307,13 +286,15 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     }
 
     private void registerComponents(final CoreComponentLoader coreComponentLoader) {
-        coreComponentLoader.init(LanguageProvider.class, this);
         coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
         coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
-        coreComponentLoader.init(QuestManager.class, questManager);
         coreComponentLoader.init(ProfileProvider.class, profileProvider);
         coreComponentLoader.init(FileConfigAccessor.class, config);
 
+        coreComponentLoader.register(new LanguageProviderComponent());
+        coreComponentLoader.register(new CommandsComponent(this::reload));
+        coreComponentLoader.register(new LogHandlerComponent());
+        coreComponentLoader.register(new QuestPackageManagerComponent());
         coreComponentLoader.register(new DatabaseComponent());
         coreComponentLoader.register(new AsyncSaverComponent());
         coreComponentLoader.register(new GlobalDataComponent());
@@ -324,28 +305,12 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.register(new ExecutionCacheComponent());
     }
 
-    private void registerCommands(final CoreComponentLoader coreComponentLoader, final AccumulatingReceiverSelector receiverSelector, final HistoryHandler debugHistoryHandler) {
-        coreComponentLoader.init(AccumulatingReceiverSelector.class, receiverSelector);
-        coreComponentLoader.init(HistoryHandler.class, debugHistoryHandler);
-        coreComponentLoader.register(new CommandsComponent(this::reload));
-    }
-
     private void migrate() {
         try {
             new Migrator(loggerFactory).migrate();
         } catch (final IOException e) {
             log.error("There was an exception while migrating from a previous version! Reason: " + e.getMessage(), e);
         }
-    }
-
-    @SuppressWarnings("PMD.DoNotUseThreads")
-    private void registerLogHandler(final Server server, final Handler handler) {
-        final java.util.logging.Logger serverLogger = server.getLogger().getParent();
-        serverLogger.addHandler(handler);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            serverLogger.removeHandler(handler);
-            handler.close();
-        }));
     }
 
     /**
@@ -369,7 +334,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         } catch (final IOException e) {
             log.warn("Could not reload config! " + e.getMessage(), e);
         }
-        defaultLanguage = config.getString("language", "en-US");
         questManager.reload();
         try {
             coreQuestTypeHandler.getPluginMessage().reload();
@@ -477,7 +441,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
     @Override
     public String getDefaultLanguage() {
-        return defaultLanguage;
+        return coreComponentLoader.get(LanguageProvider.class).getDefaultLanguage();
     }
 
     /**
