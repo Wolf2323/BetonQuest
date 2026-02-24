@@ -314,7 +314,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.register(new TextParserTypesComponent());
     }
 
-    @SuppressWarnings("PMD.DoNotUseThreads")
     private void registerComponents(final CoreComponentLoader coreComponentLoader) {
         coreComponentLoader.init(LanguageProvider.class, this);
         coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
