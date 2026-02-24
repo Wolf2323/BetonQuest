@@ -26,14 +26,6 @@ public abstract class AbstractCoreComponent implements CoreComponent {
         this.injectedDependencies = new HashSet<>();
     }
 
-    /**
-     * Implement all loading logic here and use the provided {@link DependencyProvider} to inject dependencies into
-     * all other components.
-     *
-     * @param dependencyProvider the dependency provider to use
-     */
-    protected abstract void load(DependencyProvider dependencyProvider);
-
     @Override
     public void inject(final LoadedDependency<?> dependency) {
         if (requires(dependency.type())) {
@@ -84,4 +76,15 @@ public abstract class AbstractCoreComponent implements CoreComponent {
                 .filter(dependency -> dependency.match(type)).findFirst().orElseThrow();
         return type.cast(injectedDependency.dependency());
     }
+
+    @Override
+    public abstract Set<Class<?>> requires();
+
+    /**
+     * Implement all loading logic here and use the provided {@link DependencyProvider} to inject dependencies into
+     * all other components.
+     *
+     * @param dependencyProvider the dependency provider to use
+     */
+    protected abstract void load(DependencyProvider dependencyProvider);
 }
