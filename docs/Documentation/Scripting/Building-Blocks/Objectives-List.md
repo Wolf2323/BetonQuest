@@ -487,9 +487,9 @@ __Context__: @snippet:objective-meta:online@
 __Syntax__: `login`  
 __Description__: The player has to log in.
 
-If you use `global` this objective will be also completed directly when a new player joins for the first time.
+If you use `auto-once` this objective will be also completed directly when a new player joins for the first time.
 If you use `persistent` it will be permanent.
-Don't forget that if you use global and persistent you can still remove the objective explicitly.
+Don't forget that if you use auto-once and persistent you can still remove the objective explicitly.
 
 ```YAML title="Example"
 objectives:

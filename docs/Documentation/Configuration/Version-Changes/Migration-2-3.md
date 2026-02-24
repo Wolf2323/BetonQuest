@@ -63,6 +63,7 @@ This guide explains how to migrate from the latest BetonQuest 2.X version to Bet
 - [3.0.0-DEV-511 - Dynamize `top:` Hologram Line](#300-dev-511-dynamize-top-hologram-line) :sun:
 - [3.0.0-DEV-562 - Rename `events` to `actions`](#300-dev-562-rename-events-to-actions) :sun:
 - [3.0.0-DEV-635 - Brewery Item Type](#300-dev-635-brewery-item-type) :thunder_cloud_rain:
+- [3.0.0-DEV-673 - `auto-once` Objectives](#300-dev-673-auto-once-objectives) :sun:
 
 ### 3.0.0-DEV-58 - Delete messages.yml :thunder_cloud_rain:
 
@@ -1114,3 +1115,26 @@ actions:
 ```
 
 </div>
+
+### 3.0.0-DEV-673 - `auto-once` Objectives :sun:
+
+The `global` property of objectives has been renamed to `auto-once`.
+
+??? info "Automated Migration"
+    *The migration is automated. You shouldn't have to do anything.*
+    
+    -------------
+
+    <div class="grid" markdown>
+    
+    ```YAML title="Old Syntax"
+    objectives:
+      welcome: login global persistent actions:welcome_message
+    ```
+    
+    ```YAML title="New Syntax"
+    objectives:
+      welcome: login auto-once persistent actions:welcome_message
+    ```
+    
+    </div>
