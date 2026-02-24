@@ -121,11 +121,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     private Connector connector;
 
     /**
-     * If MySQL is used.
-     */
-    private boolean usesMySQL;
-
-    /**
      * The database saver for Quest Data.
      */
     @SuppressWarnings("PMD.DoNotUseThreads")

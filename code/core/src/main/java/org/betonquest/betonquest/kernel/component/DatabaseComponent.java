@@ -21,7 +21,7 @@ public class DatabaseComponent extends AbstractCoreComponent {
     /**
      * Whether the database is using MySQL.
      */
-    private boolean usesMySQL;
+    private boolean mySql;
 
     /**
      * Create a new DatabaseComponent.
@@ -56,7 +56,7 @@ public class DatabaseComponent extends AbstractCoreComponent {
             try {
                 mySql.getConnection();
                 database = mySql;
-                usesMySQL = true;
+                this.mySql = true;
                 log.info("Successfully connected to MySQL database!");
             } catch (final IllegalStateException e) {
                 log.warn("MySQL: " + e.getMessage(), e);
@@ -83,6 +83,6 @@ public class DatabaseComponent extends AbstractCoreComponent {
      * @return if the database is using MySQL
      */
     public boolean usesMySQL() {
-        return usesMySQL;
+        return mySql;
     }
 }
