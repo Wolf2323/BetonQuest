@@ -43,6 +43,7 @@ import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
+import org.betonquest.betonquest.kernel.component.ExecutionCacheComponent;
 import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
 import org.betonquest.betonquest.kernel.component.ListenersComponent;
 import org.betonquest.betonquest.kernel.component.UpdaterComponent;
@@ -83,11 +84,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.InstantSource;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Handler;
 
 /**
@@ -96,11 +94,6 @@ import java.util.logging.Handler;
 @SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass", "PMD.TooManyMethods",
         "PMD.TooManyFields", "NullAway.Init"})
 public class BetonQuest extends JavaPlugin implements LanguageProvider {
-
-    /**
-     * The File where last executions should be cached.
-     */
-    private static final String CACHE_FILE = ".cache/schedules.yml";
 
     /**
      * The BetonQuest Plugin instance.
@@ -276,22 +269,11 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
         globalData = new GlobalData(loggerFactory.create(GlobalData.class), saver, connector);
 
-        final FileConfigAccessor cache;
-        try {
-            final Path cacheFile = new File(getDataFolder(), CACHE_FILE).toPath();
-            if (!Files.exists(cacheFile)) {
-                Files.createDirectories(Optional.ofNullable(cacheFile.getParent()).orElseThrow());
-                Files.createFile(cacheFile);
-            }
-            cache = configAccessorFactory.create(cacheFile.toFile());
-        } catch (final IOException | InvalidConfigurationException e) {
-            throw new IllegalStateException("Error while loading schedule cache: " + e.getMessage(), e);
-        }
-        lastExecutionCache = new LastExecutionCache(loggerFactory.create(LastExecutionCache.class, "Cache"), cache);
-
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
         this.coreComponentLoader = coreComponentLoader;
         this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class), coreComponentLoader);
+
+        coreComponentLoader.register(new ExecutionCacheComponent());
 
         setupFontRegistry(coreComponentLoader);
 
@@ -309,7 +291,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(GlobalData.class, globalData);
         coreComponentLoader.init(Connector.class, connector);
         coreComponentLoader.init(AsyncSaver.class, saver);
-        coreComponentLoader.init(LastExecutionCache.class, lastExecutionCache);
         coreComponentLoader.init(FileConfigAccessor.class, config);
 
         registerCoreQuestTypes(coreComponentLoader);
@@ -322,6 +303,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
         this.compatibility = coreComponentLoader.get(Compatibility.class);
         this.updater = coreComponentLoader.get(Updater.class);
+        this.lastExecutionCache = coreComponentLoader.get(LastExecutionCache.class);
 
         conversationColors = coreComponentLoader.get(ConversationColors.class);
 
