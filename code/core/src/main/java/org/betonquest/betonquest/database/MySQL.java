@@ -3,15 +3,16 @@ package org.betonquest.betonquest.database;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.common.component.BookPageWrapper;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
+import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.item.SimpleQuestItemFactory;
 import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
@@ -70,14 +71,16 @@ public class MySQL extends Database {
      *
      * @param log      the logger that will be used for logging
      * @param plugin   Plugin instance
+     * @param config   the configuration accessor
      * @param hostname Name of the host
      * @param port     Port number
      * @param database Database name
      * @param username Username
      * @param password Password
      */
-    public MySQL(final BetonQuestLogger log, final BetonQuest plugin, final String hostname, final String port, final String database, final String username, final String password) {
-        super(log, plugin);
+    public MySQL(final BetonQuestLogger log, final Plugin plugin, final ConfigAccessor config, final String hostname,
+                 final String port, final String database, final String username, final String password) {
+        super(log, plugin, config);
         this.log = log;
         this.hostname = hostname;
         this.port = port;
