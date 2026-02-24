@@ -122,22 +122,22 @@ objectives:
   die: 'die cancel respawn:100;200;300;world;90;0 actions:sendRespawnMessage conditions:hasCustomTotem'
 ```
 
-#### Global objectives
+#### Auto-Once objectives
 
-If you want an objective to be active for every player right after joining, you can create a global objective.
-This is done by adding `global` argument to the instruction of the objective.
+If you want an objective to be active for every player right after joining, you can create a auto-once objective.
+This is done by adding `auto-once` argument to the instruction of the objective.
 When you then reload BetonQuest it is started for all online players and also will be started for every player who joins.
 
 Possible use cases would be a quest which starts if a player reaches a specific location or breaks a specific block.
 
 To prevent the objective from being started every time a player joins, a tag is set for the player whenever the objective
 is started. With this tag, the objective will not be started again.  
-These tags follow the syntax `<package>.global-<id>`, where `<id>` is the objectives id and `<package>` the package where
+These tags follow the syntax `<package>.auto-once-<id>`, where `<id>` is the objectives id and `<package>` the package where
 the objective is located.
 
 ```YAML title="Example"
 objectives:
-  startQuestByMining: 'location 100;200;300;world 5 actions:start_quest_mine_folder {++global++}'
+  startQuestByMining: 'location 100;200;300;world 5 actions:start_quest_mine_folder {++auto-once++}'
 ```
 
 #### Placeholders

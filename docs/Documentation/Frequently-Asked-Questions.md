@@ -183,17 +183,17 @@ These actions will set a specific tag. Now when the player starts the conversati
 should check (using the `globaltag` condition) which tag is currently set and give the player different quests based on that.
 Of course, the scheduled folder action also needs to remove the current tag before setting a new one.
 
-## Global Quests (all players work together)
+## Server wide Quests (all players work together)
 
 There is no easy way to do this (yet). Additionally, every use case differs. Let's assume you have some sort of action
 on your server where your player's need to fish 100 salmons. The quest package is only installed during the action.
 
 Create an objective that is immediately fired upon the first interaction (this means setting the amount to one for most objectives).
-That objective must be `persistent` so it restarts immediately upon completion. It also has to be `global` so every
+That objective must be `persistent` so it restarts immediately upon completion. It also has to be `auto-once` so every
 player will receive it upon joining the server.
 ```YAML
-# fish a salmon to progress the global quest
-gQuest: fish SALMON 1 actions:gQuestProgress global persistent
+# fish a salmon to progress the server wide quest
+gQuest: fish SALMON 1 actions:gQuestProgress auto-once persistent
 ```
 The objective would trigger a folder action that increases a `globalpoint` counter by one and tries to run the
 actions that are fired upon completion. That globalpoint counter tracks the players combined progress.
@@ -232,10 +232,10 @@ Such a package holds the original objective and clean-up objective:
 
 === "objectives"
     ```YAML
-    # Old objective just without global & persistent to make sure no one get's it automatically
+    # Old objective just without auto-once & persistent to make sure no one get's it automatically
     gQuest: fish SALMON 1 actions:gQuestProgress
     # Cleanup objective that is immediately completed when someone joins
-    login actions:deleteOldObjective global
+    login actions:deleteOldObjective auto-once
     ```
 
 === "actions"
@@ -262,7 +262,7 @@ Name the NPC "Quester", add one option for each quest etc. Now you need an objec
 It should be `action` objective, set to right-click on any block.
 Add `hand` condition to make it accept only clicks with a specific item and make the objective `persistent` (so players can use it multiple times).
 The item used here should be marked as Quest Item so players can't drop it.
-Now define new global location covering your whole map and using it start the objective and give players the item.
+Now define new auto-once location covering your whole map and using it start the objective and give players the item.
 This way all players (existing and new) will get the quest item, which opens a GUI with quests when right-clicked.
 
 ## Non-Linear Objectives in Quests

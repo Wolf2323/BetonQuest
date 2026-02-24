@@ -56,9 +56,9 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
     private final Plugin plugin;
 
     /**
-     * Loaded global objectives.
+     * Loaded auto-once objectives.
      */
-    private final Set<ObjectiveIdentifier> globalObjectiveIds;
+    private final Set<ObjectiveIdentifier> autoOnceObjectiveIds;
 
     /**
      * The available objective types.
@@ -91,17 +91,17 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
         this.objectiveService = service;
         this.types = objectiveTypes;
         this.plugin = plugin;
-        globalObjectiveIds = new HashSet<>();
+        autoOnceObjectiveIds = new HashSet<>();
     }
 
     /**
-     * Get the tag used to mark an already started global objective.
+     * Get the tag used to mark an already started auto-once objective.
      *
-     * @param objectiveID the id of a global objective
-     * @return the tag which marks that the given global objective has already been started for the player
+     * @param objectiveID the id of a auto-once objective
+     * @return the tag which marks that the given auto-once objective has already been started for the player
      */
     public static String getTag(final ObjectiveIdentifier objectiveID) {
-        return PackageIdentifierParser.INSTANCE.apply(objectiveID.getPackage(), "global-" + objectiveID.get());
+        return PackageIdentifierParser.INSTANCE.apply(objectiveID.getPackage(), "auto-once-" + objectiveID.get());
     }
 
     @Override
@@ -157,7 +157,7 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
     @Override
     public void clear() {
         objectiveService.clear();
-        globalObjectiveIds.clear();
+        autoOnceObjectiveIds.clear();
         for (final Objective objective : values.values()) {
             closeObjective(objective);
             if (objective instanceof Listener) {
@@ -170,15 +170,15 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
     }
 
     private void postCreation(final ObjectiveIdentifier identifier, final Objective objective) {
-        boolean global = false;
+        boolean autoOnce = false;
         try {
-            global = instructionApi.create(identifier, identifier.readRawInstruction()).bool()
-                    .getFlag("global", true).getValue(null).orElse(false);
+            autoOnce = instructionApi.create(identifier, identifier.readRawInstruction()).bool()
+                    .getFlag("auto-once", true).getValue(null).orElse(false);
         } catch (final QuestException e) {
-            log.error("Error while loading global flag for objective " + identifier, e);
+            log.error("Error while loading auto-once flag for objective " + identifier, e);
         }
-        if (global) {
-            globalObjectiveIds.add(identifier);
+        if (autoOnce) {
+            autoOnceObjectiveIds.add(identifier);
         }
         if (objective instanceof Listener) {
             pluginManager.registerEvents((Listener) objective, plugin);
@@ -298,14 +298,14 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
     }
 
     /**
-     * Starts all unstarted global objectives for the player.
+     * Starts all unstarted auto-once objectives for the player.
      *
      * @param profile     the {@link Profile} of the player
      * @param dataStorage the storage providing player data
      */
     public void startAll(final Profile profile, final PlayerDataStorage dataStorage) {
         final PlayerData data = dataStorage.get(profile);
-        for (final ObjectiveIdentifier id : globalObjectiveIds) {
+        for (final ObjectiveIdentifier id : autoOnceObjectiveIds) {
             final Objective objective = values.get(id);
             final String tag = getTag(id);
             if (objective == null || data.hasTag(tag)) {
@@ -321,11 +321,11 @@ public class ObjectiveProcessor extends QuestProcessor<ObjectiveIdentifier, Obje
     }
 
     /**
-     * Get all global objectives.
+     * Get all auto-once objectives.
      *
-     * @return a new list of all loaded global objectives
+     * @return a new list of all loaded auto-once objectives
      */
-    public List<ObjectiveIdentifier> getGlobalObjectives() {
-        return new ArrayList<>(globalObjectiveIds);
+    public List<ObjectiveIdentifier> getAutoOnceObjectives() {
+        return new ArrayList<>(autoOnceObjectiveIds);
     }
 }

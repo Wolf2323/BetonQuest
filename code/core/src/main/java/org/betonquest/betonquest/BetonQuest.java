@@ -380,7 +380,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         lastExecutionCache.reload();
 
         updater.search();
-        log.debug("Restarting global locations");
         conversationColors.load();
         compatibility.reload();
         loadData();

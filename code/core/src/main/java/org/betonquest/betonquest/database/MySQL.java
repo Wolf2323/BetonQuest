@@ -118,6 +118,7 @@ public class MySQL extends Database {
         migrations.put(new MigrationKey("betonquest", 4), this::migration4);
         migrations.put(new MigrationKey("betonquest", 5), this::migration5);
         migrations.put(new MigrationKey("betonquest", 6), this::migration6);
+        migrations.put(new MigrationKey("betonquest", 7), this::migration7);
         return migrations;
     }
 
@@ -377,6 +378,12 @@ public class MySQL extends Database {
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
+        }
+    }
+
+    private void migration7(final Connection connection) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate("UPDATE " + prefix + "tags SET tag = REPLACE(tag, 'global-', 'auto-once-') WHERE tag LIKE '%>global-%'");
         }
     }
 }

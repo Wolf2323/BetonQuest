@@ -129,6 +129,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Events to Actions.
 - `menu` conv io no longer ignores canceled events to process as input
 - `citizens` npc hiding now uses the inbuilt player filter trait
+- `global` property for objectives renamed to `auto-once`
 ### Deprecated
 ### Removed
 - undocumented prefix feature in conversation

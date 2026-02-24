@@ -37,7 +37,7 @@ public class PlayerDataStorage {
     private final PlayerDataFactory playerDataFactory;
 
     /**
-     * Objective processor to start (global) objectives.
+     * Objective processor to start (auto-once) objectives.
      */
     private final ObjectiveProcessor objectives;
 
@@ -52,7 +52,7 @@ public class PlayerDataStorage {
      * @param log               the logger for debug messages
      * @param config            the plugin configuration file
      * @param playerDataFactory the factory to create player data
-     * @param objectives        the objective processor to start (global) objectives
+     * @param objectives        the objective processor to start (auto-once) objectives
      * @param profileProvider   the profile provider to use
      */
     public PlayerDataStorage(final BetonQuestLogger log,
@@ -92,13 +92,13 @@ public class PlayerDataStorage {
     }
 
     /**
-     * Start global objectives and update journals.
+     * Start auto-once objectives and update journals.
      *
      * @param onlineProfiles the profiles to update
      */
     public void reloadProfiles(final Collection<OnlineProfile> onlineProfiles) {
         for (final OnlineProfile onlineProfile : onlineProfiles) {
-            log.debug("Updating global objectives and journal for player " + onlineProfile);
+            log.debug("Updating auto-once objectives and journal for player " + onlineProfile);
             final PlayerData playerData = get(onlineProfile);
             objectives.startAll(onlineProfile, this);
             playerData.getJournal().update();

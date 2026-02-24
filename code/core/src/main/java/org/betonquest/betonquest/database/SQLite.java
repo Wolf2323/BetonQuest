@@ -34,7 +34,7 @@ import static org.betonquest.betonquest.item.typehandler.QuestHandler.QUEST_ITEM
 /**
  * Connects to and uses a SQLite database.
  */
-@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.TooManyMethods"})
 public class SQLite extends Database {
 
     /**
@@ -99,6 +99,7 @@ public class SQLite extends Database {
         migrations.put(new MigrationKey("betonquest", 4), this::migration4);
         migrations.put(new MigrationKey("betonquest", 5), this::migration5);
         migrations.put(new MigrationKey("betonquest", 6), this::migration6);
+        migrations.put(new MigrationKey("betonquest", 7), this::migration7);
         return migrations;
     }
 
@@ -378,6 +379,12 @@ public class SQLite extends Database {
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
+        }
+    }
+
+    private void migration7(final Connection connection) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate("UPDATE " + prefix + "tags SET tag = REPLACE(tag, 'global-', 'auto-once-') WHERE tag LIKE '%>global-%'");
         }
     }
 }
