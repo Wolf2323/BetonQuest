@@ -20,7 +20,6 @@ import org.betonquest.betonquest.config.DefaultConfigAccessorFactory;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.config.QuestManager;
 import org.betonquest.betonquest.config.patcher.migration.Migrator;
-import org.betonquest.betonquest.config.patcher.migration.QuestMigrator;
 import org.betonquest.betonquest.conversation.AnswerFilter;
 import org.betonquest.betonquest.conversation.Conversation;
 import org.betonquest.betonquest.conversation.ConversationColors;
@@ -38,6 +37,7 @@ import org.betonquest.betonquest.kernel.component.ExecutionCacheComponent;
 import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
 import org.betonquest.betonquest.kernel.component.GlobalDataComponent;
 import org.betonquest.betonquest.kernel.component.ListenersComponent;
+import org.betonquest.betonquest.kernel.component.QuestPackageManagerComponent;
 import org.betonquest.betonquest.kernel.component.UpdaterComponent;
 import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConditionTypesComponent;
@@ -236,10 +236,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         log.debug("BetonQuest " + version + " is starting...");
         log.debug(jreInfo);
 
-        questManager = new QuestManager(loggerFactory, loggerFactory.create(QuestManager.class), configAccessorFactory,
-                getDataFolder(), new QuestMigrator(loggerFactory.create(QuestMigrator.class), getDescription()));
-        Notify.load(config, questManager.getPackages().values());
-
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
         this.coreComponentLoader = coreComponentLoader;
         this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class), coreComponentLoader);
@@ -249,6 +245,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         registerCommands(coreComponentLoader, receiverSelector, debugHistoryHandler);
         coreQuestTypeHandler.init();
 
+        this.questManager = coreComponentLoader.get(QuestManager.class);
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
         this.compatibility = coreComponentLoader.get(Compatibility.class);
         this.updater = coreComponentLoader.get(Updater.class);
@@ -310,10 +307,10 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(LanguageProvider.class, this);
         coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
         coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
-        coreComponentLoader.init(QuestManager.class, questManager);
         coreComponentLoader.init(ProfileProvider.class, profileProvider);
         coreComponentLoader.init(FileConfigAccessor.class, config);
 
+        coreComponentLoader.register(new QuestPackageManagerComponent());
         coreComponentLoader.register(new DatabaseComponent());
         coreComponentLoader.register(new AsyncSaverComponent());
         coreComponentLoader.register(new GlobalDataComponent());
