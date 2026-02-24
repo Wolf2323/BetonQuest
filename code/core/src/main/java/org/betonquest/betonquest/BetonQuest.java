@@ -73,7 +73,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Handler;
 
 /**
  * Represents BetonQuest plugin.
@@ -317,16 +316,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         } catch (final IOException e) {
             log.error("There was an exception while migrating from a previous version! Reason: " + e.getMessage(), e);
         }
-    }
-
-    @SuppressWarnings("PMD.DoNotUseThreads")
-    private void registerLogHandler(final Server server, final Handler handler) {
-        final java.util.logging.Logger serverLogger = server.getLogger().getParent();
-        serverLogger.addHandler(handler);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            serverLogger.removeHandler(handler);
-            handler.close();
-        }));
     }
 
     /**
