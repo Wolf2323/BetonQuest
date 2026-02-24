@@ -231,7 +231,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         initPluginDependencies(coreComponentLoader);
         registerComponents(coreComponentLoader);
         registerTypesComponents(coreComponentLoader);
-        registerCommands(coreComponentLoader);
         coreQuestTypeHandler.init();
 
         this.questManager = coreComponentLoader.get(QuestManager.class);
@@ -299,6 +298,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(ProfileProvider.class, profileProvider);
         coreComponentLoader.init(FileConfigAccessor.class, config);
 
+        coreComponentLoader.register(new CommandsComponent(this::reload));
         coreComponentLoader.register(new LogHandlerComponent());
         coreComponentLoader.register(new QuestPackageManagerComponent());
         coreComponentLoader.register(new DatabaseComponent());
@@ -309,10 +309,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.register(new UpdaterComponent(this.getFile()));
         coreComponentLoader.register(new ConversationColorsComponent());
         coreComponentLoader.register(new ExecutionCacheComponent());
-    }
-
-    private void registerCommands(final CoreComponentLoader coreComponentLoader) {
-        coreComponentLoader.register(new CommandsComponent(this::reload));
     }
 
     private void migrate() {
