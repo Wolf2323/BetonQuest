@@ -37,6 +37,7 @@ import org.betonquest.betonquest.kernel.component.ExecutionCacheComponent;
 import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
 import org.betonquest.betonquest.kernel.component.GlobalDataComponent;
 import org.betonquest.betonquest.kernel.component.ListenersComponent;
+import org.betonquest.betonquest.kernel.component.LogHandlerComponent;
 import org.betonquest.betonquest.kernel.component.QuestPackageManagerComponent;
 import org.betonquest.betonquest.kernel.component.UpdaterComponent;
 import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
@@ -52,10 +53,6 @@ import org.betonquest.betonquest.kernel.component.types.TextParserTypesComponent
 import org.betonquest.betonquest.kernel.processor.QuestProcessor;
 import org.betonquest.betonquest.lib.logger.CachingBetonQuestLoggerFactory;
 import org.betonquest.betonquest.logger.DefaultBetonQuestLoggerFactory;
-import org.betonquest.betonquest.logger.HandlerFactory;
-import org.betonquest.betonquest.logger.handler.chat.AccumulatingReceiverSelector;
-import org.betonquest.betonquest.logger.handler.chat.ChatHandler;
-import org.betonquest.betonquest.logger.handler.history.HistoryHandler;
 import org.betonquest.betonquest.notify.Notify;
 import org.betonquest.betonquest.playerhider.PlayerHider;
 import org.betonquest.betonquest.profile.UUIDProfileProvider;
@@ -75,7 +72,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.InstantSource;
 import java.util.logging.Handler;
 
 /**
@@ -225,13 +221,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         }
         defaultLanguage = config.getString("language", "en-US");
 
-        final HistoryHandler debugHistoryHandler = HandlerFactory.createHistoryHandler(loggerFactory, this,
-                this.getServer().getScheduler(), config, new File(getDataFolder(), "/logs"), InstantSource.system());
-        registerLogHandler(getServer(), debugHistoryHandler);
-        final AccumulatingReceiverSelector receiverSelector = new AccumulatingReceiverSelector();
-        final ChatHandler chatHandler = HandlerFactory.createChatHandler(this, getServer(), receiverSelector);
-        registerLogHandler(getServer(), chatHandler);
-
         final String version = getDescription().getVersion();
         log.debug("BetonQuest " + version + " is starting...");
         log.debug(jreInfo);
@@ -242,7 +231,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         initPluginDependencies(coreComponentLoader);
         registerComponents(coreComponentLoader);
         registerTypesComponents(coreComponentLoader);
-        registerCommands(coreComponentLoader, receiverSelector, debugHistoryHandler);
+        registerCommands(coreComponentLoader);
         coreQuestTypeHandler.init();
 
         this.questManager = coreComponentLoader.get(QuestManager.class);
@@ -310,6 +299,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(ProfileProvider.class, profileProvider);
         coreComponentLoader.init(FileConfigAccessor.class, config);
 
+        coreComponentLoader.register(new LogHandlerComponent());
         coreComponentLoader.register(new QuestPackageManagerComponent());
         coreComponentLoader.register(new DatabaseComponent());
         coreComponentLoader.register(new AsyncSaverComponent());
@@ -321,9 +311,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.register(new ExecutionCacheComponent());
     }
 
-    private void registerCommands(final CoreComponentLoader coreComponentLoader, final AccumulatingReceiverSelector receiverSelector, final HistoryHandler debugHistoryHandler) {
-        coreComponentLoader.init(AccumulatingReceiverSelector.class, receiverSelector);
-        coreComponentLoader.init(HistoryHandler.class, debugHistoryHandler);
+    private void registerCommands(final CoreComponentLoader coreComponentLoader) {
         coreComponentLoader.register(new CommandsComponent(this::reload));
     }
 
