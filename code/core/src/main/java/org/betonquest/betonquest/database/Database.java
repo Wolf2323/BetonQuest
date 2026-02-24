@@ -1,6 +1,6 @@
 package org.betonquest.betonquest.database;
 
-import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
@@ -49,12 +49,13 @@ public abstract class Database {
      *
      * @param log    the BetonQuestLogger to use for logging
      * @param plugin the BetonQuest plugin instance
+     * @param config the plugin configuration file
      */
-    protected Database(final BetonQuestLogger log, final BetonQuest plugin) {
+    protected Database(final BetonQuestLogger log, final Plugin plugin, final ConfigAccessor config) {
         this.log = log;
         this.plugin = plugin;
-        this.prefix = plugin.getPluginConfig().getString("mysql.prefix", "");
-        this.profileInitialName = plugin.getPluginConfig().getString("profile.initial_name", "default");
+        this.prefix = config.getString("mysql.prefix", "");
+        this.profileInitialName = config.getString("profile.initial_name", "default");
     }
 
     /**

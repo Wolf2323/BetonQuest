@@ -27,15 +27,13 @@ import org.betonquest.betonquest.conversation.ConversationColors;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.AsyncSaver;
 import org.betonquest.betonquest.database.Connector;
-import org.betonquest.betonquest.database.Database;
-import org.betonquest.betonquest.database.MySQL;
-import org.betonquest.betonquest.database.SQLite;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
 import org.betonquest.betonquest.kernel.component.AsyncSaverComponent;
 import org.betonquest.betonquest.kernel.component.CommandsComponent;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
+import org.betonquest.betonquest.kernel.component.DatabaseComponent;
 import org.betonquest.betonquest.kernel.component.ExecutionCacheComponent;
 import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
 import org.betonquest.betonquest.kernel.component.GlobalDataComponent;
@@ -121,11 +119,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      * The used Connector for the Database.
      */
     private Connector connector;
-
-    /**
-     * If MySQL is used.
-     */
-    private boolean usesMySQL;
 
     /**
      * The database saver for Quest Data.
@@ -247,8 +240,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
                 getDataFolder(), new QuestMigrator(loggerFactory.create(QuestMigrator.class), getDescription()));
         Notify.load(config, questManager.getPackages().values());
 
-        setupDatabase();
-
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
         this.coreComponentLoader = coreComponentLoader;
         this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class), coreComponentLoader);
@@ -263,6 +254,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         this.updater = coreComponentLoader.get(Updater.class);
         this.lastExecutionCache = coreComponentLoader.get(LastExecutionCache.class);
         this.saver = coreComponentLoader.get(AsyncSaver.class);
+        this.connector = coreComponentLoader.get(Connector.class);
 
         conversationColors = coreComponentLoader.get(ConversationColors.class);
 
@@ -320,9 +312,9 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
         coreComponentLoader.init(QuestManager.class, questManager);
         coreComponentLoader.init(ProfileProvider.class, profileProvider);
-        coreComponentLoader.init(Connector.class, connector);
         coreComponentLoader.init(FileConfigAccessor.class, config);
 
+        coreComponentLoader.register(new DatabaseComponent());
         coreComponentLoader.register(new AsyncSaverComponent());
         coreComponentLoader.register(new GlobalDataComponent());
         coreComponentLoader.register(new FontRegistryComponent());
@@ -330,39 +322,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.register(new UpdaterComponent(this.getFile()));
         coreComponentLoader.register(new ConversationColorsComponent());
         coreComponentLoader.register(new ExecutionCacheComponent());
-    }
-
-    private void setupDatabase() {
-        final boolean mySQLEnabled = config.getBoolean("mysql.enabled", true);
-        Database database = null;
-        if (mySQLEnabled) {
-            log.debug("Connecting to MySQL database");
-            final Database mySql = new MySQL(loggerFactory.create(MySQL.class, "Database"), this,
-                    config.getString("mysql.host"),
-                    config.getString("mysql.port"),
-                    config.getString("mysql.base"),
-                    config.getString("mysql.user"),
-                    config.getString("mysql.pass"));
-            try {
-                mySql.getConnection();
-                database = mySql;
-                usesMySQL = true;
-                log.info("Successfully connected to MySQL database!");
-            } catch (final IllegalStateException e) {
-                log.warn("MySQL: " + e.getMessage(), e);
-            }
-        }
-        if (database == null) {
-            database = new SQLite(loggerFactory.create(SQLite.class, "Database"), this, "database.db");
-            if (mySQLEnabled) {
-                log.warn("No connection to the mySQL Database! Using SQLite for storing data as fallback!");
-            } else {
-                log.info("Using SQLite for storing data!");
-            }
-        }
-
-        database.createTables();
-        this.connector = new Connector(loggerFactory.create(Connector.class), config.getString("mysql.prefix"), database);
     }
 
     private void registerCommands(final CoreComponentLoader coreComponentLoader, final AccumulatingReceiverSelector receiverSelector, final HistoryHandler debugHistoryHandler) {
@@ -582,7 +541,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      * @return if MySQL is used (false means that SQLite is being used)
      */
     public boolean isMySQLUsed() {
-        return usesMySQL;
+        return coreComponentLoader.get(DatabaseComponent.class).usesMySQL();
     }
 
     /**

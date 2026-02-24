@@ -3,15 +3,16 @@ package org.betonquest.betonquest.database;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.common.component.BookPageWrapper;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
+import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.item.SimpleQuestItemFactory;
 import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,10 +52,11 @@ public class SQLite extends Database {
      *
      * @param log        the logger that will be used for logging
      * @param plugin     Plugin instance
+     * @param config     the accessor for the config
      * @param dbLocation Location of the Database (Must end in .db)
      */
-    public SQLite(final BetonQuestLogger log, final BetonQuest plugin, final String dbLocation) {
-        super(log, plugin);
+    public SQLite(final BetonQuestLogger log, final Plugin plugin, final ConfigAccessor config, final String dbLocation) {
+        super(log, plugin, config);
         this.log = log;
         this.dbLocation = dbLocation;
     }
