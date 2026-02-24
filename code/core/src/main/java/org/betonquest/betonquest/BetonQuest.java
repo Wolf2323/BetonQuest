@@ -39,6 +39,7 @@ import org.betonquest.betonquest.kernel.component.CommandsComponent;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
 import org.betonquest.betonquest.kernel.component.ExecutionCacheComponent;
 import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
+import org.betonquest.betonquest.kernel.component.GlobalDataComponent;
 import org.betonquest.betonquest.kernel.component.ListenersComponent;
 import org.betonquest.betonquest.kernel.component.UpdaterComponent;
 import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
@@ -259,8 +260,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         new Backup(loggerFactory.create(Backup.class), configAccessorFactory, getDataFolder(), connector)
                 .loadDatabaseFromBackup();
 
-        globalData = new GlobalData(loggerFactory.create(GlobalData.class), saver, connector);
-
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
         this.coreComponentLoader = coreComponentLoader;
         this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class), coreComponentLoader);
@@ -332,11 +331,11 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
         coreComponentLoader.init(QuestManager.class, questManager);
         coreComponentLoader.init(ProfileProvider.class, profileProvider);
-        coreComponentLoader.init(GlobalData.class, globalData);
         coreComponentLoader.init(Connector.class, connector);
         coreComponentLoader.init(AsyncSaver.class, saver);
         coreComponentLoader.init(FileConfigAccessor.class, config);
 
+        coreComponentLoader.register(new GlobalDataComponent());
         coreComponentLoader.register(new FontRegistryComponent());
         coreComponentLoader.register(new ListenersComponent());
         coreComponentLoader.register(new UpdaterComponent(this.getFile()));
