@@ -15,12 +15,6 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.command.BackpackCommand;
-import org.betonquest.betonquest.command.CancelQuestCommand;
-import org.betonquest.betonquest.command.CompassCommand;
-import org.betonquest.betonquest.command.JournalCommand;
-import org.betonquest.betonquest.command.LangCommand;
-import org.betonquest.betonquest.command.QuestCommand;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.config.DefaultConfigAccessorFactory;
 import org.betonquest.betonquest.config.PluginMessage;
@@ -37,11 +31,11 @@ import org.betonquest.betonquest.database.Connector;
 import org.betonquest.betonquest.database.Database;
 import org.betonquest.betonquest.database.GlobalData;
 import org.betonquest.betonquest.database.MySQL;
-import org.betonquest.betonquest.database.PlayerDataFactory;
 import org.betonquest.betonquest.database.SQLite;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
+import org.betonquest.betonquest.kernel.component.CommandsComponent;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
 import org.betonquest.betonquest.kernel.component.ExecutionCacheComponent;
 import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
@@ -61,7 +55,6 @@ import org.betonquest.betonquest.kernel.processor.QuestProcessor;
 import org.betonquest.betonquest.lib.logger.CachingBetonQuestLoggerFactory;
 import org.betonquest.betonquest.logger.DefaultBetonQuestLoggerFactory;
 import org.betonquest.betonquest.logger.HandlerFactory;
-import org.betonquest.betonquest.logger.PlayerLogWatcher;
 import org.betonquest.betonquest.logger.handler.chat.AccumulatingReceiverSelector;
 import org.betonquest.betonquest.logger.handler.chat.ChatHandler;
 import org.betonquest.betonquest.logger.handler.history.HistoryHandler;
@@ -85,7 +78,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.InstantSource;
-import java.util.List;
 import java.util.logging.Handler;
 
 /**
@@ -275,15 +267,15 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         initPluginDependencies(coreComponentLoader);
         registerComponents(coreComponentLoader);
         registerTypesComponents(coreComponentLoader);
+        registerCommands(coreComponentLoader, receiverSelector, debugHistoryHandler);
         coreQuestTypeHandler.init();
+
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
         this.compatibility = coreComponentLoader.get(Compatibility.class);
         this.updater = coreComponentLoader.get(Updater.class);
         this.lastExecutionCache = coreComponentLoader.get(LastExecutionCache.class);
 
         conversationColors = coreComponentLoader.get(ConversationColors.class);
-
-        registerCommands(receiverSelector, debugHistoryHandler, coreQuestTypeHandler.getPlayerDataFactory());
 
         // schedule quest data loading on the first tick, so all other
         // plugins can register their types
@@ -384,32 +376,10 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         this.connector = new Connector(loggerFactory.create(Connector.class), config.getString("mysql.prefix"), database);
     }
 
-    private void registerCommands(final AccumulatingReceiverSelector receiverSelector, final HistoryHandler debugHistoryHandler,
-                                  final PlayerDataFactory playerDataFactory) {
-        final PlayerDataStorage playerDataStorage = coreQuestTypeHandler.getPlayerDataStorage();
-        final PluginMessage pluginMessage = coreQuestTypeHandler.getPluginMessage();
-        final QuestCommand.ConstructorParams questCommandParams = new QuestCommand.ConstructorParams(loggerFactory, configAccessorFactory, playerDataFactory, playerDataStorage,
-                profileProvider, pluginMessage, updater, compatibility, connector, saver, questManager, config,
-                debugHistoryHandler, new PlayerLogWatcher(receiverSelector), betonQuestApi.identifiers(), globalData,
-                coreQuestTypeHandler.getJournalEntryProcessor(), coreQuestTypeHandler.getItemRegistry(), betonQuestApi.actions().manager(),
-                betonQuestApi.conditions().manager(), betonQuestApi.objectives().manager(), betonQuestApi.items().manager(), this::reload);
-        final QuestCommand questCommand = new QuestCommand(this, loggerFactory.create(QuestCommand.class), questCommandParams);
-        getCommand("betonquest").setExecutor(questCommand);
-        getCommand("betonquest").setTabCompleter(questCommand);
-        getCommand("journal").setExecutor(new JournalCommand(playerDataStorage, profileProvider));
-        getCommand("backpack").setExecutor(new BackpackCommand(this, loggerFactory, loggerFactory.create(BackpackCommand.class),
-                config, pluginMessage, profileProvider, playerDataStorage, coreQuestTypeHandler.getCancelerProcessor(),
-                coreQuestTypeHandler.getCompassProcessor(), betonQuestApi.items().manager(), betonQuestApi.identifiers()));
-        getCommand("cancelquest").setExecutor(new CancelQuestCommand(this, config, pluginMessage, profileProvider,
-                loggerFactory, playerDataStorage, coreQuestTypeHandler.getCancelerProcessor(), coreQuestTypeHandler.getCompassProcessor(),
-                betonQuestApi.identifiers(), betonQuestApi.items().manager()));
-        getCommand("compass").setExecutor(new CompassCommand(this, loggerFactory,
-                config, pluginMessage, profileProvider, playerDataStorage, coreQuestTypeHandler.getCancelerProcessor(),
-                coreQuestTypeHandler.getCompassProcessor(), betonQuestApi.items().manager(), betonQuestApi.identifiers()));
-        final LangCommand langCommand = new LangCommand(loggerFactory.create(LangCommand.class), playerDataStorage, pluginMessage, profileProvider, this);
-        getCommand("questlang").setExecutor(langCommand);
-        getCommand("questlang").setTabCompleter(langCommand);
-        getCommand("betonquestanswer").setTabCompleter((sender, command, label, args) -> List.of());
+    private void registerCommands(final CoreComponentLoader coreComponentLoader, final AccumulatingReceiverSelector receiverSelector, final HistoryHandler debugHistoryHandler) {
+        coreComponentLoader.init(AccumulatingReceiverSelector.class, receiverSelector);
+        coreComponentLoader.init(HistoryHandler.class, debugHistoryHandler);
+        coreComponentLoader.register(new CommandsComponent(this::reload));
     }
 
     private void migrate() {
