@@ -36,6 +36,7 @@ import org.betonquest.betonquest.kernel.component.DatabaseComponent;
 import org.betonquest.betonquest.kernel.component.ExecutionCacheComponent;
 import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
 import org.betonquest.betonquest.kernel.component.GlobalDataComponent;
+import org.betonquest.betonquest.kernel.component.LanguageProviderComponent;
 import org.betonquest.betonquest.kernel.component.ListenersComponent;
 import org.betonquest.betonquest.kernel.component.LogHandlerComponent;
 import org.betonquest.betonquest.kernel.component.QuestPackageManagerComponent;
@@ -219,7 +220,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         } catch (final InvalidConfigurationException | FileNotFoundException e) {
             throw new IllegalStateException("Could not load the config.yml file!", e);
         }
-        defaultLanguage = config.getString("language", "en-US");
 
         final String version = getDescription().getVersion();
         log.debug("BetonQuest " + version + " is starting...");
@@ -292,12 +292,12 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     }
 
     private void registerComponents(final CoreComponentLoader coreComponentLoader) {
-        coreComponentLoader.init(LanguageProvider.class, this);
         coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
         coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
         coreComponentLoader.init(ProfileProvider.class, profileProvider);
         coreComponentLoader.init(FileConfigAccessor.class, config);
 
+        coreComponentLoader.register(new LanguageProviderComponent());
         coreComponentLoader.register(new CommandsComponent(this::reload));
         coreComponentLoader.register(new LogHandlerComponent());
         coreComponentLoader.register(new QuestPackageManagerComponent());
