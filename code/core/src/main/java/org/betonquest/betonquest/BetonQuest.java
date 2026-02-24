@@ -77,7 +77,7 @@ import java.io.IOException;
 /**
  * Represents BetonQuest plugin.
  */
-@SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass", "PMD.TooManyMethods",
+@SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass",
         "PMD.TooManyFields", "NullAway.Init"})
 public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
