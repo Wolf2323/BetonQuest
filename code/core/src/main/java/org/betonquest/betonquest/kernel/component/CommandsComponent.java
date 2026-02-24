@@ -42,6 +42,7 @@ import java.util.Set;
 /**
  * The implementation of {@link AbstractCoreComponent} for commands.
  */
+@SuppressWarnings("PMD.CouplingBetweenObjects")
 public class CommandsComponent extends AbstractCoreComponent {
 
     /**

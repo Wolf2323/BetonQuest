@@ -210,7 +210,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         return servicesManager.load(clazz);
     }
 
-    @SuppressWarnings({"PMD.NcssCount", "PMD.DoNotUseThreads"})
+    @SuppressWarnings("PMD.DoNotUseThreads")
     @Override
     public void onEnable() {
         instance = this;
@@ -325,6 +325,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.register(new TextParserTypesComponent());
     }
 
+    @SuppressWarnings("PMD.DoNotUseThreads")
     private void registerComponents(final CoreComponentLoader coreComponentLoader) {
         coreComponentLoader.init(LanguageProvider.class, this);
         coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
