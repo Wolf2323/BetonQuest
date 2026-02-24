@@ -26,15 +26,14 @@ import org.betonquest.betonquest.conversation.Conversation;
 import org.betonquest.betonquest.conversation.ConversationColors;
 import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.AsyncSaver;
-import org.betonquest.betonquest.database.Backup;
 import org.betonquest.betonquest.database.Connector;
 import org.betonquest.betonquest.database.Database;
-import org.betonquest.betonquest.database.GlobalData;
 import org.betonquest.betonquest.database.MySQL;
 import org.betonquest.betonquest.database.SQLite;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
+import org.betonquest.betonquest.kernel.component.AsyncSaverComponent;
 import org.betonquest.betonquest.kernel.component.CommandsComponent;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
 import org.betonquest.betonquest.kernel.component.ExecutionCacheComponent;
@@ -138,11 +137,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      * The plugin updater.
      */
     private Updater updater;
-
-    /**
-     * The Global Quest Data.
-     */
-    private GlobalData globalData;
 
     /**
      * The Player Hider instance.
@@ -255,11 +249,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
         setupDatabase();
 
-        saver = new AsyncSaver(loggerFactory.create(AsyncSaver.class, "Database"), config.getLong("mysql.reconnect_interval"), connector);
-        saver.start();
-        new Backup(loggerFactory.create(Backup.class), configAccessorFactory, getDataFolder(), connector)
-                .loadDatabaseFromBackup();
-
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
         this.coreComponentLoader = coreComponentLoader;
         this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class), coreComponentLoader);
@@ -273,6 +262,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         this.compatibility = coreComponentLoader.get(Compatibility.class);
         this.updater = coreComponentLoader.get(Updater.class);
         this.lastExecutionCache = coreComponentLoader.get(LastExecutionCache.class);
+        this.saver = coreComponentLoader.get(AsyncSaver.class);
 
         conversationColors = coreComponentLoader.get(ConversationColors.class);
 
@@ -332,9 +322,9 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(QuestManager.class, questManager);
         coreComponentLoader.init(ProfileProvider.class, profileProvider);
         coreComponentLoader.init(Connector.class, connector);
-        coreComponentLoader.init(AsyncSaver.class, saver);
         coreComponentLoader.init(FileConfigAccessor.class, config);
 
+        coreComponentLoader.register(new AsyncSaverComponent());
         coreComponentLoader.register(new GlobalDataComponent());
         coreComponentLoader.register(new FontRegistryComponent());
         coreComponentLoader.register(new ListenersComponent());
@@ -594,15 +584,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      */
     public boolean isMySQLUsed() {
         return usesMySQL;
-    }
-
-    /**
-     * Retrieves GlobalData object which handles all global tags and points.
-     *
-     * @return GlobalData object
-     */
-    public GlobalData getGlobalData() {
-        return globalData;
     }
 
     /**
