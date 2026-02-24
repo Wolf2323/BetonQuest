@@ -272,33 +272,9 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
         this.coreComponentLoader = coreComponentLoader;
         this.coreQuestTypeHandler = new CoreQuestTypeHandler(loggerFactory.create(CoreQuestTypeHandler.class), coreComponentLoader);
-
-        coreComponentLoader.register(new ExecutionCacheComponent());
-
-        setupFontRegistry(coreComponentLoader);
-
-        coreComponentLoader.init(JavaPlugin.class, this);
-        coreComponentLoader.init(Server.class, getServer());
-        coreComponentLoader.init(PluginManager.class, getServer().getPluginManager());
-        coreComponentLoader.init(BukkitScheduler.class, getServer().getScheduler());
-        coreComponentLoader.init(PluginDescriptionFile.class, getDescription());
-        coreComponentLoader.init(LanguageProvider.class, this);
-        coreComponentLoader.init(ServicesManager.class, getServer().getServicesManager());
-        coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
-        coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
-        coreComponentLoader.init(QuestManager.class, questManager);
-        coreComponentLoader.init(ProfileProvider.class, profileProvider);
-        coreComponentLoader.init(GlobalData.class, globalData);
-        coreComponentLoader.init(Connector.class, connector);
-        coreComponentLoader.init(AsyncSaver.class, saver);
-        coreComponentLoader.init(FileConfigAccessor.class, config);
-
-        registerCoreQuestTypes(coreComponentLoader);
-        coreComponentLoader.register(new ConversationColorsComponent());
-        registerFeatureQuestTypes(coreComponentLoader);
-        setupUpdater(coreComponentLoader);
-        registerListener(coreComponentLoader);
-
+        initPluginDependencies(coreComponentLoader);
+        registerComponents(coreComponentLoader);
+        registerTypesComponents(coreComponentLoader);
         coreQuestTypeHandler.init();
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
         this.compatibility = coreComponentLoader.get(Compatibility.class);
@@ -335,14 +311,20 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         log.info("BetonQuest successfully enabled!");
     }
 
-    private void registerCoreQuestTypes(final CoreComponentLoader coreComponentLoader) {
+    private void initPluginDependencies(final CoreComponentLoader coreComponentLoader) {
+        coreComponentLoader.init(JavaPlugin.class, this);
+        coreComponentLoader.init(Server.class, getServer());
+        coreComponentLoader.init(PluginManager.class, getServer().getPluginManager());
+        coreComponentLoader.init(BukkitScheduler.class, getServer().getScheduler());
+        coreComponentLoader.init(PluginDescriptionFile.class, getDescription());
+        coreComponentLoader.init(ServicesManager.class, getServer().getServicesManager());
+    }
+
+    private void registerTypesComponents(final CoreComponentLoader coreComponentLoader) {
         coreComponentLoader.register(new ActionTypesComponent());
         coreComponentLoader.register(new ConditionTypesComponent());
         coreComponentLoader.register(new ObjectiveTypeComponent());
         coreComponentLoader.register(new PlaceholderTypeComponent());
-    }
-
-    private void registerFeatureQuestTypes(final CoreComponentLoader coreComponentLoader) {
         coreComponentLoader.register(new ConversationIOTypesComponent());
         coreComponentLoader.register(new InterceptorTypesComponent());
         coreComponentLoader.register(new ItemTypesComponent());
@@ -351,8 +333,22 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.register(new TextParserTypesComponent());
     }
 
-    private void setupFontRegistry(final CoreComponentLoader coreComponentLoader) {
+    private void registerComponents(final CoreComponentLoader coreComponentLoader) {
+        coreComponentLoader.init(LanguageProvider.class, this);
+        coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
+        coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
+        coreComponentLoader.init(QuestManager.class, questManager);
+        coreComponentLoader.init(ProfileProvider.class, profileProvider);
+        coreComponentLoader.init(GlobalData.class, globalData);
+        coreComponentLoader.init(Connector.class, connector);
+        coreComponentLoader.init(AsyncSaver.class, saver);
+        coreComponentLoader.init(FileConfigAccessor.class, config);
+
         coreComponentLoader.register(new FontRegistryComponent());
+        coreComponentLoader.register(new ListenersComponent());
+        coreComponentLoader.register(new UpdaterComponent(this.getFile()));
+        coreComponentLoader.register(new ConversationColorsComponent());
+        coreComponentLoader.register(new ExecutionCacheComponent());
     }
 
     private void setupDatabase() {
@@ -386,10 +382,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
         database.createTables();
         this.connector = new Connector(loggerFactory.create(Connector.class), config.getString("mysql.prefix"), database);
-    }
-
-    private void registerListener(final CoreComponentLoader coreComponentLoader) {
-        coreComponentLoader.register(new ListenersComponent());
     }
 
     private void registerCommands(final AccumulatingReceiverSelector receiverSelector, final HistoryHandler debugHistoryHandler,
@@ -426,10 +418,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         } catch (final IOException e) {
             log.error("There was an exception while migrating from a previous version! Reason: " + e.getMessage(), e);
         }
-    }
-
-    private void setupUpdater(final CoreComponentLoader coreComponentLoader) {
-        coreComponentLoader.register(new UpdaterComponent(this.getFile()));
     }
 
     @SuppressWarnings("PMD.DoNotUseThreads")
