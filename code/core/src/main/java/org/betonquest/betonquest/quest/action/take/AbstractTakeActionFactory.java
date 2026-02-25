@@ -1,6 +1,7 @@
 package org.betonquest.betonquest.quest.action.take;
 
 import org.betonquest.betonquest.api.QuestException;
+import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
@@ -46,9 +47,9 @@ public abstract class AbstractTakeActionFactory implements PlayerActionFactory {
      * @return the check order
      * @throws QuestException if the check order is invalid
      */
-    protected List<CheckType> getCheckOrder(final Instruction instruction) throws QuestException {
+    protected Argument<List<CheckType>> getCheckOrder(final Instruction instruction) throws QuestException {
         return instruction.enumeration(CheckType.class).list().get("invOrder",
-                List.of(CheckType.INVENTORY, CheckType.OFFHAND, CheckType.ARMOR, CheckType.BACKPACK)).getValue(null);
+                List.of(CheckType.INVENTORY, CheckType.OFFHAND, CheckType.ARMOR, CheckType.BACKPACK));
     }
 
     /**

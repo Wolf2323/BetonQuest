@@ -31,7 +31,7 @@ public class TakeActionFactory extends AbstractTakeActionFactory {
     @Override
     public PlayerAction parsePlayer(final Instruction instruction) throws QuestException {
         final BetonQuestLogger log = loggerFactory.create(TakeAction.class);
-        final List<CheckType> checkOrder = getCheckOrder(instruction);
+        final Argument<List<CheckType>> checkOrder = getCheckOrder(instruction);
         final Argument<List<ItemWrapper>> questItems = instruction.item().list().get();
         final NotificationSender notificationSender = getNotificationSender(instruction, log);
         return new OnlineActionAdapter(new TakeAction(questItems, checkOrder, notificationSender), log, instruction.getPackage());

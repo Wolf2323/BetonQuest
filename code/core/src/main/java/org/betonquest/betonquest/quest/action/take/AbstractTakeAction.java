@@ -2,6 +2,7 @@ package org.betonquest.betonquest.quest.action.take;
 
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.QuestException;
+import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.Profile;
 import org.betonquest.betonquest.api.quest.action.OnlineAction;
@@ -24,7 +25,7 @@ public abstract class AbstractTakeAction implements OnlineAction {
     /**
      * The order in which the checks should be performed to remove the item.
      */
-    protected final List<CheckType> checkOrder;
+    protected final Argument<List<CheckType>> checkOrder;
 
     /**
      * The notification sender to send notifications to the player.
@@ -37,7 +38,7 @@ public abstract class AbstractTakeAction implements OnlineAction {
      * @param checkOrder         the order in which the checks should be performed
      * @param notificationSender the notification sender to use
      */
-    public AbstractTakeAction(final List<CheckType> checkOrder, final NotificationSender notificationSender) {
+    public AbstractTakeAction(final Argument<List<CheckType>> checkOrder, final NotificationSender notificationSender) {
         this.checkOrder = checkOrder;
         this.notificationSender = notificationSender;
     }
@@ -49,7 +50,7 @@ public abstract class AbstractTakeAction implements OnlineAction {
      * @throws QuestException if an error occurs during the check
      */
     protected void checkSelectedTypes(final OnlineProfile profile) throws QuestException {
-        for (final CheckType type : checkOrder) {
+        for (final CheckType type : checkOrder.getValue(profile)) {
             switch (type) {
                 case INVENTORY -> checkInventory(profile);
                 case ARMOR -> checkArmor(profile);
@@ -80,7 +81,7 @@ public abstract class AbstractTakeAction implements OnlineAction {
         player.getInventory().setItemInOffHand(newOffhand[0]);
     }
 
-    private void checkBackpack(final OnlineProfile profile) throws QuestException {
+    private void checkBackpack(final OnlineProfile profile) {
         final PlayerData playerData = BetonQuest.getInstance().getPlayerDataStorage().get(profile);
         final List<ItemStack> backpack = playerData.getBackpack();
         final List<ItemStack> newBackpack = removeDesiredAmount(profile, backpack);
