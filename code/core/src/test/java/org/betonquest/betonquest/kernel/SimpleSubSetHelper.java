@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 /**
  * Simple helper class for testing to generate subsets.
  */
-public class SimpleSubSetHelper {
+final class SimpleSubSetHelper {
 
     /**
      * Private constructor.
