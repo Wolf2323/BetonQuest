@@ -29,7 +29,7 @@ public class AsyncSaver extends Thread implements Saver {
     private final Queue<Record> queue;
 
     /**
-     * The amount of time, until the AsyncSaver tries to reconnect if there was a connection loss.
+     * The amount of time until the AsyncSaver tries to reconnect if there was a connection loss.
      */
     private final long reconnectInterval;
 
@@ -39,7 +39,7 @@ public class AsyncSaver extends Thread implements Saver {
     private boolean running;
 
     /**
-     * Creates new database saver thread.
+     * Creates a new database saver thread.
      *
      * @param log               the logger that will be used for logging
      * @param reconnectInterval the interval for trying reconnecting to the database

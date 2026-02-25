@@ -72,7 +72,7 @@ public class DatabaseComponent extends AbstractCoreComponent {
         }
 
         database.createTables();
-        final Connector connector = new Connector(loggerFactory.create(Connector.class), config.getString("mysql.prefix"), database);
+        final Connector connector = new Connector(config.getString("mysql.prefix"), database);
 
         dependencyProvider.take(Connector.class, connector);
     }
