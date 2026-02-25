@@ -16,10 +16,8 @@ import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.compatibility.Compatibility;
-import org.betonquest.betonquest.config.DefaultConfigAccessorFactory;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.config.QuestManager;
-import org.betonquest.betonquest.config.patcher.migration.Migrator;
 import org.betonquest.betonquest.conversation.AnswerFilter;
 import org.betonquest.betonquest.conversation.Conversation;
 import org.betonquest.betonquest.conversation.ConversationColors;
@@ -31,6 +29,7 @@ import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
 import org.betonquest.betonquest.kernel.component.AsyncSaverComponent;
 import org.betonquest.betonquest.kernel.component.CommandsComponent;
+import org.betonquest.betonquest.kernel.component.ConfigAccessorFactoryComponent;
 import org.betonquest.betonquest.kernel.component.ConfigComponent;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
 import org.betonquest.betonquest.kernel.component.DatabaseComponent;
@@ -40,8 +39,11 @@ import org.betonquest.betonquest.kernel.component.GlobalDataComponent;
 import org.betonquest.betonquest.kernel.component.LanguageProviderComponent;
 import org.betonquest.betonquest.kernel.component.ListenersComponent;
 import org.betonquest.betonquest.kernel.component.LogHandlerComponent;
+import org.betonquest.betonquest.kernel.component.MigratorComponent;
+import org.betonquest.betonquest.kernel.component.ProfileProviderComponent;
 import org.betonquest.betonquest.kernel.component.QuestPackageManagerComponent;
 import org.betonquest.betonquest.kernel.component.UpdaterComponent;
+import org.betonquest.betonquest.kernel.component.VersionInfoComponent;
 import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConditionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConversationIOTypesComponent;
@@ -57,10 +59,8 @@ import org.betonquest.betonquest.lib.logger.CachingBetonQuestLoggerFactory;
 import org.betonquest.betonquest.logger.DefaultBetonQuestLoggerFactory;
 import org.betonquest.betonquest.notify.Notify;
 import org.betonquest.betonquest.playerhider.PlayerHider;
-import org.betonquest.betonquest.profile.UUIDProfileProvider;
 import org.betonquest.betonquest.quest.CoreQuestTypeHandler;
 import org.betonquest.betonquest.schedule.LastExecutionCache;
-import org.betonquest.betonquest.versioning.java.JREVersionPrinter;
 import org.betonquest.betonquest.web.updater.Updater;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -72,13 +72,19 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents BetonQuest plugin.
  */
-@SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass",
-        "PMD.TooManyFields", "NullAway.Init"})
+@SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass", "NullAway.Init"})
 public class BetonQuest extends JavaPlugin implements LanguageProvider {
+
+    /**
+     * All of those classes have to exist to determine the server software to be Paper.
+     */
+    public static final Set<String> PAPER_IDENTIFYING_CLASSES =
+            Set.of("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
 
     /**
      * The BetonQuest Plugin instance.
@@ -89,11 +95,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      * Factory to create new class-specific loggers.
      */
     private BetonQuestLoggerFactory loggerFactory;
-
-    /**
-     * Factory to create new file accessors.
-     */
-    private ConfigAccessorFactory configAccessorFactory;
 
     /**
      * The custom logger for the plugin.
@@ -194,23 +195,9 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         instance = this;
 
         this.loggerFactory = registerAndGetService(BetonQuestLoggerFactory.class, new CachingBetonQuestLoggerFactory(new DefaultBetonQuestLoggerFactory()));
-        this.log = loggerFactory.create(this);
         if (!isPaper()) {
             throw new IllegalStateException("Only Paper is supported!");
         }
-
-        this.configAccessorFactory = registerAndGetService(ConfigAccessorFactory.class, new DefaultConfigAccessorFactory(loggerFactory, loggerFactory.create(ConfigAccessorFactory.class)));
-        this.profileProvider = registerAndGetService(ProfileProvider.class, new UUIDProfileProvider(getServer()));
-
-        final JREVersionPrinter jreVersionPrinter = new JREVersionPrinter();
-        final String jreInfo = jreVersionPrinter.getMessage();
-        log.info(jreInfo);
-
-        migrate();
-
-        final String version = getDescription().getVersion();
-        log.debug("BetonQuest " + version + " is starting...");
-        log.debug(jreInfo);
 
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
         this.coreComponentLoader = coreComponentLoader;
@@ -220,6 +207,9 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         registerTypesComponents(coreComponentLoader);
         coreQuestTypeHandler.init();
 
+        this.profileProvider = registerAndGetService(ProfileProvider.class, coreComponentLoader.get(ProfileProvider.class));
+        registerAndGetService(ConfigAccessorFactory.class, coreComponentLoader.get(ConfigAccessorFactory.class));
+        this.log = loggerFactory.create(this);
         this.config = coreComponentLoader.get(FileConfigAccessor.class);
         this.questManager = coreComponentLoader.get(QuestManager.class);
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
@@ -228,8 +218,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         this.lastExecutionCache = coreComponentLoader.get(LastExecutionCache.class);
         this.saver = coreComponentLoader.get(AsyncSaver.class);
         this.connector = coreComponentLoader.get(Connector.class);
-
-        conversationColors = coreComponentLoader.get(ConversationColors.class);
+        this.conversationColors = coreComponentLoader.get(ConversationColors.class);
 
         // schedule quest data loading on the first tick, so all other
         // plugins can register their types
@@ -283,10 +272,12 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
     private void registerComponents(final CoreComponentLoader coreComponentLoader) {
         coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
-        coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
-        coreComponentLoader.init(ProfileProvider.class, profileProvider);
 
         List.of(
+                new VersionInfoComponent(),
+                new ProfileProviderComponent(),
+                new ConfigAccessorFactoryComponent(),
+                new MigratorComponent(),
                 new ConfigComponent(),
                 new LanguageProviderComponent(),
                 new CommandsComponent(this::reload),
@@ -303,11 +294,16 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         ).forEach(coreComponentLoader::register);
     }
 
-    private void migrate() {
+    private boolean isPaper() {
+        return PAPER_IDENTIFYING_CLASSES.stream().allMatch(this::testClass);
+    }
+
+    private boolean testClass(final String className) {
         try {
-            new Migrator(loggerFactory).migrate();
-        } catch (final IOException e) {
-            log.error("There was an exception while migrating from a previous version! Reason: " + e.getMessage(), e);
+            Class.forName(className);
+            return true;
+        } catch (final ClassNotFoundException exception) {
+            return false;
         }
     }
 
@@ -521,20 +517,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      */
     public PlayerDataStorage getPlayerDataStorage() {
         return coreQuestTypeHandler.getPlayerDataStorage();
-    }
-
-    private boolean isPaper() {
-        try {
-            Class.forName("com.destroystokyo.paper.PaperConfig");
-            return true;
-        } catch (final ClassNotFoundException exception) {
-            try {
-                Class.forName("io.papermc.paper.configuration.Configuration");
-                return true;
-            } catch (final ClassNotFoundException e) {
-                return false;
-            }
-        }
     }
 
     /**
