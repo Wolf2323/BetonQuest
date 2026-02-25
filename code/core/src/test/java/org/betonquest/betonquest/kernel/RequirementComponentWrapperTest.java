@@ -49,8 +49,29 @@ class RequirementComponentWrapperTest {
 
     @BeforeEach
     void setUp() {
-        loader = new DefaultCoreComponentLoader(logger);
-        dummyComponent = new RawDummyComponent(false);
+        loader = spy(new DefaultCoreComponentLoader(logger));
+        dummyComponent = spy(new RawDummyComponent(false));
+    }
+
+    @Test
+    void ensure_called_only_once() {
+        final RequirementComponentWrapper wrapped = spy(new RequirementComponentWrapper(dummyComponent, RequirementComponentWrapper.class));
+        loader.register(wrapped);
+        loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
+        loader.load();
+        verify(dummyComponent, times(1)).loadComponent(loader);
+        verify(wrapped, times(1)).loadComponent(loader);
+    }
+
+    @Test
+    void ensure_dependencyProvider_is_only_called_once() {
+        final RawDummyComponent rawDummyComponent = spy(new RawDummyComponent(provider -> provider.take(String.class, "")));
+        final RequirementComponentWrapper wrapped = spy(new RequirementComponentWrapper(rawDummyComponent, RequirementComponentWrapper.class));
+        loader.register(wrapped);
+        loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
+        loader.load();
+        verify(wrapped, times(1)).loadComponent(loader);
+        verify(loader, times(1)).take(String.class, "");
     }
 
     @Test
@@ -65,6 +86,16 @@ class RequirementComponentWrapperTest {
         final RequirementComponentWrapper wrapped = new RequirementComponentWrapper(dummyComponent, RequirementComponentWrapper.class);
         loader.register(wrapped);
         loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
+        loader.load();
+        assertTrue(dummyComponent.isLoaded(), "Component should be loaded");
+    }
+
+    @Test
+    void cannot_load_after_being_loaded() {
+        final RequirementComponentWrapper wrapped = new RequirementComponentWrapper(dummyComponent, RequirementComponentWrapper.class);
+        loader.register(wrapped);
+        loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
+        assertFalse(dummyComponent.isLoaded(), "Component should not be loaded");
         loader.load();
         assertTrue(dummyComponent.isLoaded(), "Component should be loaded");
     }
