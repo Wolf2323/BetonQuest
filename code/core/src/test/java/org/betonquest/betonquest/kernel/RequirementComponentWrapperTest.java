@@ -71,7 +71,7 @@ class RequirementComponentWrapperTest {
     void normal_with_wrapper_fail(final List<Class<?>> requirementClasses) {
         final RequirementComponentWrapper wrapped = new RequirementComponentWrapper(dummyComponent, requirementClasses.toArray(new Class<?>[0]));
         loader.register(wrapped);
-        assertThrows(IllegalStateException.class, () -> loader.load());
+        assertThrows(IllegalStateException.class, loader::load);
         assertFalse(dummyComponent.isLoaded(), "Component should not be loaded");
     }
 
