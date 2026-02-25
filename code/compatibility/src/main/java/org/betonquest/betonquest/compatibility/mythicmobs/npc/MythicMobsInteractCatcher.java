@@ -82,6 +82,9 @@ public class MythicMobsInteractCatcher extends NpcInteractCatcher<ActiveMob> {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onMove(final EntityMoveEvent event) {
+        if (!mobExecutor.isMythicMob(event.getEntity())) {
+            return;
+        }
         final ActiveMob activeMob = mobExecutor.getMythicMobInstance(event.getEntity());
         if (activeMob != null) {
             updateHolo(activeMob);
