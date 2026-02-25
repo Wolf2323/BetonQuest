@@ -18,6 +18,7 @@ import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.compatibility.Compatibility;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.config.QuestManager;
+import org.betonquest.betonquest.config.patcher.migration.Migrator;
 import org.betonquest.betonquest.conversation.AnswerFilter;
 import org.betonquest.betonquest.conversation.Conversation;
 import org.betonquest.betonquest.conversation.ConversationColors;
@@ -27,6 +28,7 @@ import org.betonquest.betonquest.database.Connector;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
+import org.betonquest.betonquest.kernel.RequirementComponentWrapper;
 import org.betonquest.betonquest.kernel.component.AsyncSaverComponent;
 import org.betonquest.betonquest.kernel.component.CommandsComponent;
 import org.betonquest.betonquest.kernel.component.ConfigAccessorFactoryComponent;
@@ -278,7 +280,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
                 new ProfileProviderComponent(),
                 new ConfigAccessorFactoryComponent(),
                 new MigratorComponent(),
-                new ConfigComponent(),
+                new RequirementComponentWrapper(new ConfigComponent(), Migrator.class),
                 new LanguageProviderComponent(),
                 new CommandsComponent(this::reload),
                 new LogHandlerComponent(),

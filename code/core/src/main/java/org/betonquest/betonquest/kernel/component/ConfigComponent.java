@@ -2,9 +2,7 @@ package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
 import org.betonquest.betonquest.api.config.FileConfigAccessor;
-import org.betonquest.betonquest.config.patcher.migration.Migrator;
 import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.CoreComponent;
 import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.Plugin;
@@ -30,14 +28,9 @@ public class ConfigComponent extends AbstractCoreComponent {
         super();
     }
 
-    /**
-     * It does not require the Migrator component, however, it needs to be loaded after it.
-     *
-     * @see CoreComponent#requires()
-     */
     @Override
     public Set<Class<?>> requires() {
-        return Set.of(Plugin.class, ConfigAccessorFactory.class, Migrator.class);
+        return Set.of(Plugin.class, ConfigAccessorFactory.class);
     }
 
     @Override
