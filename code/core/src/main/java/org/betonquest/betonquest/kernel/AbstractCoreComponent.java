@@ -2,7 +2,6 @@ package org.betonquest.betonquest.kernel;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 /**
  * Default abstract implementation of {@link CoreComponent} aiming to reduce boilerplate code.
@@ -35,7 +34,7 @@ public abstract class AbstractCoreComponent implements CoreComponent {
 
     @Override
     public boolean canLoad() {
-        return !isLoaded() && remainingRequirements().findAny().isEmpty();
+        return !isLoaded() && DependencyHelper.remainingDependencies(requires(), injectedDependencies).isEmpty();
     }
 
     @Override
@@ -45,23 +44,13 @@ public abstract class AbstractCoreComponent implements CoreComponent {
 
     @Override
     public boolean requires(final Class<?> type) {
-        return remainingRequirements().anyMatch(required -> required.isAssignableFrom(type));
+        return DependencyHelper.isStillRequired(requires(), injectedDependencies, type);
     }
 
     @Override
     public final void loadComponent(final DependencyProvider dependencyProvider) {
         load(dependencyProvider);
         this.loaded = true;
-    }
-
-    /**
-     * Creates a stream of all classes that are required as defined by #requires() but are not yet injected.
-     *
-     * @return a stream of remaining required classes
-     */
-    private Stream<Class<?>> remainingRequirements() {
-        return requires().stream().filter(requirement -> injectedDependencies.stream()
-                .noneMatch(dependency -> dependency.match(requirement)));
     }
 
     /**
