@@ -46,20 +46,15 @@ class DependencyHelperTest {
             ItemsComponent.class, NotificationsComponent.class, PluginMessageComponent.class, JournalsComponent.class,
             NpcsComponent.class, UpdaterComponent.class, PlayerDataStorageComponent.class, ProfileProviderComponent.class));
 
-    private static final List<LoadedDependency<?>> LOADED_DEPENDENCIES = RANDOM_CLASSES_TO_PICK.stream().<LoadedDependency<?>>map(DependencyHelperTest::dep).toList();
+    private static final List<LoadedDependency<?>> LOADED_DEPENDENCIES = new ArrayList<>(RANDOM_CLASSES_TO_PICK.stream().<LoadedDependency<?>>map(DependencyHelperTest::dep).toList());
 
     private static <T> LoadedDependency<T> dep(final Class<T> clazz) {
         return new LoadedDependency<>(clazz, mock(clazz));
     }
 
     private static <T> List<T> random(final List<T> list) {
-        final Random random = new Random();
-        final int first = random.nextInt(list.size());
-        int second = random.nextInt(list.size());
-        while (first == second) {
-            second = random.nextInt(list.size());
-        }
-        return list.subList(Math.min(first, second), Math.max(first, second));
+        Collections.shuffle(list);
+        return list.subList(0, new Random().nextInt(list.size()));
     }
 
     private static Stream<Arguments> combinations() {
