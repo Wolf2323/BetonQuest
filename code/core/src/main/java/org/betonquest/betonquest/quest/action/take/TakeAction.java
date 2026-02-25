@@ -40,7 +40,7 @@ public class TakeAction extends AbstractTakeAction {
      * @param checkOrder         the order in which the checks should be performed
      * @param notificationSender the notification sender to use
      */
-    public TakeAction(final Argument<List<ItemWrapper>> questItems, final List<CheckType> checkOrder, final NotificationSender notificationSender) {
+    public TakeAction(final Argument<List<ItemWrapper>> questItems, final Argument<List<CheckType>> checkOrder, final NotificationSender notificationSender) {
         super(checkOrder, notificationSender);
         this.questItems = questItems;
     }

@@ -13,6 +13,10 @@ public enum CheckType {
      */
     ARMOR,
     /**
+     * Check for the player's main hand.
+     */
+    MAINHAND,
+    /**
      * Check for the player's offhand.
      */
     OFFHAND,

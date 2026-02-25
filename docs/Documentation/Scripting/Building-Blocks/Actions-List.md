@@ -964,7 +964,7 @@ It can't contain spaces (though `_` is fine).
 Multiple tags can be added and deleted separated by commas (without spaces).
 
 The independent context is only available for the `delete` operation,
-and delte the tag for all players in the database (even if offline).
+and delete the tag for all players in the database (even if offline).
 
 ```YAML title="Example"
 actions:
@@ -979,7 +979,7 @@ __Description__: Take items from the player’s inventory or backpack.
 
 The items itself must be defined in the `items` section, optionally with an amount after a colon.
 Which inventory types are checked is defined by the `invOrder:`
-option. You can use `Backpack`, `Inventory`, `Offhand` and `Armor` there. One after another will be checked if multiple types are defined.
+option. You can use `Backpack`, `Inventory`, `MainHand`,  `Offhand` and `Armor` there. One after another will be checked if multiple types are defined.
 
 Note: If the items aren't quest items don't use `take` action with player options in conversations!
 The player can drop items before selecting the option and pickup them after the action fires.
