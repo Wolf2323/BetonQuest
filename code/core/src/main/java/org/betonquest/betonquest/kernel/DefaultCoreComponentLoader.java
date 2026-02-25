@@ -98,6 +98,7 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
         }
         int cycle = 0;
         final StopWatch stopWatch = StopWatch.createStarted();
+        final StopWatch perComponentStopWatch = StopWatch.create();
         do {
             cycle++;
             checkForDependencyBlocking();
@@ -105,8 +106,11 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
             log.debug("Trying to load %s components in cycle %s: %s".formatted(toBeLoaded.size(), cycle,
                     toBeLoaded.stream().map(CoreComponent::getClass).map(Class::getSimpleName).collect(Collectors.joining(","))));
             toBeLoaded.forEach(component -> {
+                perComponentStopWatch.start();
                 component.loadComponent(this);
-                log.debug("Loaded component '%s'.".formatted(component.getClass().getSimpleName()));
+                perComponentStopWatch.stop();
+                log.debug("Loaded component '%s'. Took %s".formatted(component.getClass().getSimpleName(), perComponentStopWatch.formatTime()));
+                perComponentStopWatch.reset();
             });
         } while (components.stream().anyMatch(component -> !component.isLoaded()));
         stopWatch.stop();
