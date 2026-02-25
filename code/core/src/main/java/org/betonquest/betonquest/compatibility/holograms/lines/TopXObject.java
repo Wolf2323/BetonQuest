@@ -73,10 +73,7 @@ public class TopXObject {
         entries.clear();
         final Connector con = BetonQuest.getInstance().getDBConnector();
 
-        try (ResultSet resultSet = con.querySQL(orderType.getType(), statement -> {
-            statement.setString(1, category);
-            statement.setInt(2, limit);
-        })) {
+        try (ResultSet resultSet = con.querySQL(orderType.getType(), category, limit)) {
             while (resultSet.next()) {
                 final UUID uuid = UUID.fromString(resultSet.getString("playerID"));
                 final String playerName = Bukkit.getOfflinePlayer(uuid).getName();

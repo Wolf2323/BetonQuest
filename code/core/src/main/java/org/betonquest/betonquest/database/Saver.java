@@ -5,13 +5,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 /**
- * The saver is used to save data via records into the database. Implementations should be thread save and must document
- * if they are not.
+ * The saver is used to save data via records into the database. Implementations should be thread save, and
+ * it must be documented if they are not.
  */
 public interface Saver {
 
     /**
-     * Adds new record to the queue, where it will be saved to the database.
+     * Adds a new record to the queue, where it will be saved to the database.
      *
      * @param rec Record to save
      */
@@ -28,7 +28,7 @@ public interface Saver {
      * @param type method used for saving the data
      * @param args list of Strings which will be saved to the database
      */
-    record Record(UpdateType type, String... args) {
+    record Record(UpdateType type, Object... args) {
 
         /**
          * Creates new Record, which can be saved to the database using
@@ -37,7 +37,7 @@ public interface Saver {
          * @param type method used for saving the data
          * @param args list of Strings which will be saved to the database
          */
-        public Record(final UpdateType type, @Nullable final String... args) {
+        public Record(final UpdateType type, @Nullable final Object... args) {
             this.type = type;
             this.args = Arrays.copyOf(args, args.length);
         }
