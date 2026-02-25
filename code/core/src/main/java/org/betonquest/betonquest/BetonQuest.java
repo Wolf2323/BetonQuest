@@ -288,7 +288,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     }
 
     private boolean isPaper() {
-        return PAPER_IDENTIFYING_CLASSES.stream().allMatch(this::testClass);
+        return PAPER_IDENTIFYING_CLASSES.stream().anyMatch(this::testClass);
     }
 
     private boolean testClass(final String className) {
