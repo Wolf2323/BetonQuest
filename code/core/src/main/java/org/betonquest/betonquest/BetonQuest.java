@@ -8,7 +8,6 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.bukkit.event.LoadDataEvent;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
 import org.betonquest.betonquest.api.config.FileConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
@@ -67,7 +66,6 @@ import org.betonquest.betonquest.web.updater.Updater;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -185,18 +183,12 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         return instance;
     }
 
-    private <T> T registerAndGetService(final Class<T> clazz, final T service) {
-        final ServicesManager servicesManager = getServer().getServicesManager();
-        servicesManager.register(clazz, service, this, ServicePriority.Lowest);
-        return servicesManager.load(clazz);
-    }
-
     @SuppressWarnings("PMD.DoNotUseThreads")
     @Override
     public void onEnable() {
         instance = this;
 
-        this.loggerFactory = registerAndGetService(BetonQuestLoggerFactory.class, new CachingBetonQuestLoggerFactory(new DefaultBetonQuestLoggerFactory()));
+        this.loggerFactory = new CachingBetonQuestLoggerFactory(new DefaultBetonQuestLoggerFactory());
         if (!isPaper()) {
             throw new IllegalStateException("Only Paper is supported!");
         }
@@ -209,8 +201,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         registerTypesComponents(coreComponentLoader);
         coreQuestTypeHandler.init();
 
-        this.profileProvider = registerAndGetService(ProfileProvider.class, coreComponentLoader.get(ProfileProvider.class));
-        registerAndGetService(ConfigAccessorFactory.class, coreComponentLoader.get(ConfigAccessorFactory.class));
+        this.profileProvider = coreComponentLoader.get(ProfileProvider.class);
         this.log = loggerFactory.create(this);
         this.config = coreComponentLoader.get(FileConfigAccessor.class);
         this.questManager = coreComponentLoader.get(QuestManager.class);
