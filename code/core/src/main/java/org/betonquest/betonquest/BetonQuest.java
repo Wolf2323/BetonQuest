@@ -31,6 +31,7 @@ import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
 import org.betonquest.betonquest.kernel.component.AsyncSaverComponent;
 import org.betonquest.betonquest.kernel.component.CommandsComponent;
+import org.betonquest.betonquest.kernel.component.ConfigComponent;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
 import org.betonquest.betonquest.kernel.component.DatabaseComponent;
 import org.betonquest.betonquest.kernel.component.ExecutionCacheComponent;
@@ -62,7 +63,6 @@ import org.betonquest.betonquest.schedule.LastExecutionCache;
 import org.betonquest.betonquest.versioning.java.JREVersionPrinter;
 import org.betonquest.betonquest.web.updater.Updater;
 import org.bukkit.Server;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
@@ -70,8 +70,6 @@ import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -209,12 +207,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
 
         migrate();
 
-        try {
-            config = configAccessorFactory.createPatching(new File(getDataFolder(), "config.yml"), this, "config.yml");
-        } catch (final InvalidConfigurationException | FileNotFoundException e) {
-            throw new IllegalStateException("Could not load the config.yml file!", e);
-        }
-
         final String version = getDescription().getVersion();
         log.debug("BetonQuest " + version + " is starting...");
         log.debug(jreInfo);
@@ -227,6 +219,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         registerTypesComponents(coreComponentLoader);
         coreQuestTypeHandler.init();
 
+        this.config = coreComponentLoader.get(FileConfigAccessor.class);
         this.questManager = coreComponentLoader.get(QuestManager.class);
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
         this.compatibility = coreComponentLoader.get(Compatibility.class);
@@ -289,8 +282,8 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
         coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
         coreComponentLoader.init(ProfileProvider.class, profileProvider);
-        coreComponentLoader.init(FileConfigAccessor.class, config);
 
+        coreComponentLoader.register(new ConfigComponent());
         coreComponentLoader.register(new LanguageProviderComponent());
         coreComponentLoader.register(new CommandsComponent(this::reload));
         coreComponentLoader.register(new LogHandlerComponent());
