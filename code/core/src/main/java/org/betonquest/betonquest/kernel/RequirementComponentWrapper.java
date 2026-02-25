@@ -58,7 +58,7 @@ public class RequirementComponentWrapper implements CoreComponent {
 
     @Override
     public boolean canLoad() {
-        return DependencyHelper.remainingDependencies(requires(), loadedRequirements).isEmpty();
+        return !isLoaded() && DependencyHelper.remainingDependencies(requires(), loadedRequirements).isEmpty();
     }
 
     @Override
