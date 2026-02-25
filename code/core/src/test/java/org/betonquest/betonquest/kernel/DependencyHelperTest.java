@@ -7,17 +7,8 @@ import org.betonquest.betonquest.kernel.component.CancelersComponent;
 import org.betonquest.betonquest.kernel.component.ConditionsComponent;
 import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
 import org.betonquest.betonquest.kernel.component.InstructionsComponent;
-import org.betonquest.betonquest.kernel.component.ItemsComponent;
-import org.betonquest.betonquest.kernel.component.JournalsComponent;
-import org.betonquest.betonquest.kernel.component.NotificationsComponent;
-import org.betonquest.betonquest.kernel.component.NpcsComponent;
 import org.betonquest.betonquest.kernel.component.ObjectivesComponent;
 import org.betonquest.betonquest.kernel.component.PlaceholdersComponent;
-import org.betonquest.betonquest.kernel.component.PlayerDataStorageComponent;
-import org.betonquest.betonquest.kernel.component.PluginMessageComponent;
-import org.betonquest.betonquest.kernel.component.ProfileProviderComponent;
-import org.betonquest.betonquest.kernel.component.UpdaterComponent;
-import org.betonquest.betonquest.logger.util.BetonQuestLoggerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,9 +17,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,15 +27,12 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(BetonQuestLoggerService.class)
 @ExtendWith(MockitoExtension.class)
 class DependencyHelperTest {
 
     private static final List<Class<?>> RANDOM_CLASSES_TO_PICK = new ArrayList<>(List.of(ActionsComponent.class,
             ConditionsComponent.class, ObjectivesComponent.class, PlaceholdersComponent.class, ArgumentParsersComponent.class,
-            AsyncSaverComponent.class, CancelersComponent.class, InstructionsComponent.class, FontRegistryComponent.class,
-            ItemsComponent.class, NotificationsComponent.class, PluginMessageComponent.class, JournalsComponent.class,
-            NpcsComponent.class, UpdaterComponent.class, PlayerDataStorageComponent.class, ProfileProviderComponent.class));
+            AsyncSaverComponent.class, CancelersComponent.class, InstructionsComponent.class, FontRegistryComponent.class));
 
     private static final List<LoadedDependency<?>> LOADED_DEPENDENCIES = new ArrayList<>(RANDOM_CLASSES_TO_PICK.stream().<LoadedDependency<?>>map(DependencyHelperTest::dep).toList());
 
@@ -52,22 +40,19 @@ class DependencyHelperTest {
         return new LoadedDependency<>(clazz, mock(clazz));
     }
 
-    private static <T> List<T> random(final List<T> list) {
-        Collections.shuffle(list);
-        return list.subList(0, new Random().nextInt(list.size()));
-    }
-
     private static Stream<Arguments> combinations() {
-        final List<Arguments> arguments = new ArrayList<>(RANDOM_CLASSES_TO_PICK.size() * 5);
-        for (int i = 0; i < RANDOM_CLASSES_TO_PICK.size() * 5; i++) {
-            arguments.add(Arguments.of(random(RANDOM_CLASSES_TO_PICK), random(LOADED_DEPENDENCIES)));
-        }
+        final List<Arguments> arguments = new ArrayList<>();
+        SimpleSubSetHelper.allKSubSets(RANDOM_CLASSES_TO_PICK).forEach(subSet -> {
+            SimpleSubSetHelper.allKSubSets(LOADED_DEPENDENCIES).forEach(loadedSubSet -> {
+                arguments.add(Arguments.of(subSet, loadedSubSet));
+            });
+        });
         return arguments.stream();
     }
 
     @ParameterizedTest
     @MethodSource("combinations")
-    void remaining_requirements_are_disjoint_from_loaded_dependency(final List<Class<?>> requirements, final List<LoadedDependency<?>> loadedDependencies) {
+    void remaining_requirements_are_disjoint_from_loaded_dependency(final Collection<Class<?>> requirements, final Collection<LoadedDependency<?>> loadedDependencies) {
         final Set<Class<?>> classes = DependencyHelper.remainingDependencies(requirements, loadedDependencies);
         final boolean classesDisjointFromLoaded = Collections.disjoint(classes, loadedDependencies.stream().map(LoadedDependency::type).collect(Collectors.toSet()));
         assertTrue(classesDisjointFromLoaded, "Remaining requirements should be disjoint from loaded: %s vs. %s"
@@ -76,14 +61,14 @@ class DependencyHelperTest {
 
     @ParameterizedTest
     @MethodSource("combinations")
-    void remaining_classes_are_still_required(final List<Class<?>> requirements, final List<LoadedDependency<?>> loadedDependencies) {
+    void remaining_classes_are_still_required(final Collection<Class<?>> requirements, final Collection<LoadedDependency<?>> loadedDependencies) {
         final Set<Class<?>> classes = DependencyHelper.remainingDependencies(requirements, loadedDependencies);
         assertTrue(classes.stream().allMatch(cl -> DependencyHelper.isStillRequired(requirements, loadedDependencies, cl)), "Class should be still required");
     }
 
     @ParameterizedTest
     @MethodSource("combinations")
-    void loaded_dependency_are_not_required(final List<Class<?>> requirements, final List<LoadedDependency<?>> loadedDependencies) {
+    void loaded_dependency_are_not_required(final Collection<Class<?>> requirements, final Collection<LoadedDependency<?>> loadedDependencies) {
         final boolean anyLoadedStillRequired = loadedDependencies.stream().map(LoadedDependency::type)
                 .anyMatch(loaded -> DependencyHelper.isStillRequired(requirements, loadedDependencies, loaded));
         assertFalse(anyLoadedStillRequired, "Class should not be required");
