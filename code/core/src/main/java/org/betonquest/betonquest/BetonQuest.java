@@ -71,6 +71,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Represents BetonQuest plugin.
@@ -266,16 +267,18 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     }
 
     private void registerTypesComponents(final CoreComponentLoader coreComponentLoader) {
-        coreComponentLoader.register(new ActionTypesComponent());
-        coreComponentLoader.register(new ConditionTypesComponent());
-        coreComponentLoader.register(new ObjectiveTypeComponent());
-        coreComponentLoader.register(new PlaceholderTypeComponent());
-        coreComponentLoader.register(new ConversationIOTypesComponent());
-        coreComponentLoader.register(new InterceptorTypesComponent());
-        coreComponentLoader.register(new ItemTypesComponent());
-        coreComponentLoader.register(new NotifyIOTypesComponent());
-        coreComponentLoader.register(new ScheduleTypesComponent());
-        coreComponentLoader.register(new TextParserTypesComponent());
+        List.of(
+                new ActionTypesComponent(),
+                new ConditionTypesComponent(),
+                new ObjectiveTypeComponent(),
+                new PlaceholderTypeComponent(),
+                new ConversationIOTypesComponent(),
+                new InterceptorTypesComponent(),
+                new ItemTypesComponent(),
+                new NotifyIOTypesComponent(),
+                new ScheduleTypesComponent(),
+                new TextParserTypesComponent()
+        ).forEach(coreComponentLoader::register);
     }
 
     private void registerComponents(final CoreComponentLoader coreComponentLoader) {
@@ -283,19 +286,21 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
         coreComponentLoader.init(ProfileProvider.class, profileProvider);
 
-        coreComponentLoader.register(new ConfigComponent());
-        coreComponentLoader.register(new LanguageProviderComponent());
-        coreComponentLoader.register(new CommandsComponent(this::reload));
-        coreComponentLoader.register(new LogHandlerComponent());
-        coreComponentLoader.register(new QuestPackageManagerComponent());
-        coreComponentLoader.register(new DatabaseComponent());
-        coreComponentLoader.register(new AsyncSaverComponent());
-        coreComponentLoader.register(new GlobalDataComponent());
-        coreComponentLoader.register(new FontRegistryComponent());
-        coreComponentLoader.register(new ListenersComponent());
-        coreComponentLoader.register(new UpdaterComponent(this.getFile()));
-        coreComponentLoader.register(new ConversationColorsComponent());
-        coreComponentLoader.register(new ExecutionCacheComponent());
+        List.of(
+                new ConfigComponent(),
+                new LanguageProviderComponent(),
+                new CommandsComponent(this::reload),
+                new LogHandlerComponent(),
+                new QuestPackageManagerComponent(),
+                new DatabaseComponent(),
+                new AsyncSaverComponent(),
+                new GlobalDataComponent(),
+                new FontRegistryComponent(),
+                new ListenersComponent(),
+                new UpdaterComponent(this.getFile()),
+                new ConversationColorsComponent(),
+                new ExecutionCacheComponent()
+        ).forEach(coreComponentLoader::register);
     }
 
     private void migrate() {
