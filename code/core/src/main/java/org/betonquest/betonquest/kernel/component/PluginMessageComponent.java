@@ -32,6 +32,11 @@ public class PluginMessageComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(PluginMessage.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final ConfigAccessorFactory configAccessorFactory = getDependency(ConfigAccessorFactory.class);

@@ -39,6 +39,11 @@ public class ExecutionCacheComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(LastExecutionCache.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final Plugin plugin = getDependency(Plugin.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);

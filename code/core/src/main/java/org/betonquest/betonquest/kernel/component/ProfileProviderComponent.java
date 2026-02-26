@@ -29,6 +29,11 @@ public class ProfileProviderComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(ProfileProvider.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final Plugin plugin = getDependency(Plugin.class);
         final ServicesManager servicesManager = getDependency(ServicesManager.class);

@@ -46,6 +46,12 @@ public class ConversationsComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(ConversationIdentifierFactory.class, ConversationOptionIdentifierFactory.class,
+                ConversationIORegistry.class, InterceptorRegistry.class, ConversationProcessor.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);

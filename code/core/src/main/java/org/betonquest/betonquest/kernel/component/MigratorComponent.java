@@ -27,6 +27,11 @@ public class MigratorComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(Migrator.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
 

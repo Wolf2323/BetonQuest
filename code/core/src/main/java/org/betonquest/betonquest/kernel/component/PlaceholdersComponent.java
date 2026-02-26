@@ -38,6 +38,11 @@ public class PlaceholdersComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(PlaceholderIdentifierFactory.class, PlaceholderTypeRegistry.class, PlaceholderProcessor.class, DefaultPlaceholders.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final Identifiers identifiers = getDependency(Identifiers.class);

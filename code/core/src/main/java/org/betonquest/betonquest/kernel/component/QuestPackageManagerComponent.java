@@ -32,6 +32,11 @@ public class QuestPackageManagerComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(QuestManager.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final Plugin plugin = getDependency(Plugin.class);
         final PluginDescriptionFile descriptionFile = getDependency(PluginDescriptionFile.class);

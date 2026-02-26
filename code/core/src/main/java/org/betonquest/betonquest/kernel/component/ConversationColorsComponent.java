@@ -26,6 +26,11 @@ public class ConversationColorsComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(ConversationColors.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final FileConfigAccessor config = getDependency(FileConfigAccessor.class);
         final TextParser textParser = getDependency(TextParser.class);

@@ -29,6 +29,11 @@ public class ArgumentParsersComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(DefaultArgumentParsers.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final ItemManager itemManager = getDependency(ItemManager.class);
         final ItemIdentifierFactory itemIdentifierFactory = getDependency(ItemIdentifierFactory.class);

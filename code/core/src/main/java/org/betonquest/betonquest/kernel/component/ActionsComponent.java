@@ -39,6 +39,11 @@ public class ActionsComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(ActionIdentifierFactory.class, ActionTypeRegistry.class, ActionProcessor.class, DefaultActions.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);

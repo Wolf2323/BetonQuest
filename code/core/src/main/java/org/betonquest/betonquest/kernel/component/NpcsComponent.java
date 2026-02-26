@@ -48,6 +48,11 @@ public class NpcsComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(NpcIdentifierFactory.class, NpcTypeRegistry.class, NpcProcessor.class, DefaultNpcHider.class, DefaultNpcs.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);

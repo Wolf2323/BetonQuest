@@ -25,6 +25,11 @@ public class IdentifiersComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(IdentifierTypeRegistry.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
 

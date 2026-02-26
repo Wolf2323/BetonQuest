@@ -28,6 +28,11 @@ public class TextSectionParserComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(ParsedSectionTextCreator.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final LanguageProvider languageProvider = getDependency(LanguageProvider.class);
         final PlayerDataStorage playerDataStorage = getDependency(PlayerDataStorage.class);

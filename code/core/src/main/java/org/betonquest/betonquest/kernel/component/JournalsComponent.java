@@ -43,6 +43,12 @@ public class JournalsComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(JournalEntryIdentifierFactory.class, JournalMainPageIdentifierFactory.class,
+                JournalEntryProcessor.class, JournalMainPageProcessor.class, JournalFactory.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager questPackageManager = getDependency(QuestPackageManager.class);
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);

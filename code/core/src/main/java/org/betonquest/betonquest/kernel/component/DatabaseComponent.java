@@ -36,6 +36,11 @@ public class DatabaseComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(Connector.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final ConfigAccessor config = getDependency(ConfigAccessor.class);

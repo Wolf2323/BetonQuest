@@ -25,6 +25,11 @@ public class LanguageProviderComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(LanguageProvider.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final ConfigAccessor config = getDependency(ConfigAccessor.class);
 

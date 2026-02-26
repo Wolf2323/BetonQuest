@@ -28,6 +28,11 @@ public class CompatibilityComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(Compatibility.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final BetonQuestLoggerFactory loggerFactory = getDependency(BetonQuestLoggerFactory.class);
         final BetonQuestApi betonQuestApi = getDependency(BetonQuestApi.class);

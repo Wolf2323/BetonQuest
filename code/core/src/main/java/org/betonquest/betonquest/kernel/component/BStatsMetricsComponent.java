@@ -38,6 +38,11 @@ public class BStatsMetricsComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(BStatsMetrics.class);
+    }
+
+    @Override
     public boolean requires(final Class<?> type) {
         return MetricsHolder.class.isAssignableFrom(type) || super.requires(type);
     }

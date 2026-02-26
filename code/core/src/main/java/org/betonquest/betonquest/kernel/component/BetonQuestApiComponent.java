@@ -45,6 +45,11 @@ public class BetonQuestApiComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(DefaultBetonQuestApi.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final QuestPackageManager packManager = getDependency(QuestPackageManager.class);
         final ServicesManager servicesManager = getDependency(ServicesManager.class);

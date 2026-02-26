@@ -37,6 +37,11 @@ public class LogHandlerComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(HistoryHandler.class, AccumulatingReceiverSelector.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final Plugin plugin = getDependency(Plugin.class);
         final Server server = getDependency(Server.class);

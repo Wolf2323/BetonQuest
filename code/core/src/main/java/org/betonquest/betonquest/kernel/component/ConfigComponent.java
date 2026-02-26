@@ -34,6 +34,11 @@ public class ConfigComponent extends AbstractCoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of(FileConfigAccessor.class);
+    }
+
+    @Override
     protected void load(final DependencyProvider dependencyProvider) {
         final Plugin plugin = getDependency(Plugin.class);
         final ConfigAccessorFactory configAccessorFactory = getDependency(ConfigAccessorFactory.class);
