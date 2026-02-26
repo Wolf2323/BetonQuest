@@ -1,7 +1,4 @@
-package org.betonquest.betonquest.kernel;
-
-import org.betonquest.betonquest.kernel.dependency.DependencyGraph;
-import org.betonquest.betonquest.kernel.dependency.DependencyGraphNode;
+package org.betonquest.betonquest.kernel.dependency;
 
 import java.util.ArrayList;
 import java.util.Collection;

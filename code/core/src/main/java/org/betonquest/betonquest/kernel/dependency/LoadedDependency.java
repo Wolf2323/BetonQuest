@@ -1,4 +1,4 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.kernel.dependency;
 
 /**
  * The record representing an injected dependency.

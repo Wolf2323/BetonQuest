@@ -9,6 +9,8 @@ import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
 import org.betonquest.betonquest.kernel.component.InstructionsComponent;
 import org.betonquest.betonquest.kernel.component.ObjectivesComponent;
 import org.betonquest.betonquest.kernel.component.PlaceholdersComponent;
+import org.betonquest.betonquest.kernel.dependency.DependencyHelper;
+import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;

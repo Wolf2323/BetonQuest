@@ -2,6 +2,7 @@ package org.betonquest.betonquest.kernel;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
