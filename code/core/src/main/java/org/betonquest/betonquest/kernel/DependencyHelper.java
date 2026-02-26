@@ -1,13 +1,20 @@
 package org.betonquest.betonquest.kernel;
 
+import org.betonquest.betonquest.kernel.dependency.DependencyGraph;
+import org.betonquest.betonquest.kernel.dependency.DependencyGraphNode;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Helps with handling all kinds of dependency-related filtration and analysis.
  */
-final class DependencyHelper {
+public final class DependencyHelper {
 
     private DependencyHelper() {
     }
@@ -20,7 +27,7 @@ final class DependencyHelper {
      * @return the remaining dependencies
      */
     /* default */
-    static Set<Class<?>> remainingDependencies(final Collection<Class<?>> required, final Collection<LoadedDependency<?>> loaded) {
+    public static Set<Class<?>> remainingDependencies(final Collection<Class<?>> required, final Collection<LoadedDependency<?>> loaded) {
         return required.stream()
                 .filter(requirement -> loaded.stream().noneMatch(dependency -> dependency.match(requirement)))
                 .collect(Collectors.toSet());
@@ -35,7 +42,7 @@ final class DependencyHelper {
      * @return true if the instance is required, false otherwise
      */
     /* default */
-    static boolean isRequired(final Collection<Class<?>> requiredDependencies, final Class<?> instanceType) {
+    public static boolean isRequired(final Collection<Class<?>> requiredDependencies, final Class<?> instanceType) {
         return requiredDependencies.stream().anyMatch(requirement -> requirement.isAssignableFrom(instanceType));
     }
 
@@ -49,8 +56,79 @@ final class DependencyHelper {
      * @return true if the instance is still required, false otherwise
      */
     /* default */
-    static boolean isStillRequired(final Collection<Class<?>> requiredDependencies,
-                                   final Collection<LoadedDependency<?>> loadedDependencies, final Class<?> instanceType) {
+    public static boolean isStillRequired(final Collection<Class<?>> requiredDependencies,
+                                          final Collection<LoadedDependency<?>> loadedDependencies, final Class<?> instanceType) {
         return isRequired(remainingDependencies(requiredDependencies, loadedDependencies), instanceType);
+    }
+
+    /**
+     * Orders the given nodes topologically. <br>
+     * The resulting list is ordered in such a way that the dependencies of a node are always before it in the list and
+     * therefore the list may be loaded in order in a single iteration. <br>
+     * In the case of cylic dependencies, the cycle is isolated and an {@link IllegalStateException}
+     * with the resolved cycle is thrown.
+     *
+     * @param nodes              the nodes to order
+     * @param loadedDependencies the loaded dependencies
+     * @param <T>                the subtype of {@link DependencyGraphNode} of the nodes
+     * @return the ordered nodes
+     * @throws IllegalStateException if a cyclic dependency is detected
+     * @see DependencyGraph
+     */
+    public static <T extends DependencyGraphNode> List<T> topologicalOrder(final Collection<T> nodes, final Collection<LoadedDependency<?>> loadedDependencies) {
+        final List<T> orderedNodes = new ArrayList<>(nodes.size());
+        final DependencyGraph<T> graph = buildDependencyGraph(nodes, loadedDependencies);
+        final List<T> queue = graph.getNodesWithZeroInDegree();
+        while (!queue.isEmpty()) {
+            final T current = queue.remove(0);
+            orderedNodes.add(current);
+            for (final T dependent : graph.dependents().get(current)) {
+                graph.decrementInDegree(dependent);
+                if (graph.inDegree().get(dependent) == 0) {
+                    queue.add(dependent);
+                }
+            }
+        }
+        if (orderedNodes.size() != nodes.size()) {
+            final List<T> cycleNodes = graph.getNodesWithPositiveInDegree();
+            final String cycleDescription = cycleNodes.stream()
+                    .map(node -> node.getClass().getSimpleName())
+                    .collect(Collectors.joining(" -> "));
+            throw new IllegalStateException("Cyclic dependency detected among nodes: " + cycleDescription);
+        }
+        return orderedNodes;
+    }
+
+    /**
+     * Builds a dependency graph for the given nodes considering the given loaded dependencies.
+     *
+     * @param nodes              the nodes to build the graph for
+     * @param loadedDependencies the loaded dependencies to resolve in the dependencies of the nodes
+     * @param <T>                the subtype of {@link DependencyGraphNode} of the nodes
+     * @return the dependency graph
+     */
+    public static <T extends DependencyGraphNode> DependencyGraph<T> buildDependencyGraph(final Collection<T> nodes, final Collection<LoadedDependency<?>> loadedDependencies) {
+        final HashMap<T, Integer> inDegree = new HashMap<>();
+        final HashMap<T, Set<T>> dependents = new HashMap<>();
+        for (final T node : nodes) {
+            inDegree.put(node, 0);
+            dependents.put(node, new HashSet<>());
+        }
+        for (final T node : nodes) {
+            final Set<Class<?>> remainingRequirements = remainingDependencies(node.requires(), loadedDependencies);
+            for (final T potentialDependency : nodes) {
+                if (node == potentialDependency) {
+                    continue;
+                }
+                for (final Class<?> providedType : potentialDependency.provides()) {
+                    if (remainingRequirements.stream().anyMatch(req -> req.isAssignableFrom(providedType))) {
+                        dependents.get(potentialDependency).add(node);
+                        inDegree.put(node, inDegree.get(node) + 1);
+                        break;
+                    }
+                }
+            }
+        }
+        return new DependencyGraph<>(inDegree, dependents);
     }
 }
