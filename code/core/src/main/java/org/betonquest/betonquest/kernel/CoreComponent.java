@@ -1,7 +1,5 @@
 package org.betonquest.betonquest.kernel;
 
-import java.util.Set;
-
 /**
  * A core component of the BetonQuest plugin representing a unique unit of functionality that may be loaded
  * by a {@link CoreComponentLoader} respecting its dependencies and thereby being loaded in order.
@@ -18,15 +16,7 @@ import java.util.Set;
  *     <li>After the loading process has finished successfully, {@link #isLoaded()} returns true</li>
  * </ul>
  */
-public interface CoreComponent {
-
-    /**
-     * Specifies an unmodifiable set of types that this component requires to be loaded before itself.
-     * Essentially contains all classes that are dependencies of this component.
-     *
-     * @return all dependencies of this component
-     */
-    Set<Class<?>> requires();
+public interface CoreComponent extends DependencyGraphNode {
 
     /**
      * Checks whether this component still requires the specified type.
