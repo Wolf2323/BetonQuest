@@ -1,4 +1,4 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.kernel.dependency;
 
 import java.util.Set;
 

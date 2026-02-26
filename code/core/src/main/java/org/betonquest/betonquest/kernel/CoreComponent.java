@@ -1,5 +1,7 @@
 package org.betonquest.betonquest.kernel;
 
+import org.betonquest.betonquest.kernel.dependency.DependencyGraphNode;
+
 /**
  * A core component of the BetonQuest plugin representing a unique unit of functionality that may be loaded
  * by a {@link CoreComponentLoader} respecting its dependencies and thereby being loaded in order.
