@@ -44,6 +44,11 @@ public class RequirementComponentWrapper implements CoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return wrappedComponent.provides();
+    }
+
+    @Override
     public boolean requires(final Class<?> type) {
         return DependencyHelper.isStillRequired(requires(), loadedRequirements, type);
     }
