@@ -8,7 +8,6 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.bukkit.event.LoadDataEvent;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
 import org.betonquest.betonquest.api.config.FileConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
@@ -16,7 +15,6 @@ import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.compatibility.Compatibility;
-import org.betonquest.betonquest.config.DefaultConfigAccessorFactory;
 import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.config.QuestManager;
 import org.betonquest.betonquest.config.patcher.migration.Migrator;
@@ -29,8 +27,11 @@ import org.betonquest.betonquest.database.Connector;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.kernel.CoreComponentLoader;
 import org.betonquest.betonquest.kernel.DefaultCoreComponentLoader;
+import org.betonquest.betonquest.kernel.RequirementComponentWrapper;
 import org.betonquest.betonquest.kernel.component.AsyncSaverComponent;
 import org.betonquest.betonquest.kernel.component.CommandsComponent;
+import org.betonquest.betonquest.kernel.component.ConfigAccessorFactoryComponent;
+import org.betonquest.betonquest.kernel.component.ConfigComponent;
 import org.betonquest.betonquest.kernel.component.ConversationColorsComponent;
 import org.betonquest.betonquest.kernel.component.DatabaseComponent;
 import org.betonquest.betonquest.kernel.component.ExecutionCacheComponent;
@@ -39,8 +40,11 @@ import org.betonquest.betonquest.kernel.component.GlobalDataComponent;
 import org.betonquest.betonquest.kernel.component.LanguageProviderComponent;
 import org.betonquest.betonquest.kernel.component.ListenersComponent;
 import org.betonquest.betonquest.kernel.component.LogHandlerComponent;
+import org.betonquest.betonquest.kernel.component.MigratorComponent;
+import org.betonquest.betonquest.kernel.component.ProfileProviderComponent;
 import org.betonquest.betonquest.kernel.component.QuestPackageManagerComponent;
 import org.betonquest.betonquest.kernel.component.UpdaterComponent;
+import org.betonquest.betonquest.kernel.component.VersionInfoComponent;
 import org.betonquest.betonquest.kernel.component.types.ActionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConditionTypesComponent;
 import org.betonquest.betonquest.kernel.component.types.ConversationIOTypesComponent;
@@ -56,30 +60,31 @@ import org.betonquest.betonquest.lib.logger.CachingBetonQuestLoggerFactory;
 import org.betonquest.betonquest.logger.DefaultBetonQuestLoggerFactory;
 import org.betonquest.betonquest.notify.Notify;
 import org.betonquest.betonquest.playerhider.PlayerHider;
-import org.betonquest.betonquest.profile.UUIDProfileProvider;
 import org.betonquest.betonquest.quest.CoreQuestTypeHandler;
 import org.betonquest.betonquest.schedule.LastExecutionCache;
-import org.betonquest.betonquest.versioning.java.JREVersionPrinter;
 import org.betonquest.betonquest.web.updater.Updater;
 import org.bukkit.Server;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Represents BetonQuest plugin.
  */
-@SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass",
-        "PMD.TooManyFields", "NullAway.Init"})
+@SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.GodClass", "NullAway.Init"})
 public class BetonQuest extends JavaPlugin implements LanguageProvider {
+
+    /**
+     * All of those classes have to exist to determine the server software to be Paper.
+     */
+    public static final Set<String> PAPER_IDENTIFYING_CLASSES =
+            Set.of("com.destroystokyo.paper.PaperConfig", "io.papermc.paper.configuration.Configuration");
 
     /**
      * The BetonQuest Plugin instance.
@@ -90,11 +95,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      * Factory to create new class-specific loggers.
      */
     private BetonQuestLoggerFactory loggerFactory;
-
-    /**
-     * Factory to create new file accessors.
-     */
-    private ConfigAccessorFactory configAccessorFactory;
 
     /**
      * The custom logger for the plugin.
@@ -183,41 +183,15 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         return instance;
     }
 
-    private <T> T registerAndGetService(final Class<T> clazz, final T service) {
-        final ServicesManager servicesManager = getServer().getServicesManager();
-        servicesManager.register(clazz, service, this, ServicePriority.Lowest);
-        return servicesManager.load(clazz);
-    }
-
     @SuppressWarnings("PMD.DoNotUseThreads")
     @Override
     public void onEnable() {
         instance = this;
 
-        this.loggerFactory = registerAndGetService(BetonQuestLoggerFactory.class, new CachingBetonQuestLoggerFactory(new DefaultBetonQuestLoggerFactory()));
-        this.log = loggerFactory.create(this);
+        this.loggerFactory = new CachingBetonQuestLoggerFactory(new DefaultBetonQuestLoggerFactory());
         if (!isPaper()) {
             throw new IllegalStateException("Only Paper is supported!");
         }
-
-        this.configAccessorFactory = registerAndGetService(ConfigAccessorFactory.class, new DefaultConfigAccessorFactory(loggerFactory, loggerFactory.create(ConfigAccessorFactory.class)));
-        this.profileProvider = registerAndGetService(ProfileProvider.class, new UUIDProfileProvider(getServer()));
-
-        final JREVersionPrinter jreVersionPrinter = new JREVersionPrinter();
-        final String jreInfo = jreVersionPrinter.getMessage();
-        log.info(jreInfo);
-
-        migrate();
-
-        try {
-            config = configAccessorFactory.createPatching(new File(getDataFolder(), "config.yml"), this, "config.yml");
-        } catch (final InvalidConfigurationException | FileNotFoundException e) {
-            throw new IllegalStateException("Could not load the config.yml file!", e);
-        }
-
-        final String version = getDescription().getVersion();
-        log.debug("BetonQuest " + version + " is starting...");
-        log.debug(jreInfo);
 
         final DefaultCoreComponentLoader coreComponentLoader = new DefaultCoreComponentLoader(loggerFactory.create(DefaultCoreComponentLoader.class));
         this.coreComponentLoader = coreComponentLoader;
@@ -227,6 +201,9 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         registerTypesComponents(coreComponentLoader);
         coreQuestTypeHandler.init();
 
+        this.profileProvider = coreComponentLoader.get(ProfileProvider.class);
+        this.log = loggerFactory.create(this);
+        this.config = coreComponentLoader.get(FileConfigAccessor.class);
         this.questManager = coreComponentLoader.get(QuestManager.class);
         this.betonQuestApi = coreComponentLoader.get(BetonQuestApi.class);
         this.compatibility = coreComponentLoader.get(Compatibility.class);
@@ -234,8 +211,7 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
         this.lastExecutionCache = coreComponentLoader.get(LastExecutionCache.class);
         this.saver = coreComponentLoader.get(AsyncSaver.class);
         this.connector = coreComponentLoader.get(Connector.class);
-
-        conversationColors = coreComponentLoader.get(ConversationColors.class);
+        this.conversationColors = coreComponentLoader.get(ConversationColors.class);
 
         // schedule quest data loading on the first tick, so all other
         // plugins can register their types
@@ -273,43 +249,54 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
     }
 
     private void registerTypesComponents(final CoreComponentLoader coreComponentLoader) {
-        coreComponentLoader.register(new ActionTypesComponent());
-        coreComponentLoader.register(new ConditionTypesComponent());
-        coreComponentLoader.register(new ObjectiveTypeComponent());
-        coreComponentLoader.register(new PlaceholderTypeComponent());
-        coreComponentLoader.register(new ConversationIOTypesComponent());
-        coreComponentLoader.register(new InterceptorTypesComponent());
-        coreComponentLoader.register(new ItemTypesComponent());
-        coreComponentLoader.register(new NotifyIOTypesComponent());
-        coreComponentLoader.register(new ScheduleTypesComponent());
-        coreComponentLoader.register(new TextParserTypesComponent());
+        List.of(
+                new ActionTypesComponent(),
+                new ConditionTypesComponent(),
+                new ObjectiveTypeComponent(),
+                new PlaceholderTypeComponent(),
+                new ConversationIOTypesComponent(),
+                new InterceptorTypesComponent(),
+                new ItemTypesComponent(),
+                new NotifyIOTypesComponent(),
+                new ScheduleTypesComponent(),
+                new TextParserTypesComponent()
+        ).forEach(coreComponentLoader::register);
     }
 
     private void registerComponents(final CoreComponentLoader coreComponentLoader) {
         coreComponentLoader.init(BetonQuestLoggerFactory.class, loggerFactory);
-        coreComponentLoader.init(ConfigAccessorFactory.class, configAccessorFactory);
-        coreComponentLoader.init(ProfileProvider.class, profileProvider);
-        coreComponentLoader.init(FileConfigAccessor.class, config);
 
-        coreComponentLoader.register(new LanguageProviderComponent());
-        coreComponentLoader.register(new CommandsComponent(this::reload));
-        coreComponentLoader.register(new LogHandlerComponent());
-        coreComponentLoader.register(new QuestPackageManagerComponent());
-        coreComponentLoader.register(new DatabaseComponent());
-        coreComponentLoader.register(new AsyncSaverComponent());
-        coreComponentLoader.register(new GlobalDataComponent());
-        coreComponentLoader.register(new FontRegistryComponent());
-        coreComponentLoader.register(new ListenersComponent());
-        coreComponentLoader.register(new UpdaterComponent(this.getFile()));
-        coreComponentLoader.register(new ConversationColorsComponent());
-        coreComponentLoader.register(new ExecutionCacheComponent());
+        List.of(
+                new VersionInfoComponent(),
+                new ProfileProviderComponent(),
+                new ConfigAccessorFactoryComponent(),
+                new MigratorComponent(),
+                new RequirementComponentWrapper(new ConfigComponent(), Migrator.class),
+                new LanguageProviderComponent(),
+                new CommandsComponent(this::reload),
+                new LogHandlerComponent(),
+                new QuestPackageManagerComponent(),
+                new DatabaseComponent(),
+                new AsyncSaverComponent(),
+                new GlobalDataComponent(),
+                new FontRegistryComponent(),
+                new ListenersComponent(),
+                new UpdaterComponent(this.getFile()),
+                new ConversationColorsComponent(),
+                new ExecutionCacheComponent()
+        ).forEach(coreComponentLoader::register);
     }
 
-    private void migrate() {
+    private boolean isPaper() {
+        return PAPER_IDENTIFYING_CLASSES.stream().anyMatch(this::testClass);
+    }
+
+    private boolean testClass(final String className) {
         try {
-            new Migrator(loggerFactory).migrate();
-        } catch (final IOException e) {
-            log.error("There was an exception while migrating from a previous version! Reason: " + e.getMessage(), e);
+            Class.forName(className);
+            return true;
+        } catch (final ClassNotFoundException exception) {
+            return false;
         }
     }
 
@@ -523,20 +510,6 @@ public class BetonQuest extends JavaPlugin implements LanguageProvider {
      */
     public PlayerDataStorage getPlayerDataStorage() {
         return coreQuestTypeHandler.getPlayerDataStorage();
-    }
-
-    private boolean isPaper() {
-        try {
-            Class.forName("com.destroystokyo.paper.PaperConfig");
-            return true;
-        } catch (final ClassNotFoundException exception) {
-            try {
-                Class.forName("io.papermc.paper.configuration.Configuration");
-                return true;
-            } catch (final ClassNotFoundException e) {
-                return false;
-            }
-        }
     }
 
     /**

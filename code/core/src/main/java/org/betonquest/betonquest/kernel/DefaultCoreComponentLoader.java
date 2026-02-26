@@ -1,9 +1,11 @@
 package org.betonquest.betonquest.kernel;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -94,10 +96,25 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
             log.warn("No components were registered. Skipping loading.");
             return;
         }
+        int cycle = 0;
+        final StopWatch stopWatch = StopWatch.createStarted();
+        final StopWatch perComponentStopWatch = StopWatch.create();
         do {
+            cycle++;
             checkForDependencyBlocking();
-            components.stream().filter(CoreComponent::canLoad).forEach(component -> component.loadComponent(this));
+            final List<CoreComponent> toBeLoaded = components.stream().filter(CoreComponent::canLoad).toList();
+            log.debug("Trying to load %s components in cycle %s: %s".formatted(toBeLoaded.size(), cycle,
+                    toBeLoaded.stream().map(CoreComponent::getClass).map(Class::getSimpleName).collect(Collectors.joining(","))));
+            toBeLoaded.forEach(component -> {
+                perComponentStopWatch.start();
+                component.loadComponent(this);
+                perComponentStopWatch.stop();
+                log.debug("Loaded component '%s'. Took %s".formatted(component.getClass().getSimpleName(), perComponentStopWatch.formatTime()));
+                perComponentStopWatch.reset();
+            });
         } while (components.stream().anyMatch(component -> !component.isLoaded()));
+        stopWatch.stop();
+        log.debug("Loaded %s components in %s cycles, took %s".formatted(components.size(), cycle, stopWatch.formatTime()));
         log.info("All %s components successfully loaded.".formatted(components.size()));
     }
 
