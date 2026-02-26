@@ -33,6 +33,11 @@ public abstract class AbstractCoreComponent implements CoreComponent {
     }
 
     @Override
+    public Set<Class<?>> provides() {
+        return Set.of();
+    }
+
+    @Override
     public boolean canLoad() {
         return !isLoaded() && DependencyHelper.remainingDependencies(requires(), injectedDependencies).isEmpty();
     }
