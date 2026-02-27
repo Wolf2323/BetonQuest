@@ -6,6 +6,7 @@ import io.lumine.mythic.core.items.ItemExecutor;
 import io.lumine.mythic.core.mobs.MobExecutor;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.api.BetonQuestApi;
+import org.betonquest.betonquest.api.bukkit.event.LoadDataEvent;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.service.item.ItemRegistry;
 import org.betonquest.betonquest.api.service.npc.NpcRegistry;
@@ -25,7 +26,9 @@ import org.betonquest.betonquest.versioning.UpdateStrategy;
 import org.betonquest.betonquest.versioning.Version;
 import org.betonquest.betonquest.versioning.VersionComparator;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.Nullable;
@@ -75,8 +78,10 @@ public class MythicMobsIntegrator implements Integrator {
         api.actions().registry().register("mcast", new MythicCastSkillActionFactory(loggerFactory, apiHelper));
 
         final NpcRegistry npcRegistry = api.npcs().registry();
-        manager.registerEvents(new MythicMobsInteractCatcher(api.profiles(), npcRegistry, mobExecutor, mythicHider), plugin);
-        npcRegistry.register("mythicmobs", new MythicMobsNpcFactory(mobExecutor, mythicHider));
+        final Listener interactCatcher = new MythicMobsInteractCatcher(api.profiles(), npcRegistry, mobExecutor, mythicHider);
+        final MythicMobsNpcFactory npcFactory = new MythicMobsNpcFactory(mobExecutor, mythicHider);
+        manager.registerEvents(new DynamicListenerRegister(interactCatcher, npcFactory), plugin);
+        npcRegistry.register("mythicmobs", npcFactory);
         npcRegistry.registerIdentifier(new MythicMobsReverseIdentifier());
 
         final ItemRegistry itemRegistry = api.items().registry();
@@ -113,6 +118,55 @@ public class MythicMobsIntegrator implements Integrator {
         if (mythicHider != null) {
             mythicHider.stop();
             HandlerList.unregisterAll(mythicHider);
+        }
+    }
+
+    /**
+     * Handles de-/registration of a listener based on a condition which may change on reload.
+     */
+    private final class DynamicListenerRegister implements Listener {
+
+        /**
+         * Listener to de-/register.
+         */
+        private final Listener listener;
+
+        /**
+         * Factory to determine if listener should be registered.
+         */
+        private final MythicMobsNpcFactory npcFactory;
+
+        /**
+         * If the listener is currently registered.
+         */
+        private boolean registered;
+
+        private DynamicListenerRegister(final Listener listener, final MythicMobsNpcFactory npcFactory) {
+            this.listener = listener;
+            this.npcFactory = npcFactory;
+        }
+
+        /**
+         * Registers or unregisters the listener after BetonQuest reload.
+         *
+         * @param event the load data event on reload
+         */
+        @EventHandler
+        public void onReloadData(final LoadDataEvent event) {
+            if (event.getState() != LoadDataEvent.State.POST_LOAD) {
+                return;
+            }
+
+            final boolean shouldBeRegistered = npcFactory.createdAnIdentifier();
+            if (shouldBeRegistered) {
+                if (!registered) {
+                    plugin.getServer().getPluginManager().registerEvents(listener, plugin);
+                    registered = true;
+                }
+            } else if (registered) {
+                HandlerList.unregisterAll(listener);
+                registered = false;
+            }
         }
     }
 }

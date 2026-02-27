@@ -24,6 +24,11 @@ public class MythicMobsNpcFactory implements NpcFactory {
     private final MythicHider mythicHider;
 
     /**
+     * If the factory attempted to create an instance.
+     */
+    private boolean created;
+
+    /**
      * Creates a new factory to get MythicMobs as Npcs from Instructions.
      *
      * @param mobExecutor to get mobs from the MythicMobs plugin
@@ -36,7 +41,19 @@ public class MythicMobsNpcFactory implements NpcFactory {
 
     @Override
     public NpcWrapper<ActiveMob> parseInstruction(final Instruction instruction) throws QuestException {
+        created = true;
         final Type type = instruction.enumeration(Type.class).get().getValue(null);
         return type.parse(instruction, mythicHider, mobExecutor);
+    }
+
+    /**
+     * Gets if the factory created an identifier and resets the state information.
+     *
+     * @return true if the factory was used since the last call of this method
+     */
+    public boolean createdAnIdentifier() {
+        final boolean tmp = created;
+        created = false;
+        return tmp;
     }
 }
