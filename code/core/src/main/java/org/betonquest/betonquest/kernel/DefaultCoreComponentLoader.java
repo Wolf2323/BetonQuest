@@ -2,6 +2,7 @@ package org.betonquest.betonquest.kernel;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+import org.betonquest.betonquest.kernel.dependency.DependencyHelper;
 import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
 
 import java.util.Collection;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * The default implementation of {@link CoreComponentLoader}.
  */
-public class DefaultCoreComponentLoader implements CoreComponentLoader, DependencyProvider {
+public class DefaultCoreComponentLoader implements CoreComponentLoader {
 
     /**
      * Contains all registered components.
@@ -97,38 +98,20 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
             log.warn("No components were registered. Skipping loading.");
             return;
         }
-        int cycle = 0;
+        final List<CoreComponent> orderedComponents = DependencyHelper.topologicalOrder(components, loaded);
+        log.debug("Component order for %s components: %s".formatted(orderedComponents.size(), orderedComponents.stream().map(CoreComponent::getClass).map(Class::getSimpleName).collect(Collectors.joining(","))));
         final StopWatch stopWatch = StopWatch.createStarted();
         final StopWatch perComponentStopWatch = StopWatch.create();
-        do {
-            cycle++;
-            checkForDependencyBlocking();
-            final List<CoreComponent> toBeLoaded = components.stream().filter(CoreComponent::canLoad).toList();
-            log.debug("Trying to load %s components in cycle %s: %s".formatted(toBeLoaded.size(), cycle,
-                    toBeLoaded.stream().map(CoreComponent::getClass).map(Class::getSimpleName).collect(Collectors.joining(","))));
-            toBeLoaded.forEach(component -> {
-                perComponentStopWatch.start();
-                component.loadComponent(this);
-                perComponentStopWatch.stop();
-                log.debug("Loaded component '%s'. Took %s".formatted(component.getClass().getSimpleName(), perComponentStopWatch.formatTime()));
-                perComponentStopWatch.reset();
-            });
-        } while (components.stream().anyMatch(component -> !component.isLoaded()));
+        orderedComponents.forEach(component -> {
+            perComponentStopWatch.start();
+            component.loadComponent(createDependencyProvider(component));
+            perComponentStopWatch.stop();
+            log.debug("Loaded component '%s'. Took %s".formatted(component.getClass().getSimpleName(), perComponentStopWatch.formatTime()));
+            perComponentStopWatch.reset();
+        });
         stopWatch.stop();
-        log.debug("Loaded %s components in %s cycles, took %s".formatted(components.size(), cycle, stopWatch.formatTime()));
+        log.debug("Loaded %s components, took %s".formatted(components.size(), stopWatch.formatTime()));
         log.info("All %s components successfully loaded.".formatted(components.size()));
-    }
-
-    private void checkForDependencyBlocking() {
-        if (components.stream().noneMatch(CoreComponent::canLoad)) {
-            final String remainingComponents = components.stream()
-                    .filter(coreComponent -> !coreComponent.canLoad() && !coreComponent.isLoaded())
-                    .map(Object::getClass)
-                    .map(Class::getSimpleName)
-                    .sorted()
-                    .collect(Collectors.joining(","));
-            throw new IllegalStateException("Potential cyclomatic dependency while preparing components. Remaining components are missing dependencies: %s".formatted(remainingComponents));
-        }
     }
 
     private void injectToAll(final LoadedDependency<?> loadedDependency) {
@@ -136,13 +119,22 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader, Dependen
         loaded.add(loadedDependency);
     }
 
-    @Override
-    public <U> void take(final Class<U> type, final U dependency) {
-        if (loaded.stream().anyMatch(known -> known.type().isAssignableFrom(type) || type.isAssignableFrom(known.type()))) {
-            throw new IllegalStateException("Attempted to load a dependency compatible with another. This might cause non-deterministic behaviour and is therefore prevented: new %s ~ %s".formatted(type.getSimpleName(), dependency.getClass().getSimpleName()));
-        }
-        final LoadedDependency<U> loadedDependency = new LoadedDependency<>(type, dependency);
-        components.forEach(component -> component.inject(loadedDependency));
-        loaded.add(loadedDependency);
+    private DependencyProvider createDependencyProvider(final CoreComponent activeComponent) {
+        return new DependencyProvider() {
+            @Override
+            public <T> void take(final Class<T> type, final T dependency) {
+                if (!activeComponent.provides().contains(type)) {
+                    throw new IllegalArgumentException("Component %s attempted to inject a dependency that is supposed to be provided by it: %s not in (%s)"
+                            .formatted(activeComponent.getClass().getSimpleName(), type.getSimpleName(), activeComponent.provides().stream().map(Class::getSimpleName).collect(Collectors.joining(","))));
+                }
+                if (loaded.stream().anyMatch(known -> known.type().isAssignableFrom(type) || type.isAssignableFrom(known.type()))) {
+                    throw new IllegalStateException("Component %s attempted to load a dependency compatible with another. This might cause non-deterministic behaviour and is therefore prevented: new %s ~ %s"
+                            .formatted(activeComponent.getClass().getSimpleName(), type.getSimpleName(), dependency.getClass().getSimpleName()));
+                }
+                final LoadedDependency<T> loadedDependency = new LoadedDependency<>(type, dependency);
+                components.forEach(component -> component.inject(loadedDependency));
+                loaded.add(loadedDependency);
+            }
+        };
     }
 }
