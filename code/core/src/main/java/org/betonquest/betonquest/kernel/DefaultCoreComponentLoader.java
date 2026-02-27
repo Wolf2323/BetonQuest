@@ -5,10 +5,12 @@ import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.kernel.dependency.DependencyHelper;
 import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -88,12 +90,7 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader {
         log.info("Loading %s BetonQuest components...".formatted(components.size()));
         initialInjections.forEach(this::injectToAll);
         log.debug("Injected initial %s dependencies into components.".formatted(initialInjections.size()));
-        if (components.stream().anyMatch(CoreComponent::isLoaded)) {
-            final String loaded = components.stream().filter(CoreComponent::isLoaded)
-                    .map(CoreComponent::getClass).map(Class::getSimpleName).sorted().collect(Collectors.joining(","));
-            components.removeIf(CoreComponent::isLoaded);
-            log.warn("Components '%s' were already loaded. This might lead to unexpected behavior.".formatted(loaded));
-        }
+        loadedComponentsWarningCheck();
         if (components.isEmpty()) {
             log.warn("No components were registered. Skipping loading.");
             return;
@@ -101,17 +98,34 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader {
         final List<CoreComponent> orderedComponents = DependencyHelper.topologicalOrder(components, loaded);
         log.debug("Component order for %s components: %s".formatted(orderedComponents.size(), orderedComponents.stream().map(CoreComponent::getClass).map(Class::getSimpleName).collect(Collectors.joining(","))));
         final StopWatch stopWatch = StopWatch.createStarted();
-        final StopWatch perComponentStopWatch = StopWatch.create();
-        orderedComponents.forEach(component -> {
-            perComponentStopWatch.start();
-            component.loadComponent(createDependencyProvider(component));
-            perComponentStopWatch.stop();
-            log.debug("Loaded component '%s'. Took %s".formatted(component.getClass().getSimpleName(), perComponentStopWatch.formatTime()));
-            perComponentStopWatch.reset();
-        });
+        orderedComponents.forEach(this::loadComponent);
         stopWatch.stop();
         log.debug("Loaded %s components, took %s".formatted(components.size(), stopWatch.formatTime()));
         log.info("All %s components successfully loaded.".formatted(components.size()));
+    }
+
+    private void loadedComponentsWarningCheck() {
+        if (components.stream().anyMatch(CoreComponent::isLoaded)) {
+            final String loaded = components.stream().filter(CoreComponent::isLoaded)
+                    .map(CoreComponent::getClass).map(Class::getSimpleName).sorted().collect(Collectors.joining(","));
+            components.removeIf(CoreComponent::isLoaded);
+            log.warn("Components '%s' were already loaded. This might lead to unexpected behavior.".formatted(loaded));
+        }
+    }
+
+    private void loadComponent(final CoreComponent component) {
+        final StopWatch stopWatch = StopWatch.createStarted();
+        final List<Class<?>> expectedProvidedClasses = new ArrayList<>(component.provides());
+        component.loadComponent(createDependencyProvider(component, loadedDependency -> {
+            expectedProvidedClasses.removeIf(expectedProvidedClass -> expectedProvidedClass.isAssignableFrom(loadedDependency.type()));
+            injectToAll(loadedDependency);
+        }));
+        stopWatch.stop();
+        if (!expectedProvidedClasses.isEmpty()) {
+            final String missing = expectedProvidedClasses.stream().map(Class::getSimpleName).sorted().collect(Collectors.joining(","));
+            throw new IllegalStateException("Component %s did not provide all expected dependencies, missing: %s".formatted(component.getClass().getSimpleName(), missing));
+        }
+        log.debug("Loaded component '%s'. Took %s".formatted(component.getClass().getSimpleName(), stopWatch.formatTime()));
     }
 
     private void injectToAll(final LoadedDependency<?> loadedDependency) {
@@ -119,7 +133,7 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader {
         loaded.add(loadedDependency);
     }
 
-    private DependencyProvider createDependencyProvider(final CoreComponent activeComponent) {
+    private DependencyProvider createDependencyProvider(final CoreComponent activeComponent, final Consumer<LoadedDependency<?>> injectionReceiver) {
         return new DependencyProvider() {
             @Override
             public <T> void take(final Class<T> type, final T dependency) {
@@ -132,8 +146,7 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader {
                             .formatted(activeComponent.getClass().getSimpleName(), type.getSimpleName(), dependency.getClass().getSimpleName()));
                 }
                 final LoadedDependency<T> loadedDependency = new LoadedDependency<>(type, dependency);
-                components.forEach(component -> component.inject(loadedDependency));
-                loaded.add(loadedDependency);
+                injectionReceiver.accept(loadedDependency);
             }
         };
     }
