@@ -56,7 +56,7 @@ class AbstractCoreComponentTest {
 
     @Test
     void loading_with_fulfilled_dependencies() {
-        component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
+        loader.init(BetonQuestLogger.class, logger);
         loader.register(component);
         loader.load();
         verify(component, times(1)).load(any());

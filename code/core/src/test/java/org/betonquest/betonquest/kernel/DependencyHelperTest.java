@@ -44,8 +44,8 @@ class DependencyHelperTest {
 
     private static DependencyGraphNode node(final Set<Class<?>> requirements, final Set<Class<?>> provided) {
         final DependencyGraphNode mock = mock(DependencyGraphNode.class);
-        when(mock.requires()).thenReturn(requirements);
-        when(mock.provides()).thenReturn(provided);
+        lenient().when(mock.requires()).thenReturn(requirements);
+        lenient().when(mock.provides()).thenReturn(provided);
         return mock;
     }
 
@@ -107,6 +107,12 @@ class DependencyHelperTest {
                 node(Set.of(ObjectivesComponent.class), Set.of(InstructionsComponent.class))
         );
         assertThrows(IllegalStateException.class, () -> DependencyHelper.topologicalOrder(nodes, List.of()), "Should throw an exception because a node has a cyclic dependency");
+    }
+
+    @Test
+    void simple_blocking_node() {
+        final DependencyGraphNode node = node(Set.of(ActionsComponent.class), Set.of(ConditionsComponent.class));
+        assertThrows(IllegalStateException.class, () -> DependencyHelper.topologicalOrder(List.of(node), List.of()), "Should throw an exception because a node is blocking");
     }
 
     @ParameterizedTest

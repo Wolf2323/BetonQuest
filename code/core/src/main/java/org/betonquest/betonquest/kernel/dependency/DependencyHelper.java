@@ -93,6 +93,10 @@ public final class DependencyHelper {
                     .collect(Collectors.joining(" -> "));
             throw new IllegalStateException("Cyclic dependency detected among nodes: " + cycleDescription);
         }
+        if (!DependencyHelper.remainingDependencies(orderedNodes.get(0).requires(), loadedDependencies).isEmpty()) {
+            throw new IllegalStateException("Nodes are missing dependencies entirely: %s"
+                    .formatted(DependencyHelper.remainingDependencies(orderedNodes.get(0).requires(), loadedDependencies).stream().map(Class::getSimpleName).collect(Collectors.joining(", "))));
+        }
         return orderedNodes;
     }
 
