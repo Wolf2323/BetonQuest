@@ -1,13 +1,11 @@
-package org.betonquest.betonquest.kernel;
-
-import java.util.Set;
+package org.betonquest.betonquest.api.dependency;
 
 /**
  * A core component of the BetonQuest plugin representing a unique unit of functionality that may be loaded
  * by a {@link CoreComponentLoader} respecting its dependencies and thereby being loaded in order.
  * <br> <br>
  * Every {@link CoreComponent} defines a list of dependencies in {@link #requires()} that must be injected
- * via {@link #inject(LoadedDependency)} before the component can be loaded (see {@link #canLoad()}).
+ * via {@link #inject(LoadedDependency)} before the component can be loaded.
  * <br> <br>
  * The loading process essentially follows a few steps:
  * <ul>
@@ -18,44 +16,15 @@ import java.util.Set;
  *     <li>After the loading process has finished successfully, {@link #isLoaded()} returns true</li>
  * </ul>
  */
-public interface CoreComponent {
-
-    /**
-     * Specifies an unmodifiable set of types that this component requires to be loaded before itself.
-     * Essentially contains all classes that are dependencies of this component.
-     *
-     * @return all dependencies of this component
-     */
-    Set<Class<?>> requires();
-
-    /**
-     * Checks whether this component still requires the specified type.
-     * May be used to check whether a dependency has been already injected.
-     * <br>
-     * Generally refers to dependencies defined in {@link #requires()}.
-     *
-     * @param type the type to check
-     * @return if this component still requires the specified type
-     */
-    boolean requires(Class<?> type);
+public interface CoreComponent extends DependencyGraphNode {
 
     /**
      * Injects a loaded dependency into this component and removes it from the list of required dependencies.
-     * Injecting a dependency not required as defined by {@link #requires(Class)} will have no effect.
+     * Injecting a dependency that is not required will have no effect.
      *
      * @param loadedDependency the dependency instance to inject
      */
     void inject(LoadedDependency<?> loadedDependency);
-
-    /**
-     * Checks whether this component can be loaded.
-     * <br> <br>
-     * This may be true if all required dependencies have been injected. <br>
-     * It must never be true if the component is already loaded ({@link #isLoaded()} is true).
-     *
-     * @return if this component can be loaded
-     */
-    boolean canLoad();
 
     /**
      * Checks whether this component has been loaded.

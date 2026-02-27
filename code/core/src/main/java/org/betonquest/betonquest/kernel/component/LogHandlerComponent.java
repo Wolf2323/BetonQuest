@@ -1,9 +1,9 @@
 package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.config.FileConfigAccessor;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.betonquest.betonquest.logger.HandlerFactory;
 import org.betonquest.betonquest.logger.handler.chat.AccumulatingReceiverSelector;
 import org.betonquest.betonquest.logger.handler.chat.ChatHandler;
@@ -34,6 +34,11 @@ public class LogHandlerComponent extends AbstractCoreComponent {
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class, Server.class, BukkitScheduler.class,
                 BetonQuestLoggerFactory.class, FileConfigAccessor.class);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(HistoryHandler.class, AccumulatingReceiverSelector.class);
     }
 
     @Override

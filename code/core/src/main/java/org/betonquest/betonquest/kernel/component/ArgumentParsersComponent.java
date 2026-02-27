@@ -1,12 +1,12 @@
 package org.betonquest.betonquest.kernel.component;
 
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.instruction.argument.parser.DefaultArgumentParsers;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
 import org.betonquest.betonquest.api.service.item.ItemManager;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.id.item.ItemIdentifierFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.bukkit.Server;
 
 import java.util.Set;
@@ -26,6 +26,11 @@ public class ArgumentParsersComponent extends AbstractCoreComponent {
     @Override
     public Set<Class<?>> requires() {
         return Set.of(Server.class, ItemManager.class, ItemIdentifierFactory.class, TextParser.class, Identifiers.class);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(DefaultArgumentParsers.class);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package org.betonquest.betonquest.kernel.component;
 
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.registry.quest.IdentifierTypeRegistry;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 
 import java.util.Set;
 
@@ -22,6 +22,11 @@ public class IdentifiersComponent extends AbstractCoreComponent {
     @Override
     public Set<Class<?>> requires() {
         return Set.of(BetonQuestLoggerFactory.class);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(IdentifierTypeRegistry.class);
     }
 
     @Override

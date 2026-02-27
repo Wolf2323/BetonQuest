@@ -1,7 +1,13 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency.component;
+
+import org.betonquest.betonquest.api.dependency.CoreComponent;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
+import org.betonquest.betonquest.api.dependency.LoadedDependency;
+import org.betonquest.betonquest.lib.dependency.DependencyHelper;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Wrapper for {@link CoreComponent} to add additional requirements.
@@ -44,21 +50,16 @@ public class RequirementComponentWrapper implements CoreComponent {
     }
 
     @Override
-    public boolean requires(final Class<?> type) {
-        return DependencyHelper.isStillRequired(requires(), loadedRequirements, type);
+    public Set<Class<?>> provides() {
+        return wrappedComponent.provides();
     }
 
     @Override
     public void inject(final LoadedDependency<?> dependency) {
-        if (requires(dependency.type())) {
+        if (DependencyHelper.isStillRequired(requirements, loadedRequirements, dependency.type())) {
             loadedRequirements.add(dependency);
             wrappedComponent.inject(dependency);
         }
-    }
-
-    @Override
-    public boolean canLoad() {
-        return !isLoaded() && DependencyHelper.remainingDependencies(requires(), loadedRequirements).isEmpty();
     }
 
     @Override
@@ -68,6 +69,10 @@ public class RequirementComponentWrapper implements CoreComponent {
 
     @Override
     public void loadComponent(final DependencyProvider dependencyProvider) {
+        if (isLoaded() || !DependencyHelper.remainingDependencies(requirements, loadedRequirements).isEmpty()) {
+            throw new IllegalStateException("Cannot load component %s because it still requires %s".formatted(wrappedComponent.getClass().getName(),
+                    DependencyHelper.remainingDependencies(requirements, loadedRequirements).stream().map(Class::getSimpleName).collect(Collectors.joining(","))));
+        }
         wrappedComponent.loadComponent(dependencyProvider);
     }
 }

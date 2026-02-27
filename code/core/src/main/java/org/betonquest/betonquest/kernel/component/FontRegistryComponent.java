@@ -4,10 +4,10 @@ import net.kyori.adventure.key.Key;
 import org.apache.commons.lang3.tuple.Pair;
 import org.betonquest.betonquest.api.common.component.font.Font;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.betonquest.betonquest.lib.font.FontRetriever;
 import org.bukkit.plugin.Plugin;
 
@@ -30,6 +30,11 @@ public class FontRegistryComponent extends AbstractCoreComponent {
     @Override
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class, BetonQuestLoggerFactory.class);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(FontRegistry.class);
     }
 
     @Override

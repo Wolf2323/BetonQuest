@@ -1,6 +1,7 @@
 package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.identifier.ObjectiveIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
@@ -11,12 +12,11 @@ import org.betonquest.betonquest.api.service.objective.ObjectiveManager;
 import org.betonquest.betonquest.api.service.objective.ObjectiveRegistry;
 import org.betonquest.betonquest.api.service.objective.Objectives;
 import org.betonquest.betonquest.id.objective.ObjectiveIdentifierFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.quest.ActionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ConditionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ObjectiveProcessor;
 import org.betonquest.betonquest.kernel.registry.quest.ObjectiveTypeRegistry;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
@@ -39,6 +39,11 @@ public class ObjectivesComponent extends AbstractCoreComponent {
         return Set.of(Plugin.class, PluginManager.class,
                 QuestPackageManager.class, BetonQuestLoggerFactory.class, ProfileProvider.class,
                 Identifiers.class, ConditionProcessor.class, ActionProcessor.class, Instructions.class);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(ObjectiveIdentifierFactory.class, ObjectiveTypeRegistry.class, ObjectiveProcessor.class, DefaultObjectives.class);
     }
 
     @Override

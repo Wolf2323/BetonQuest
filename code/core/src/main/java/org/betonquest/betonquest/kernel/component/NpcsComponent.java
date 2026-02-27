@@ -2,6 +2,7 @@ package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.identifier.NpcIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
@@ -17,11 +18,10 @@ import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.id.conversation.ConversationIdentifierFactory;
 import org.betonquest.betonquest.id.npc.NpcIdentifierFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.feature.ConversationProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.NpcProcessor;
 import org.betonquest.betonquest.kernel.registry.quest.NpcTypeRegistry;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Set;
@@ -45,6 +45,11 @@ public class NpcsComponent extends AbstractCoreComponent {
                 Saver.class, PluginMessage.class, Instructions.class, Identifiers.class,
                 ConversationProcessor.class, ActionManager.class, ConditionManager.class,
                 ConversationIdentifierFactory.class);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(NpcIdentifierFactory.class, NpcTypeRegistry.class, NpcProcessor.class, DefaultNpcHider.class, DefaultNpcs.class);
     }
 
     @Override

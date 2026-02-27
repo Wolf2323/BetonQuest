@@ -2,6 +2,7 @@ package org.betonquest.betonquest.kernel.component;
 
 import com.google.common.base.Suppliers;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
@@ -9,9 +10,8 @@ import org.betonquest.betonquest.data.PlayerDataStorage;
 import org.betonquest.betonquest.database.PlayerDataFactory;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.feature.journal.JournalFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.quest.ObjectiveProcessor;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.bukkit.Server;
 
 import java.util.Set;
@@ -37,6 +37,11 @@ public class PlayerDataStorageComponent extends AbstractCoreComponent {
     @Override
     public boolean requires(final Class<?> type) {
         return JournalFactory.class.isAssignableFrom(type) || super.requires(type);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(PlayerDataFactory.class, PlayerDataStorage.class);
     }
 
     @Override

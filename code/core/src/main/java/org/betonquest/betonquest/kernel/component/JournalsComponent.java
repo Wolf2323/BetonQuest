@@ -3,6 +3,7 @@ package org.betonquest.betonquest.kernel.component;
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.identifier.JournalEntryIdentifier;
 import org.betonquest.betonquest.api.identifier.JournalMainPageIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
@@ -14,10 +15,9 @@ import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.feature.journal.JournalFactory;
 import org.betonquest.betonquest.id.journal.JournalEntryIdentifierFactory;
 import org.betonquest.betonquest.id.journal.JournalMainPageIdentifierFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.feature.JournalEntryProcessor;
 import org.betonquest.betonquest.kernel.processor.feature.JournalMainPageProcessor;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
 
 import java.util.Set;
@@ -40,6 +40,12 @@ public class JournalsComponent extends AbstractCoreComponent {
         return Set.of(QuestPackageManager.class, BetonQuestLoggerFactory.class, ConfigAccessor.class,
                 Identifiers.class, Instructions.class, PluginMessage.class, TextParser.class,
                 ParsedSectionTextCreator.class, FontRegistry.class, ConditionManager.class);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(JournalEntryIdentifierFactory.class, JournalMainPageIdentifierFactory.class,
+                JournalEntryProcessor.class, JournalMainPageProcessor.class, JournalFactory.class);
     }
 
     @Override

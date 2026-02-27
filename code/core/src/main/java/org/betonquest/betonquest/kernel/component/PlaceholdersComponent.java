@@ -1,6 +1,7 @@
 package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.identifier.PlaceholderIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.service.identifier.Identifiers;
@@ -9,10 +10,9 @@ import org.betonquest.betonquest.api.service.placeholder.PlaceholderManager;
 import org.betonquest.betonquest.api.service.placeholder.PlaceholderRegistry;
 import org.betonquest.betonquest.api.service.placeholder.Placeholders;
 import org.betonquest.betonquest.id.placeholder.PlaceholderIdentifierFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
 import org.betonquest.betonquest.kernel.registry.quest.PlaceholderTypeRegistry;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -35,6 +35,11 @@ public class PlaceholdersComponent extends AbstractCoreComponent {
         return Set.of(Plugin.class, BukkitScheduler.class,
                 QuestPackageManager.class, BetonQuestLoggerFactory.class,
                 Identifiers.class, Instructions.class);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(PlaceholderIdentifierFactory.class, PlaceholderTypeRegistry.class, PlaceholderProcessor.class, DefaultPlaceholders.class);
     }
 
     @Override

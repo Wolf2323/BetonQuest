@@ -1,4 +1,4 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.api.dependency;
 
 /**
  * Provides dependencies to the core components in the

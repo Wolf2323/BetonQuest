@@ -1,7 +1,10 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency.component;
 
+import org.betonquest.betonquest.api.dependency.CoreComponent;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.logger.util.BetonQuestLoggerService;
+import org.betonquest.betonquest.api.service.ServiceFeature;
+import org.betonquest.betonquest.api.service.action.Actions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,7 +26,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(BetonQuestLoggerService.class)
 @ExtendWith(MockitoExtension.class)
 class DefaultCoreComponentLoaderTest {
 
@@ -71,8 +73,9 @@ class DefaultCoreComponentLoaderTest {
 
     @Test
     void loading_initial_injections_multiple_times_fails() {
-        loader.init(BetonQuestLogger.class, logger);
-        assertThrows(IllegalStateException.class, () -> loader.init(BetonQuestLogger.class, logger));
+        loader.init(Actions.class, mock(Actions.class));
+        assertThrows(IllegalStateException.class, () -> loader.init(Actions.class, mock(Actions.class)), "Should throw an exception because the injections are already initialized");
+        assertThrows(IllegalStateException.class, () -> loader.init(ServiceFeature.class, mock(ServiceFeature.class)), "Should throw an exception because similar injections are already initialized");
     }
 
     @Test
@@ -89,17 +92,17 @@ class DefaultCoreComponentLoaderTest {
         final CoreComponent component = spy(new RawDummyComponent());
         loader.register(component);
         loader.load();
-        verify(component, times(1)).loadComponent(loader);
+        verify(component, times(1)).loadComponent(any());
         assertTrue(component.isLoaded(), "Component should be loaded after loading");
     }
 
     @Test
-    void can_load_method_works_properly() {
+    void loading_expects_logger_calls() {
         final CoreComponent component = spy(new RawDummyComponent());
         loader.register(component);
-        assertTrue(component.canLoad(), "Component should be loadable before loading");
         loader.load();
-        assertFalse(component.canLoad(), "Component should not be loadable after loading");
+        verify(logger, atLeastOnce()).info(anyString());
+        verify(logger, atLeastOnce()).debug(anyString());
     }
 
     @Test
@@ -107,7 +110,7 @@ class DefaultCoreComponentLoaderTest {
         final CoreComponent component = spy(new RawDummyComponent(RawDummyComponent.class));
         loader.register(component);
         assertThrows(IllegalStateException.class, loader::load, "Should throw an exception because a blocking component that cannot be loaded");
-        verify(component, never()).loadComponent(loader);
+        verify(component, never()).loadComponent(any());
     }
 
     @Nested
@@ -123,10 +126,11 @@ class DefaultCoreComponentLoaderTest {
             return Stream.of(
                     Arguments.of(Set.of(new RawDummyComponent(true, RawDummyComponent.class))),
                     Arguments.of(Set.of(new RawDummyComponent(), new RawDummyComponent(RawDummyComponent.class))),
-                    Arguments.of(Set.of(new RawDummyComponent(STRING, Boolean.class), new RawDummyComponent(BOOLEAN, String.class))),
-                    Arguments.of(Set.of(new RawDummyComponent(true, Integer.class), new RawDummyComponent(STRING, RawDummyComponent.class),
-                            new RawDummyComponent(BOOLEAN, String.class), new RawDummyComponent(INTEGER, Boolean.class))),
-                    Arguments.of(Set.of(new RawDummyComponent(true), new RawDummyComponent(true, RawDummyComponent.class)))
+                    Arguments.of(Set.of(new RawDummyComponent(STRING, Set.of(String.class), Boolean.class), new RawDummyComponent(BOOLEAN, Set.of(Boolean.class), String.class))),
+                    Arguments.of(Set.of(new RawDummyComponent(true, Integer.class), new RawDummyComponent(STRING, Set.of(String.class), RawDummyComponent.class),
+                            new RawDummyComponent(BOOLEAN, Set.of(Boolean.class), String.class), new RawDummyComponent(INTEGER, Set.of(Integer.class), Boolean.class))),
+                    Arguments.of(Set.of(new RawDummyComponent(true), new RawDummyComponent(true, RawDummyComponent.class))),
+                    Arguments.of(Set.of(new RawDummyComponent(STRING, Set.of())))
             );
         }
 
@@ -135,10 +139,10 @@ class DefaultCoreComponentLoaderTest {
                     Arguments.of(0, Set.of()),
                     Arguments.of(1, Set.of(new RawDummyComponent(true))),
                     Arguments.of(0, Set.of(new RawDummyComponent(false))),
-                    Arguments.of(2, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, RawDummyComponent.class))),
-                    Arguments.of(3, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, RawDummyComponent.class), new RawDummyComponent(BOOLEAN, String.class))),
-                    Arguments.of(4, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, RawDummyComponent.class), new RawDummyComponent(BOOLEAN, String.class),
-                            new RawDummyComponent(INTEGER, Boolean.class))),
+                    Arguments.of(2, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, Set.of(String.class), RawDummyComponent.class))),
+                    Arguments.of(3, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, Set.of(String.class), RawDummyComponent.class), new RawDummyComponent(BOOLEAN, Set.of(Boolean.class), String.class))),
+                    Arguments.of(4, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, Set.of(String.class), RawDummyComponent.class), new RawDummyComponent(BOOLEAN, Set.of(Boolean.class), String.class),
+                            new RawDummyComponent(INTEGER, Set.of(Integer.class), Boolean.class))),
                     Arguments.of(0, aLot(16)),
                     Arguments.of(0, aLot(100)),
                     Arguments.of(0, aLot(1000))
@@ -190,14 +194,14 @@ class DefaultCoreComponentLoaderTest {
         void loading_with_initial_logger_injection_to_check_components_load_calls() {
             loader.init(BetonQuestLogger.class, logger);
             loader.load();
-            verify(dummyDependency, times(1)).load(loader);
-            verify(dummyComponent, times(1)).load(loader);
+            verify(dummyDependency, times(1)).load(any());
+            verify(dummyComponent, times(1)).load(any());
         }
 
         @Test
         void loading_without_initial_dependencies_fails() {
             assertThrows(IllegalStateException.class, loader::load, "Should throw an exception because a component should fail to load without dependencies");
-            verify(dummyDependency, never()).load(loader);
+            verify(dummyDependency, never()).load(any());
         }
 
         @Test

@@ -1,10 +1,10 @@
 package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.config.ConfigAccessor;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.registry.feature.TextParserRegistryImpl;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.betonquest.betonquest.text.DecidingTextParser;
 import org.betonquest.betonquest.text.TagTextParserDecider;
 
@@ -26,6 +26,11 @@ public class TextParserComponent extends AbstractCoreComponent {
     @Override
     public Set<Class<?>> requires() {
         return Set.of(BetonQuestLoggerFactory.class, ConfigAccessor.class);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(TextParserRegistryImpl.class, DecidingTextParser.class);
     }
 
     @Override

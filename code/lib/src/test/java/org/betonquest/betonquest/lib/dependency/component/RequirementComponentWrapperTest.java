@@ -1,16 +1,14 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency.component;
 
+import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.kernel.component.ActionsComponent;
-import org.betonquest.betonquest.kernel.component.ArgumentParsersComponent;
-import org.betonquest.betonquest.kernel.component.AsyncSaverComponent;
-import org.betonquest.betonquest.kernel.component.CancelersComponent;
-import org.betonquest.betonquest.kernel.component.ConditionsComponent;
-import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
-import org.betonquest.betonquest.kernel.component.InstructionsComponent;
-import org.betonquest.betonquest.kernel.component.ObjectivesComponent;
-import org.betonquest.betonquest.kernel.component.PlaceholdersComponent;
-import org.betonquest.betonquest.logger.util.BetonQuestLoggerService;
+import org.betonquest.betonquest.api.service.action.Actions;
+import org.betonquest.betonquest.api.service.condition.Conditions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.objective.Objectives;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.lib.dependency.DependencyHelper;
+import org.betonquest.betonquest.lib.dependency.SimpleSubSetHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,22 +21,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(BetonQuestLoggerService.class)
 @ExtendWith(MockitoExtension.class)
 class RequirementComponentWrapperTest {
 
-    private static final List<Class<?>> RANDOM_CLASSES_TO_PICK = new ArrayList<>(List.of(ActionsComponent.class,
-            ConditionsComponent.class, ObjectivesComponent.class, PlaceholdersComponent.class, ArgumentParsersComponent.class,
-            AsyncSaverComponent.class, CancelersComponent.class, InstructionsComponent.class, FontRegistryComponent.class));
+    private static final List<Class<?>> RANDOM_CLASSES_TO_PICK = new ArrayList<>(List.of(Actions.class,
+            Conditions.class, Objectives.class, Placeholders.class, ArgumentParsers.class,
+            Instructions.class));
 
     private DefaultCoreComponentLoader loader;
 
-    private CoreComponent dummyComponent;
+    private org.betonquest.betonquest.api.dependency.CoreComponent dummyComponent;
 
     @Mock
     private BetonQuestLogger logger;
@@ -59,19 +57,19 @@ class RequirementComponentWrapperTest {
         loader.register(wrapped);
         loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
         loader.load();
-        verify(dummyComponent, times(1)).loadComponent(loader);
-        verify(wrapped, times(1)).loadComponent(loader);
+        verify(dummyComponent, times(1)).loadComponent(any());
+        verify(wrapped, times(1)).loadComponent(any());
     }
 
     @Test
     void ensure_dependencyProvider_is_only_called_once() {
-        final RawDummyComponent rawDummyComponent = spy(new RawDummyComponent(provider -> provider.take(String.class, "")));
+        final RawDummyComponent rawDummyComponent = spy(new RawDummyComponent(provider -> provider.take(String.class, ""), Set.of(String.class)));
         final RequirementComponentWrapper wrapped = spy(new RequirementComponentWrapper(rawDummyComponent, RequirementComponentWrapper.class));
         loader.register(wrapped);
         loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
         loader.load();
-        verify(wrapped, times(1)).loadComponent(loader);
-        verify(loader, times(1)).take(String.class, "");
+        verify(rawDummyComponent, atLeastOnce()).inject(any());
+        verify(wrapped, times(1)).loadComponent(any());
     }
 
     @Test
@@ -82,12 +80,23 @@ class RequirementComponentWrapperTest {
     }
 
     @Test
-    void normal_with_wrapper_success() {
+    void normal_with_wrapper_success_to_verify_component() {
         final RequirementComponentWrapper wrapped = new RequirementComponentWrapper(dummyComponent, RequirementComponentWrapper.class);
         loader.register(wrapped);
         loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
+        assertFalse(dummyComponent.isLoaded(), "Component should not be loaded");
         loader.load();
         assertTrue(dummyComponent.isLoaded(), "Component should be loaded");
+    }
+
+    @Test
+    void normal_with_wrapper_success_to_verify_wrapper() {
+        final RequirementComponentWrapper wrapped = new RequirementComponentWrapper(dummyComponent, RequirementComponentWrapper.class);
+        loader.register(wrapped);
+        loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
+        assertFalse(wrapped.isLoaded(), "Wrapper should not be loaded");
+        loader.load();
+        assertTrue(wrapped.isLoaded(), "Wrapper should be loaded");
     }
 
     @Test
@@ -113,7 +122,6 @@ class RequirementComponentWrapperTest {
     @MethodSource("requirementOptions")
     void check_for_requirements(final Collection<Class<?>> requirementClasses) {
         final RequirementComponentWrapper wrapped = new RequirementComponentWrapper(dummyComponent, requirementClasses.toArray(new Class<?>[0]));
-        assertTrue(requirementClasses.stream().allMatch(wrapped::requires), "Wrapped component should require all requirement classes");
-        assertFalse(wrapped.canLoad(), "Wrapped component should not be loadable");
+        assertTrue(requirementClasses.stream().allMatch(requirement -> DependencyHelper.isRequired(wrapped.requires(), requirement)), "Wrapped component should require all requirement classes");
     }
 }

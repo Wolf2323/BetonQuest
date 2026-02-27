@@ -2,12 +2,12 @@ package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.ConfigAccessorFactory;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.database.AsyncSaver;
 import org.betonquest.betonquest.database.Backup;
 import org.betonquest.betonquest.database.Connector;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Set;
@@ -28,6 +28,11 @@ public class AsyncSaverComponent extends AbstractCoreComponent {
     @Override
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class, BetonQuestLoggerFactory.class, ConfigAccessorFactory.class, ConfigAccessor.class, Connector.class);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(AsyncSaver.class);
     }
 
     @Override

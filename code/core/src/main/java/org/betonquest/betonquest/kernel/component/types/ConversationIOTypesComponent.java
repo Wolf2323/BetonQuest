@@ -2,6 +2,7 @@ package org.betonquest.betonquest.kernel.component.types;
 
 import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.service.conversation.Conversations;
@@ -13,9 +14,8 @@ import org.betonquest.betonquest.conversation.io.InventoryConvIOFactory;
 import org.betonquest.betonquest.conversation.io.SimpleConvIOFactory;
 import org.betonquest.betonquest.conversation.io.SlowTellrawConvIOFactory;
 import org.betonquest.betonquest.conversation.io.TellrawConvIOFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.registry.feature.ConversationIORegistry;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 

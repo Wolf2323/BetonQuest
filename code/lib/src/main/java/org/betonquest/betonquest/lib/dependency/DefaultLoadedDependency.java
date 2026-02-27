@@ -1,4 +1,6 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency;
+
+import org.betonquest.betonquest.api.dependency.LoadedDependency;
 
 /**
  * The record representing an injected dependency.
@@ -7,14 +9,9 @@ package org.betonquest.betonquest.kernel;
  * @param dependency the dependency instance itself
  * @param <T>        the generic type of the dependency
  */
-public record LoadedDependency<T>(Class<T> type, T dependency) {
+public record DefaultLoadedDependency<T>(Class<T> type, T dependency) implements LoadedDependency<T> {
 
-    /**
-     * Matches a type against the dependency type.
-     *
-     * @param type the type to match
-     * @return if the dependency type is assignable to the given type
-     */
+    @Override
     public boolean match(final Class<?> type) {
         return type.isAssignableFrom(this.type);
     }

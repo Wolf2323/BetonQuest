@@ -1,4 +1,6 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency.component;
+
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -12,6 +14,11 @@ public class RawDummyComponent extends AbstractCoreComponent {
      * The dependencies of this component.
      */
     private final Set<Class<?>> dependencies;
+
+    /**
+     * The provided classes.
+     */
+    private final Set<Class<?>> provided;
 
     /**
      * The method to call when loading this component.
@@ -35,13 +42,14 @@ public class RawDummyComponent extends AbstractCoreComponent {
     /**
      * Create a new dummy component.
      *
-     * @param injectSelf   wether this component should inject itself into the dependency provider
+     * @param injectSelf   whether this component should inject itself into the dependency provider
      * @param dependencies the dependencies of this component
      */
     public RawDummyComponent(final boolean injectSelf, final Class<?>... dependencies) {
         super();
         this.dependencies = Set.of(dependencies);
         this.injectSelf = injectSelf;
+        this.provided = injectSelf ? Set.of(RawDummyComponent.class) : Set.of();
         this.loadMethod = provider -> {
         };
     }
@@ -50,10 +58,12 @@ public class RawDummyComponent extends AbstractCoreComponent {
      * Create a new dummy component.
      *
      * @param loadMethod   the method to call when loading this component
+     * @param provided     the provided classes
      * @param dependencies the dependencies of this component
      */
-    public RawDummyComponent(final Consumer<DependencyProvider> loadMethod, final Class<?>... dependencies) {
+    public RawDummyComponent(final Consumer<DependencyProvider> loadMethod, final Set<Class<?>> provided, final Class<?>... dependencies) {
         super();
+        this.provided = provided;
         this.dependencies = Set.of(dependencies);
         this.injectSelf = false;
         this.loadMethod = loadMethod;
@@ -62,6 +72,11 @@ public class RawDummyComponent extends AbstractCoreComponent {
     @Override
     public Set<Class<?>> requires() {
         return dependencies;
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return provided;
     }
 
     @Override

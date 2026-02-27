@@ -1,9 +1,9 @@
 package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.config.ConfigAccessor;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.betonquest.betonquest.versioning.Version;
 import org.betonquest.betonquest.web.DownloadSource;
 import org.betonquest.betonquest.web.TempFileDownloadSource;
@@ -77,6 +77,11 @@ public class UpdaterComponent extends AbstractCoreComponent {
     public Set<Class<?>> requires() {
         return Set.of(Plugin.class, BukkitScheduler.class, PluginDescriptionFile.class,
                 Server.class, ConfigAccessor.class, BetonQuestLoggerFactory.class);
+    }
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of(Updater.class);
     }
 
     @Override
