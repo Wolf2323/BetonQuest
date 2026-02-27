@@ -31,7 +31,7 @@ public class CommandActionFactory extends BaseCommandActionFactory implements Pl
      * @param server        the server to execute commands on
      */
     public CommandActionFactory(final BetonQuestLoggerFactory loggerFactory, final Server server) {
-        super(loggerFactory, server);
+        super(server);
         this.silentSender = new SilentConsoleCommandSender(loggerFactory.create(SilentCommandSender.class,
                 "CommandAction"), server.getConsoleSender());
     }

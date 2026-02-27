@@ -6,8 +6,6 @@ import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
 import org.betonquest.betonquest.api.instruction.argument.SimpleArgumentParser;
 import org.betonquest.betonquest.api.instruction.argument.parser.NumberParser;
-import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.condition.OnlineConditionAdapter;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
@@ -22,11 +20,6 @@ import java.util.Map;
 public class WandConditionFactory implements PlayerConditionFactory {
 
     /**
-     * Logger Factory to create new class specific logger.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * Magic API to use.
      */
     private final MagicAPI api;
@@ -34,11 +27,9 @@ public class WandConditionFactory implements PlayerConditionFactory {
     /**
      * Create a new factory for Magic Wand Conditions.
      *
-     * @param loggerFactory the logger factory to create class specific logger
-     * @param api           the magic api
+     * @param api the magic api
      */
-    public WandConditionFactory(final BetonQuestLoggerFactory loggerFactory, final MagicAPI api) {
-        this.loggerFactory = loggerFactory;
+    public WandConditionFactory(final MagicAPI api) {
         this.api = api;
     }
 
@@ -49,9 +40,7 @@ public class WandConditionFactory implements PlayerConditionFactory {
                 instruction.parse(SpellParser.SPELL).list().get("spells", Collections.emptyList());
         final Argument<String> name = instruction.string().get("name").orElse(null);
         final Argument<Number> amount = instruction.number().get("amount").orElse(null);
-
-        final BetonQuestLogger log = loggerFactory.create(WandCondition.class);
-        return new OnlineConditionAdapter(new WandCondition(api, type, name, spells, amount), log, instruction.getPackage());
+        return new OnlineConditionAdapter(new WandCondition(api, type, name, spells, amount));
     }
 
     /**

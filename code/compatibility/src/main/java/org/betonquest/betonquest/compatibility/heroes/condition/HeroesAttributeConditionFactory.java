@@ -4,7 +4,6 @@ import com.herocraftonline.heroes.characters.CharacterManager;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.condition.OnlineConditionAdapter;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
@@ -15,11 +14,6 @@ import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 public class HeroesAttributeConditionFactory implements PlayerConditionFactory {
 
     /**
-     * The logger factory.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * The {@link CharacterManager} of the Heroes plugin.
      */
     private final CharacterManager characterManager;
@@ -27,11 +21,9 @@ public class HeroesAttributeConditionFactory implements PlayerConditionFactory {
     /**
      * Create a new Factory to create Give Brew Events.
      *
-     * @param loggerFactory    the logger factory.
      * @param characterManager the {@link CharacterManager} of the Heroes plugin.
      */
-    public HeroesAttributeConditionFactory(final BetonQuestLoggerFactory loggerFactory, final CharacterManager characterManager) {
-        this.loggerFactory = loggerFactory;
+    public HeroesAttributeConditionFactory(final CharacterManager characterManager) {
         this.characterManager = characterManager;
     }
 
@@ -39,7 +31,6 @@ public class HeroesAttributeConditionFactory implements PlayerConditionFactory {
     public PlayerCondition parsePlayer(final Instruction instruction) throws QuestException {
         final Argument<String> attribute = instruction.string().get();
         final Argument<Number> level = instruction.number().get();
-        return new OnlineConditionAdapter(new HeroesAttributeCondition(characterManager, attribute, level),
-                loggerFactory.create(HeroesAttributeCondition.class), instruction.getPackage());
+        return new OnlineConditionAdapter(new HeroesAttributeCondition(characterManager, attribute, level));
     }
 }

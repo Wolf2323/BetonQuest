@@ -34,6 +34,6 @@ public class TakeActionFactory extends AbstractTakeActionFactory {
         final Argument<List<CheckType>> checkOrder = getCheckOrder(instruction);
         final Argument<List<ItemWrapper>> questItems = instruction.item().list().get();
         final NotificationSender notificationSender = getNotificationSender(instruction, log);
-        return new OnlineActionAdapter(new TakeAction(questItems, checkOrder, notificationSender), log, instruction.getPackage());
+        return new OnlineActionAdapter(new TakeAction(questItems, checkOrder, notificationSender));
     }
 }

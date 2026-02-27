@@ -40,10 +40,6 @@ public class MythicCastSkillActionFactory implements PlayerActionFactory {
     public PlayerAction parsePlayer(final Instruction instruction) throws QuestException {
         final Argument<String> skillName = instruction.string().get();
         final BetonQuestLogger log = loggerFactory.create(MythicCastSkillAction.class);
-        return new OnlineActionAdapter(
-                new MythicCastSkillAction(log, instruction.getPackage(), apiHelper, skillName),
-                log,
-                instruction.getPackage()
-        );
+        return new OnlineActionAdapter(new MythicCastSkillAction(log, instruction.getPackage(), apiHelper, skillName));
     }
 }

@@ -4,7 +4,6 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
@@ -19,17 +18,9 @@ import java.util.Random;
 public class ItemDurabilityActionFactory implements PlayerActionFactory {
 
     /**
-     * Logger factory to create a logger for the actions.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * Create the item durability action factory.
-     *
-     * @param loggerFactory the logger factory to create a logger for the actions
      */
-    public ItemDurabilityActionFactory(final BetonQuestLoggerFactory loggerFactory) {
-        this.loggerFactory = loggerFactory;
+    public ItemDurabilityActionFactory() {
     }
 
     @Override
@@ -39,7 +30,6 @@ public class ItemDurabilityActionFactory implements PlayerActionFactory {
         final Argument<Number> amount = instruction.number().get();
         final FlagArgument<Boolean> ignoreUnbreakable = instruction.bool().getFlag("ignoreUnbreakable", true);
         final FlagArgument<Boolean> ignoreEvents = instruction.bool().getFlag("ignoreEvents", true);
-        return new OnlineActionAdapter(new ItemDurabilityAction(slot, operation, amount, ignoreUnbreakable, ignoreEvents, new Random()),
-                loggerFactory.create(ItemDurabilityAction.class), instruction.getPackage());
+        return new OnlineActionAdapter(new ItemDurabilityAction(slot, operation, amount, ignoreUnbreakable, ignoreEvents, new Random()));
     }
 }

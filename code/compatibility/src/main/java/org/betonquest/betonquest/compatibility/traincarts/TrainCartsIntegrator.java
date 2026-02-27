@@ -26,7 +26,7 @@ public class TrainCartsIntegrator implements Integrator {
         objectiveRegistry.register("traincartsride", new TrainCartsRideObjectiveFactory());
         objectiveRegistry.register("traincartsexit", new TrainCartsExitObjectiveFactory());
 
-        api.conditions().registry().register("traincartsride", new TrainCartsRideConditionFactory(api.loggerFactory()));
+        api.conditions().registry().register("traincartsride", new TrainCartsRideConditionFactory());
     }
 
     @Override

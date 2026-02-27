@@ -36,7 +36,7 @@ public class NotifyAllActionFactory extends NotifyActionFactory implements Playe
     public NotifyAllActionFactory(final BetonQuestLoggerFactory loggerFactory,
                                   final TextParser textParser, final PlayerDataStorage dataStorage,
                                   final ProfileProvider profileProvider, final LanguageProvider languageProvider) {
-        super(loggerFactory, textParser, dataStorage, languageProvider);
+        super(textParser, dataStorage, languageProvider);
         this.profileProvider = profileProvider;
     }
 

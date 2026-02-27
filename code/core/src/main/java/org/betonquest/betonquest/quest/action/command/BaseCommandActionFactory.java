@@ -3,7 +3,6 @@ package org.betonquest.betonquest.quest.action.command;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
 import org.bukkit.Server;
 
@@ -31,18 +30,11 @@ public abstract class BaseCommandActionFactory implements PlayerActionFactory {
     protected final Server server;
 
     /**
-     * Logger factory to create a logger for the actions.
-     */
-    protected final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * Create the sudo action factory.
      *
-     * @param loggerFactory the logger factory to create a logger for the actions
-     * @param server        the server to execute commands on
+     * @param server the server to execute commands on
      */
-    public BaseCommandActionFactory(final BetonQuestLoggerFactory loggerFactory, final Server server) {
-        this.loggerFactory = loggerFactory;
+    public BaseCommandActionFactory(final Server server) {
         this.server = server;
     }
 

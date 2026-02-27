@@ -5,7 +5,6 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
@@ -19,11 +18,6 @@ import org.bukkit.configuration.ConfigurationSection;
 public class ParticleActionFactory implements PlayerActionFactory {
 
     /**
-     * Logger Factory to create new class specific logger.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * Effect manager which will create and control the particles.
      */
     private final EffectManager manager;
@@ -31,11 +25,9 @@ public class ParticleActionFactory implements PlayerActionFactory {
     /**
      * Create a factory for particle actions.
      *
-     * @param loggerFactory the logger factory to create new class specific logger
-     * @param manager       the effect manager which will create and control the particles
+     * @param manager the effect manager which will create and control the particles
      */
-    public ParticleActionFactory(final BetonQuestLoggerFactory loggerFactory, final EffectManager manager) {
-        this.loggerFactory = loggerFactory;
+    public ParticleActionFactory(final EffectManager manager) {
         this.manager = manager;
     }
 
@@ -49,6 +41,6 @@ public class ParticleActionFactory implements PlayerActionFactory {
         final Argument<Location> loc = instruction.location().get("loc").orElse(null);
         final FlagArgument<Boolean> privateParticle = instruction.bool().getFlag("private", true);
         final ParticleAction particleAction = new ParticleAction(manager, effectClass, parameters, loc, privateParticle);
-        return new OnlineActionAdapter(particleAction, loggerFactory.create(ParticleAction.class), instruction.getPackage());
+        return new OnlineActionAdapter(particleAction);
     }
 }

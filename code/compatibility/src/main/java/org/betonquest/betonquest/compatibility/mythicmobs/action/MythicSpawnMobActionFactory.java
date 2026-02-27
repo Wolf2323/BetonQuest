@@ -5,7 +5,6 @@ import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.FlagArgument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
@@ -23,11 +22,6 @@ import java.util.Optional;
  * Factory to create {@link MythicSpawnMobAction}s from {@link Instruction}s.
  */
 public class MythicSpawnMobActionFactory implements PlayerActionFactory, PlayerlessActionFactory {
-
-    /**
-     * Factory to create new class specific loggers.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
 
     /**
      * The plugin instance.
@@ -48,14 +42,12 @@ public class MythicSpawnMobActionFactory implements PlayerActionFactory, Playerl
     /**
      * Create a new factory for {@link MythicSpawnMobAction}s.
      *
-     * @param loggerFactory   the logger factory to create class specific logger
      * @param mythicMobParser the parser for the mob type
      * @param plugin          the plugin instance
      * @param mythicHider     the mythic hider instance for the spawned mobs
      */
-    public MythicSpawnMobActionFactory(final BetonQuestLoggerFactory loggerFactory, final MythicMobDoubleParser mythicMobParser,
-                                       final Plugin plugin, final MythicHider mythicHider) {
-        this.loggerFactory = loggerFactory;
+    public MythicSpawnMobActionFactory(final MythicMobDoubleParser mythicMobParser, final Plugin plugin,
+                                       final MythicHider mythicHider) {
         this.mythicMobParser = mythicMobParser;
         this.plugin = plugin;
         this.mythicHider = mythicHider;
@@ -69,8 +61,7 @@ public class MythicSpawnMobActionFactory implements PlayerActionFactory, Playerl
         final FlagArgument<MythicHider> privateMob = instruction.bool().map(val -> val ? mythicHider : null).getFlag("private", mythicHider);
         final FlagArgument<Boolean> targetPlayer = instruction.bool().getFlag("target", true);
         final Argument<String> marked = instruction.packageIdentifier().get("marked").orElse(null);
-        return new OnlineActionAdapter(new MythicSpawnMobAction(plugin, loc, mobLevel, amount, privateMob, targetPlayer, marked),
-                loggerFactory.create(MythicSpawnMobAction.class), instruction.getPackage());
+        return new OnlineActionAdapter(new MythicSpawnMobAction(plugin, loc, mobLevel, amount, privateMob, targetPlayer, marked));
     }
 
     @Override

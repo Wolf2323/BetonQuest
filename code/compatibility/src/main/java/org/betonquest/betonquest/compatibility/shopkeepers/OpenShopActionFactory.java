@@ -4,7 +4,6 @@ import com.nisovin.shopkeepers.api.ShopkeepersAPI;
 import com.nisovin.shopkeepers.api.shopkeeper.Shopkeeper;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
 import org.betonquest.betonquest.api.quest.action.PlayerActionFactory;
@@ -18,17 +17,9 @@ import java.util.UUID;
 public class OpenShopActionFactory implements PlayerActionFactory {
 
     /**
-     * Logger Factory to create new class specific logger.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * Create a new open shop action factory.
-     *
-     * @param loggerFactory the logger factory to create class specific logger
      */
-    public OpenShopActionFactory(final BetonQuestLoggerFactory loggerFactory) {
-        this.loggerFactory = loggerFactory;
+    public OpenShopActionFactory() {
     }
 
     @Override
@@ -41,7 +32,6 @@ public class OpenShopActionFactory implements PlayerActionFactory {
         } catch (final IllegalArgumentException e) {
             throw new QuestException("Could not parse UUID: '" + string + "'", e);
         }
-        return new OnlineActionAdapter(new OpenShopAction(shopkeeper),
-                loggerFactory.create(OpenShopAction.class), instruction.getPackage());
+        return new OnlineActionAdapter(new OpenShopAction(shopkeeper));
     }
 }

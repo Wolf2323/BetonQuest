@@ -4,7 +4,6 @@ import com.herocraftonline.heroes.characters.CharacterManager;
 import org.betonquest.betonquest.api.QuestException;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.quest.condition.OnlineConditionAdapter;
 import org.betonquest.betonquest.api.quest.condition.PlayerCondition;
 import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
@@ -15,11 +14,6 @@ import org.betonquest.betonquest.api.quest.condition.PlayerConditionFactory;
 public class HeroesSkillConditionFactory implements PlayerConditionFactory {
 
     /**
-     * The logger factory.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * The {@link CharacterManager} of the Heroes plugin.
      */
     private final CharacterManager characterManager;
@@ -27,18 +21,15 @@ public class HeroesSkillConditionFactory implements PlayerConditionFactory {
     /**
      * Create a new Factory to create Give Brew Events.
      *
-     * @param loggerFactory    the logger factory.
      * @param characterManager the {@link CharacterManager} of the Heroes plugin.
      */
-    public HeroesSkillConditionFactory(final BetonQuestLoggerFactory loggerFactory, final CharacterManager characterManager) {
-        this.loggerFactory = loggerFactory;
+    public HeroesSkillConditionFactory(final CharacterManager characterManager) {
         this.characterManager = characterManager;
     }
 
     @Override
     public PlayerCondition parsePlayer(final Instruction instruction) throws QuestException {
         final Argument<String> skillName = instruction.string().get();
-        return new OnlineConditionAdapter(new HeroesSkillCondition(characterManager, skillName),
-                loggerFactory.create(HeroesSkillCondition.class), instruction.getPackage());
+        return new OnlineConditionAdapter(new HeroesSkillCondition(characterManager, skillName));
     }
 }

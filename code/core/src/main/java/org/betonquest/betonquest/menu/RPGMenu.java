@@ -106,9 +106,9 @@ public class RPGMenu {
         final BetonQuest betonQuest = BetonQuest.getInstance();
         final String menu = "menu";
         final Server server = betonQuest.getServer();
-        conditionRegistry.register(menu, new MenuConditionFactory(loggerFactory));
+        conditionRegistry.register(menu, new MenuConditionFactory());
         objectiveRegistry.register(menu, new MenuObjectiveFactory(loggerFactory, this));
-        actionRegistry.register(menu, new MenuActionFactory(loggerFactory, this));
+        actionRegistry.register(menu, new MenuActionFactory(this));
         placeholderRegistry.register(menu, new MenuPlaceholderFactory());
         this.pluginCommand = new RPGMenuCommand(loggerFactory.create(RPGMenuCommand.class), this, menuIdentifierFactory);
         pluginCommand.register();

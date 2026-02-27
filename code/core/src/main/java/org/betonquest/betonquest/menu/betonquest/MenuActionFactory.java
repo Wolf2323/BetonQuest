@@ -5,7 +5,6 @@ import org.betonquest.betonquest.api.common.function.QuestConsumer;
 import org.betonquest.betonquest.api.identifier.MenuIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.OnlineProfile;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
@@ -19,11 +18,6 @@ import org.betonquest.betonquest.menu.RPGMenu;
 public class MenuActionFactory implements PlayerActionFactory {
 
     /**
-     * Factory to create new class specific logger.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
-
-    /**
      * RPGMenu instance.
      */
     private final RPGMenu rpgMenu;
@@ -31,11 +25,9 @@ public class MenuActionFactory implements PlayerActionFactory {
     /**
      * Create a new factory for Menu Actions.
      *
-     * @param loggerFactory the factory to create new class specific logger
-     * @param rpgMenu       the rpg menu instance
+     * @param rpgMenu the rpg menu instance
      */
-    public MenuActionFactory(final BetonQuestLoggerFactory loggerFactory, final RPGMenu rpgMenu) {
-        this.loggerFactory = loggerFactory;
+    public MenuActionFactory(final RPGMenu rpgMenu) {
         this.rpgMenu = rpgMenu;
     }
 
@@ -55,7 +47,7 @@ public class MenuActionFactory implements PlayerActionFactory {
                 }
             };
         };
-        return new OnlineActionAdapter(new MenuAction(consumer), loggerFactory.create(MenuAction.class), instruction.getPackage());
+        return new OnlineActionAdapter(new MenuAction(consumer));
     }
 
     /**

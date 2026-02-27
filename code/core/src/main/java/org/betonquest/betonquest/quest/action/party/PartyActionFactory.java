@@ -5,7 +5,6 @@ import org.betonquest.betonquest.api.identifier.ActionIdentifier;
 import org.betonquest.betonquest.api.identifier.ConditionIdentifier;
 import org.betonquest.betonquest.api.instruction.Argument;
 import org.betonquest.betonquest.api.instruction.Instruction;
-import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
 import org.betonquest.betonquest.api.quest.action.OnlineActionAdapter;
 import org.betonquest.betonquest.api.quest.action.PlayerAction;
@@ -19,11 +18,6 @@ import java.util.List;
  * Fires specified actions for every player in the party.
  */
 public class PartyActionFactory implements PlayerActionFactory {
-
-    /**
-     * Logger factory to create a logger for the actions.
-     */
-    private final BetonQuestLoggerFactory loggerFactory;
 
     /**
      * The action manager.
@@ -43,14 +37,12 @@ public class PartyActionFactory implements PlayerActionFactory {
     /**
      * Creates a PartyActionFactory instance.
      *
-     * @param loggerFactory    the logger factory to create a logger for the actions
      * @param profileProvider  the profile provider instance
      * @param actionManager    the action manager
      * @param conditionManager the condition manager
      */
-    public PartyActionFactory(final BetonQuestLoggerFactory loggerFactory, final ProfileProvider profileProvider,
+    public PartyActionFactory(final ProfileProvider profileProvider,
                               final ActionManager actionManager, final ConditionManager conditionManager) {
-        this.loggerFactory = loggerFactory;
         this.profileProvider = profileProvider;
         this.actionManager = actionManager;
         this.conditionManager = conditionManager;
@@ -62,10 +54,6 @@ public class PartyActionFactory implements PlayerActionFactory {
         final Argument<Number> amount = instruction.number().get("amount").orElse(null);
         final Argument<List<ConditionIdentifier>> conditions = instruction.identifier(ConditionIdentifier.class).list().get();
         final Argument<List<ActionIdentifier>> actions = instruction.identifier(ActionIdentifier.class).list().get();
-        return new OnlineActionAdapter(
-                new PartyAction(profileProvider, actionManager, conditionManager, range, amount, conditions, actions),
-                loggerFactory.create(PartyAction.class),
-                instruction.getPackage()
-        );
+        return new OnlineActionAdapter(new PartyAction(profileProvider, actionManager, conditionManager, range, amount, conditions, actions));
     }
 }

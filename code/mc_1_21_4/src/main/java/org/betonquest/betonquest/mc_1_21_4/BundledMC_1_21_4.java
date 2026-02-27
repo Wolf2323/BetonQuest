@@ -53,7 +53,7 @@ public class BundledMC_1_21_4 implements Integrator {
                 betonQuest, betonQuest.getCoreQuestTypeHandler().getTextParser(), betonQuest.getFontRegistry(),
                 betonQuest.getPluginConfig(), betonQuest.getConversationColors()));
 
-        api.conditions().registry().register("biome", new UpdatedBiomeConditionFactory(betonQuest.getLoggerFactory()));
+        api.conditions().registry().register("biome", new UpdatedBiomeConditionFactory());
 
         betonQuest.getCoreQuestTypeHandler().getNotifyIORegistry().register("totem", new UpdatedTotemNotifyIOFactory(api.placeholders().manager()));
     }

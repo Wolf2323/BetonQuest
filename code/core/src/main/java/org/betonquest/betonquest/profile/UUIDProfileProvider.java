@@ -32,35 +32,35 @@ public class UUIDProfileProvider implements ProfileProvider {
     }
 
     @Override
-    public Profile getProfile(final OfflinePlayer player) {
+    public Profile getProfile(final OfflinePlayer offlinePlayer) {
         return new Profile() {
             @Override
             public OfflinePlayer getPlayer() {
-                return player;
+                return offlinePlayer;
             }
 
             @Override
             public UUID getProfileUUID() {
-                return player.getUniqueId();
+                return offlinePlayer.getUniqueId();
             }
 
             @Override
             public String getProfileName() {
-                return player.getName();
+                return offlinePlayer.getName();
             }
 
             @Override
             public Optional<OnlineProfile> getOnlineProfile() {
-                final Player onlinePlayer = player.getPlayer();
-                if (onlinePlayer == null) {
+                final Player player = offlinePlayer.getPlayer();
+                if (player == null || !player.isOnline()) {
                     return Optional.empty();
                 }
-                return Optional.of(getProfile(onlinePlayer));
+                return Optional.of(getProfile(player));
             }
 
             @Override
             public String toString() {
-                return player.getName() + " with profile " + this.getProfileName();
+                return offlinePlayer.getName() + " with profile " + this.getProfileName();
             }
 
             @Override
