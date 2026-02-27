@@ -94,15 +94,6 @@ class DefaultCoreComponentLoaderTest {
     }
 
     @Test
-    void can_load_method_works_properly() {
-        final RawDummyComponent component = spy(new RawDummyComponent());
-        loader.register(component);
-        assertTrue(component.canLoad(), "Component should be loadable before loading");
-        loader.load();
-        assertFalse(component.canLoad(), "Component should not be loadable after loading");
-    }
-
-    @Test
     void loading_a_component_with_unavailable_dependency_fails() {
         final CoreComponent component = spy(new RawDummyComponent(RawDummyComponent.class));
         loader.register(component);

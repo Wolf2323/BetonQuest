@@ -22,19 +22,8 @@ import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
 public interface CoreComponent extends DependencyGraphNode {
 
     /**
-     * Checks whether this component still requires the specified type.
-     * May be used to check whether a dependency has been already injected.
-     * <br>
-     * Generally refers to dependencies defined in {@link #requires()}.
-     *
-     * @param type the type to check
-     * @return if this component still requires the specified type
-     */
-    boolean requires(Class<?> type);
-
-    /**
      * Injects a loaded dependency into this component and removes it from the list of required dependencies.
-     * Injecting a dependency not required as defined by {@link #requires(Class)} will have no effect.
+     * Injecting a dependency that is not required will have no effect.
      *
      * @param loadedDependency the dependency instance to inject
      */

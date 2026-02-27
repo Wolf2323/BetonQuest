@@ -10,6 +10,7 @@ import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
 import org.betonquest.betonquest.kernel.component.InstructionsComponent;
 import org.betonquest.betonquest.kernel.component.ObjectivesComponent;
 import org.betonquest.betonquest.kernel.component.PlaceholdersComponent;
+import org.betonquest.betonquest.kernel.dependency.DependencyHelper;
 import org.betonquest.betonquest.logger.util.BetonQuestLoggerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -112,6 +113,6 @@ class RequirementComponentWrapperTest {
     @MethodSource("requirementOptions")
     void check_for_requirements(final Collection<Class<?>> requirementClasses) {
         final RequirementComponentWrapper wrapped = new RequirementComponentWrapper(dummyComponent, requirementClasses.toArray(new Class<?>[0]));
-        assertTrue(requirementClasses.stream().allMatch(wrapped::requires), "Wrapped component should require all requirement classes");
+        assertTrue(requirementClasses.stream().allMatch(requirement -> DependencyHelper.isRequired(wrapped.requires(), requirement)), "Wrapped component should require all requirement classes");
     }
 }

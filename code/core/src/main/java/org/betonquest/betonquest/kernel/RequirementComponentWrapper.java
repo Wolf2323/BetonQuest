@@ -53,13 +53,8 @@ public class RequirementComponentWrapper implements CoreComponent {
     }
 
     @Override
-    public boolean requires(final Class<?> type) {
-        return DependencyHelper.isStillRequired(requires(), loadedRequirements, type);
-    }
-
-    @Override
     public void inject(final LoadedDependency<?> dependency) {
-        if (requires(dependency.type())) {
+        if (DependencyHelper.isStillRequired(requirements, loadedRequirements, dependency.type())) {
             loadedRequirements.add(dependency);
             wrappedComponent.inject(dependency);
         }
@@ -72,9 +67,9 @@ public class RequirementComponentWrapper implements CoreComponent {
 
     @Override
     public void loadComponent(final DependencyProvider dependencyProvider) {
-        if (isLoaded() || !DependencyHelper.remainingDependencies(requires(), loadedRequirements).isEmpty()) {
+        if (isLoaded() || !DependencyHelper.remainingDependencies(requirements, loadedRequirements).isEmpty()) {
             throw new IllegalStateException("Cannot load component %s because it still requires %s".formatted(wrappedComponent.getClass().getName(),
-                    DependencyHelper.remainingDependencies(requires(), loadedRequirements).stream().map(Class::getSimpleName).collect(Collectors.joining(","))));
+                    DependencyHelper.remainingDependencies(requirements, loadedRequirements).stream().map(Class::getSimpleName).collect(Collectors.joining(","))));
         }
         wrappedComponent.loadComponent(dependencyProvider);
     }

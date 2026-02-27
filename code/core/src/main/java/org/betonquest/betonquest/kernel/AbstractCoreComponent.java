@@ -37,18 +37,8 @@ public abstract class AbstractCoreComponent implements CoreComponent {
     }
 
     @Override
-    public Set<Class<?>> provides() {
-        return Set.of();
-    }
-
-    @Override
     public boolean isLoaded() {
         return loaded;
-    }
-
-    @Override
-    public boolean requires(final Class<?> type) {
-        return DependencyHelper.isStillRequired(requires(), injectedDependencies, type);
     }
 
     @Override
@@ -75,8 +65,26 @@ public abstract class AbstractCoreComponent implements CoreComponent {
         return type.cast(injectedDependency.dependency());
     }
 
+    /**
+     * Checks whether this component still requires the specified type.
+     * May be used to check whether a dependency has been already injected.
+     * <br>
+     * Generally refers to dependencies defined in {@link #requires()}.
+     *
+     * @param type the type to check
+     * @return if this component still requires the specified type
+     */
+    protected boolean requires(final Class<?> type) {
+        return DependencyHelper.isStillRequired(requires(), injectedDependencies, type);
+    }
+
     @Override
     public abstract Set<Class<?>> requires();
+
+    @Override
+    public Set<Class<?>> provides() {
+        return Set.of();
+    }
 
     /**
      * Implement all loading logic here and use the provided {@link DependencyProvider} to inject dependencies into

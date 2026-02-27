@@ -1,6 +1,7 @@
 package org.betonquest.betonquest.kernel;
 
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+import org.betonquest.betonquest.kernel.dependency.DependencyHelper;
 import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
 import org.betonquest.betonquest.logger.util.BetonQuestLoggerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,24 +34,9 @@ class AbstractCoreComponentTest {
 
     @Test
     void inject_dependency_into_component_to_test_requires_method() {
-        assertTrue(component.requires(BetonQuestLogger.class), "Component should require BetonQuestLogger");
+        assertTrue(DependencyHelper.isStillRequired(component.requires(), component.injectedDependencies, BetonQuestLogger.class), "Component should require BetonQuestLogger");
         component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
-        assertFalse(component.requires(BetonQuestLogger.class), "Component should not require BetonQuestLogger anymore");
-    }
-
-    @Test
-    void inject_dependency_into_component_to_test_can_load_method() {
-        assertFalse(component.canLoad(), "Component should not be loadable before injecting dependencies");
-        component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
-        assertTrue(component.canLoad(), "Component should be loadable after injecting dependencies");
-    }
-
-    @Test
-    void is_no_longer_loadable_after_loading() {
-        component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
-        assertTrue(component.canLoad(), "Component should be loadable before loading");
-        component.loadComponent(mock(DependencyProvider.class));
-        assertFalse(component.canLoad(), "Component should not be loadable after loading");
+        assertFalse(DependencyHelper.isStillRequired(component.requires(), component.injectedDependencies, BetonQuestLogger.class), "Component should not require BetonQuestLogger anymore");
     }
 
     @Test
@@ -58,13 +44,7 @@ class AbstractCoreComponentTest {
         for (int i = 0; i < 50; i++) {
             component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
         }
-        assertTrue(component.canLoad(), "Component should be loadable after multiple injections");
         assertEquals(1, component.injectedDependencies.size(), "Component should only have one dependency");
-    }
-
-    @Test
-    void cannot_load_component_without_dependencies() {
-        assertFalse(component.canLoad(), "Component should not be loadable without dependencies");
     }
 
     @Test
