@@ -114,10 +114,11 @@ class DefaultCoreComponentLoaderTest {
             return Stream.of(
                     Arguments.of(Set.of(new RawDummyComponent(true, RawDummyComponent.class))),
                     Arguments.of(Set.of(new RawDummyComponent(), new RawDummyComponent(RawDummyComponent.class))),
-                    Arguments.of(Set.of(new RawDummyComponent(STRING, Boolean.class), new RawDummyComponent(BOOLEAN, String.class))),
-                    Arguments.of(Set.of(new RawDummyComponent(true, Integer.class), new RawDummyComponent(STRING, RawDummyComponent.class),
-                            new RawDummyComponent(BOOLEAN, String.class), new RawDummyComponent(INTEGER, Boolean.class))),
-                    Arguments.of(Set.of(new RawDummyComponent(true), new RawDummyComponent(true, RawDummyComponent.class)))
+                    Arguments.of(Set.of(new RawDummyComponent(STRING, Set.of(String.class), Boolean.class), new RawDummyComponent(BOOLEAN, Set.of(Boolean.class), String.class))),
+                    Arguments.of(Set.of(new RawDummyComponent(true, Integer.class), new RawDummyComponent(STRING, Set.of(String.class), RawDummyComponent.class),
+                            new RawDummyComponent(BOOLEAN, Set.of(Boolean.class), String.class), new RawDummyComponent(INTEGER, Set.of(Integer.class), Boolean.class))),
+                    Arguments.of(Set.of(new RawDummyComponent(true), new RawDummyComponent(true, RawDummyComponent.class))),
+                    Arguments.of(Set.of(new RawDummyComponent(STRING, Set.of())))
             );
         }
 
@@ -126,10 +127,10 @@ class DefaultCoreComponentLoaderTest {
                     Arguments.of(0, Set.of()),
                     Arguments.of(1, Set.of(new RawDummyComponent(true))),
                     Arguments.of(0, Set.of(new RawDummyComponent(false))),
-                    Arguments.of(2, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, RawDummyComponent.class))),
-                    Arguments.of(3, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, RawDummyComponent.class), new RawDummyComponent(BOOLEAN, String.class))),
-                    Arguments.of(4, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, RawDummyComponent.class), new RawDummyComponent(BOOLEAN, String.class),
-                            new RawDummyComponent(INTEGER, Boolean.class))),
+                    Arguments.of(2, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, Set.of(String.class), RawDummyComponent.class))),
+                    Arguments.of(3, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, Set.of(String.class), RawDummyComponent.class), new RawDummyComponent(BOOLEAN, Set.of(Boolean.class), String.class))),
+                    Arguments.of(4, Set.of(new RawDummyComponent(true), new RawDummyComponent(STRING, Set.of(String.class), RawDummyComponent.class), new RawDummyComponent(BOOLEAN, Set.of(Boolean.class), String.class),
+                            new RawDummyComponent(INTEGER, Set.of(Boolean.class), Boolean.class))),
                     Arguments.of(0, aLot(16)),
                     Arguments.of(0, aLot(100)),
                     Arguments.of(0, aLot(1000))
