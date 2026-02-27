@@ -3,6 +3,8 @@ package org.betonquest.betonquest.lib.dependency.component;
 import org.betonquest.betonquest.api.dependency.CoreComponent;
 import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
+import org.betonquest.betonquest.api.service.ServiceFeature;
+import org.betonquest.betonquest.api.service.action.Actions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -71,8 +73,9 @@ class DefaultCoreComponentLoaderTest {
 
     @Test
     void loading_initial_injections_multiple_times_fails() {
-        loader.init(BetonQuestLogger.class, logger);
-        assertThrows(IllegalStateException.class, () -> loader.init(BetonQuestLogger.class, logger));
+        loader.init(Actions.class, mock(Actions.class));
+        assertThrows(IllegalStateException.class, () -> loader.init(Actions.class, mock(Actions.class)), "Should throw an exception because the injections are already initialized");
+        assertThrows(IllegalStateException.class, () -> loader.init(ServiceFeature.class, mock(ServiceFeature.class)), "Should throw an exception because similar injections are already initialized");
     }
 
     @Test
@@ -91,6 +94,15 @@ class DefaultCoreComponentLoaderTest {
         loader.load();
         verify(component, times(1)).loadComponent(any());
         assertTrue(component.isLoaded(), "Component should be loaded after loading");
+    }
+
+    @Test
+    void loading_expects_logger_calls() {
+        final CoreComponent component = spy(new RawDummyComponent());
+        loader.register(component);
+        loader.load();
+        verify(logger, atLeastOnce()).info(anyString());
+        verify(logger, atLeastOnce()).debug(anyString());
     }
 
     @Test

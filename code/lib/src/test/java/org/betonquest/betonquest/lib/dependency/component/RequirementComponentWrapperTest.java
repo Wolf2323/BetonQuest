@@ -68,6 +68,7 @@ class RequirementComponentWrapperTest {
         loader.register(wrapped);
         loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
         loader.load();
+        verify(rawDummyComponent, atLeastOnce()).inject(any());
         verify(wrapped, times(1)).loadComponent(any());
     }
 
@@ -79,12 +80,23 @@ class RequirementComponentWrapperTest {
     }
 
     @Test
-    void normal_with_wrapper_success() {
+    void normal_with_wrapper_success_to_verify_component() {
         final RequirementComponentWrapper wrapped = new RequirementComponentWrapper(dummyComponent, RequirementComponentWrapper.class);
         loader.register(wrapped);
         loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
+        assertFalse(dummyComponent.isLoaded(), "Component should not be loaded");
         loader.load();
         assertTrue(dummyComponent.isLoaded(), "Component should be loaded");
+    }
+
+    @Test
+    void normal_with_wrapper_success_to_verify_wrapper() {
+        final RequirementComponentWrapper wrapped = new RequirementComponentWrapper(dummyComponent, RequirementComponentWrapper.class);
+        loader.register(wrapped);
+        loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
+        assertFalse(wrapped.isLoaded(), "Wrapper should not be loaded");
+        loader.load();
+        assertTrue(wrapped.isLoaded(), "Wrapper should be loaded");
     }
 
     @Test

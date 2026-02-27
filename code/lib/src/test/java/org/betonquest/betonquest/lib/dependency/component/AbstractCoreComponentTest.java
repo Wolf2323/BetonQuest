@@ -1,5 +1,7 @@
 package org.betonquest.betonquest.lib.dependency.component;
 
+import org.betonquest.betonquest.api.dependency.CoreComponentLoader;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.lib.dependency.DefaultLoadedDependency;
 import org.betonquest.betonquest.lib.dependency.DependencyHelper;
@@ -22,7 +24,7 @@ class AbstractCoreComponentTest {
     @Mock
     private BetonQuestLogger logger;
 
-    private org.betonquest.betonquest.api.dependency.CoreComponentLoader loader;
+    private CoreComponentLoader loader;
 
     @BeforeEach
     void setUp() {
@@ -73,9 +75,16 @@ class AbstractCoreComponentTest {
     }
 
     @Test
+    void component_requires_injection() {
+        assertTrue(component.requires(BetonQuestLogger.class), "Component should require BetonQuestLogger");
+        component.inject(new DefaultLoadedDependency<>(BetonQuestLogger.class, logger));
+        assertFalse(component.requires(BetonQuestLogger.class), "Component should no longer require BetonQuestLogger");
+    }
+
+    @Test
     void loading_component_propagates_dependency_provider_and_is_loaded_afterwards() {
         component.inject(new DefaultLoadedDependency<>(BetonQuestLogger.class, logger));
-        final org.betonquest.betonquest.api.dependency.DependencyProvider mockedProvider = mock(org.betonquest.betonquest.api.dependency.DependencyProvider.class);
+        final DependencyProvider mockedProvider = mock(DependencyProvider.class);
         component.loadComponent(mockedProvider);
         assertTrue(component.isLoaded(), "Component should be loaded after loading");
         verify(component, times(1)).load(mockedProvider);
