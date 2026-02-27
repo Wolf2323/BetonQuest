@@ -1,10 +1,10 @@
 package org.betonquest.betonquest.kernel.component;
 
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.config.patcher.migration.Migrator;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 
 import java.io.IOException;
 import java.util.Set;

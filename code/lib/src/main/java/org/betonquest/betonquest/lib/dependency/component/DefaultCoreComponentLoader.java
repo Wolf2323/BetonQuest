@@ -1,9 +1,13 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency.component;
 
 import org.apache.commons.lang3.time.StopWatch;
+import org.betonquest.betonquest.api.dependency.CoreComponent;
+import org.betonquest.betonquest.api.dependency.CoreComponentLoader;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
+import org.betonquest.betonquest.api.dependency.LoadedDependency;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.kernel.dependency.DependencyHelper;
-import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
+import org.betonquest.betonquest.lib.dependency.DefaultLoadedDependency;
+import org.betonquest.betonquest.lib.dependency.DependencyHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,7 +64,7 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader {
 
     @Override
     public <T> void init(final Class<T> type, final T instance) {
-        final LoadedDependency<T> newlyAddedDependency = new LoadedDependency<>(type, instance);
+        final LoadedDependency<T> newlyAddedDependency = new DefaultLoadedDependency<>(type, instance);
         if (initialInjections.stream().anyMatch(dependency -> dependency.match(type) || newlyAddedDependency.match(dependency.type()))) {
             final String existing = initialInjections.stream().filter(dependency -> dependency.match(type))
                     .map(LoadedDependency::type).map(Class::getSimpleName).sorted().collect(Collectors.joining(","));
@@ -145,7 +149,7 @@ public class DefaultCoreComponentLoader implements CoreComponentLoader {
                     throw new IllegalStateException("Component %s attempted to load a dependency compatible with another. This might cause non-deterministic behaviour and is therefore prevented: new %s ~ %s"
                             .formatted(activeComponent.getClass().getSimpleName(), type.getSimpleName(), dependency.getClass().getSimpleName()));
                 }
-                final LoadedDependency<T> loadedDependency = new LoadedDependency<>(type, dependency);
+                final LoadedDependency<T> loadedDependency = new DefaultLoadedDependency<>(type, dependency);
                 injectionReceiver.accept(loadedDependency);
             }
         };

@@ -2,8 +2,8 @@ package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.LanguageProvider;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 
 import java.util.Set;
 

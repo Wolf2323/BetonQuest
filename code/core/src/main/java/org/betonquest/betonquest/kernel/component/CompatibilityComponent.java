@@ -2,10 +2,10 @@ package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.compatibility.Compatibility;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.util.Set;

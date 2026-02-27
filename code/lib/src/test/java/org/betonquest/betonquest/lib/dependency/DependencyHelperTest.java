@@ -1,15 +1,15 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency;
 
-import org.betonquest.betonquest.kernel.component.ActionsComponent;
-import org.betonquest.betonquest.kernel.component.ArgumentParsersComponent;
-import org.betonquest.betonquest.kernel.component.AsyncSaverComponent;
-import org.betonquest.betonquest.kernel.component.ConditionsComponent;
-import org.betonquest.betonquest.kernel.component.InstructionsComponent;
-import org.betonquest.betonquest.kernel.component.ObjectivesComponent;
-import org.betonquest.betonquest.kernel.component.PlaceholdersComponent;
-import org.betonquest.betonquest.kernel.dependency.DependencyGraphNode;
-import org.betonquest.betonquest.kernel.dependency.DependencyHelper;
-import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
+import org.betonquest.betonquest.api.dependency.CoreComponent;
+import org.betonquest.betonquest.api.dependency.DependencyGraphNode;
+import org.betonquest.betonquest.api.dependency.LoadedDependency;
+import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
+import org.betonquest.betonquest.api.service.action.Actions;
+import org.betonquest.betonquest.api.service.condition.Conditions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.objective.Objectives;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,14 +32,14 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class DependencyHelperTest {
 
-    private static final List<Class<?>> RANDOM_CLASSES_TO_PICK = new ArrayList<>(List.of(ActionsComponent.class,
-            ConditionsComponent.class, ObjectivesComponent.class, PlaceholdersComponent.class, ArgumentParsersComponent.class,
-            AsyncSaverComponent.class));
+    private static final List<Class<?>> RANDOM_CLASSES_TO_PICK = new ArrayList<>(List.of(Actions.class,
+            Conditions.class, Objectives.class, Placeholders.class, ArgumentParsers.class,
+            Instructions.class));
 
     private static final List<LoadedDependency<?>> LOADED_DEPENDENCIES = new ArrayList<>(RANDOM_CLASSES_TO_PICK.stream().<LoadedDependency<?>>map(DependencyHelperTest::dep).toList());
 
     private static <T> LoadedDependency<T> dep(final Class<T> clazz) {
-        return new LoadedDependency<>(clazz, mock(clazz));
+        return new DefaultLoadedDependency<>(clazz, mock(clazz));
     }
 
     private static DependencyGraphNode node(final Set<Class<?>> requirements, final Set<Class<?>> provided) {
@@ -87,31 +87,31 @@ class DependencyHelperTest {
     @Test
     void find_simple_topological_order() {
         final List<DependencyGraphNode> nodes = List.of(
-                node(Set.of(PlaceholdersComponent.class, ConditionsComponent.class), Set.of(ObjectivesComponent.class)),
-                node(Set.of(), Set.of(ActionsComponent.class)),
-                node(Set.of(ActionsComponent.class), Set.of(ConditionsComponent.class)),
-                node(Set.of(ActionsComponent.class), Set.of(PlaceholdersComponent.class))
+                node(Set.of(Placeholders.class, Conditions.class), Set.of(Objectives.class)),
+                node(Set.of(), Set.of(Actions.class)),
+                node(Set.of(Actions.class), Set.of(Conditions.class)),
+                node(Set.of(Actions.class), Set.of(Placeholders.class))
         );
         final List<DependencyGraphNode> dependencyGraphNodes = DependencyHelper.topologicalOrder(nodes, List.of());
-        assertTrue(dependencyGraphNodes.get(0).provides().contains(ActionsComponent.class), "ActionsComponent should be first");
-        assertTrue(dependencyGraphNodes.get(3).provides().contains(ObjectivesComponent.class), "ObjectivesComponent should be last");
+        assertTrue(dependencyGraphNodes.get(0).provides().contains(Actions.class), "ActionsComponent should be first");
+        assertTrue(dependencyGraphNodes.get(3).provides().contains(Objectives.class), "ObjectivesComponent should be last");
     }
 
     @Test
     void find_simple_cycle() {
         final List<DependencyGraphNode> nodes = List.of(
-                node(Set.of(PlaceholdersComponent.class, ConditionsComponent.class), Set.of(ObjectivesComponent.class)),
-                node(Set.of(), Set.of(ActionsComponent.class)),
-                node(Set.of(ActionsComponent.class), Set.of(ConditionsComponent.class)),
-                node(Set.of(ActionsComponent.class, InstructionsComponent.class), Set.of(PlaceholdersComponent.class)),
-                node(Set.of(ObjectivesComponent.class), Set.of(InstructionsComponent.class))
+                node(Set.of(Placeholders.class, Conditions.class), Set.of(Objectives.class)),
+                node(Set.of(), Set.of(Actions.class)),
+                node(Set.of(Actions.class), Set.of(Conditions.class)),
+                node(Set.of(Actions.class, Instructions.class), Set.of(Placeholders.class)),
+                node(Set.of(Objectives.class), Set.of(Instructions.class))
         );
         assertThrows(IllegalStateException.class, () -> DependencyHelper.topologicalOrder(nodes, List.of()), "Should throw an exception because a node has a cyclic dependency");
     }
 
     @Test
     void simple_blocking_node() {
-        final DependencyGraphNode node = node(Set.of(ActionsComponent.class), Set.of(ConditionsComponent.class));
+        final DependencyGraphNode node = node(Set.of(Actions.class), Set.of(Conditions.class));
         assertThrows(IllegalStateException.class, () -> DependencyHelper.topologicalOrder(List.of(node), List.of()), "Should throw an exception because a node is blocking");
     }
 
@@ -121,8 +121,9 @@ class DependencyHelperTest {
         final List<DependencyGraphNode> dependencyGraphNodes = DependencyHelper.topologicalOrder(nodes, loadedDependencies);
         final List<Class<?>> loaded = new ArrayList<>(loadedDependencies.stream().map(LoadedDependency::type).toList());
         for (final DependencyGraphNode node : dependencyGraphNodes) {
-            if (!loaded.containsAll(node.requires()))
+            if (!loaded.containsAll(node.requires())) {
                 fail("Node %s requires %s which is not loaded".formatted(node.provides(), node.requires()));
+            }
             loaded.addAll(node.provides());
         }
     }

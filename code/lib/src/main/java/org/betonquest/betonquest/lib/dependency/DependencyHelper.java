@@ -1,10 +1,15 @@
-package org.betonquest.betonquest.kernel.dependency;
+package org.betonquest.betonquest.lib.dependency;
+
+import org.betonquest.betonquest.api.dependency.DependencyGraphNode;
+import org.betonquest.betonquest.api.dependency.LoadedDependency;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -79,9 +84,9 @@ public final class DependencyHelper {
         while (!queue.isEmpty()) {
             final T current = queue.remove(0);
             orderedNodes.add(current);
-            for (final T dependent : graph.dependents().get(current)) {
+            for (final T dependent : Objects.requireNonNull(graph.dependents().get(current))) {
                 graph.decrementInDegree(dependent);
-                if (graph.inDegree().get(dependent) == 0) {
+                if (Objects.requireNonNull(graph.inDegree().get(dependent)) == 0) {
                     queue.add(dependent);
                 }
             }
@@ -93,9 +98,9 @@ public final class DependencyHelper {
                     .collect(Collectors.joining(" -> "));
             throw new IllegalStateException("Cyclic dependency detected among nodes: " + cycleDescription);
         }
-        if (!DependencyHelper.remainingDependencies(orderedNodes.get(0).requires(), loadedDependencies).isEmpty()) {
+        if (!remainingDependencies(orderedNodes.get(0).requires(), loadedDependencies).isEmpty()) {
             throw new IllegalStateException("Nodes are missing dependencies entirely: %s"
-                    .formatted(DependencyHelper.remainingDependencies(orderedNodes.get(0).requires(), loadedDependencies).stream().map(Class::getSimpleName).collect(Collectors.joining(", "))));
+                    .formatted(remainingDependencies(orderedNodes.get(0).requires(), loadedDependencies).stream().map(Class::getSimpleName).collect(Collectors.joining(", "))));
         }
         return orderedNodes;
     }
@@ -109,8 +114,8 @@ public final class DependencyHelper {
      * @return the dependency graph
      */
     public static <T extends DependencyGraphNode> DependencyGraph<T> buildDependencyGraph(final Collection<T> nodes, final Collection<LoadedDependency<?>> loadedDependencies) {
-        final HashMap<T, Integer> inDegree = new HashMap<>();
-        final HashMap<T, Set<T>> dependents = new HashMap<>();
+        final Map<T, Integer> inDegree = new HashMap<>();
+        final Map<T, Set<T>> dependents = new HashMap<>();
         for (final T node : nodes) {
             inDegree.put(node, 0);
             dependents.put(node, new HashSet<>());
@@ -118,13 +123,13 @@ public final class DependencyHelper {
         for (final T node : nodes) {
             final Set<Class<?>> remainingRequirements = remainingDependencies(node.requires(), loadedDependencies);
             for (final T potentialDependency : nodes) {
-                if (node == potentialDependency) {
+                if (node.equals(potentialDependency)) {
                     continue;
                 }
                 for (final Class<?> providedType : potentialDependency.provides()) {
                     if (remainingRequirements.stream().anyMatch(req -> req.isAssignableFrom(providedType))) {
-                        dependents.get(potentialDependency).add(node);
-                        inDegree.put(node, inDegree.get(node) + 1);
+                        Objects.requireNonNull(dependents.get(potentialDependency)).add(node);
+                        inDegree.put(node, Objects.requireNonNull(inDegree.get(node)) + 1);
                         break;
                     }
                 }

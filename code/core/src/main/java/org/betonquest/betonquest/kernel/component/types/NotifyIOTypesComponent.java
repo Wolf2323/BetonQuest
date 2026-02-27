@@ -1,10 +1,10 @@
 package org.betonquest.betonquest.kernel.component.types;
 
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.service.conversation.Conversations;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
 import org.betonquest.betonquest.kernel.registry.feature.NotifyIORegistry;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.betonquest.betonquest.notify.SuppressNotifyIOFactory;
 import org.betonquest.betonquest.notify.io.ActionBarNotifyIOFactory;
 import org.betonquest.betonquest.notify.io.AdvancementNotifyIOFactory;

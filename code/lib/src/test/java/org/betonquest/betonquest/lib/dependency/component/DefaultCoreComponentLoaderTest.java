@@ -1,7 +1,8 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency.component;
 
+import org.betonquest.betonquest.api.dependency.CoreComponent;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.logger.util.BetonQuestLoggerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(BetonQuestLoggerService.class)
 @ExtendWith(MockitoExtension.class)
 class DefaultCoreComponentLoaderTest {
 

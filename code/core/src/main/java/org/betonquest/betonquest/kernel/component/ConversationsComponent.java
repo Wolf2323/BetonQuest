@@ -2,6 +2,7 @@ package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.identifier.ConversationIdentifier;
 import org.betonquest.betonquest.api.identifier.ConversationOptionIdentifier;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
@@ -12,14 +13,13 @@ import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.id.conversation.ConversationIdentifierFactory;
 import org.betonquest.betonquest.id.conversation.ConversationOptionIdentifierFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.feature.ConversationProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ActionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.ConditionProcessor;
 import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
 import org.betonquest.betonquest.kernel.registry.feature.ConversationIORegistry;
 import org.betonquest.betonquest.kernel.registry.feature.InterceptorRegistry;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.betonquest.betonquest.text.ParsedSectionTextCreator;
 import org.bukkit.plugin.Plugin;
 

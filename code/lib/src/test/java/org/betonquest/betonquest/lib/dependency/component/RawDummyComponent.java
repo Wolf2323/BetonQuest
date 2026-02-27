@@ -1,4 +1,6 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency.component;
+
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 
 import java.util.Set;
 import java.util.function.Consumer;

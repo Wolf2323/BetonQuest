@@ -1,4 +1,4 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 /**
  * Simple helper class for testing to generate subsets.
  */
-final class SimpleSubSetHelper {
+public final class SimpleSubSetHelper {
 
     /**
      * Private constructor.
@@ -65,13 +65,13 @@ final class SimpleSubSetHelper {
                 .mapToObj(i -> permutationHelper(i, new LinkedList<>(items), new ArrayList<>()));
     }
 
-    private static <T> List<T> permutationHelper(final long no, final LinkedList<T> in, final List<T> out) {
-        if (in.isEmpty()) {
-            return out;
+    private static <T> List<T> permutationHelper(final long position, final List<T> input, final List<T> output) {
+        if (input.isEmpty()) {
+            return output;
         }
-        final long subFactorial = factorial(in.size() - 1);
-        out.add(in.remove((int) (no / subFactorial)));
-        return permutationHelper((int) (no % subFactorial), in, out);
+        final long subFactorial = factorial(input.size() - 1);
+        output.add(input.remove((int) (position / subFactorial)));
+        return permutationHelper((int) (position % subFactorial), input, output);
     }
 
     private static long factorial(final int number) {

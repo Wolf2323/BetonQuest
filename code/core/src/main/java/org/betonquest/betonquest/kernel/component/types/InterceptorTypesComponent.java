@@ -1,10 +1,10 @@
 package org.betonquest.betonquest.kernel.component.types;
 
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.conversation.interceptor.NonInterceptingInterceptorFactory;
 import org.betonquest.betonquest.conversation.interceptor.SimpleInterceptorFactory;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.registry.feature.InterceptorRegistry;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 
 import java.util.Set;
 

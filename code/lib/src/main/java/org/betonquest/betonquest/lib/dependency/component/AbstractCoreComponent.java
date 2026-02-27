@@ -1,7 +1,9 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency.component;
 
-import org.betonquest.betonquest.kernel.dependency.DependencyHelper;
-import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
+import org.betonquest.betonquest.api.dependency.CoreComponent;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
+import org.betonquest.betonquest.api.dependency.LoadedDependency;
+import org.betonquest.betonquest.lib.dependency.DependencyHelper;
 
 import java.util.HashSet;
 import java.util.Set;

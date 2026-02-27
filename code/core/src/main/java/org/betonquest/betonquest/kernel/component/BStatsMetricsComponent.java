@@ -1,13 +1,13 @@
 package org.betonquest.betonquest.kernel.component;
 
 import org.betonquest.betonquest.api.BetonQuestApi;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.identifier.ReadableIdentifier;
 import org.betonquest.betonquest.bstats.BStatsMetrics;
 import org.betonquest.betonquest.bstats.InstructionMetricsSupplier;
 import org.betonquest.betonquest.bstats.MetricsHolder;
 import org.betonquest.betonquest.compatibility.Compatibility;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 

@@ -1,17 +1,14 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency.component;
 
+import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.kernel.component.ActionsComponent;
-import org.betonquest.betonquest.kernel.component.ArgumentParsersComponent;
-import org.betonquest.betonquest.kernel.component.AsyncSaverComponent;
-import org.betonquest.betonquest.kernel.component.CancelersComponent;
-import org.betonquest.betonquest.kernel.component.ConditionsComponent;
-import org.betonquest.betonquest.kernel.component.FontRegistryComponent;
-import org.betonquest.betonquest.kernel.component.InstructionsComponent;
-import org.betonquest.betonquest.kernel.component.ObjectivesComponent;
-import org.betonquest.betonquest.kernel.component.PlaceholdersComponent;
-import org.betonquest.betonquest.kernel.dependency.DependencyHelper;
-import org.betonquest.betonquest.logger.util.BetonQuestLoggerService;
+import org.betonquest.betonquest.api.service.action.Actions;
+import org.betonquest.betonquest.api.service.condition.Conditions;
+import org.betonquest.betonquest.api.service.instruction.Instructions;
+import org.betonquest.betonquest.api.service.objective.Objectives;
+import org.betonquest.betonquest.api.service.placeholder.Placeholders;
+import org.betonquest.betonquest.lib.dependency.DependencyHelper;
+import org.betonquest.betonquest.lib.dependency.SimpleSubSetHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,17 +27,16 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(BetonQuestLoggerService.class)
 @ExtendWith(MockitoExtension.class)
 class RequirementComponentWrapperTest {
 
-    private static final List<Class<?>> RANDOM_CLASSES_TO_PICK = new ArrayList<>(List.of(ActionsComponent.class,
-            ConditionsComponent.class, ObjectivesComponent.class, PlaceholdersComponent.class, ArgumentParsersComponent.class,
-            AsyncSaverComponent.class, CancelersComponent.class, InstructionsComponent.class, FontRegistryComponent.class));
+    private static final List<Class<?>> RANDOM_CLASSES_TO_PICK = new ArrayList<>(List.of(Actions.class,
+            Conditions.class, Objectives.class, Placeholders.class, ArgumentParsers.class,
+            Instructions.class));
 
     private DefaultCoreComponentLoader loader;
 
-    private CoreComponent dummyComponent;
+    private org.betonquest.betonquest.api.dependency.CoreComponent dummyComponent;
 
     @Mock
     private BetonQuestLogger logger;

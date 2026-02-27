@@ -1,8 +1,8 @@
 package org.betonquest.betonquest.kernel.component;
 
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.profile.ProfileProvider;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.betonquest.betonquest.profile.UUIDProfileProvider;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;

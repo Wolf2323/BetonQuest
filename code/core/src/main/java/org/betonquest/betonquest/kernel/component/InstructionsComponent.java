@@ -2,13 +2,13 @@ package org.betonquest.betonquest.kernel.component;
 
 import com.google.common.base.Suppliers;
 import org.betonquest.betonquest.api.config.quest.QuestPackageManager;
+import org.betonquest.betonquest.api.dependency.DependencyProvider;
 import org.betonquest.betonquest.api.instruction.argument.ArgumentParsers;
 import org.betonquest.betonquest.api.logger.BetonQuestLoggerFactory;
 import org.betonquest.betonquest.api.service.DefaultInstructions;
 import org.betonquest.betonquest.api.service.instruction.Instructions;
-import org.betonquest.betonquest.kernel.AbstractCoreComponent;
-import org.betonquest.betonquest.kernel.DependencyProvider;
 import org.betonquest.betonquest.kernel.processor.quest.PlaceholderProcessor;
+import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 
 import java.util.Set;
 

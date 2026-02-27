@@ -1,9 +1,8 @@
-package org.betonquest.betonquest.kernel;
+package org.betonquest.betonquest.lib.dependency.component;
 
 import org.betonquest.betonquest.api.logger.BetonQuestLogger;
-import org.betonquest.betonquest.kernel.dependency.DependencyHelper;
-import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
-import org.betonquest.betonquest.logger.util.BetonQuestLoggerService;
+import org.betonquest.betonquest.lib.dependency.DefaultLoadedDependency;
+import org.betonquest.betonquest.lib.dependency.DependencyHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +14,6 @@ import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(BetonQuestLoggerService.class)
 @ExtendWith(MockitoExtension.class)
 class AbstractCoreComponentTest {
 
@@ -24,7 +22,7 @@ class AbstractCoreComponentTest {
     @Mock
     private BetonQuestLogger logger;
 
-    private CoreComponentLoader loader;
+    private org.betonquest.betonquest.api.dependency.CoreComponentLoader loader;
 
     @BeforeEach
     void setUp() {
@@ -35,14 +33,14 @@ class AbstractCoreComponentTest {
     @Test
     void inject_dependency_into_component_to_test_requires_method() {
         assertTrue(DependencyHelper.isStillRequired(component.requires(), component.injectedDependencies, BetonQuestLogger.class), "Component should require BetonQuestLogger");
-        component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
+        component.inject(new DefaultLoadedDependency<>(BetonQuestLogger.class, logger));
         assertFalse(DependencyHelper.isStillRequired(component.requires(), component.injectedDependencies, BetonQuestLogger.class), "Component should not require BetonQuestLogger anymore");
     }
 
     @Test
     void multiple_injections_are_skipped() {
         for (int i = 0; i < 50; i++) {
-            component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
+            component.inject(new DefaultLoadedDependency<>(BetonQuestLogger.class, logger));
         }
         assertEquals(1, component.injectedDependencies.size(), "Component should only have one dependency");
     }
@@ -65,7 +63,7 @@ class AbstractCoreComponentTest {
 
     @Test
     void get_dependency_with_fulfilled_requirement() {
-        component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
+        component.inject(new DefaultLoadedDependency<>(BetonQuestLogger.class, logger));
         assertEquals(logger, component.getDependency(BetonQuestLogger.class), "Should return injected dependency");
     }
 
@@ -76,8 +74,8 @@ class AbstractCoreComponentTest {
 
     @Test
     void loading_component_propagates_dependency_provider_and_is_loaded_afterwards() {
-        component.inject(new LoadedDependency<>(BetonQuestLogger.class, logger));
-        final DependencyProvider mockedProvider = mock(DependencyProvider.class);
+        component.inject(new DefaultLoadedDependency<>(BetonQuestLogger.class, logger));
+        final org.betonquest.betonquest.api.dependency.DependencyProvider mockedProvider = mock(org.betonquest.betonquest.api.dependency.DependencyProvider.class);
         component.loadComponent(mockedProvider);
         assertTrue(component.isLoaded(), "Component should be loaded after loading");
         verify(component, times(1)).load(mockedProvider);
