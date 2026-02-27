@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -180,5 +181,42 @@ class DependencyHelperTest {
                 "Subclasses of dependencies should be required if not loaded");
         assertFalse(DependencyHelper.isStillRequired(List.of(CoreComponent.class), List.of(dep(CoreComponent.class)), AbstractCoreComponent.class),
                 "Subclasses of dependencies should not be required if the superclass is loaded");
+    }
+
+    @Test
+    void create_correct_dependency_graph_maps() {
+        final List<DependencyGraphNode> nodes = List.of(
+                node(Set.of(), Set.of(Actions.class)),
+                node(Set.of(Actions.class), Set.of(Conditions.class)),
+                node(Set.of(Actions.class), Set.of(Placeholders.class)),
+                node(Set.of(Placeholders.class, Conditions.class), Set.of(Objectives.class))
+        );
+        final DependencyGraph<DependencyGraphNode> dependencyGraph = DependencyHelper.buildDependencyGraph(nodes, Set.of());
+        assertEquals(4, dependencyGraph.inDegree().size(), "Indegree should be 4");
+        assertEquals(4, dependencyGraph.dependents().size(), "Dependents should be 3");
+    }
+
+    @Test
+    void create_correct_dependency_graph_in_degrees() {
+        final List<DependencyGraphNode> nodes = List.of(
+                node(Set.of(), Set.of(Actions.class)),
+                node(Set.of(Actions.class), Set.of(Conditions.class)),
+                node(Set.of(Actions.class), Set.of(Placeholders.class)),
+                node(Set.of(Placeholders.class, Conditions.class), Set.of(Objectives.class))
+        );
+
+        final DependencyGraph<DependencyGraphNode> dependencyGraph = DependencyHelper.buildDependencyGraph(nodes, Set.of());
+        final Map<DependencyGraphNode, Integer> expectedInDegree = Map.of(nodes.get(0), 0, nodes.get(1), 1, nodes.get(2), 1, nodes.get(3), 2);
+        final String actualInDegrees = nodes.stream().map(node -> node.hashCode() + ":" + dependencyGraph.inDegree().get(node)).collect(Collectors.joining(","));
+        final String expectedInDegrees = nodes.stream().map(node -> node.hashCode() + ":" + expectedInDegree.get(node)).collect(Collectors.joining(","));
+        assertEquals(expectedInDegrees, actualInDegrees, "Indegree should be match");
+
+        final Map<DependencyGraphNode, Set<DependencyGraphNode>> expectedDependents = Map.of(nodes.get(0), Set.of(nodes.get(1), nodes.get(2)), nodes.get(1), Set.of(nodes.get(3)),
+                nodes.get(2), Set.of(nodes.get(3)), nodes.get(3), Set.of());
+        final String actualDependents = nodes.stream().map(node -> "%d:%s".formatted(node.hashCode(),
+                dependencyGraph.dependents().get(node).stream().map(DependencyGraphNode::hashCode).sorted().toList())).collect(Collectors.joining(","));
+        final String expectedDependentsString = nodes.stream().map(node -> "%d:%s".formatted(node.hashCode(),
+                expectedDependents.get(node).stream().map(DependencyGraphNode::hashCode).sorted().toList())).collect(Collectors.joining(","));
+        assertEquals(expectedDependentsString, actualDependents, "Dependents should be match");
     }
 }

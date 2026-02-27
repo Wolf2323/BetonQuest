@@ -15,7 +15,7 @@ class DependencyGraphTest {
 
     private DependencyGraph<DependencyGraphNode> graph;
 
-    private DependencyGraphNode node;
+    private DependencyGraphNode graphNode;
 
     private static DependencyGraphNode node(final Set<Class<?>> requirements, final Set<Class<?>> provided) {
         final DependencyGraphNode mock = mock(DependencyGraphNode.class);
@@ -27,19 +27,19 @@ class DependencyGraphTest {
     @BeforeEach
     void setUp() {
         final Map<DependencyGraphNode, Integer> inDegree = new HashMap<>();
-        node = node(Set.of(), Set.of());
-        inDegree.put(node, 3);
+        graphNode = node(Set.of(), Set.of());
+        inDegree.put(graphNode, 3);
         inDegree.put(node(Set.of(), Set.of()), 2);
         final Map<DependencyGraphNode, Set<DependencyGraphNode>> dependents = new HashMap<>();
-        dependents.put(node, Set.of(node(Set.of(), Set.of()), node(Set.of(), Set.of())));
+        dependents.put(graphNode, Set.of(node(Set.of(), Set.of()), node(Set.of(), Set.of())));
         graph = new DependencyGraph<>(inDegree, dependents);
     }
 
     @Test
     void can_reduce_indegree() {
-        assertEquals(3, graph.inDegree().get(node), "Indegree should be 3");
-        graph.decrementInDegree(node);
-        assertEquals(2, graph.inDegree().get(node), "Indegree should be 2");
+        assertEquals(3, graph.inDegree().get(graphNode), "Indegree should be 3");
+        graph.decrementInDegree(graphNode);
+        assertEquals(2, graph.inDegree().get(graphNode), "Indegree should be 2");
     }
 
     @Test
@@ -50,9 +50,9 @@ class DependencyGraphTest {
 
     @Test
     void after_decrement_there_is_one_positive_indegree_node_left() {
-        graph.decrementInDegree(node);
-        graph.decrementInDegree(node);
-        graph.decrementInDegree(node);
+        graph.decrementInDegree(graphNode);
+        graph.decrementInDegree(graphNode);
+        graph.decrementInDegree(graphNode);
         assertEquals(1, graph.getNodesWithPositiveInDegree().size(), "There should be one positive indegree node");
         assertEquals(1, graph.getNodesWithZeroInDegree().size(), "There should be one zero-in-degree node");
     }
