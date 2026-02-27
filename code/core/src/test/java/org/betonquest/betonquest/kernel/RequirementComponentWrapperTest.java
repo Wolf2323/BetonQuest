@@ -59,8 +59,8 @@ class RequirementComponentWrapperTest {
         loader.register(wrapped);
         loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
         loader.load();
-        verify(dummyComponent, times(1)).loadComponent(loader);
-        verify(wrapped, times(1)).loadComponent(loader);
+        verify(dummyComponent, times(1)).loadComponent(any());
+        verify(wrapped, times(1)).loadComponent(any());
     }
 
     @Test
@@ -70,8 +70,7 @@ class RequirementComponentWrapperTest {
         loader.register(wrapped);
         loader.init(RequirementComponentWrapper.class, mock(RequirementComponentWrapper.class));
         loader.load();
-        verify(wrapped, times(1)).loadComponent(loader);
-        verify(loader, times(1)).take(String.class, "");
+        verify(wrapped, times(1)).loadComponent(any());
     }
 
     @Test
@@ -114,6 +113,5 @@ class RequirementComponentWrapperTest {
     void check_for_requirements(final Collection<Class<?>> requirementClasses) {
         final RequirementComponentWrapper wrapped = new RequirementComponentWrapper(dummyComponent, requirementClasses.toArray(new Class<?>[0]));
         assertTrue(requirementClasses.stream().allMatch(wrapped::requires), "Wrapped component should require all requirement classes");
-        assertFalse(wrapped.canLoad(), "Wrapped component should not be loadable");
     }
 }

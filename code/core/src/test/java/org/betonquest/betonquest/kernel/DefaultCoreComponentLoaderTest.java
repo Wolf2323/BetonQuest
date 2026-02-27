@@ -95,7 +95,7 @@ class DefaultCoreComponentLoaderTest {
 
     @Test
     void can_load_method_works_properly() {
-        final CoreComponent component = spy(new RawDummyComponent());
+        final RawDummyComponent component = spy(new RawDummyComponent());
         loader.register(component);
         assertTrue(component.canLoad(), "Component should be loadable before loading");
         loader.load();

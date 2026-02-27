@@ -5,6 +5,7 @@ import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Default abstract implementation of {@link CoreComponent} aiming to reduce boilerplate code.
@@ -41,11 +42,6 @@ public abstract class AbstractCoreComponent implements CoreComponent {
     }
 
     @Override
-    public boolean canLoad() {
-        return !isLoaded() && DependencyHelper.remainingDependencies(requires(), injectedDependencies).isEmpty();
-    }
-
-    @Override
     public boolean isLoaded() {
         return loaded;
     }
@@ -57,6 +53,11 @@ public abstract class AbstractCoreComponent implements CoreComponent {
 
     @Override
     public final void loadComponent(final DependencyProvider dependencyProvider) {
+        if (isLoaded() || !DependencyHelper.remainingDependencies(requires(), injectedDependencies).isEmpty()) {
+            throw new IllegalStateException("Cannot load component providing (%s) because it still requires %s".formatted(
+                    provides().stream().map(Class::getSimpleName).collect(Collectors.joining(",")),
+                    DependencyHelper.remainingDependencies(requires(), injectedDependencies).stream().map(Class::getSimpleName).collect(Collectors.joining(","))));
+        }
         load(dependencyProvider);
         this.loaded = true;
     }

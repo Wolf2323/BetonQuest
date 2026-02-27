@@ -8,7 +8,7 @@ import org.betonquest.betonquest.kernel.dependency.LoadedDependency;
  * by a {@link CoreComponentLoader} respecting its dependencies and thereby being loaded in order.
  * <br> <br>
  * Every {@link CoreComponent} defines a list of dependencies in {@link #requires()} that must be injected
- * via {@link #inject(LoadedDependency)} before the component can be loaded (see {@link #canLoad()}).
+ * via {@link #inject(LoadedDependency)} before the component can be loaded.
  * <br> <br>
  * The loading process essentially follows a few steps:
  * <ul>
@@ -39,16 +39,6 @@ public interface CoreComponent extends DependencyGraphNode {
      * @param loadedDependency the dependency instance to inject
      */
     void inject(LoadedDependency<?> loadedDependency);
-
-    /**
-     * Checks whether this component can be loaded.
-     * <br> <br>
-     * This may be true if all required dependencies have been injected. <br>
-     * It must never be true if the component is already loaded ({@link #isLoaded()} is true).
-     *
-     * @return if this component can be loaded
-     */
-    boolean canLoad();
 
     /**
      * Checks whether this component has been loaded.
