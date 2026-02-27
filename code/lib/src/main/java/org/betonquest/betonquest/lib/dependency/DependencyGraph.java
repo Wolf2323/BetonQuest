@@ -1,5 +1,7 @@
 package org.betonquest.betonquest.lib.dependency;
 
+import org.betonquest.betonquest.api.dependency.DependencyGraphNode;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
  * @param dependents the set of dependents for each node in the graph
  * @param inDegree   the number of incoming edges to each node in the graph
  */
-public record DependencyGraph<T>(Map<T, Integer> inDegree, Map<T, Set<T>> dependents) {
+public record DependencyGraph<T extends DependencyGraphNode>(Map<T, Integer> inDegree, Map<T, Set<T>> dependents) {
 
     /**
      * Retrieves all nodes from the dependency graph that have zero incoming edges, indicating that
