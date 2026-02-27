@@ -89,7 +89,7 @@ class DefaultCoreComponentLoaderTest {
         final CoreComponent component = spy(new RawDummyComponent());
         loader.register(component);
         loader.load();
-        verify(component, times(1)).loadComponent(loader);
+        verify(component, times(1)).loadComponent(any());
         assertTrue(component.isLoaded(), "Component should be loaded after loading");
     }
 
@@ -107,7 +107,7 @@ class DefaultCoreComponentLoaderTest {
         final CoreComponent component = spy(new RawDummyComponent(RawDummyComponent.class));
         loader.register(component);
         assertThrows(IllegalStateException.class, loader::load, "Should throw an exception because a blocking component that cannot be loaded");
-        verify(component, never()).loadComponent(loader);
+        verify(component, never()).loadComponent(any());
     }
 
     @Nested
@@ -190,14 +190,14 @@ class DefaultCoreComponentLoaderTest {
         void loading_with_initial_logger_injection_to_check_components_load_calls() {
             loader.init(BetonQuestLogger.class, logger);
             loader.load();
-            verify(dummyDependency, times(1)).load(loader);
-            verify(dummyComponent, times(1)).load(loader);
+            verify(dummyDependency, times(1)).load(any());
+            verify(dummyComponent, times(1)).load(any());
         }
 
         @Test
         void loading_without_initial_dependencies_fails() {
             assertThrows(IllegalStateException.class, loader::load, "Should throw an exception because a component should fail to load without dependencies");
-            verify(dummyDependency, never()).load(loader);
+            verify(dummyDependency, never()).load(any());
         }
 
         @Test
