@@ -17,6 +17,7 @@ import org.betonquest.betonquest.api.common.component.font.FontRegistry;
 import org.betonquest.betonquest.api.config.ConfigAccessor;
 import org.betonquest.betonquest.api.dependency.CoreComponentLoader;
 import org.betonquest.betonquest.api.integration.Integration;
+import org.betonquest.betonquest.api.logger.BetonQuestLogger;
 import org.betonquest.betonquest.api.text.TextParser;
 import org.betonquest.betonquest.compatibility.packetevents.action.FreezeActionFactory;
 import org.betonquest.betonquest.compatibility.packetevents.interceptor.PacketEventsInterceptorFactory;
@@ -24,6 +25,7 @@ import org.betonquest.betonquest.compatibility.packetevents.interceptor.history.
 import org.betonquest.betonquest.compatibility.packetevents.interceptor.history.NoneChatHistory;
 import org.betonquest.betonquest.compatibility.packetevents.interceptor.history.PacketChatHistory;
 import org.betonquest.betonquest.compatibility.packetevents.passenger.FakeArmorStandPassengerController;
+import org.betonquest.betonquest.config.PluginMessage;
 import org.betonquest.betonquest.conversation.menu.MenuConvIOFactory;
 import org.betonquest.betonquest.conversation.menu.input.ConversationAction;
 import org.betonquest.betonquest.conversation.menu.input.ConversationSession;
@@ -69,11 +71,13 @@ public class PacketEventsIntegrator implements Integration {
         final CoreComponentLoader componentLoader = plugin.getComponentLoader();
         final ConfigAccessor pluginConfig = plugin.getPluginConfig();
 
+        final BetonQuestLogger log = api.loggerFactory().create(MenuConvIOFactory.class);
+        final PluginMessage message = componentLoader.get(PluginMessage.class);
         final TriFunction<Player, ConversationAction, Boolean, ConversationSession> inputFunction = (player, control, setSpeed) ->
                 new FakeArmorStandPassengerController(plugin, packetEventsAPI, player, control, setSpeed);
         componentLoader.get(ConversationIORegistry.class).register("packetevents",
-                new MenuConvIOFactory(inputFunction, plugin, componentLoader.get(TextParser.class),
-                        componentLoader.get(FontRegistry.class), pluginConfig, plugin.getConversationColors()));
+                new MenuConvIOFactory(log, pluginConfig, plugin, message, inputFunction, componentLoader.get(TextParser.class),
+                        componentLoader.get(FontRegistry.class), plugin.getConversationColors()));
 
         final boolean displayHistory = pluginConfig.getBoolean("conversation.interceptor.display_history");
         final ChatHistory chatHistory = displayHistory ? getPacketChatHistory(packetEventsAPI, api.bukkit()) : new NoneChatHistory();
