@@ -218,10 +218,7 @@ finalizeAndPublish() {
   setupPublishCreatePullRequest
 
   echo '    Resetting current branch...'
-  AMOUNT=0
-  if [ "$ACTION_DO_SETUP" = true ]; then ((AMOUNT++)); fi
-  if [ "$ACTION_DO_BUMP" = true ]; then ((AMOUNT++)); fi
-  git reset --hard HEAD~$AMOUNT 2>&1 > /dev/null | sed 's/^/        /'
+  git reset --hard "$PREVIOUS_HEAD" 2>&1 > /dev/null | sed 's/^/        /'
 
   echo '    DONE'
 }
@@ -303,6 +300,7 @@ goToRootDirectory
 source "./.github/scripts/release_utils.sh"
 source "./.github/scripts/release_prompts.sh"
 
+PREVIOUS_HEAD=$(git rev-parse HEAD)
 printHelp
 checkRequirements
 selectAction
