@@ -289,7 +289,7 @@ bumpPrepare() {
   deletePreviousLines 6
   echo "Bump: $BUMP_MODULES"
 
-  if [ -z "$NEW_VERSION" ]; then
+  if [ -z ${NEW_VERSION+x} ]; then
     NEW_VERSION="$CURRENT_VERSION"
     promptSetupRemote
     promptSetupBranch "$NEW_VERSION"
