@@ -93,7 +93,7 @@ version() {
 }
 
 versionCurrent() {
-  CURRENT_VERSION="$(./mvnw --raw-streams help:evaluate -Dexpression=revision -q -DforceStdout)"
+  CURRENT_VERSION="$(./mvnw -B --raw-streams help:evaluate -Dexpression=revision -q -DforceStdout)"
   echo "    Current: $CURRENT_VERSION"
 }
 
@@ -107,7 +107,7 @@ releasePrepare() {
 
 releasePrepareModule() {
   local module="$1"
-  CURRENT_MODULE_VERSION="$(./mvnw --raw-streams help:evaluate -Dexpression=revision -q -DforceStdout --projects ":$module")"
+  CURRENT_MODULE_VERSION="$(./mvnw -B --raw-streams help:evaluate -Dexpression=revision -q -DforceStdout --projects ":$module")"
   if [ "$(git tag -l "v$CURRENT_MODULE_VERSION-$module")" ]; then
     echo "    $module: up to date"
   else
@@ -169,9 +169,9 @@ setupCommit() {
   echo 'Setup'
 
   echo '    Updating BetonQuest pom.xml file...'
-  ./mvnw versions:set-property -DgenerateBackupPoms=false -Dproperty=revision -DnewVersion="$NEW_VERSION" --projects -:lib,-:api 2>&1 > /dev/null | sed 's/^/        /'
+  ./mvnw -B versions:set-property -DgenerateBackupPoms=false -Dproperty=revision -DnewVersion="$NEW_VERSION" --projects -:lib,-:api 2>&1 > /dev/null | sed 's/^/        /'
 
-  for module in $(./mvnw -DforceStdout help:evaluate -Dexpression=project.modules | sed -n 's:.*<string>\(.*\)</string>.*:\1:p'); do
+  for module in $(./mvnw -B -DforceStdout help:evaluate -Dexpression=project.modules | sed -n 's:.*<string>\(.*\)</string>.*:\1:p'); do
     module="${module#code/}"
     case "$module" in
       api|lib|"") continue ;;
@@ -185,7 +185,7 @@ setupCommit() {
   sed -i "s~## \[Unreleased\] - \${maven\.build\.timestamp}~$NEW_CHANGELOG\n## \[$CURRENT_VERSION\] - $RELEASE_TIME~g" CHANGELOG.md 2>&1 > /dev/null | sed 's/^/        /'
 
   echo '    Committing changed files...'
-  git commit --all --message="Bump version of BetonQuest to $NEW_VERSION" 2>&1 > /dev/null | sed 's/^/        /'
+  git -c core.safecrlf=false commit --all --message="Bump version of BetonQuest to $NEW_VERSION" 2>&1 > /dev/null | sed 's/^/        /'
 }
 
 bumpCommit() {
@@ -193,7 +193,7 @@ bumpCommit() {
 
     echo "    Updating pom.xml files for mudules $BUMP_MODULES..."
     FORMATTED_BUMP_MODULES=":${BUMP_MODULES//,/,:}"
-    ./mvnw versions:set-property -DgenerateBackupPoms=false -Dproperty=revision -DnewVersion="$NEW_VERSION" --projects "$FORMATTED_BUMP_MODULES" 2>&1 > /dev/null | sed 's/^/        /'
+    ./mvnw -B versions:set-property -DgenerateBackupPoms=false -Dproperty=revision -DnewVersion="$NEW_VERSION" --projects "$FORMATTED_BUMP_MODULES" 2>&1 > /dev/null | sed 's/^/        /'
 
     for module in $(echo "$BUMP_MODULES" | tr ',' ' '); do
       find . -name "pom.xml" -type f -exec sed -i "s|<betonquest\.${module}\.version>[^<]*</betonquest\.${module}\.version>|<betonquest.${module}.version>4.0.0\${changelist}</betonquest.${module}.version>|g" {} +
@@ -205,7 +205,7 @@ bumpCommit() {
     fi
 
     echo '    Committing changed files...'
-    git commit --all --message="Bump version of $BUMP_MODULES to $NEW_VERSION" 2>&1 > /dev/null | sed 's/^/        /'
+    git -c core.safecrlf=false commit --all --message="Bump version of $BUMP_MODULES to $NEW_VERSION" 2>&1 > /dev/null | sed 's/^/        /'
 }
 
 finalizeAndPublish() {
