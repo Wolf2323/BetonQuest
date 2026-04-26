@@ -6,6 +6,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - ${maven.build.timestamp}
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [3.0.0] - 2026-04-26
+### Added
 - `quest compass` location now allows variables
 - `point` and `globalpoint` events and conditions now support variables
 - `cancel` event now has `bypass` keyword to ignore conditions in Quest Canceler
