@@ -96,7 +96,11 @@ version() {
 
 versionCurrent() {
   CURRENT_VERSION="$(./mvnw -B --raw-streams help:evaluate -Dexpression=revision -q -DforceStdout)"
-  echo "    betonquest: $CURRENT_VERSION"
+  if [ "$(git tag -l "v$CURRENT_VERSION")" ]; then
+    echo "    betonquest: $CURRENT_VERSION (already released)"
+  else
+    echo "    betonquest: $CURRENT_VERSION"
+  fi
 }
 
 releasePrepare() {
