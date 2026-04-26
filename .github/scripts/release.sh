@@ -119,7 +119,7 @@ releasePrepareModule() {
 releasePublish() {
   echo 'Release'
 
-  echo '    Creating version tag...'
+  echo '    Creating version tag for betonquest...'
   git tag "v$CURRENT_VERSION" HEAD 2>&1 > /dev/null | sed 's/^/        /'
   TAGS_TO_PUSH=("v$CURRENT_VERSION")
 
@@ -135,7 +135,7 @@ releasePublish() {
     TAGS_TO_PUSH+=("$CURRENT_MODULE_VERSION_lib")
   fi
 
-  echo '    Pushing version tag...'
+  echo '    Pushing version tags...'
   git push "$RELEASE_REMOTE_REPOSITORY" "${TAGS_TO_PUSH[@]}" 2>&1 > /dev/null | sed 's/^/        /'
 
   echo '    DONE'
@@ -177,7 +177,7 @@ setupCommit() {
       api|lib|"") continue ;;
     esac
     find . -name "pom.xml" -type f -exec sed -i \
-      "s|<betonquest\.${module}\.version>[^<]*</betonquest\.${module}\.version>|<betonquest.${module}.version>4.0.0\${changelist}</betonquest.${module}.version>|g" {} +
+      "s|<betonquest\.${module}\.version>[^<]*</betonquest\.${module}\.version>|<betonquest.${module}.version>${NEW_VERSION}\${changelist}</betonquest.${module}.version>|g" {} +
   done
 
   echo '    Updating CHANGELOG.md file...'
@@ -189,36 +189,38 @@ setupCommit() {
 }
 
 bumpCommit() {
-    echo 'Bump'
+  echo 'Bump'
 
-    echo "    Updating pom.xml files for mudules $BUMP_MODULES..."
-    FORMATTED_BUMP_MODULES=":${BUMP_MODULES//,/,:}"
-    ./mvnw -B versions:set-property -DgenerateBackupPoms=false -Dproperty=revision -DnewVersion="$NEW_VERSION" --projects "$FORMATTED_BUMP_MODULES" 2>&1 > /dev/null | sed 's/^/        /'
+  echo "    Updating pom.xml files for mudules $BUMP_MODULES..."
+  FORMATTED_BUMP_MODULES=":${BUMP_MODULES//,/,:}"
+  ./mvnw -B versions:set-property -DgenerateBackupPoms=false -Dproperty=revision -DnewVersion="$NEW_VERSION" --projects "$FORMATTED_BUMP_MODULES" 2>&1 > /dev/null | sed 's/^/        /'
 
-    for module in $(echo "$BUMP_MODULES" | tr ',' ' '); do
-      find . -name "pom.xml" -type f -exec sed -i "s|<betonquest\.${module}\.version>[^<]*</betonquest\.${module}\.version>|<betonquest.${module}.version>4.0.0\${changelist}</betonquest.${module}.version>|g" {} +
-    done
+  for module in $(echo "$BUMP_MODULES" | tr ',' ' '); do
+    find . -name "pom.xml" -type f -exec sed -i \
+      "s|<betonquest\.${module}\.version>[^<]*</betonquest\.${module}\.version>|<betonquest.${module}.version>${NEW_VERSION}\${changelist}</betonquest.${module}.version>|g" {} +
+  done
 
-    if [ ! "$(git status --porcelain)" ]; then
-      echo 'No version to bump to was found!'
-      exit 1
-    fi
+  if [ ! "$(git status --porcelain)" ]; then
+    echo 'No version to bump to was found!'
+    exit 1
+  fi
 
-    echo '    Committing changed files...'
-    git -c core.safecrlf=false commit --all --message="Bump version of $BUMP_MODULES to $NEW_VERSION" 2>&1 > /dev/null | sed 's/^/        /'
+  echo '    Committing changed files...'
+  git -c core.safecrlf=false commit --all --message="Bump version of $BUMP_MODULES to $NEW_VERSION" 2>&1 > /dev/null | sed 's/^/        /'
 }
 
 finalizeAndPublish() {
-    echo '    Pushing committed changes...'
-    git push "$SETUP_REMOTE_REPOSITORY" "HEAD:$SETUP_REMOTE_BRANCH" 2>&1 > /dev/null | sed 's/^/        /'
+  echo 'Finalize'
+  echo '    Pushing committed changes...'
+  git push "$SETUP_REMOTE_REPOSITORY" "HEAD:$SETUP_REMOTE_BRANCH" 2>&1 > /dev/null | sed 's/^/        /'
 
-    echo '    Creating Pull Request...'
-    setupPublishCreatePullRequest
+  echo '    Creating Pull Request...'
+  setupPublishCreatePullRequest
 
-    echo '    Resetting current branch...'
-    git reset --hard HEAD~1 2>&1 > /dev/null | sed 's/^/        /'
+  echo '    Resetting current branch...'
+  git reset --hard HEAD~1 2>&1 > /dev/null | sed 's/^/        /'
 
-    echo '    DONE'
+  echo '    DONE'
 }
 
 setupPublishCreatePullRequest() {
