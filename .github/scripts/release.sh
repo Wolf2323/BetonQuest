@@ -218,7 +218,10 @@ finalizeAndPublish() {
   setupPublishCreatePullRequest
 
   echo '    Resetting current branch...'
-  git reset --hard HEAD~1 2>&1 > /dev/null | sed 's/^/        /'
+  AMOUNT=0
+  if [ "$ACTION_DO_SETUP" = true ]; then ((AMOUNT++)); fi
+  if [ "$ACTION_DO_BUMP" = true ]; then ((AMOUNT++)); fi
+  git reset --hard HEAD~$AMOUNT 2>&1 > /dev/null | sed 's/^/        /'
 
   echo '    DONE'
 }
