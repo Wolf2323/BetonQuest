@@ -83,6 +83,8 @@ version() {
   printNewSection
   echo 'Version:'
   versionCurrent
+  releasePrepareModule "api"
+  releasePrepareModule "lib"
   if [ "$ACTION_DO_SETUP" = true ]; then
     promptNewVersion
     promptShouldBumpVersion
@@ -94,22 +96,20 @@ version() {
 
 versionCurrent() {
   CURRENT_VERSION="$(./mvnw -B --raw-streams help:evaluate -Dexpression=revision -q -DforceStdout)"
-  echo "    Current: $CURRENT_VERSION"
+  echo "    betonquest: $CURRENT_VERSION"
 }
 
 releasePrepare() {
   printNewSection
   echo 'Release:'
   promptReleaseRemote
-  releasePrepareModule "api"
-  releasePrepareModule "lib"
 }
 
 releasePrepareModule() {
   local module="$1"
   CURRENT_MODULE_VERSION="$(./mvnw -B --raw-streams help:evaluate -Dexpression=revision -q -DforceStdout --projects ":$module")"
   if [ "$(git tag -l "v$CURRENT_MODULE_VERSION-$module")" ]; then
-    echo "    $module: up to date"
+    echo "    $module: $CURRENT_MODULE_VERSION (already released)"
   else
     echo "    $module: $CURRENT_MODULE_VERSION"
     printf -v "CURRENT_MODULE_VERSION_$module" '%s' "v$CURRENT_MODULE_VERSION-$module"
