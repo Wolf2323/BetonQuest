@@ -18,7 +18,7 @@ printHelp() {
   echo '        Additionally a Pull Request is created for the selected remote repository and branch.'
   echo '    Bump'
   echo '        Bump the version of lazy versioned modules to the current version of BetonQuest.'
-  echo '        Selected either API & Library or just the Library to bump.'
+  echo '        Select either API & Library or just the Library to bump.'
   echo
   echo '    A value in (parentheses) before an input value is the default value if no input is given.'
 }
@@ -65,7 +65,7 @@ selectAction() {
         exit 1
         ;;
   esac
-  deletePreviousLines 7
+  deletePreviousLines 8
   echo "Action: $ACTION_TYPE"
 }
 
@@ -121,22 +121,22 @@ releasePublish() {
 
   echo '    Creating version tag...'
   git tag "v$CURRENT_VERSION" HEAD 2>&1 > /dev/null | sed 's/^/        /'
-  TAGS_TO_PUSH="v$CURRENT_VERSION"
+  TAGS_TO_PUSH=("v$CURRENT_VERSION")
 
   if [ -n "$CURRENT_MODULE_VERSION_api" ]; then
     echo '    Creating version tag for api...'
     git tag "$CURRENT_MODULE_VERSION_api" HEAD 2>&1 > /dev/null | sed 's/^/        /'
-    TAGS_TO_PUSH="$TAGS_TO_PUSH $CURRENT_MODULE_VERSION_api"
+    TAGS_TO_PUSH+=("$CURRENT_MODULE_VERSION_api")
   fi
 
   if [ -n "$CURRENT_MODULE_VERSION_lib" ]; then
     echo '    Creating version tag for lib...'
     git tag "$CURRENT_MODULE_VERSION_lib" HEAD 2>&1 > /dev/null | sed 's/^/        /'
-    TAGS_TO_PUSH="$TAGS_TO_PUSH $CURRENT_MODULE_VERSION_lib"
+    TAGS_TO_PUSH+=("$CURRENT_MODULE_VERSION_lib")
   fi
 
   echo '    Pushing version tag...'
-  git push "$RELEASE_REMOTE_REPOSITORY" "$TAGS_TO_PUSH" 2>&1 > /dev/null | sed 's/^/        /'
+  git push "$RELEASE_REMOTE_REPOSITORY" "${TAGS_TO_PUSH[@]}" 2>&1 > /dev/null | sed 's/^/        /'
 
   echo '    DONE'
 }
@@ -256,23 +256,23 @@ setupPublishCreatePullRequestSlug() {
 bumpPrepare() {
   printNewSection
   echo 'Bump:'
-  echo '    1. api'
-  echo '    2. lib'
-  echo '    3. api & lib'
+  echo '    1. api & lib'
+  echo '    2. api'
+  echo '    3. lib'
   echo
   echo '    ? Select the module(s) you want to bump'
   echo -n '    Selection: '
 
   read -r ACTION
   case "$ACTION" in
-    1|'api')
+    1|'api & lib')
+        BUMP_MODULES='api,lib'
+        ;;
+    2|'api')
         BUMP_MODULES='api'
         ;;
-    2|'lib')
+    3|'lib')
         BUMP_MODULES='lib'
-        ;;
-    3|'api & lib')
-        BUMP_MODULES='api,lib'
         ;;
     *)  printNewSection
         echo 'You need to select a valid module to bump!'
