@@ -195,7 +195,7 @@ bumpCommit() {
   FORMATTED_BUMP_MODULES=":${BUMP_MODULES//,/,:}"
   ./mvnw -B versions:set-property -DgenerateBackupPoms=false -Dproperty=revision -DnewVersion="$NEW_VERSION" --projects "$FORMATTED_BUMP_MODULES" 2>&1 > /dev/null | sed 's/^/        /'
 
-  for module in $(echo "$BUMP_MODULES" | tr ',' ' '); do
+  for module in $(echo "$BUMP_MODULES" | tr ',' '\t'); do
     find . -name "pom.xml" -type f -exec sed -i \
       "s|<betonquest\.${module}\.version>[^<]*</betonquest\.${module}\.version>|<betonquest.${module}.version>${NEW_VERSION}\${changelist}</betonquest.${module}.version>|g" {} +
   done
