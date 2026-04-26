@@ -286,8 +286,8 @@ bumpPrepare() {
         exit 1
         ;;
   esac
-  deletePreviousLines 7
-  echo "Bump: $BUMP_MODULES"
+  deletePreviousLines 6
+  echo "    Modules: $BUMP_MODULES"
 
   if [ -z ${NEW_VERSION+x} ]; then
     NEW_VERSION="$CURRENT_VERSION"
