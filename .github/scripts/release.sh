@@ -177,7 +177,7 @@ setupCommit() {
       api|lib|"") continue ;;
     esac
     find . -name "pom.xml" -type f -exec sed -i \
-      "s|<betonquest\.${module}\.version>[^<]*</betonquest\.${module}\.version>|<betonquest.${module}.version>${NEW_VERSION}\${changelist}</betonquest.${module}.version>|g" {} +
+      "s|<betonquest\.${module}\.version>[^<]*</betonquest\.${module}\.version>|<betonquest.${module}.version>${NEW_VERSION}\${changelist}</betonquest.${module}.version>|g" {} \;
   done
 
   echo '    Updating CHANGELOG.md file...'
@@ -195,10 +195,13 @@ bumpCommit() {
   FORMATTED_BUMP_MODULES=":${BUMP_MODULES//,/,:}"
   ./mvnw -B versions:set-property -DgenerateBackupPoms=false -Dproperty=revision -DnewVersion="$NEW_VERSION" --projects "$FORMATTED_BUMP_MODULES" 2>&1 > /dev/null | sed 's/^/        /'
 
+  echo "Start replacement"
   for module in $(echo "$BUMP_MODULES" | tr ',' ' '); do
+    echo "For module $module"
     find . -name "pom.xml" -type f -exec sed -i \
-      "s|<betonquest\.${module}\.version>[^<]*</betonquest\.${module}\.version>|<betonquest.${module}.version>${NEW_VERSION}\${changelist}</betonquest.${module}.version>|g" {} +
+      "s|<betonquest\.${module}\.version>[^<]*</betonquest\.${module}\.version>|<betonquest.${module}.version>${NEW_VERSION}\${changelist}</betonquest.${module}.version>|g" {} \;
   done
+  echo "Replaced"
 
   if [ ! "$(git status --porcelain)" ]; then
     echo 'No version to bump to was found!'
