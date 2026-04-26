@@ -110,6 +110,7 @@ releasePrepareModule() {
   CURRENT_MODULE_VERSION="$(./mvnw -B --raw-streams help:evaluate -Dexpression=revision -q -DforceStdout --projects ":$module")"
   if [ "$(git tag -l "v$CURRENT_MODULE_VERSION-$module")" ]; then
     echo "    $module: $CURRENT_MODULE_VERSION (already released)"
+    printf -v "CURRENT_MODULE_VERSION_$module" '%s' ""
   else
     echo "    $module: $CURRENT_MODULE_VERSION"
     printf -v "CURRENT_MODULE_VERSION_$module" '%s' "v$CURRENT_MODULE_VERSION-$module"
