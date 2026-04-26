@@ -232,7 +232,7 @@ setupPublishCreatePullRequest() {
         --body "This is an automatically created PR from the release script" \
         --base "$CURRENT_BRANCH" \
         --head "$SETUP_REMOTE_SLUG:$SETUP_REMOTE_BRANCH" \
-        --repo "BetonQuest/BetonQuest" \
+        --repo "$SETUP_REMOTE_SLUG/BetonQuest" \
         2>&1 > /dev/null | sed 's/^/        /'
         return
     else
