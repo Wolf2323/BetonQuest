@@ -5,7 +5,7 @@
 // E.g.: https://repo.betonquest.org/betonquest/
 
 document$.subscribe(async () => {
-  const repoUrl = "${REPOSITORY_URL}";
+  const repoUrl = "https://repo.betonquest.org/betonquest/";
   const parts = repoUrl.split("/");
   const baseUrl = parts.slice(0, -2).join("/") + "/";
 
@@ -36,7 +36,7 @@ document$.subscribe(async () => {
       latestBuild.textContent = version;
       const downloadUrl = builds[0].downloadUrl;
       latestBuild.onclick = function () {
-        downloadWithRename(downloadUrl, "BetonQuest-" + version + ".jar");
+        downloadWithRename(downloadUrl, "BetonQuest-" + version + ".jar", latestBuild);
       };
       resetDisabled(latestBuild);
     } else {
@@ -61,7 +61,7 @@ document$.subscribe(async () => {
         a.textContent = version;
         a.href = "#";
         a.onclick = function () {
-          downloadWithRename(build.downloadUrl, "BetonQuest-" + version + ".jar");
+          downloadWithRename(build.downloadUrl, "BetonQuest-" + version + ".jar", a);
         };
         a.style.cssText = "width: 100%; text-align: center;";
         a.classList.add("md-button");
@@ -99,17 +99,59 @@ document$.subscribe(async () => {
     return builds;
   }
 
-  function downloadWithRename(url, filename) {
-    return fetch(url).then(async response => {
-      if (response.ok) {
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(await response.blob());
-        link.download = filename ? filename : url.split("/").pop();
-        link.click();
-      } else {
-        console.error("Error while downloading file: " + response.status + " " + response.statusText + "");
+  async function downloadWithRename(url, filename, statusElement) {
+    const originalText = statusElement ? statusElement.textContent : "";
+    if (statusElement) {
+      statusElement.style.pointerEvents = "none";
+      statusElement.textContent = "Downloading...";
+    }
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+
+      const contentLength = response.headers.get("Content-Length");
+      const total = contentLength ? parseInt(contentLength, 10) : 0;
+      let loaded = 0;
+
+      const reader = response.body.getReader();
+      const chunks = [];
+
+      while (true) {
+        const {done, value} = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        loaded += value.length;
+
+        if (statusElement) {
+          if (total) {
+            const percent = Math.round((loaded / total) * 100);
+            statusElement.textContent = `Downloading... ${percent}%`;
+          } else {
+            const loadedMb = (loaded / (1024 * 1024)).toFixed(1);
+            statusElement.textContent = `Downloading... ${loadedMb} MB`;
+          }
+        }
       }
-    });
+
+      const blob = new Blob(chunks);
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename || url.split("/").pop();
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Download failed:", error);
+      if (statusElement) {
+        statusElement.textContent = "Download failed";
+      }
+    } finally {
+      if (statusElement) {
+        setTimeout(() => {
+          statusElement.textContent = originalText;
+          resetDisabled(statusElement);
+        }, 1500);
+      }
+    }
   }
 
 });
