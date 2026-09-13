@@ -59,10 +59,33 @@ public class SimpleInterceptor implements Interceptor, Listener {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidSynchronizedStatement")
     public void end() {
         HandlerList.unregisterAll(this);
-        for (final String message : messages) {
-            player.sendMessage(message);
+        synchronized (this) {
+            for (final String message : messages) {
+                player.sendMessage(message);
+            }
+            messages.clear();
+        }
+    }
+
+    @Override
+    @SuppressWarnings("PMD.AvoidSynchronizedStatement")
+    public void transferTo(final Interceptor next) {
+        HandlerList.unregisterAll(this);
+        synchronized (this) {
+            if (next instanceof final SimpleInterceptor other) {
+                synchronized (other) {
+                    other.messages.addAll(this.messages);
+                    this.messages.clear();
+                }
+            } else {
+                for (final String message : messages) {
+                    player.sendMessage(message);
+                }
+                messages.clear();
+            }
         }
     }
 

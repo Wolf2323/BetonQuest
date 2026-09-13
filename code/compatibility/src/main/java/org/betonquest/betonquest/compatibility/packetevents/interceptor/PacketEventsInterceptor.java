@@ -113,14 +113,39 @@ public class PacketEventsInterceptor implements Interceptor, PacketListener {
 
     @Override
     public void end() {
-        final User user = packetEventsAPI.getPlayerManager().getUser(onlineProfile.getPlayer());
-        if (user != null) {
-            chatHistory.sendHistory(onlineProfile.getPlayer());
-            while (!messages.isEmpty()) {
-                user.sendPacketSilently(messages.poll());
+        if (ended.compareAndSet(false, true)) {
+            final User user = packetEventsAPI.getPlayerManager().getUser(onlineProfile.getPlayer());
+            if (user != null) {
+                chatHistory.sendHistory(onlineProfile.getPlayer());
+                while (!messages.isEmpty()) {
+                    user.sendPacketSilently(messages.poll());
+                }
+            }
+            if (packetListenerCommon != null) {
+                packetEventsAPI.getEventManager().unregisterListener(packetListenerCommon);
             }
         }
-        ended.set(true);
-        packetEventsAPI.getEventManager().unregisterListener(packetListenerCommon);
+    }
+
+    @Override
+    public void transferTo(final Interceptor next) {
+        if (ended.compareAndSet(false, true)) {
+            if (packetListenerCommon != null) {
+                packetEventsAPI.getEventManager().unregisterListener(packetListenerCommon);
+            }
+            if (next instanceof final PacketEventsInterceptor other) {
+                while (!messages.isEmpty()) {
+                    other.messages.offer(messages.poll());
+                }
+                return;
+            }
+            final User user = packetEventsAPI.getPlayerManager().getUser(onlineProfile.getPlayer());
+            if (user != null) {
+                chatHistory.sendHistory(onlineProfile.getPlayer());
+                while (!messages.isEmpty()) {
+                    user.sendPacketSilently(messages.poll());
+                }
+            }
+        }
     }
 }

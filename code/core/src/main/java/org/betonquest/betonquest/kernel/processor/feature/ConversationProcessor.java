@@ -28,6 +28,7 @@ import org.betonquest.betonquest.conversation.ConversationData;
 import org.betonquest.betonquest.conversation.ConversationIOFactory;
 import org.betonquest.betonquest.conversation.ConversationPublicData;
 import org.betonquest.betonquest.conversation.DefaultConversationData;
+import org.betonquest.betonquest.conversation.interceptor.Interceptor;
 import org.betonquest.betonquest.conversation.interceptor.InterceptorFactory;
 import org.betonquest.betonquest.database.Saver;
 import org.betonquest.betonquest.kernel.processor.PostLoadTask;
@@ -40,6 +41,8 @@ import org.betonquest.betonquest.text.ParsedSectionTextCreator;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -52,7 +55,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Stores Conversation Data and validates it.
  */
-@SuppressWarnings("PMD.CouplingBetweenObjects")
+@SuppressWarnings({"PMD.CouplingBetweenObjects", "PMD.TooManyMethods"})
 public class ConversationProcessor extends SectionProcessor<ConversationIdentifier, DefaultConversationData> implements Conversations, PostLoadTask {
 
     /**
@@ -61,9 +64,19 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
     private final BetonQuestLoggerFactory loggerFactory;
 
     /**
+     * Plugin instance.
+     */
+    private final Plugin plugin;
+
+    /**
      * The map of all active conversations.
      */
     private final Map<Profile, Conversation> activeConversations;
+
+    /**
+     * Map of pending delayed interceptors per profile.
+     */
+    private final Map<Profile, PendingDelayedInterceptor> pendingInterceptors;
 
     /**
      * Registry for available ConversationIOs.
@@ -143,7 +156,9 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
                                  final Identifiers identifiers, final Saver saver) {
         super(log, placeholders, identifierFactory, "Conversation", "conversations");
         this.loggerFactory = loggerFactory;
+        this.plugin = plugin;
         this.activeConversations = new ProfileKeyMap<>(profileProvider, new ConcurrentHashMap<>());
+        this.pendingInterceptors = new ProfileKeyMap<>(profileProvider, new ConcurrentHashMap<>());
         this.starter = new ConversationStarter(loggerFactory, loggerFactory.create(ConversationStarter.class),
                 activeConversations, plugin, localizations, actionManager, conditionManager, this, identifiers, saver);
         this.textCreator = textCreator;
@@ -162,6 +177,11 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
     public void clear() {
         super.clear();
         listener.reload();
+        for (final PendingDelayedInterceptor pending : pendingInterceptors.values()) {
+            pending.task().cancel();
+            pending.interceptor().end();
+        }
+        pendingInterceptors.clear();
     }
 
     @Override
@@ -185,7 +205,7 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
         final Argument<ConversationIOFactory> conversationIO = instruction.chainForArgument(rawConvIO).string().list().map(convIORegistry::getFactory).get();
         final Argument<InterceptorFactory> interceptor = instruction.chainForArgument(rawInterceptor).string().list().map(interceptorRegistry::getFactory).get();
         final Argument<Number> interceptorDelay = instruction.chainForArgument(rawInterceptorDelay).number()
-                .validate(delay -> delay.doubleValue() > 0, "Expected a non-negative number for 'interceptor_delay', got '%s' instead.").get();
+                .validate(delay -> delay.doubleValue() >= 0, "Expected a non-negative number for 'interceptor_delay', got '%s' instead.").get();
 
         final ConversationPublicData publicData = new ConversationPublicData(identifier, quester, stop, blockTransfer, finalActions, conversationIO, interceptor, interceptorDelay, invincible);
         final DefaultConversationData conversationData = new DefaultConversationData(loggerFactory.create(DefaultConversationData.class), questPackageManager,
@@ -270,9 +290,16 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
 
     @Override
     public void cancel(final OnlineProfile profile) {
+        cancel(profile, false);
+    }
+
+    @Override
+    public void cancel(final OnlineProfile profile, final boolean skipDelay) {
         final Conversation conversation = getActiveConversation(profile);
         if (conversation != null) {
-            conversation.endConversation();
+            conversation.endConversation(skipDelay);
+        } else if (skipDelay) {
+            cancelPendingInterceptor(profile);
         }
     }
 
@@ -284,10 +311,15 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
     @Override
     public void sendBypassMessage(final OnlineProfile profile, final Component message) {
         final Conversation activeConversation = getActiveConversation(profile);
-        if (activeConversation == null) {
-            profile.getPlayer().sendMessage(message);
-        } else {
+        if (activeConversation != null) {
             activeConversation.sendMessage(message);
+        } else {
+            final PendingDelayedInterceptor pending = pendingInterceptors.get(profile);
+            if (pending != null) {
+                pending.interceptor().sendMessage(message);
+            } else {
+                profile.getPlayer().sendMessage(message);
+            }
         }
     }
 
@@ -307,11 +339,99 @@ public class ConversationProcessor extends SectionProcessor<ConversationIdentifi
     }
 
     /**
+     * Schedules the end of an interceptor after the given delay ticks.
+     *
+     * @param profile     the profile of the player
+     * @param interceptor the interceptor to end
+     * @param delayTicks  the delay in ticks
+     */
+    public void scheduleInterceptorEnd(final OnlineProfile profile, final Interceptor interceptor, final long delayTicks) {
+        if (delayTicks <= 0) {
+            endPendingInterceptor(profile, interceptor);
+            return;
+        }
+        final PendingDelayedInterceptor existing = pendingInterceptors.remove(profile);
+        if (existing != null) {
+            existing.task().cancel();
+            if (!Objects.equals(existing.interceptor(), interceptor)) {
+                existing.interceptor().transferTo(interceptor);
+            }
+        }
+
+        final BukkitTask task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                final PendingDelayedInterceptor current = pendingInterceptors.get(profile);
+                if (current != null && Objects.equals(current.interceptor(), interceptor)) {
+                    pendingInterceptors.remove(profile);
+                    interceptor.end();
+                }
+            }
+        }.runTaskLaterAsynchronously(plugin, delayTicks);
+
+        pendingInterceptors.put(profile, new PendingDelayedInterceptor(interceptor, task));
+    }
+
+    /**
+     * Transfers any pending delayed interceptor to the next interceptor and cancels the delayed end task.
+     *
+     * @param profile         the profile of the player
+     * @param nextInterceptor the next interceptor
+     */
+    public void transferPendingInterceptor(final OnlineProfile profile, final Interceptor nextInterceptor) {
+        final PendingDelayedInterceptor pending = pendingInterceptors.remove(profile);
+        if (pending != null) {
+            pending.task().cancel();
+            pending.interceptor().transferTo(nextInterceptor);
+        }
+    }
+
+    /**
+     * Ends the pending interceptor immediately.
+     *
+     * @param profile     the profile of the player
+     * @param interceptor the interceptor to end
+     */
+    public void endPendingInterceptor(final OnlineProfile profile, final Interceptor interceptor) {
+        final PendingDelayedInterceptor pending = pendingInterceptors.remove(profile);
+        if (pending != null) {
+            pending.task().cancel();
+            if (!Objects.equals(pending.interceptor(), interceptor)) {
+                pending.interceptor().transferTo(interceptor);
+            }
+        }
+        interceptor.end();
+    }
+
+    /**
+     * Cancels any pending delayed interceptor for the profile.
+     *
+     * @param profile the profile of the player
+     */
+    public void cancelPendingInterceptor(final OnlineProfile profile) {
+        final PendingDelayedInterceptor pending = pendingInterceptors.remove(profile);
+        if (pending != null) {
+            pending.task().cancel();
+            pending.interceptor().end();
+        }
+    }
+
+    /**
      * Gets the object that actually starts conversations.
      *
      * @return the conversation starter
      */
     public ConversationStarter getStarter() {
         return starter;
+    }
+
+    /**
+     * Holds a pending delayed interceptor and its scheduled task.
+     *
+     * @param interceptor the interceptor
+     * @param task        the scheduled task
+     */
+    private record PendingDelayedInterceptor(Interceptor interceptor, BukkitTask task) {
+
     }
 }
