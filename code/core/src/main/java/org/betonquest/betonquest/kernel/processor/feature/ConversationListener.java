@@ -132,6 +132,6 @@ public class ConversationListener implements Listener {
                 active.endConversation(true);
             }
         }
-        conversationProcessor.cancelPendingInterceptor(profile);
+        conversationProcessor.getInterceptorManager().cancelPendingInterceptor(profile);
     }
 }

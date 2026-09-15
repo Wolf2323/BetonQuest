@@ -392,15 +392,15 @@ public class Conversation {
 
     private void handleInterceptorEnd(final boolean skipDelay) {
         if (skipDelay) {
-            conversationProcessor.endPendingInterceptor(onlineProfile, interceptor);
+            conversationProcessor.getInterceptorManager().endPendingInterceptor(onlineProfile, interceptor);
             return;
         }
         try {
             final long delay = data.getPublicData().interceptorDelay().getValue(onlineProfile).longValue();
-            conversationProcessor.scheduleInterceptorEnd(onlineProfile, interceptor, delay);
+            conversationProcessor.getInterceptorManager().scheduleInterceptorEnd(onlineProfile, interceptor, delay);
         } catch (final QuestException e) {
             log.warn(pack, "Error while ending conversation: " + e.getMessage(), e);
-            conversationProcessor.endPendingInterceptor(onlineProfile, interceptor);
+            conversationProcessor.getInterceptorManager().endPendingInterceptor(onlineProfile, interceptor);
         }
     }
 
@@ -488,7 +488,7 @@ public class Conversation {
             final PlayerConversationState state = new PlayerConversationState(identifier, nextNPCOption.name(), center);
             saver.add(new Record(UpdateType.UPDATE_CONVERSATION, state.toString(), onlineProfile.getProfileUUID().toString()));
 
-            conversationProcessor.endPendingInterceptor(onlineProfile, interceptor);
+            conversationProcessor.getInterceptorManager().endPendingInterceptor(onlineProfile, interceptor);
 
             endCallable.run();
             new PlayerConversationEndEvent(onlineProfile, !plugin.getServer().isPrimaryThread(), this).callEvent();
@@ -650,7 +650,7 @@ public class Conversation {
                 conversation.state = ConversationState.ACTIVE;
 
                 conversation.inOut.begin();
-                conversation.conversationProcessor.transferPendingInterceptor(onlineProfile, conversation.interceptor);
+                conversation.conversationProcessor.getInterceptorManager().transferPendingInterceptor(onlineProfile, conversation.interceptor);
                 conversation.interceptor.begin();
 
                 conversation.printNPCText();
