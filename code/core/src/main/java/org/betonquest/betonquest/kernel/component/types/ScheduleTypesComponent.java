@@ -6,6 +6,8 @@ import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.kernel.registry.feature.ScheduleRegistry;
 import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.betonquest.betonquest.schedule.LastExecutionCache;
+import org.betonquest.betonquest.schedule.impl.gametime.cron.GametimeCronScheduleFactory;
+import org.betonquest.betonquest.schedule.impl.gametime.cron.GametimeCronScheduler;
 import org.betonquest.betonquest.schedule.impl.realtime.cron.RealtimeCronScheduleFactory;
 import org.betonquest.betonquest.schedule.impl.realtime.cron.RealtimeCronScheduler;
 import org.betonquest.betonquest.schedule.impl.realtime.daily.RealtimeDailyScheduleFactory;
@@ -42,6 +44,9 @@ public class ScheduleTypesComponent extends AbstractCoreComponent {
         );
         scheduleRegistry.register("realtime-cron", new RealtimeCronScheduleFactory(),
                 new RealtimeCronScheduler(loggerFactory.create(RealtimeCronScheduler.class, "Schedules"), actionManager, lastExecutionCache)
+        );
+        scheduleRegistry.register("gametime-cron", new GametimeCronScheduleFactory(),
+                new GametimeCronScheduler(loggerFactory.create(GametimeCronScheduler.class, "Schedules"), actionManager, lastExecutionCache)
         );
     }
 }

@@ -202,3 +202,117 @@ For mixed types the **order** can **not** be **guaranteed**.
     **So be very cautious when using `ALL` catchup strategy!**
 
     By deleting `.cache/schedules.yml` before startup you can make BetonQuest forget about any missed schedules :wink:
+
+## Gametime schedules
+
+Gametime schedules run actions based on Minecraft's ingame time, independent of real world time.
+This is useful for events that should happen at specific times of the Minecraft day, like midnight or noon.
+
+The ingame time is controlled by the world's time setting. A full Minecraft day lasts 20 minutes of real time (24,000 ticks).
+The time can be changed by players sleeping in beds, by using the `/time set` command, or by plugins.
+
+### Cron gametime schedule: `gametime-cron`
+
+The gametime cron schedule uses a cron expression to define when actions should run based on Minecraft ingame time.
+It works similarly to [`realtime-cron`](#cron-realtime-schedule-realtime-cron) but maps the cron expression to Minecraft hours and minutes.
+
+The cron expression uses the standard 5-field format: `minute hour day month weekday`.
+However, the mapping to Minecraft time is different:
+
+| Cron Field | Minecraft Mapping |
+|:-----------|:------------------|
+| Minute     | Minecraft minute (0-59) |
+| Hour       | Minecraft hour (0-23) |
+| Day        | Ignored (Minecraft has no calendar) |
+| Month      | Ignored |
+| Weekday    | Ignored |
+
+!!! tip
+
+    **[Crontab Guru](https://crontab.guru/)**
+    is a great tool for learning and testing cron expressions.
+    For gametime schedules, only the minute and hour fields are relevant.
+
+=== "Simple Example"
+
+    ```YAML
+    schedules:
+      midnightEvent: #(1)!
+        type: gametime-cron #(2)!
+        time: '0 0 * * *' #(3)!
+        world: world #(4)!
+        actions: spawn_mobs #(5)!
+    ```
+
+    1.  The name of the schedule.
+
+    2.  The `type` of this schedule is always `gametime-cron`.
+
+    3.  `time` is the cron expression. `0 0 * * *` means every day at 00:00 (midnight) Minecraft time.
+
+    4.  `world` specifies which world's ingame time to use. This is required for gametime schedules.
+
+    5.  An action (or multiple separated by `,`) that should run at the given time.
+
+    _Runs every Minecraft midnight in the world "world", spawning mobs._
+
+=== "Full Example"
+
+    ```YAML
+    # This example works out of the box. Copy-paste to try out how it works.
+    actions:
+      notify_noon: 'notifyall &6It is noon in Minecraft!'
+      notify_midnight: 'notifyall &9It is midnight in Minecraft!'
+    schedules:
+      noonGreeting:
+        type: gametime-cron
+        time: '0 12 * * *'
+        world: world
+        actions: notify_noon
+      midnightGreeting:
+        type: gametime-cron
+        time: '0 0 * * *'
+        world: world
+        actions: notify_midnight
+    ```
+---
+
+Common gametime cron expressions:
+
+| Expression        | Description                          |
+|:------------------|:-------------------------------------|
+| `0 0 * * *`       | Every day at midnight (00:00)        |
+| `0 6 * * *`       | Every day at 6 AM (sunrise)          |
+| `0 12 * * *`      | Every day at noon (12:00)            |
+| `0 18 * * *`      | Every day at 6 PM (sunset)           |
+| `30 7 * * *`      | Every day at 7:30 AM                |
+| `*/15 * * * *`    | Every 15 Minecraft minutes           |
+
+### Catchup Skip Options
+
+Gametime schedules support extended catchup options to skip certain types of time jumps.
+When the ingame time jumps (e.g., a player sleeps in a bed, or an admin uses `/time set`), the scheduler can detect missed executions.
+With catchup skip options, you can configure which types of time jumps should be ignored.
+
+=== "Example"
+
+    ```YAML
+    schedules:
+      midnightEvent:
+        type: gametime-cron
+        time: '0 0 * * *'
+        world: world
+        actions: spawn_mobs
+        catchup: one
+        catchup_skip: -bed,-command #(1)!
+    ```
+
+    1.  Skip catchup when time was changed by sleeping in a bed (`-bed`) or by a command like `/time set` (`-command`).
+        Available options: `-bed`, `-command`, `-plugin`.
+
+    _If a player sleeps and skips to morning, the midnight event will not be caught up.
+    If an admin changes the time with a command, the event will also not be caught up._
+
+!!! note
+    The catchup skip options work in combination with the catchup strategy.
+    If catchup is set to `none`, the skip options have no effect.

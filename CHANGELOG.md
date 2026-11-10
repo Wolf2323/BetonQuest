@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - ${maven.build.timestamp}
 ### Added
+- `gametime-cron` schedule type to run actions based on Minecraft ingame time using cron syntax
+- `catchup_skip` option for gametime schedules to skip certain types of time jumps (`-bed`, `-command`, `-plugin`)
 ### Changed
 ### Deprecated
 ### Removed

@@ -8,11 +8,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased] - ${maven.build.timestamp}
 ### API
 #### Added
+- `GametimeCronSchedule` as a new schedule type that runs actions based on Minecraft ingame time using cron syntax
+- `GametimeCronScheduler` to manage gametime-cron schedules via Bukkit tick-based polling
+- `CatchupSkipOptions` to configure which time jump causes should be skipped during catchup
 #### Changed
+- `BaseScheduleFactory.ScheduleData` record now includes optional `world` and `skipOptions` fields for gametime schedules
 #### Deprecated
 #### Removed
 ### Library
 #### Added
+- `GametimeCronScheduleFactory` to parse gametime-cron schedule configurations
+- `gametime-cron` schedule type registered in `ScheduleTypesComponent`
 #### Changed
 #### Deprecated
 #### Removed

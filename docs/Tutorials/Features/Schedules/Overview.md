@@ -6,15 +6,21 @@ tags:
   - Automation
 ---
 
-Schedules let BetonQuest run actions at fixed real-world times. They are useful when the server should change quest
+Schedules let BetonQuest run actions at fixed times. They are useful when the server should change quest
 progress without a player starting the action manually.
+
+BetonQuest supports two types of schedules:
+
+- **Realtime schedules** run at fixed real-world times (e.g., every day at 10pm server time).
+- **Gametime schedules** run at fixed Minecraft ingame times (e.g., every midnight in the game world).
 
 Use schedules when:
 
 - a quest should reset at the same time for everyone,
 - a server-wide phase should open or close automatically,
 - an event should start and end at fixed times,
-- players should see the same world state after a scheduled change.
+- players should see the same world state after a scheduled change,
+- game events should sync with the Minecraft day/night cycle.
 
 Schedules are different from personal timers. A schedule runs from the server, not from one player. That means the
 actions in a schedule must either be player independent, like `globaltag`, `globalpoint`, `notifyall`, or be wrapped
@@ -48,5 +54,13 @@ with `runforall` when they should affect online players.
      Start and end temporary event progress with schedules.
 
      [:octicons-arrow-right-24: Limited Time Events Tutorial](./Limited-Time-Events.md)
+
+ -   :material-weather-night:{ .lg .middle } __Gametime Events__
+
+     ---
+
+     Sync events with the Minecraft day/night cycle using ingame time schedules.
+
+     [:octicons-arrow-right-24: Gametime Events Tutorial](./Gametime-Events.md)
 
 </div>

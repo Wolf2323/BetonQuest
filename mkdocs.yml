@@ -74,6 +74,7 @@ nav:
               - 'Daily Repetition': Tutorials/Features/Schedules/Daily-Repetition.md
               - 'Delayed Quest Steps': Tutorials/Features/Schedules/Delayed-Quest-Steps.md
               - 'Limited Time Events': Tutorials/Features/Schedules/Limited-Time-Events.md
+              - 'Gametime Events': Tutorials/Features/Schedules/Gametime-Events.md
       - 'Quick Guides':
           - 'Quest Progress & State':
               - 'Displaying Progress': Tutorials/Quick-Guides/Quest-Progress-and-State/Displaying-Progress.md
