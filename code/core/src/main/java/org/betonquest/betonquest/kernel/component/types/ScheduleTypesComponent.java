@@ -6,6 +6,10 @@ import org.betonquest.betonquest.api.service.action.ActionManager;
 import org.betonquest.betonquest.kernel.registry.feature.ScheduleRegistry;
 import org.betonquest.betonquest.lib.dependency.component.AbstractCoreComponent;
 import org.betonquest.betonquest.schedule.LastExecutionCache;
+import org.betonquest.betonquest.schedule.impl.gametime.cron.GametimeCronScheduleFactory;
+import org.betonquest.betonquest.schedule.impl.gametime.cron.GametimeCronScheduler;
+import org.betonquest.betonquest.schedule.impl.gametime.daily.GametimeDailyScheduleFactory;
+import org.betonquest.betonquest.schedule.impl.gametime.daily.GametimeDailyScheduler;
 import org.betonquest.betonquest.schedule.impl.realtime.cron.RealtimeCronScheduleFactory;
 import org.betonquest.betonquest.schedule.impl.realtime.cron.RealtimeCronScheduler;
 import org.betonquest.betonquest.schedule.impl.realtime.daily.RealtimeDailyScheduleFactory;
@@ -37,11 +41,20 @@ public class ScheduleTypesComponent extends AbstractCoreComponent {
         final ScheduleRegistry scheduleRegistry = getDependency(ScheduleRegistry.class);
         final ActionManager actionManager = getDependency(ActionManager.class);
 
+        // Realtime schedules
         scheduleRegistry.register("realtime-daily", new RealtimeDailyScheduleFactory(),
                 new RealtimeDailyScheduler(loggerFactory.create(RealtimeDailyScheduler.class, "Schedules"), actionManager, lastExecutionCache)
         );
         scheduleRegistry.register("realtime-cron", new RealtimeCronScheduleFactory(),
                 new RealtimeCronScheduler(loggerFactory.create(RealtimeCronScheduler.class, "Schedules"), actionManager, lastExecutionCache)
+        );
+
+        // Gametime schedules
+        scheduleRegistry.register("gametime-daily", new GametimeDailyScheduleFactory(),
+                new GametimeDailyScheduler(loggerFactory.create(GametimeDailyScheduler.class, "Schedules"), actionManager)
+        );
+        scheduleRegistry.register("gametime-cron", new GametimeCronScheduleFactory(),
+                new GametimeCronScheduler(loggerFactory.create(GametimeCronScheduler.class, "Schedules"), actionManager)
         );
     }
 }
