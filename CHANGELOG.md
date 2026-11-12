@@ -9,7 +9,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 - `world` placeholder to get properties from a specific world
 - `boostelytra` action to boost the player's fly speed while gliding
+- Package-specific cache stored in `.cache/packages/<package>.yml` accessible via `QuestPackage`
 ### Changed
+- Schedule last execution times are now cached in each package's cache file under `schedules` instead of a single global file
 ### Deprecated
 ### Removed
 ### Fixed

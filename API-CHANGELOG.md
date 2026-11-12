@@ -8,11 +8,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased] - ${maven.build.timestamp}
 ### API
 #### Added
+- `QuestPackageCache` interface representing a package-specific YAML cache
+- `QuestPackage::getCache` method to access the cache of a quest package
 #### Changed
 #### Deprecated
 #### Removed
 ### Library
 #### Added
+- `QuestPackageCacheImpl` as implementation for `QuestPackageCache`
 #### Changed
 #### Deprecated
 #### Removed
